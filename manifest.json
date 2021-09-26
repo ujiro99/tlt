@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+
+  "name": "task-time-list",
+  "description": "This is a chrome extension, enables to manage tasks and time.",
+  "version": "0.0.1",
+
+  "action": {
+    "default_icon": "icon16.png",
+    "default_popup": "popup.html"
+  },
+
+  "background": {
+    "service_worker": "eventPage.js"
+  },
+
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+
+  "permissions": []
+}
