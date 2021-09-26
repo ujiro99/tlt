@@ -1,0 +1,35 @@
+{
+  "name": "task-time-list",
+  "version": "0.0.1",
+  "description": "This is a chrome extension, enables to manage tasks and time.",
+  "scripts": {
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack --config webpack.dev.js",
+    "watch": "webpack -w --config webpack.dev.js",
+    "zip": "find . -name \".DS_Store\" -delete; cd dist; zip -r ../build/build-$(node -p -e \"require('../package.json').version\").zip ./",
+    "bump": "mversion p -m",
+    "bump:i": "mversion i -m"
+  },
+  "author": "Yujiro Takeda",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/chrome": "^0.0.60",
+    "@types/react": "^16.9.32",
+    "@types/react-dom": "^16.9.6",
+    "css-loader": "^3.4.2",
+    "mversion": "^2.0.1",
+    "node-sass": "^4.13.1",
+    "sass-loader": "^6.0.7",
+    "style-loader": "^0.20.3",
+    "ts-loader": "^4.0.1",
+    "typescript": "^3.8.0",
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11",
+    "webpack-merge": "^4.2.2"
+  },
+  "dependencies": {
+    "copy-webpack-plugin": "^6.2.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1"
+  }
+}
