@@ -1,5 +1,5 @@
 {
-  "name": "task-time-list",
+  "name": "tlt",
   "version": "0.0.1",
   "description": "This is a chrome extension, enables to manage tasks and time.",
   "scripts": {

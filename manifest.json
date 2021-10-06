@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
 
-  "name": "task-time-list",
+  "name": "tlt",
   "description": "This is a chrome extension, enables to manage tasks and time.",
   "version": "0.0.1",
 
