@@ -1,0 +1,15 @@
+body {
+  margin: 0px;
+}
+
+.popupContainer {
+  align-items: center;
+  background-color: #bada55;
+  border: 2px solid darkblue;
+  color: darkblue;
+  display: flex;
+  font-size: 20px;
+  height: 75px;
+  justify-content: center;
+  width: 150px;
+}

@@ -8,7 +8,7 @@ import {
   useSetRecoilState
 } from 'recoil'
 
-import './Popup.scss'
+import '@/popup/Popup.css'
 
 export default function Popup(): JSX.Element {
   useEffect(() => {
@@ -64,7 +64,7 @@ function TodoItemCreator() {
   }
 
   return (
-    <div>
+    <div className="text-lg">
       <input type="text" value={inputValue} onChange={onChange} />
       <button onClick={addItem}>Add</button>
     </div>
