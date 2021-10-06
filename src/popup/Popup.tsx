@@ -66,7 +66,7 @@ function TodoItemCreator() {
   return (
     <div className="text-lg">
       <input type="text" value={inputValue} onChange={onChange} />
-      <button onClick={addItem}>Add</button>
+      <button className="bg-red-700 btn hover:bg-red-500" onClick={addItem}>Add</button>
     </div>
   )
 }

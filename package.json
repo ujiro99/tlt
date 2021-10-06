@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "This is a chrome extension, enables to manage tasks and time.",
   "scripts": {
-    "build": "webpack --config webpack.prod.js",
+    "build": "NODE_ENV=production webpack --config webpack.prod.js",
     "dev": "webpack --config webpack.dev.js",
     "lint": "eslint --ext .jsx,.js,.tsx,.ts src/",
     "format": "prettier --write src/**/*",
