@@ -15,6 +15,7 @@
   "author": "Yujiro Takeda",
   "license": "MIT",
   "dependencies": {
+    "@tailwindcss/typography": "^0.4.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
@@ -31,9 +32,9 @@
     "@types/react-dom": "^17.0.9",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.32.0",
-    "css-loader": "^3.6.0",
     "autoprefixer": "^10.3.7",
     "copy-webpack-plugin": "^6.2.1",
+    "css-loader": "^3.6.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-config-standard": "^16.0.3",
