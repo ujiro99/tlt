@@ -1,9 +1,9 @@
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
-
 const TailwindCss = require('tailwindcss')
 const Autoprefixer = require('autoprefixer')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const StylelintPlugin = require('stylelint-webpack-plugin');
 
 module.exports = {
   entry: {
@@ -55,5 +55,6 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: 'dist/style.css',
     }),
+    new StylelintPlugin({ configFile: `${path.resolve(__dirname, '')}/.stylelintrc.json` }),
   ],
 }
