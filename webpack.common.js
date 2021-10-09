@@ -1,9 +1,7 @@
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
-const TailwindCss = require('tailwindcss')
-const Autoprefixer = require('autoprefixer')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const StylelintPlugin = require('stylelint-webpack-plugin');
+const StylelintPlugin = require('stylelint-webpack-plugin')
 
 module.exports = {
   entry: {
@@ -25,14 +23,12 @@ module.exports = {
         test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
-          { loader: 'css-loader', options: { importLoaders: 1 } },
+          {
+            loader: 'css-loader',
+            options: { importLoaders: 1, sourceMap: true },
+          },
           {
             loader: 'postcss-loader',
-            options: {
-              postcssOptions: {
-                plugins: [TailwindCss, Autoprefixer],
-              },
-            },
           },
         ],
       },
@@ -55,6 +51,8 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: 'dist/style.css',
     }),
-    new StylelintPlugin({ configFile: `${path.resolve(__dirname, '')}/.stylelintrc.json` }),
+    new StylelintPlugin({
+      configFile: `${path.resolve(__dirname, '')}/.stylelintrc.json`,
+    }),
   ],
 }
