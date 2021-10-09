@@ -8,8 +8,6 @@ import {
   useSetRecoilState
 } from 'recoil'
 
-import '@/popup/Popup.css'
-
 export default function Popup(): JSX.Element {
   useEffect(() => {
     chrome.runtime.sendMessage({ popupMounted: true })
