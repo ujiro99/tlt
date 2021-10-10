@@ -5,10 +5,8 @@ import {
   selector,
   useRecoilState,
   useRecoilValue,
-  useSetRecoilState
+  useSetRecoilState,
 } from 'recoil'
-
-import './Popup.scss'
 
 export default function Popup(): JSX.Element {
   useEffect(() => {
@@ -28,17 +26,10 @@ const todoListState = atom({
 })
 
 function TodoList() {
-  const todoList = useRecoilValue(filteredTodoListState);
-
   return (
     <>
-      <TodoListStats />
-      <TodoListFilters />
       <TodoItemCreator />
-
-      {todoList.map((todoItem) => (
-        <TodoItem key={todoItem.id} item={todoItem} />
-      ))}
+      <TodoItemList />
     </>
   )
 }
@@ -64,9 +55,36 @@ function TodoItemCreator() {
   }
 
   return (
-    <div>
-      <input type="text" value={inputValue} onChange={onChange} />
-      <button onClick={addItem}>Add</button>
+    <div className="flex flex-row items-end">
+      <div className="flex-1">
+        <label htmlFor="task-name" className="text-sm text-gray-600 leading-7">
+          Task Name
+        </label>
+        <input
+          type="text"
+          name="task-name"
+          className="w-full px-3 py-1 text-gray-700 bg-gray-100 border border-gray-300 rounded outline-none bg-opacity-50 focus:border-indigo-500 focus:bg-transparent focus:ring-2 focus:ring-indigo-200 transition-colors duration-200 ease-in-out"
+          value={inputValue}
+          onChange={onChange}
+        />
+      </div>
+      <button
+        className="h-8 px-4 py-1 ml-2 text-sm font-bold text-white bg-indigo-500 border-0 rounded focus:outline-none hover:bg-indigo-600"
+        onClick={addItem}
+      >
+        Add
+      </button>
+    </div>
+  )
+}
+
+function TodoItemList() {
+  const todoList = useRecoilValue(todoListState)
+  return (
+    <div className="pt-2 mt-4 border-t divide-y">
+      {todoList.map((todoItem) => (
+        <TodoItem key={todoItem.id} item={todoItem} />
+      ))}
     </div>
   )
 }
@@ -106,14 +124,28 @@ function TodoItem({ item }) {
   }
 
   return (
-    <div>
-      <input type="text" value={item.text} onChange={editItemText} />
+    <div className="flex flex-row items-center p-1 todo-item">
+      <div className="checkbox">
+        <input
+          id={'check' + item.id}
+          type="checkbox"
+          checked={item.isComplete}
+          onChange={toggleItemCompletion}
+        />
+        <label htmlFor={'check' + item.id}></label>
+      </div>
       <input
-        type="checkbox"
-        checked={item.isComplete}
-        onChange={toggleItemCompletion}
+        type="text"
+        value={item.text}
+        onChange={editItemText}
+        className="flex-1 px-2 py-1 ml-2 text-gray-700 rounded outline-none focus:bg-gray-200 duration-200 ease-out"
       />
-      <button onClick={deleteItem}>X</button>
+      <button
+        onClick={deleteItem}
+        className="px-2 ml-1 rounded hover:bg-gray-300 duration-200 ease-out"
+      >
+        x
+      </button>
     </div>
   )
 }
@@ -124,86 +156,4 @@ function replaceItemAtIndex(arr, index, newValue) {
 
 function removeItemAtIndex(arr, index) {
   return [...arr.slice(0, index), ...arr.slice(index + 1)]
-}
-
-const todoListFilterState = atom({
-  key: 'todoListFilterState',
-  default: 'Show All',
-});
-
-const filteredTodoListState = selector({
-  key: 'filteredTodoListState',
-  get: ({get}) => {
-    const filter = get(todoListFilterState);
-    const list = get(todoListState);
-
-    console.log(filter)
-
-    switch (filter) {
-      case 'Show Completed':
-        return list.filter((item) => item.isComplete);
-      case 'Show Uncompleted':
-        return list.filter((item) => !item.isComplete);
-      default:
-        return list;
-    }
-  },
-});
-
-function TodoListFilters() {
-  const [filter, setFilter] = useRecoilState(todoListFilterState);
-
-  const updateFilter = ({target: {value}}) => {
-    console.log(value)
-    setFilter(value);
-  };
-
-  return (
-    <>
-      Filter:
-      <select value={filter} onChange={updateFilter}>
-        <option value="Show All">All</option>
-        <option value="Show Completed">Completed</option>
-        <option value="Show Uncompleted">Uncompleted</option>
-      </select>
-    </>
-  );
-}
-
-const todoListStatsState = selector({
-  key: 'todoListStatsState',
-  get: ({get}) => {
-    const todoList = get(todoListState);
-    const totalNum = todoList.length;
-    const totalCompletedNum = todoList.filter((item) => item.isComplete).length;
-    const totalUncompletedNum = totalNum - totalCompletedNum;
-    const percentCompleted = totalNum === 0 ? 0 : totalCompletedNum / totalNum * 100;
-
-    return {
-      totalNum,
-      totalCompletedNum,
-      totalUncompletedNum,
-      percentCompleted,
-    };
-  },
-});
-
-function TodoListStats() {
-  const {
-    totalNum,
-    totalCompletedNum,
-    totalUncompletedNum,
-    percentCompleted,
-  } = useRecoilValue(todoListStatsState);
-
-  const formattedPercentCompleted = Math.round(percentCompleted);
-
-  return (
-    <ul>
-      <li>Total items: {totalNum}</li>
-      <li>Items completed: {totalCompletedNum}</li>
-      <li>Items not completed: {totalUncompletedNum}</li>
-      <li>Percent completed: {formattedPercentCompleted}</li>
-    </ul>
-  );
 }
