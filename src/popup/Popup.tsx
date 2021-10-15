@@ -7,6 +7,23 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
+import { ErrorBoundary } from 'react-error-boundary'
+
+import Log from '@/services/log'
+import Storage from '@/services/storage'
+
+type ErrorFallbackProp = {
+  error: Error
+}
+
+function ErrorFallback(prop: ErrorFallbackProp) {
+  return (
+    <div role="alert">
+      <p>Something went wrong:</p>
+      <pre>{prop.error.message}</pre>
+    </div>
+  )
+}
 
 export default function Popup(): JSX.Element {
   useEffect(() => {
@@ -14,15 +31,36 @@ export default function Popup(): JSX.Element {
   }, [])
 
   return (
-    <RecoilRoot>
-      <TodoList />
-    </RecoilRoot>
+    <ErrorBoundary FallbackComponent={ErrorFallback}>
+      <RecoilRoot>
+        <React.Suspense fallback={<div>Loading...</div>}>
+          <TodoList />
+          <Clear />
+        </React.Suspense>
+      </RecoilRoot>
+    </ErrorBoundary>
   )
+}
+
+function onSetHandler(newList: []) {
+  void Storage.set('todo-list', newList)
+  Log.d(newList)
 }
 
 const todoListState = atom({
   key: 'todoListState',
-  default: [],
+  default: selector({
+    key: 'savedTodoListState',
+    get: async () => {
+      let list = (await Storage.get('todo-list')) as Task[]
+      if (!list) list = []
+      for (const task of list) {
+        if (task.id > Task.taskId) Task.taskId = task.id
+      }
+      return list
+    },
+  }),
+  effects_UNSTABLE: [({ onSet }) => onSet(onSetHandler)],
 })
 
 function TodoList() {
@@ -34,19 +72,33 @@ function TodoList() {
   )
 }
 
+class Task {
+  // for unique Id
+  static taskId = 0
+
+  // utility for creating unique Id
+  static getId() {
+    this.taskId++
+    return this.taskId
+  }
+
+  public id: number
+  public text: string
+  public isComplete: boolean
+
+  constructor(text: string) {
+    this.id = Task.getId()
+    this.text = text
+    this.isComplete = false
+  }
+}
+
 function TodoItemCreator() {
   const [inputValue, setInputValue] = useState('')
   const setTodoList = useSetRecoilState(todoListState)
 
   const addItem = () => {
-    setTodoList((oldTodoList) => [
-      ...oldTodoList,
-      {
-        id: getId(),
-        text: inputValue,
-        isComplete: false,
-      },
-    ])
+    setTodoList((oldTodoList) => [...oldTodoList, new Task(inputValue)])
     setInputValue('')
   }
 
@@ -89,12 +141,6 @@ function TodoItemList() {
   )
 }
 
-// utility for creating unique Id
-let id = 0
-function getId() {
-  return id++
-}
-
 function TodoItem({ item }) {
   const [todoList, setTodoList] = useRecoilState(todoListState)
   const index = todoList.findIndex((listItem) => listItem === item)
@@ -119,7 +165,6 @@ function TodoItem({ item }) {
 
   const deleteItem = () => {
     const newList = removeItemAtIndex(todoList, index)
-
     setTodoList(newList)
   }
 
@@ -156,4 +201,22 @@ function replaceItemAtIndex(arr, index, newValue) {
 
 function removeItemAtIndex(arr, index) {
   return [...arr.slice(0, index), ...arr.slice(index + 1)]
+}
+
+function Clear() {
+  const setTodoList = useSetRecoilState(todoListState)
+
+  function clearStorage() {
+    setTodoList([])
+    void Storage.clear()
+  }
+
+  return (
+    <button
+      className="fixed h-8 px-4 py-1 text-sm font-bold text-white bg-indigo-500 border-0 rounded bottom-2 right-2 focus:outline-none hover:bg-indigo-600"
+      onClick={clearStorage}
+    >
+      Clear
+    </button>
+  )
 }
