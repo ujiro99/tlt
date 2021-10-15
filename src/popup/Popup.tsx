@@ -12,6 +12,12 @@ import { ErrorBoundary } from 'react-error-boundary'
 import Log from '@/services/log'
 import Storage from '@/services/storage'
 
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
+import remarkRehype from 'remark-rehype'
+import rehypeReact from 'rehype-react'
+
 type ErrorFallbackProp = {
   error: Error
 }
@@ -63,11 +69,16 @@ const todoListState = atom({
   effects_UNSTABLE: [({ onSet }) => onSet(onSetHandler)],
 })
 
+const markedHtmlState = atom({
+  key: 'markedHtmlState',
+  default: <div />,
+})
+
 function TodoList() {
   return (
     <>
-      <TodoItemCreator />
-      <TodoItemList />
+      <TodoTextarea />
+      <MarkdownHtml />
     </>
   )
 }
@@ -91,6 +102,38 @@ class Task {
     this.text = text
     this.isComplete = false
   }
+}
+
+function TodoTextarea() {
+  const [inputValue, setInputValue] = useState('')
+  const setMarkedHtmlState = useSetRecoilState(markedHtmlState)
+
+  const onChange = ({ target: { value } }) => {
+    console.log(value)
+    setInputValue(value)
+    setMarkedHtmlState(
+      unified()
+        .use(remarkParse)
+        .use(remarkGfm)
+        .use(remarkRehype)
+        .use(rehypeReact, {createElement: React.createElement})
+        .processSync(value).result
+    )
+  }
+
+  return (
+    <div className="h-80">
+      <textarea
+        className="w-full h-32 px-3 py-1 text-base text-gray-700 bg-white border border-gray-300 rounded outline-none resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 leading-6 transition-colors duration-200 ease-in-out"
+        onChange={onChange}
+        value={inputValue}
+      ></textarea>
+    </div>
+  )
+}
+
+function MarkdownHtml() {
+  return useRecoilValue(markedHtmlState)
 }
 
 function TodoItemCreator() {
