@@ -23,11 +23,17 @@
       "jsx": true
     }
   },
-  "plugins": ["react", "@typescript-eslint"],
+  "plugins": ["react", "@typescript-eslint", "import"],
   "rules": {
     "no-use-before-define": "off",
     "@typescript-eslint/no-use-before-define": ["error"],
     "react/jsx-uses-react": [1],
-    "space-before-function-paren": "off"
+    "space-before-function-paren": "off",
+    "no-void": ["error", { "allowAsStatement": true }]
+  },
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
   }
 }
