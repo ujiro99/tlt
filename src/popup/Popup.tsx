@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createElement } from 'react'
+import React, { useEffect, createElement } from 'react'
 import {
   RecoilRoot,
   atom,
@@ -48,6 +48,11 @@ export default function Popup(): JSX.Element {
   )
 }
 
+const savingState = atom({
+  key: 'savingState',
+  default: 0
+})
+
 const todoListTextState = atom({
   key: 'todoListTextState',
   default: selector({
@@ -56,20 +61,29 @@ const todoListTextState = atom({
       return (await Storage.get('todo-list-text')) as string
     },
   }),
-  effects_UNSTABLE: [
-    ({ onSet }) =>
-      onSet((text) => {
-        void Storage.set('todo-list-text', text)
-      }),
-  ],
 })
+
+function TodoListTextState() {
+  const [inputValue, setInputValue] = useRecoilState(todoListTextState)
+  const setSaving = useSetRecoilState(savingState)
+
+  return {
+    todoListText: inputValue,
+    setTodoListText: async (value: string) => {
+      setInputValue(value)
+      setSaving(0)
+      await Storage.set('todo-list-text', value)
+      setSaving(1)
+    },
+  }
+}
 
 const markedHtmlState = selector({
   key: 'markedHtmlState',
-  get: ({get}) => {
+  get: ({ get }) => {
     const text = get(todoListTextState)
     return convertMarkdownToHtml(text)
-  }
+  },
 })
 
 function TodoList() {
@@ -77,6 +91,7 @@ function TodoList() {
     <>
       <TodoTextarea />
       <MarkdownHtml />
+      <SavedState />
     </>
   )
 }
@@ -102,7 +117,7 @@ class TodoItem {
   }
 }
 
-function convertMarkdownToHtml(text: string) : JSX.Element {
+function convertMarkdownToHtml(text: string): JSX.Element {
   return unified()
     .use(remarkParse)
     .use(remarkGfm)
@@ -118,10 +133,10 @@ function convertMarkdownToHtml(text: string) : JSX.Element {
 }
 
 function TodoTextarea() {
-  const [inputValue, setInputValue] = useRecoilState(todoListTextState)
+  const state = TodoListTextState()
 
   const onChange = ({ target: { value } }) => {
-    setInputValue(value)
+    void state.setTodoListText(value);
   }
 
   return (
@@ -129,7 +144,7 @@ function TodoTextarea() {
       <textarea
         className="w-full h-32 px-3 py-1 text-base text-gray-700 bg-white border border-gray-300 rounded outline-none resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 leading-6 transition-colors duration-200 ease-in-out"
         onChange={onChange}
-        value={inputValue}
+        value={state.todoListText}
       ></textarea>
     </div>
   )
@@ -167,28 +182,27 @@ type TaskCheckBox = {
 type TaskItemChildren = [React.Component, string, string]
 
 function TaskItem(children: TaskItemChildren, line: number) {
-  const [inputValue, setInputValue] = useRecoilState(todoListTextState)
+  const state = TodoListTextState()
 
   const checkboxProps = children[0].props as TaskCheckBox
-  const taskElm = children[2]
+  const todoTitle = children[2]
   const id = `check-${Math.random()}`
+  const lineStr = `${line}`
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     const line = Number(e.target.dataset.line) - 1
     const checked = e.target.checked
-    Log.d(
-      `checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`,
-    )
+    Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
 
     // update todo state in markdown text.
-    const lines = inputValue.split(/\n/)
+    const lines = state.todoListText.split(/\n/)
     if (checked) {
       lines[line] = lines[line].replace('[ ]', '[x]')
     } else {
       lines[line] = lines[line].replace('[x]', '[ ]')
     }
     const newText = lines.join('\n')
-    setInputValue(newText)
+    void state.setTodoListText(newText)
   }
 
   return (
@@ -196,18 +210,26 @@ function TaskItem(children: TaskItemChildren, line: number) {
       <div className="checkbox">
         <input
           id={id}
-          data-line={`${line}`}
+          data-line={lineStr}
           type="checkbox"
           checked={checkboxProps.checked}
           onChange={toggleItemCompletion}
         />
         <label htmlFor={id}></label>
       </div>
-      {taskElm}
+      <span className="ml-2">{todoTitle}</span>
+      <div className="todo-controll"></div>
     </div>
   )
 }
 
 function MarkdownHtml() {
   return useRecoilValue(markedHtmlState)
+}
+
+function SavedState() {
+  const count = useRecoilValue(savingState);
+  return (
+    <pre>{count}</pre>
+  )
 }
