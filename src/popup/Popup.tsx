@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, createElement } from 'react'
 import {
   RecoilRoot,
   atom,
@@ -7,7 +7,14 @@ import {
   useRecoilValue,
   useSetRecoilState,
 } from 'recoil'
+
 import { ErrorBoundary } from 'react-error-boundary'
+import type { Position } from 'unist'
+import { unified } from 'unified'
+import remarkParse from 'remark-parse'
+import remarkGfm from 'remark-gfm'
+import remarkRehype from 'remark-rehype'
+import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
 import Storage from '@/services/storage'
@@ -35,188 +42,173 @@ export default function Popup(): JSX.Element {
       <RecoilRoot>
         <React.Suspense fallback={<div>Loading...</div>}>
           <TodoList />
-          <Clear />
         </React.Suspense>
       </RecoilRoot>
     </ErrorBoundary>
   )
 }
 
-function onSetHandler(newList: []) {
-  void Storage.set('todo-list', newList)
-  Log.d(newList)
-}
+const savingState = atom({
+  key: 'savingState',
+  default: 0
+})
 
-const todoListState = atom({
-  key: 'todoListState',
+const todoListTextState = atom({
+  key: 'todoListTextState',
   default: selector({
-    key: 'savedTodoListState',
+    key: 'savedTodoListTextState',
     get: async () => {
-      let list = (await Storage.get('todo-list')) as Task[]
-      if (!list) list = []
-      for (const task of list) {
-        if (task.id > Task.taskId) Task.taskId = task.id
-      }
-      return list
+      return (await Storage.get('todo-list-text')) as string
     },
   }),
-  effects_UNSTABLE: [({ onSet }) => onSet(onSetHandler)],
+})
+
+function TodoListTextState() {
+  const [inputValue, setInputValue] = useRecoilState(todoListTextState)
+  const setSaving = useSetRecoilState(savingState)
+
+  return {
+    todoListText: inputValue,
+    setTodoListText: async (value: string) => {
+      setInputValue(value)
+      setSaving(0)
+      await Storage.set('todo-list-text', value)
+      setSaving(1)
+    },
+  }
+}
+
+const markedHtmlState = selector({
+  key: 'markedHtmlState',
+  get: ({ get }) => {
+    const text = get(todoListTextState)
+    return convertMarkdownToHtml(text)
+  },
 })
 
 function TodoList() {
   return (
     <>
-      <TodoItemCreator />
-      <TodoItemList />
+      <TodoTextarea />
+      <MarkdownHtml />
+      <SavedState />
     </>
   )
 }
 
-class Task {
-  // for unique Id
-  static taskId = 0
-
-  // utility for creating unique Id
-  static getId() {
-    this.taskId++
-    return this.taskId
-  }
-
-  public id: number
-  public text: string
-  public isComplete: boolean
-
-  constructor(text: string) {
-    this.id = Task.getId()
-    this.text = text
-    this.isComplete = false
-  }
+function convertMarkdownToHtml(text: string): JSX.Element {
+  return unified()
+    .use(remarkParse)
+    .use(remarkGfm)
+    .use(remarkRehype)
+    .use(rehypeReact, {
+      createElement: createElement,
+      passNode: true,
+      components: {
+        li: transListItem,
+      },
+    })
+    .processSync(text).result
 }
 
-function TodoItemCreator() {
-  const [inputValue, setInputValue] = useState('')
-  const setTodoList = useSetRecoilState(todoListState)
-
-  const addItem = () => {
-    setTodoList((oldTodoList) => [...oldTodoList, new Task(inputValue)])
-    setInputValue('')
-  }
+function TodoTextarea() {
+  const state = TodoListTextState()
 
   const onChange = ({ target: { value } }) => {
-    setInputValue(value)
+    void state.setTodoListText(value);
   }
 
   return (
-    <div className="flex flex-row items-end">
-      <div className="flex-1">
-        <label htmlFor="task-name" className="text-sm text-gray-600 leading-7">
-          Task Name
-        </label>
-        <input
-          type="text"
-          name="task-name"
-          className="w-full px-3 py-1 text-gray-700 bg-gray-100 border border-gray-300 rounded outline-none bg-opacity-50 focus:border-indigo-500 focus:bg-transparent focus:ring-2 focus:ring-indigo-200 transition-colors duration-200 ease-in-out"
-          value={inputValue}
-          onChange={onChange}
-        />
-      </div>
-      <button
-        className="h-8 px-4 py-1 ml-2 text-sm font-bold text-white bg-indigo-500 border-0 rounded focus:outline-none hover:bg-indigo-600"
-        onClick={addItem}
-      >
-        Add
-      </button>
+    <div className="h-80">
+      <textarea
+        className="w-full h-32 px-3 py-1 text-base text-gray-700 bg-white border border-gray-300 rounded outline-none resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 leading-6 transition-colors duration-200 ease-in-out"
+        onChange={onChange}
+        value={state.todoListText}
+      ></textarea>
     </div>
   )
 }
 
-function TodoItemList() {
-  const todoList = useRecoilValue(todoListState)
-  return (
-    <div className="pt-2 mt-4 border-t divide-y">
-      {todoList.map((todoItem) => (
-        <TodoItem key={todoItem.id} item={todoItem} />
-      ))}
-    </div>
-  )
+type Node = {
+  children: []
+  position: Position
+  properties: unknown
+  tagName: string
+  type: string
 }
 
-function TodoItem({ item }) {
-  const [todoList, setTodoList] = useRecoilState(todoListState)
-  const index = todoList.findIndex((listItem) => listItem === item)
+type TransListItemProps = { children: unknown; className: string; node: Node }
 
-  const editItemText = ({ target: { value } }) => {
-    const newList = replaceItemAtIndex(todoList, index, {
-      ...item,
-      text: value,
-    })
-
-    setTodoList(newList)
+function transListItem(_props: unknown) {
+  const props = _props as TransListItemProps
+  const line = props.node.position.start.line
+  if (props.className === 'task-list-item') {
+    const taskItemChildren = props.children as TaskItemChildren
+    return (
+      <li className={props.className}>{TaskItem(taskItemChildren, line)}</li>
+    )
+  } else {
+    return <li className={props.className}>{props.children}</li>
   }
+}
 
-  const toggleItemCompletion = () => {
-    const newList = replaceItemAtIndex(todoList, index, {
-      ...item,
-      isComplete: !item.isComplete,
-    })
+type TaskCheckBox = {
+  type: string
+  checked: boolean
+  disabled: boolean
+}
 
-    setTodoList(newList)
-  }
+type TaskItemChildren = [React.Component, string, string]
 
-  const deleteItem = () => {
-    const newList = removeItemAtIndex(todoList, index)
-    setTodoList(newList)
+function TaskItem(children: TaskItemChildren, line: number) {
+  const state = TodoListTextState()
+
+  const checkboxProps = children[0].props as TaskCheckBox
+  const todoTitle = children[2]
+  const id = `check-${Math.random()}`
+  const lineStr = `${line}`
+
+  const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const line = Number(e.target.dataset.line) - 1
+    const checked = e.target.checked
+    Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
+
+    // update todo state in markdown text.
+    const lines = state.todoListText.split(/\n/)
+    if (checked) {
+      lines[line] = lines[line].replace('[ ]', '[x]')
+    } else {
+      lines[line] = lines[line].replace('[x]', '[ ]')
+    }
+    const newText = lines.join('\n')
+    void state.setTodoListText(newText)
   }
 
   return (
     <div className="flex flex-row items-center p-1 todo-item">
       <div className="checkbox">
         <input
-          id={'check' + item.id}
+          id={id}
+          data-line={lineStr}
           type="checkbox"
-          checked={item.isComplete}
+          checked={checkboxProps.checked}
           onChange={toggleItemCompletion}
         />
-        <label htmlFor={'check' + item.id}></label>
+        <label htmlFor={id}></label>
       </div>
-      <input
-        type="text"
-        value={item.text}
-        onChange={editItemText}
-        className="flex-1 px-2 py-1 ml-2 text-gray-700 rounded outline-none focus:bg-gray-200 duration-200 ease-out"
-      />
-      <button
-        onClick={deleteItem}
-        className="px-2 ml-1 rounded hover:bg-gray-300 duration-200 ease-out"
-      >
-        x
-      </button>
+      <span className="ml-2">{todoTitle}</span>
+      <div className="todo-controll"></div>
     </div>
   )
 }
 
-function replaceItemAtIndex(arr, index, newValue) {
-  return [...arr.slice(0, index), newValue, ...arr.slice(index + 1)]
+function MarkdownHtml() {
+  return useRecoilValue(markedHtmlState)
 }
 
-function removeItemAtIndex(arr, index) {
-  return [...arr.slice(0, index), ...arr.slice(index + 1)]
-}
-
-function Clear() {
-  const setTodoList = useSetRecoilState(todoListState)
-
-  function clearStorage() {
-    setTodoList([])
-    void Storage.clear()
-  }
-
+function SavedState() {
+  const count = useRecoilValue(savingState);
   return (
-    <button
-      className="fixed h-8 px-4 py-1 text-sm font-bold text-white bg-indigo-500 border-0 rounded bottom-2 right-2 focus:outline-none hover:bg-indigo-600"
-      onClick={clearStorage}
-    >
-      Clear
-    </button>
+    <pre>{count}</pre>
   )
 }

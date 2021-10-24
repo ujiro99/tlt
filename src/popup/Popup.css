@@ -85,6 +85,14 @@ body {
   }
 }
 
+.todo-controll {
+  display: none;
+}
+
+.todo-item:hover .todo-controll {
+  display: block;
+}
+
 @keyframes scale-up {
   0% {
     transform: scale(0.8);
