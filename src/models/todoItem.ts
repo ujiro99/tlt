@@ -20,12 +20,10 @@ export class TodoItem {
   }
 
   public static parse(todoStr: string): TodoItem {
-    const todoRegexp = /(\[\s\]|\[x\])\s(.+)(~(\d+d)?(\d+h)?(\d+m)?)?\s(#.+)?/
+    const todoRegexp = /- (\[\s\]|\[x\])\s.+$/
     if (todoRegexp.test(todoStr)) {
-      const m = todoRegexp.exec(todoStr);
-      const title = m[2]
-      const timeStr = m[3]
-      const time = TodoItem.parseTime(timeStr)
+      const title = TodoItem.parseTitle(todoStr)
+      const time = TodoItem.parseTime(todoStr)
       return new TodoItem(title, time);
     }
 
@@ -33,8 +31,18 @@ export class TodoItem {
     return new TodoItem("", new Time());
   }
 
+  private static parseTitle(todoStr: string): string {
+     const titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
+    if (titleRegexp.test(todoStr)) {
+      const m = titleRegexp.exec(todoStr);
+      return m[1]
+    }
+    Log.w("Can't find title")
+    return ""
+  }
+
   private static parseTime(todoStr: string): Time {
-    const timeRegexp = /~((\d+d)?(\d+h)?(\d+m)?)\s/
+    const timeRegexp = /~((\d+d)?(\d+h)?(\d+m)?)/
     if (timeRegexp.test(todoStr)) {
       const m = timeRegexp.exec(todoStr)
       if (m[1]) {
@@ -59,7 +67,7 @@ export class TodoItem {
     this.title = title
     this.todoState = TODO_STATE.STOP
     this.trackingStartTime = 0;
-    this.estimatedTimes = time
+    this.actualTimes = time
   }
 
   trackingStart(): void {
@@ -75,8 +83,8 @@ export class TodoItem {
     this.trackingStartTime = 0
   }
 
-  complete(): void {
-    this.todoState = TODO_STATE.COMPLETE;
+  get isComplete(): boolean {
+    return this.todoState === TODO_STATE.COMPLETE
   }
 }
 
