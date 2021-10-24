@@ -96,27 +96,6 @@ function TodoList() {
   )
 }
 
-class TodoItem {
-  // for unique Id
-  static taskId = 0
-
-  // utility for creating unique Id
-  static getId() {
-    this.taskId++
-    return this.taskId
-  }
-
-  public id: number
-  public text: string
-  public isComplete: boolean
-
-  constructor(text: string) {
-    this.id = TodoItem.getId()
-    this.text = text
-    this.isComplete = false
-  }
-}
-
 function convertMarkdownToHtml(text: string): JSX.Element {
   return unified()
     .use(remarkParse)
