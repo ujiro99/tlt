@@ -17,7 +17,8 @@ import remarkRehype from 'remark-rehype'
 import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
-import { STORAGE_KEY, Storage} from '@/services/storage'
+import { STORAGE_KEY, Storage } from '@/services/storage'
+import { Task } from "@/models/task"
 
 type ErrorFallbackProp = {
   error: Error
@@ -50,7 +51,7 @@ export default function Popup(): JSX.Element {
 
 const savingState = atom({
   key: 'savingState',
-  default: 0
+  default: 0,
 })
 
 const taskListTextState = atom({
@@ -115,7 +116,7 @@ function TaskTextarea() {
   const state = TaskListTextState()
 
   const onChange = ({ target: { value } }) => {
-    void state.setTaskListText(value);
+    void state.setTaskListText(value)
   }
 
   return (
@@ -207,8 +208,6 @@ function MarkdownHtml() {
 }
 
 function SavedState() {
-  const count = useRecoilValue(savingState);
-  return (
-    <pre>{count}</pre>
-  )
+  const count = useRecoilValue(savingState)
+  return <pre>{count}</pre>
 }

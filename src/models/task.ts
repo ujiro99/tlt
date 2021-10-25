@@ -9,7 +9,7 @@ const TASK_STATE = {
 
 type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
 
-export class TaskItem {
+export class Task {
   // for unique Id
   public static taskId = 0
 
@@ -19,12 +19,12 @@ export class TaskItem {
     return this.taskId
   }
 
-  public static parse(taskStr: string): TaskItem {
+  public static parse(taskStr: string): Task {
     const taskRegexp = /- (\[\s\]|\[x\])\s.+$/
     if (taskRegexp.test(taskStr)) {
-      const title = TaskItem.parseTitle(taskStr)
-      const time = TaskItem.parseTime(taskStr)
-      return new TaskItem(title, time);
+      const title = Task.parseTitle(taskStr)
+      const time = Task.parseTime(taskStr)
+      return new Task(title, time);
     }
 
     Log.w("Can't find taskitem")
@@ -63,7 +63,7 @@ export class TaskItem {
   private trackingStartTime: number;
 
   constructor(title: string, time: Time) {
-    this.id = TaskItem.getId()
+    this.id = Task.getId()
     this.title = title
     this.taskState = TASK_STATE.STOP
     this.trackingStartTime = 0;

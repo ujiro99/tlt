@@ -1,4 +1,4 @@
-import { TaskItem } from '@/models/taskItem'
+import { Task } from '@/models/task'
 
 describe.each([
     ["- [ ] task title", "task title", ""],
@@ -8,7 +8,7 @@ describe.each([
   ])(`parse %s`, (str: string, title: string, time: string) => {
 
   test(`returns ${title} ${time}`, () => {
-    const task = TaskItem.parse(str)
+    const task = Task.parse(str)
     expect(task.title).toBe(title)
     expect(task.actualTimes.toString()).toBe(time)
   })
