@@ -17,7 +17,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
-import Storage from '@/services/storage'
+import { STORAGE_KEY, Storage} from '@/services/storage'
 
 type ErrorFallbackProp = {
   error: Error
@@ -41,7 +41,7 @@ export default function Popup(): JSX.Element {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <RecoilRoot>
         <React.Suspense fallback={<div>Loading...</div>}>
-          <TodoList />
+          <TaskList />
         </React.Suspense>
       </RecoilRoot>
     </ErrorBoundary>
@@ -53,26 +53,26 @@ const savingState = atom({
   default: 0
 })
 
-const todoListTextState = atom({
-  key: 'todoListTextState',
+const taskListTextState = atom({
+  key: 'taskListTextState',
   default: selector({
-    key: 'savedTodoListTextState',
+    key: 'savedTaskListTextState',
     get: async () => {
-      return (await Storage.get('todo-list-text')) as string
+      return (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as string
     },
   }),
 })
 
-function TodoListTextState() {
-  const [inputValue, setInputValue] = useRecoilState(todoListTextState)
+function TaskListTextState() {
+  const [inputValue, setInputValue] = useRecoilState(taskListTextState)
   const setSaving = useSetRecoilState(savingState)
 
   return {
-    todoListText: inputValue,
-    setTodoListText: async (value: string) => {
+    taskListText: inputValue,
+    setTaskListText: async (value: string) => {
       setInputValue(value)
       setSaving(0)
-      await Storage.set('todo-list-text', value)
+      await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, value)
       setSaving(1)
     },
   }
@@ -81,15 +81,15 @@ function TodoListTextState() {
 const markedHtmlState = selector({
   key: 'markedHtmlState',
   get: ({ get }) => {
-    const text = get(todoListTextState)
+    const text = get(taskListTextState)
     return convertMarkdownToHtml(text)
   },
 })
 
-function TodoList() {
+function TaskList() {
   return (
     <>
-      <TodoTextarea />
+      <TaskTextarea />
       <MarkdownHtml />
       <SavedState />
     </>
@@ -111,11 +111,11 @@ function convertMarkdownToHtml(text: string): JSX.Element {
     .processSync(text).result
 }
 
-function TodoTextarea() {
-  const state = TodoListTextState()
+function TaskTextarea() {
+  const state = TaskListTextState()
 
   const onChange = ({ target: { value } }) => {
-    void state.setTodoListText(value);
+    void state.setTaskListText(value);
   }
 
   return (
@@ -123,7 +123,7 @@ function TodoTextarea() {
       <textarea
         className="w-full h-32 px-3 py-1 text-base text-gray-700 bg-white border border-gray-300 rounded outline-none resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 leading-6 transition-colors duration-200 ease-in-out"
         onChange={onChange}
-        value={state.todoListText}
+        value={state.taskListText}
       ></textarea>
     </div>
   )
@@ -161,10 +161,10 @@ type TaskCheckBox = {
 type TaskItemChildren = [React.Component, string, string]
 
 function TaskItem(children: TaskItemChildren, line: number) {
-  const state = TodoListTextState()
+  const state = TaskListTextState()
 
   const checkboxProps = children[0].props as TaskCheckBox
-  const todoTitle = children[2]
+  const taskTitle = children[2]
   const id = `check-${Math.random()}`
   const lineStr = `${line}`
 
@@ -173,19 +173,19 @@ function TaskItem(children: TaskItemChildren, line: number) {
     const checked = e.target.checked
     Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
 
-    // update todo state in markdown text.
-    const lines = state.todoListText.split(/\n/)
+    // update task state in markdown text.
+    const lines = state.taskListText.split(/\n/)
     if (checked) {
       lines[line] = lines[line].replace('[ ]', '[x]')
     } else {
       lines[line] = lines[line].replace('[x]', '[ ]')
     }
     const newText = lines.join('\n')
-    void state.setTodoListText(newText)
+    void state.setTaskListText(newText)
   }
 
   return (
-    <div className="flex flex-row items-center p-1 todo-item">
+    <div className="flex flex-row items-center p-1 task-item">
       <div className="checkbox">
         <input
           id={id}
@@ -196,8 +196,8 @@ function TaskItem(children: TaskItemChildren, line: number) {
         />
         <label htmlFor={id}></label>
       </div>
-      <span className="ml-2">{todoTitle}</span>
-      <div className="todo-controll"></div>
+      <span className="ml-2">{taskTitle}</span>
+      <div className="task-controll"></div>
     </div>
   )
 }

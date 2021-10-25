@@ -1,15 +1,15 @@
 import Log from '@/services/log'
 import { Time }from '@/models/time'
 
-const TODO_STATE = {
+const TASK_STATE = {
   STOP: "STOP",
   RUNNING: "RUNNING",
   COMPLETE: "COMPLETE",
 }
 
-type TodoState = typeof TODO_STATE[keyof typeof TODO_STATE]
+type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
 
-export class TodoItem {
+export class TaskItem {
   // for unique Id
   public static taskId = 0
 
@@ -19,43 +19,43 @@ export class TodoItem {
     return this.taskId
   }
 
-  public static parse(todoStr: string): TodoItem {
-    const todoRegexp = /- (\[\s\]|\[x\])\s.+$/
-    if (todoRegexp.test(todoStr)) {
-      const title = TodoItem.parseTitle(todoStr)
-      const time = TodoItem.parseTime(todoStr)
-      return new TodoItem(title, time);
+  public static parse(taskStr: string): TaskItem {
+    const taskRegexp = /- (\[\s\]|\[x\])\s.+$/
+    if (taskRegexp.test(taskStr)) {
+      const title = TaskItem.parseTitle(taskStr)
+      const time = TaskItem.parseTime(taskStr)
+      return new TaskItem(title, time);
     }
 
-    Log.w("Can't find todo item")
-    return new TodoItem("", new Time());
+    Log.w("Can't find taskitem")
+    return null;
   }
 
-  private static parseTitle(todoStr: string): string {
+  private static parseTitle(taskStr: string): string {
      const titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
-    if (titleRegexp.test(todoStr)) {
-      const m = titleRegexp.exec(todoStr);
+    if (titleRegexp.test(taskStr)) {
+      const m = titleRegexp.exec(taskStr);
       return m[1]
     }
     Log.w("Can't find title")
     return ""
   }
 
-  private static parseTime(todoStr: string): Time {
+  private static parseTime(taskStr: string): Time {
     const timeRegexp = /~((\d+d)?(\d+h)?(\d+m)?)/
-    if (timeRegexp.test(todoStr)) {
-      const m = timeRegexp.exec(todoStr)
+    if (timeRegexp.test(taskStr)) {
+      const m = timeRegexp.exec(taskStr)
       if (m[1]) {
         return Time.parseStr(m[1]);
       }
     }
-    Log.w(`can't find time: ${todoStr}`)
+    Log.w(`can't find time: ${taskStr}`)
     return new Time();
   }
 
   public id: number
   public title: string
-  public todoState: TodoState
+  public taskState: TaskState
   public estimatedTimes: Time
   public actualTimes: Time
 
@@ -63,28 +63,28 @@ export class TodoItem {
   private trackingStartTime: number;
 
   constructor(title: string, time: Time) {
-    this.id = TodoItem.getId()
+    this.id = TaskItem.getId()
     this.title = title
-    this.todoState = TODO_STATE.STOP
+    this.taskState = TASK_STATE.STOP
     this.trackingStartTime = 0;
     this.actualTimes = time
   }
 
   trackingStart(): void {
     this.trackingStartTime = Date.now()
-    this.todoState = TODO_STATE.RUNNING
+    this.taskState = TASK_STATE.RUNNING
   }
 
   trackingEnd(): void {
     const elapsedTimeMs = Date.now() - this.trackingStartTime
     const elapsedTime = Time.parseMs(elapsedTimeMs)
     this.actualTimes.add(elapsedTime)
-    this.todoState = TODO_STATE.STOP
+    this.taskState = TASK_STATE.STOP
     this.trackingStartTime = 0
   }
 
   get isComplete(): boolean {
-    return this.todoState === TODO_STATE.COMPLETE
+    return this.taskState === TASK_STATE.COMPLETE
   }
 }
 
