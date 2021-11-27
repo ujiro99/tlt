@@ -1,0 +1,26 @@
+name: test and coverage
+
+on: push
+
+jobs:
+  test_and_coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Code Climate Coverage Action
+        uses: paambaati/codeclimate-action@v3.0.0
+        env:
+          CC_TEST_REPORTER_ID: f5fc2fbc071daa5dec408f54647a5d5ea0d72e8c568354e857f2b6028b1a0605
+        with:
+          coverageCommand: npm test
+          coverageLocations: |
+            ${{github.workspace}}/coverage/lcov.info:lcov
