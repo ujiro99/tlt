@@ -10,6 +10,7 @@ const isDebug = environment === "development";
 interface ILog {
   d: (msg: unknown) => void,
   w: (msg: unknown) => void
+  e: (msg: unknown) => void
 }
 
 /**
@@ -23,7 +24,11 @@ const Log: ILog = {
   /**
    * Output warning level log.
    */
-  w: console.warn.bind(console) as (msg: string) => void
+  w: console.warn.bind(console) as (msg: string) => void,
+  /**
+   * Output error level log.
+   */
+  e: console.error.bind(console) as (msg: string) => void
 };
 
 export default Log;

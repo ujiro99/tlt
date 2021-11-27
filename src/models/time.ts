@@ -11,17 +11,46 @@ const MINUTE_MS = 60 * SECOND_MS
 const HOUR_MS = 60 * MINUTE_MS
 const DAY_MS = 24 * HOUR_MS
 
+const MINUTE_S = 60
+const HOUR_S = 60 * MINUTE_S
+const DAY_S = 24 * HOUR_S
+
+const MINUTE = 60
+const HOUR = 60
+const DAY = 24
+
+/**
+ * Return the number as a zero-padded string.
+ */
+function pad(num: number, len: number): string {
+  return `${Array(len).join('0')}${num}`.slice(-len)
+}
+
 /**
  * This class represents the elapsed time.
  */
 export class Time {
   static parseMs(ms: number): Time {
     const time = new Time()
-    time.days = Math.floor(ms / DAY_MS)
+    time._days = Math.floor(ms / DAY_MS)
     ms = ms % DAY_MS
-    time.hours = Math.floor(ms / HOUR_MS)
+    time._hours = Math.floor(ms / HOUR_MS)
     ms = ms % HOUR_MS
-    time.minutes = Math.floor(ms / MINUTE_MS)
+    time._minutes = Math.floor(ms / MINUTE_MS)
+    ms = ms % MINUTE_MS
+    time._seconds = Math.floor(ms / SECOND_MS)
+    return time
+  }
+
+  static parseSecond(seconds: number): Time {
+    const time = new Time()
+    time._days = Math.floor(seconds / DAY_S)
+    seconds = seconds % DAY_S
+    time._hours = Math.floor(seconds / HOUR_S)
+    seconds = seconds % HOUR_S
+    time._minutes = Math.floor(seconds / MINUTE_S)
+    seconds = seconds % MINUTE_S
+    time._seconds = seconds
     return time
   }
 
@@ -40,56 +69,104 @@ export class Time {
         if (!value) continue
         switch (tr.type) {
           case TIME_TYPE.MINUTE:
-            time.minutes = Number(value)
+            time._minutes = Number(value)
             break
           case TIME_TYPE.HOUR:
-            time.hours = Number(value)
+            time._hours = Number(value)
             break
           case TIME_TYPE.DAY:
-            time.days = Number(value)
+            time._days = Number(value)
             break
         }
       }
     }
 
-    if (time.ms() === 0) {
+    if (time.inSeconds() === 0) {
       Log.w(`can't find time: ${timeStr}`)
     }
 
     return time
   }
 
-  public minutes = 0
-  public hours = 0
-  public days = 0
+  private _seconds = 0
+  private _minutes = 0
+  private _hours = 0
+  private _days = 0
 
   constructor(minutes = 0, hours = 0, days = 0) {
-    this.minutes = minutes
-    this.hours = hours
-    this.days = days
+    this._minutes = minutes
+    this._hours = hours
+    this._days = days
+    this.calculateCarryUp()
   }
 
-  public add(time: Time): void {
-    this.minutes += time.minutes
-    this.hours += time.hours
-    this.days += time.days
+  public add(time: Time): Time {
+    this._seconds += time._seconds
+    this._minutes += time._minutes
+    this._hours += time._hours
+    this._days += time._days
+    this.calculateCarryUp()
+    return this
   }
 
   public toString(): string {
     let str = ''
-    if (this.days > 0) {
-      str += `${this.days}d`
+    if (this._days > 0) {
+      str += `${this._days}d`
     }
-    if (this.hours > 0) {
-      str += `${this.hours}h`
+    if (this._hours > 0) {
+      str += `${this._hours}h`
     }
-    if (this.minutes > 0) {
-      str += `${this.minutes}m`
+    if (this._minutes > 0) {
+      str += `${this._minutes}m`
     }
     return str
   }
 
-  private ms(): number {
-    return this.days * DAY_MS + this.hours * HOUR_MS + this.minutes * MINUTE_MS
+  public toClockString(): string {
+    if (this._days > 0) {
+      return `${this._days}d ${pad(this._hours, 2)}:${pad(this._minutes, 2)}:${pad(this._seconds, 2)}`
+    } else {
+      return `${pad(this._hours, 2)}:${pad(this._minutes, 2)}:${pad(this._seconds, 2)}`
+    }
+  }
+
+  public isEmpty(): boolean {
+    return this._days === 0 && this._hours === 0 && this._minutes === 0
+  }
+
+  public inSeconds(): number {
+    return this._days * DAY_S + this._hours * HOUR_S + this._minutes * MINUTE_S
+  }
+
+  public get seconds(): number {
+    return this._seconds;
+  }
+
+  public get minutes(): number {
+    return this._minutes;
+  }
+
+  public get hours(): number {
+    return this._hours;
+  }
+
+  public get days(): number {
+    return this._days;
+  }
+
+  private calculateCarryUp(): void {
+    if (this._seconds >= MINUTE) {
+      this._minutes += this._seconds / MINUTE
+      this._seconds = this._seconds % MINUTE
+    }
+    if (this._minutes >= HOUR) {
+      this._hours += this._minutes / HOUR
+      this._minutes = this._minutes % HOUR
+    }
+    if (this._hours >= DAY) {
+      this._days += this._hours / DAY
+      this._hours = this._hours % DAY
+    }
   }
 }
