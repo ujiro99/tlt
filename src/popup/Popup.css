@@ -85,11 +85,11 @@ body {
   }
 }
 
-.todo-controll {
+.task-controll {
   display: none;
 }
 
-.todo-item:hover .todo-controll {
+.task-item:hover .task-controll {
   display: block;
 }
 

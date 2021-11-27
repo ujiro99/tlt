@@ -1,11 +1,10 @@
-import React, { useEffect, createElement } from 'react'
+import React, { useState, useEffect, createElement } from 'react'
 import {
   RecoilRoot,
   atom,
   selector,
   useRecoilState,
   useRecoilValue,
-  useSetRecoilState,
 } from 'recoil'
 
 import { ErrorBoundary } from 'react-error-boundary'
@@ -17,7 +16,9 @@ import remarkRehype from 'remark-rehype'
 import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
-import Storage from '@/services/storage'
+import { STORAGE_KEY, Storage } from '@/services/storage'
+import { Task } from '@/models/task'
+import { Time } from '@/models/time'
 
 type ErrorFallbackProp = {
   error: Error
@@ -41,39 +42,88 @@ export default function Popup(): JSX.Element {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <RecoilRoot>
         <React.Suspense fallback={<div>Loading...</div>}>
-          <TodoList />
+          <TaskList />
         </React.Suspense>
       </RecoilRoot>
     </ErrorBoundary>
   )
 }
 
-const savingState = atom({
-  key: 'savingState',
-  default: 0
-})
-
-const todoListTextState = atom({
-  key: 'todoListTextState',
+/**
+ * Task text saved in chrome storage.
+ */
+const taskListTextState = atom({
+  key: 'taskListTextState',
   default: selector({
-    key: 'savedTodoListTextState',
+    key: 'savedTaskListTextState',
     get: async () => {
-      return (await Storage.get('todo-list-text')) as string
+      return (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as string
     },
   }),
 })
 
-function TodoListTextState() {
-  const [inputValue, setInputValue] = useRecoilState(todoListTextState)
-  const setSaving = useSetRecoilState(savingState)
+type TrackingState = {
+  line: number
+  isTracking: boolean
+  trackingStartTime: number /** [milli second] */
+  elapsedTime: Time
+}
+
+const trackingStateList = atom({
+  key: 'trackingStateList',
+  default: [] as TrackingState[],
+})
+
+type CounterProps = {
+  id: number
+  startTime: Time
+}
+
+function Counter(props: CounterProps) {
+  const [count, setCount] = useState(props.startTime.inSeconds())
+
+  useEffect(() => {
+    const timerId = setInterval(() => {
+      setCount((count) => count + 1)
+    }, 1000)
+    return () => clearInterval(timerId)
+  }, [])
+
+  const time = Time.parseSecond(count)
+  return <div className="counter">{time.toClockString()}</div>
+}
+
+function TaskListState() {
+  const [textValue, setTextValue] = useRecoilState(taskListTextState)
+
+  const setText = async (value: string) => {
+    setTextValue(value)
+    await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, value)
+  }
 
   return {
-    todoListText: inputValue,
-    setTodoListText: async (value: string) => {
-      setInputValue(value)
-      setSaving(0)
-      await Storage.set('todo-list-text', value)
-      setSaving(1)
+    text: textValue,
+    setText: async (value: string) => {
+      await setText(value)
+    },
+    getTextByLine: (line: number) => {
+      const lines = textValue.split(/\n/)
+      line = line - 1 //  line number starts from 1.
+      if (lines.length > line) return lines[line]
+      Log.e('The specified line does not exist.')
+      Log.d(`lines.length: ${lines.length}, line: ${line}`)
+      return ''
+    },
+    setTextByLine: async (line: number, text: string) => {
+      const lines = textValue.split(/\n/)
+      if (lines.length > line) {
+        lines[line - 1] = text
+        const newText = lines.join('\n')
+        await setText(newText)
+      } else {
+        Log.e('The specified line does not exist.')
+        Log.d(`lines.length: ${lines.length}, line: ${line}`)
+      }
     },
   }
 }
@@ -81,22 +131,22 @@ function TodoListTextState() {
 const markedHtmlState = selector({
   key: 'markedHtmlState',
   get: ({ get }) => {
-    const text = get(todoListTextState)
+    const text = get(taskListTextState)
     return convertMarkdownToHtml(text)
   },
 })
 
-function TodoList() {
+function TaskList() {
   return (
     <>
-      <TodoTextarea />
+      <TaskTextarea />
       <MarkdownHtml />
-      <SavedState />
     </>
   )
 }
 
 function convertMarkdownToHtml(text: string): JSX.Element {
+  Log.w('exec convertMarkdownToHtml')
   return unified()
     .use(remarkParse)
     .use(remarkGfm)
@@ -111,11 +161,11 @@ function convertMarkdownToHtml(text: string): JSX.Element {
     .processSync(text).result
 }
 
-function TodoTextarea() {
-  const state = TodoListTextState()
+function TaskTextarea() {
+  const state = TaskListState()
 
   const onChange = ({ target: { value } }) => {
-    void state.setTodoListText(value);
+    void state.setText(value)
   }
 
   return (
@@ -123,7 +173,7 @@ function TodoTextarea() {
       <textarea
         className="w-full h-32 px-3 py-1 text-base text-gray-700 bg-white border border-gray-300 rounded outline-none resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 leading-6 transition-colors duration-200 ease-in-out"
         onChange={onChange}
-        value={state.todoListText}
+        value={state.text}
       ></textarea>
     </div>
   )
@@ -141,12 +191,12 @@ type TransListItemProps = { children: unknown; className: string; node: Node }
 
 function transListItem(_props: unknown) {
   const props = _props as TransListItemProps
-  const line = props.node.position.start.line
+
   if (props.className === 'task-list-item') {
     const taskItemChildren = props.children as TaskItemChildren
-    return (
-      <li className={props.className}>{TaskItem(taskItemChildren, line)}</li>
-    )
+    const checkboxProps = taskItemChildren[0].props as TaskCheckBox
+    const line = props.node.position.start.line
+    return <li className={props.className}>{TaskItem(checkboxProps, line)}</li>
   } else {
     return <li className={props.className}>{props.children}</li>
   }
@@ -160,55 +210,88 @@ type TaskCheckBox = {
 
 type TaskItemChildren = [React.Component, string, string]
 
-function TaskItem(children: TaskItemChildren, line: number) {
-  const state = TodoListTextState()
+function TaskItem(checkboxProps: TaskCheckBox, line: number) {
+  const state = TaskListState()
+  const [trackings, setTrackings] = useRecoilState(trackingStateList)
+  const tracking = trackings.find((n) => n.line === line)
+  const task = Task.parse(state.getTextByLine(line))
+  const id = `check-${task.id}`
 
-  const checkboxProps = children[0].props as TaskCheckBox
-  const todoTitle = children[2]
-  const id = `check-${Math.random()}`
-  const lineStr = `${line}`
+  Log.d(task)
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const line = Number(e.target.dataset.line) - 1
     const checked = e.target.checked
     Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
+    task.setComplete(checked)
+  }
 
-    // update todo state in markdown text.
-    const lines = state.todoListText.split(/\n/)
-    if (checked) {
-      lines[line] = lines[line].replace('[ ]', '[x]')
-    } else {
-      lines[line] = lines[line].replace('[x]', '[ ]')
+  task.onStringChange = (taskStr: string) => {
+    void state.setTextByLine(line, taskStr)
+  }
+
+  task.onTrackingStateChange = (isTracking: boolean) => {
+    if (!isTracking) {
+      const newTrackings = trackings.filter((n) => n.line !== line)
+      setTrackings(newTrackings)
     }
-    const newText = lines.join('\n')
-    void state.setTodoListText(newText)
+  }
+
+  const startTracking = () => {
+    const trackingStartTime = task.trackingStart()
+    const newTracking = {
+      line: line,
+      isTracking: true,
+      trackingStartTime: trackingStartTime,
+      elapsedTime: task.actualTimes,
+    }
+    setTrackings([...trackings, newTracking])
+  }
+
+  const stopTracking = () => {
+    task.trackingStop(tracking.trackingStartTime)
+  }
+
+  const isTracking = () => {
+    if (tracking == null) return false
+    return tracking.isTracking
   }
 
   return (
-    <div className="flex flex-row items-center p-1 todo-item">
+    <div className="flex flex-row items-center p-1 task-item">
       <div className="checkbox">
         <input
           id={id}
-          data-line={lineStr}
           type="checkbox"
           checked={checkboxProps.checked}
           onChange={toggleItemCompletion}
         />
         <label htmlFor={id}></label>
       </div>
-      <span className="ml-2">{todoTitle}</span>
-      <div className="todo-controll"></div>
+      <span className="ml-2">{task.title}</span>
+      <div className="task-controll">
+        {!isTracking() ? (
+          <button
+            className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+            onClick={startTracking}
+          >
+            Start
+          </button>
+        ) : (
+          <div>
+            <button
+              className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
+              onClick={stopTracking}
+            >
+              Stop
+            </button>
+            <Counter id={line} startTime={tracking.elapsedTime} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
 function MarkdownHtml() {
   return useRecoilValue(markedHtmlState)
-}
-
-function SavedState() {
-  const count = useRecoilValue(savingState);
-  return (
-    <pre>{count}</pre>
-  )
 }

@@ -1,6 +1,10 @@
 import Log from "@/services/log";
 
-const Storage = {
+export const STORAGE_KEY = {
+  TASK_LIST_TEXT: "task-list-text"
+}
+
+export const Storage = {
   /**
    * Get a item from chrome local storage.
    *
@@ -73,5 +77,3 @@ const Storage = {
     });
   },
 };
-
-export default Storage;
