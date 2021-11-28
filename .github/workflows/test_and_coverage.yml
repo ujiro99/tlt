@@ -24,3 +24,6 @@ jobs:
           coverageCommand: npm test
           coverageLocations: |
             ${{github.workspace}}/coverage/lcov.info:lcov
+
+      - name: Codecov
+        uses: codecov/codecov-action@v2
