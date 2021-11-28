@@ -35,6 +35,7 @@ export class Task {
 
   // Regular expressions for markdown parsing
   private static taskRegexp = /- (\[\s\]|\[x\])\s.+$/
+  private static indentRegexp = /^ +/
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
   private static timeRegexp = /~((\d+d)?(\d+h)?(\d+m)?)/
@@ -51,13 +52,22 @@ export class Task {
 
   public static parse(taskStr: string): Task {
     if (Task.isTaskStr(taskStr)) {
+      const indent = Task.parseIndent(taskStr)
       const state = Task.parseState(taskStr)
       const title = Task.parseTitle(taskStr)
       const time = Task.parseTime(taskStr)
-      return new Task(state, title, time)
+      return new Task(state, title, time, indent)
     }
     Log.w("Can't find task: " + taskStr)
     return null
+  }
+
+  private static parseIndent(taskStr: string): number {
+    if (Task.indentRegexp.test(taskStr)) {
+      const m = Task.indentRegexp.exec(taskStr)
+      return m[0].length
+    }
+    return 0
   }
 
   private static parseState(taskStr: string): TaskState {
@@ -89,7 +99,7 @@ export class Task {
         return Time.parseStr(m[1])
       }
     }
-    Log.w(`can't find time: ${taskStr}`)
+    Log.d(`can't find time: ${taskStr}`)
     return new Time()
   }
 
@@ -100,15 +110,17 @@ export class Task {
   public actualTimes: Time
 
   private emitter: EventEmitter
+  private _indent: number
 
   /**
    * Constructor called only by the parse function.
    */
-  private constructor(state: TaskState, title: string, time: Time) {
+  private constructor(state: TaskState, title: string, time: Time, indent: number) {
     this.id = Task.getId()
     this.title = title
     this.taskState = state
     this.actualTimes = time
+    this._indent = indent
     this.emitter = new EventEmitter()
   }
 
@@ -150,7 +162,8 @@ export class Task {
   }
 
   public toString(): string {
-    let str = `- [ ] ${this.title}`
+    const indent = ''.padStart(this._indent, ' ')
+    let str = `${indent}- [ ] ${this.title}`
     // state
     if (this.isComplete()) {
       str = str.replace('[ ]', '[x]')
@@ -174,6 +187,10 @@ export class Task {
 
   private isRunning(): boolean {
     return this.taskState === TASK_STATE.RUNNING
+  }
+
+  public get indent(): number {
+    return this._indent
   }
 
   private emit(event: TaskEvent, ...args: unknown[]): boolean {
