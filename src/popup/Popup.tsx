@@ -17,7 +17,7 @@ import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
-import { Task } from '@/models/task'
+import { Task, TASK_EVENT } from '@/models/task'
 import { Time } from '@/models/time'
 
 type ErrorFallbackProp = {
@@ -225,16 +225,16 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
     task.setComplete(checked)
   }
 
-  task.onStringChange = (taskStr: string) => {
+  task.on(TASK_EVENT.STRING_CHANGE, (taskStr: string) => {
     void state.setTextByLine(line, taskStr)
-  }
+  })
 
-  task.onTrackingStateChange = (isTracking: boolean) => {
+  task.on(TASK_EVENT.TRACKING_STATE_CHANGE, (isTracking: boolean) => {
     if (!isTracking) {
       const newTrackings = trackings.filter((n) => n.line !== line)
       setTrackings(newTrackings)
     }
-  }
+  })
 
   const startTracking = () => {
     const trackingStartTime = task.trackingStart()
