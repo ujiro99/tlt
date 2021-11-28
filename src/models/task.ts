@@ -1,20 +1,39 @@
+import { EventEmitter } from 'events'
+
 import Log from '@/services/log'
 import { Time } from '@/models/time'
 
-export const TASK_STATE = {
+/**
+ * Represent the status of the Task.
+ */
+const TASK_STATE = {
   STOP: 'STOP',
   RUNNING: 'RUNNING',
   COMPLETE: 'COMPLETE',
 }
+type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
 
-export type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
-export type OnStringChangeCallback = (taskStr: string) => void
-export type OnTrackingStateChangeCallback = (isTracking: boolean) => void
+/**
+ * Represent the events of the Task.
+ */
+export const TASK_EVENT = {
+  STRING_CHANGE: 'STRING_CHANGE',
+  TRACKING_STATE_CHANGE: 'TRACKING_STATE_CHANGE',
+}
+type TaskEvent = typeof TASK_EVENT[keyof typeof TASK_EVENT]
+
+/**
+ * Represent the event listener of the Task.
+ */
+type OnStringChangeListener = (taskStr: string) => void
+type OnTrackingStateChangeListener = (isTracking: boolean) => void
+type TaskEventListener = OnStringChangeListener | OnTrackingStateChangeListener
 
 export class Task {
   // for unique Id
   private static taskId = 0
 
+  // Regular expressions for markdown parsing
   private static taskRegexp = /- (\[\s\]|\[x\])\s.+$/
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
@@ -80,15 +99,7 @@ export class Task {
   public estimatedTimes: Time
   public actualTimes: Time
 
-  /**
-   * Callback function executed when the state changes.
-   */
-  private onStringChangeCallback: OnStringChangeCallback
-
-  /**
-   * Callback function executed when the tracking state changes.
-   */
-  private onTrackingStateChangeCallback: OnTrackingStateChangeCallback
+  private emitter: EventEmitter
 
   /**
    * Constructor called only by the parse function.
@@ -98,16 +109,19 @@ export class Task {
     this.title = title
     this.taskState = state
     this.actualTimes = time
+    this.emitter = new EventEmitter()
   }
 
-  trackingStart(): number {
+  public trackingStart(): number {
     Log.d('trackingStart: ' + this.title)
     this.taskState = TASK_STATE.RUNNING
-    this.fireOnTrackingStateChange()
+
+    this.emit(TASK_EVENT.TRACKING_STATE_CHANGE, this.isRunning())
+
     return Date.now()
   }
 
-  trackingStop(trackingStartTime: number): void {
+  public trackingStop(trackingStartTime: number): void {
     Log.d('trackingStop: ' + this.title)
     if (isNaN(trackingStartTime)) {
       Log.e('invalid trackingStartTime')
@@ -116,11 +130,12 @@ export class Task {
     const elapsedTime = Time.parseMs(elapsedTimeMs)
     this.actualTimes.add(elapsedTime)
     this.taskState = TASK_STATE.STOP
-    this.fireOnTrackingStateChange()
-    this.fireOnStringChange()
+
+    this.emit(TASK_EVENT.TRACKING_STATE_CHANGE, this.isRunning())
+    this.emit(TASK_EVENT.STRING_CHANGE, this.toString())
   }
 
-  setComplete(isComplete: boolean): void {
+  public setComplete(isComplete: boolean): void {
     const prev = this.taskState
     if (isComplete) {
       this.taskState = TASK_STATE.COMPLETE
@@ -130,19 +145,11 @@ export class Task {
       }
     }
     if (prev !== this.taskState) {
-      this.fireOnStringChange()
+      this.emit(TASK_EVENT.STRING_CHANGE, this.toString())
     }
   }
 
-  isComplete(): boolean {
-    return this.taskState === TASK_STATE.COMPLETE
-  }
-
-  isRunning(): boolean {
-    return this.taskState === TASK_STATE.RUNNING
-  }
-
-  toString(): string {
+  public toString(): string {
     let str = `- [ ] ${this.title}`
     // state
     if (this.isComplete()) {
@@ -156,37 +163,21 @@ export class Task {
     return str
   }
 
-  get onStringChange(): OnStringChangeCallback {
-    return this.onStringChangeCallback
+  public on(event: TaskEvent, listener: TaskEventListener): this {
+    this.emitter.on(event, listener)
+    return this
   }
 
-  set onStringChange(callback: OnStringChangeCallback) {
-    this.onStringChangeCallback = callback
+  public isComplete(): boolean {
+    return this.taskState === TASK_STATE.COMPLETE
   }
 
-  get onTrackingStateChange(): OnTrackingStateChangeCallback {
-    return this.onTrackingStateChangeCallback
+  private isRunning(): boolean {
+    return this.taskState === TASK_STATE.RUNNING
   }
 
-  set onTrackingStateChange(callback: OnTrackingStateChangeCallback) {
-    this.onTrackingStateChangeCallback = callback
-  }
-
-  private fireOnStringChange() {
-    Log.d('fireOnStringChange')
-    if (this.onStringChangeCallback != null) {
-      this.onStringChangeCallback(this.toString())
-    } else {
-      Log.w('onStringChangeCallback is missing.')
-    }
-  }
-
-  private fireOnTrackingStateChange() {
-    Log.d('fireOnTrackingStateChange')
-    if (this.onTrackingStateChangeCallback != null) {
-      this.onTrackingStateChangeCallback(this.isRunning())
-    } else {
-      Log.w('onTrackingStateChangeCallback is missing.')
-    }
+  private emit(event: TaskEvent, ...args: unknown[]): boolean {
+    Log.d('emit: ' + event)
+    return this.emitter.emit(event, ...args)
   }
 }
