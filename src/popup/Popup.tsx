@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createElement } from 'react'
+import React, { useState, useEffect, createElement, ReactElement } from 'react'
 import {
   RecoilRoot,
   atom,
@@ -109,6 +109,7 @@ function TaskListState() {
     getTextByLine: (line: number) => {
       const lines = textValue.split(/\n/)
       line = line - 1 //  line number starts from 1.
+
       if (lines.length > line) return lines[line]
       Log.e('The specified line does not exist.')
       Log.d(`lines.length: ${lines.length}, line: ${line}`)
@@ -116,8 +117,10 @@ function TaskListState() {
     },
     setTextByLine: async (line: number, text: string) => {
       const lines = textValue.split(/\n/)
+      line = line - 1 //  line number starts from 1.
+
       if (lines.length > line) {
-        lines[line - 1] = text
+        lines[line] = text
         const newText = lines.join('\n')
         await setText(newText)
       } else {
@@ -146,7 +149,7 @@ function TaskList() {
 }
 
 function convertMarkdownToHtml(text: string): JSX.Element {
-  Log.w('exec convertMarkdownToHtml')
+  // Log.d('exec convertMarkdownToHtml')
   return unified()
     .use(remarkParse)
     .use(remarkGfm)
@@ -187,18 +190,49 @@ type Node = {
   type: string
 }
 
-type TransListItemProps = { children: unknown; className: string; node: Node }
+type TransListItemProps = { children: ReactElement[]; className: string; node: Node }
 
 function transListItem(_props: unknown) {
   const props = _props as TransListItemProps
 
-  if (props.className === 'task-list-item') {
-    const taskItemChildren = props.children as TaskItemChildren
-    const checkboxProps = taskItemChildren[0].props as TaskCheckBox
-    const line = props.node.position.start.line
-    return <li className={props.className}>{TaskItem(checkboxProps, line)}</li>
-  } else {
+  if (props.className !== 'task-list-item') {
     return <li className={props.className}>{props.children}</li>
+  }
+
+  let checkboxProps: TaskCheckBox
+  let line: number
+  let subItem: ReactElement
+  let p : JSX.ElementChildrenAttribute
+  for (const child of props.children) {
+    switch (child.type) {
+      case 'input':
+        checkboxProps = (child.props as unknown) as TaskCheckBox
+        line = props.node.position.start.line
+        break;
+      case 'ul':
+        subItem = child
+        break;
+      case 'p':
+        p = child.props as JSX.ElementChildrenAttribute
+        checkboxProps = ((p.children as ReactElement[])[0].props as unknown) as TaskCheckBox
+        line = props.node.position.start.line
+        break;
+      default:
+        break;
+    }
+  }
+
+  if (subItem == null) {
+    return (
+      <li className={props.className}>{TaskItem(checkboxProps, line)}</li>
+    )
+  } else {
+    return (
+      <li className={props.className}>
+        {TaskItem(checkboxProps, line)}
+        <div>{subItem}</div>
+      </li>
+    )
   }
 }
 
@@ -207,8 +241,6 @@ type TaskCheckBox = {
   checked: boolean
   disabled: boolean
 }
-
-type TaskItemChildren = [React.Component, string, string]
 
 function TaskItem(checkboxProps: TaskCheckBox, line: number) {
   const state = TaskListState()
@@ -256,8 +288,16 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
     return tracking.isTracking
   }
 
+  const indent = {
+    textIndent: `${task.indent / 4}em`
+  }
+
+  if (checkboxProps == null) {
+    return
+  }
+
   return (
-    <div className="flex flex-row items-center p-1 task-item">
+    <div className="flex flex-row items-center p-1 task-item" style={indent}>
       <div className="checkbox">
         <input
           id={id}
