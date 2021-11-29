@@ -171,7 +171,7 @@ describe('isEmpty', () => {
   })
 
   test('1 minutes returns false', () => {
-    const time = new Time(1)
+    const time = new Time(0, 1)
     expect(time.isEmpty()).toBe(false)
   })
 })
@@ -198,7 +198,7 @@ describe('toClockString', () => {
   })
 
   test('1d 1h 1m tobe 1d 01:01:00', () => {
-    const time = new Time(1, 1, 1)
+    const time = new Time(0, 1, 1, 1)
     expect(time.toClockString()).toBe('1d 01:01:00')
   })
 })

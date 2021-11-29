@@ -81,7 +81,7 @@ export class Time {
       }
     }
 
-    if (time.inSeconds() === 0) {
+    if (time.toSeconds() === 0) {
       Log.w(`can't find time: ${timeStr}`)
     }
 
@@ -93,7 +93,8 @@ export class Time {
   private _hours = 0
   private _days = 0
 
-  constructor(minutes = 0, hours = 0, days = 0) {
+  public constructor(seconds = 0, minutes = 0, hours = 0, days = 0) {
+    this._seconds = seconds
     this._minutes = minutes
     this._hours = hours
     this._days = days
@@ -131,12 +132,12 @@ export class Time {
     }
   }
 
-  public isEmpty(): boolean {
-    return this._days === 0 && this._hours === 0 && this._minutes === 0
+  public toSeconds(): number {
+    return this._days * DAY_S + this._hours * HOUR_S + this._minutes * MINUTE_S + this._seconds
   }
 
-  public inSeconds(): number {
-    return this._days * DAY_S + this._hours * HOUR_S + this._minutes * MINUTE_S
+  public isEmpty(): boolean {
+    return this._days === 0 && this._hours === 0 && this._minutes === 0
   }
 
   public get seconds(): number {

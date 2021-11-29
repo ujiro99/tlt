@@ -69,9 +69,52 @@ type TrackingState = {
   elapsedTime: Time
 }
 
+type TimeObject = {
+  _seconds: number
+  _minutes: number
+  _hours: number
+  _days: number
+}
+
 const trackingStateList = atom({
   key: 'trackingStateList',
-  default: [] as TrackingState[],
+  default: selector({
+    key: 'savedTrackingStateList',
+    get: async () => {
+      const trackings = (await Storage.get(
+        STORAGE_KEY.TRACKING_STATE,
+      )) as TrackingState[]
+      if (!trackings) return []
+
+      return trackings.map((tracking) => {
+        // Convert time object to Time class's instance.
+        const obj = tracking.elapsedTime as unknown as TimeObject
+        tracking.elapsedTime = new Time(
+          obj._seconds,
+          obj._minutes,
+          obj._hours,
+          obj._days,
+        )
+
+        // If the tracking is in progress, update the elapsed time to resume counting.
+        if (tracking.isTracking) {
+          const elapsedTimeMs = Date.now() - tracking.trackingStartTime
+          const elapsedTime = Time.parseMs(elapsedTimeMs)
+          tracking.elapsedTime.add(elapsedTime)
+        }
+
+        return tracking
+      })
+    },
+  }),
+  effects_UNSTABLE: [
+    ({ onSet }) => {
+      onSet((state) => {
+        // Automatically save the tracking status.
+        void Storage.set(STORAGE_KEY.TRACKING_STATE, state)
+      })
+    },
+  ],
 })
 
 type CounterProps = {
@@ -80,7 +123,7 @@ type CounterProps = {
 }
 
 function Counter(props: CounterProps) {
-  const [count, setCount] = useState(props.startTime.inSeconds())
+  const [count, setCount] = useState(props.startTime.toSeconds())
 
   useEffect(() => {
     const timerId = setInterval(() => {
@@ -190,7 +233,11 @@ type Node = {
   type: string
 }
 
-type TransListItemProps = { children: ReactElement[]; className: string; node: Node }
+type TransListItemProps = {
+  children: ReactElement[]
+  className: string
+  node: Node
+}
 
 function transListItem(_props: unknown) {
   const props = _props as TransListItemProps
@@ -202,30 +249,29 @@ function transListItem(_props: unknown) {
   let checkboxProps: TaskCheckBox
   let line: number
   let subItem: ReactElement
-  let p : JSX.ElementChildrenAttribute
+  let p: JSX.ElementChildrenAttribute
   for (const child of props.children) {
     switch (child.type) {
       case 'input':
-        checkboxProps = (child.props as unknown) as TaskCheckBox
+        checkboxProps = child.props as unknown as TaskCheckBox
         line = props.node.position.start.line
-        break;
+        break
       case 'ul':
         subItem = child
-        break;
+        break
       case 'p':
         p = child.props as JSX.ElementChildrenAttribute
-        checkboxProps = ((p.children as ReactElement[])[0].props as unknown) as TaskCheckBox
+        checkboxProps = (p.children as ReactElement[])[0]
+          .props as unknown as TaskCheckBox
         line = props.node.position.start.line
-        break;
+        break
       default:
-        break;
+        break
     }
   }
 
   if (subItem == null) {
-    return (
-      <li className={props.className}>{TaskItem(checkboxProps, line)}</li>
-    )
+    return <li className={props.className}>{TaskItem(checkboxProps, line)}</li>
   } else {
     return (
       <li className={props.className}>
@@ -289,11 +335,7 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
   }
 
   const indent = {
-    textIndent: `${task.indent / 4}em`
-  }
-
-  if (checkboxProps == null) {
-    return
+    textIndent: `${task.indent / 4}em`,
   }
 
   return (

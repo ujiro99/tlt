@@ -1,7 +1,8 @@
 import Log from "@/services/log";
 
 export const STORAGE_KEY = {
-  TASK_LIST_TEXT: "task-list-text"
+  TASK_LIST_TEXT: "task_list_text",
+  TRACKING_STATE: "tracking_state"
 }
 
 export const Storage = {
