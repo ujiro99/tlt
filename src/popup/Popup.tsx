@@ -334,12 +334,15 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
     return tracking.isTracking
   }
 
-  const indent = {
-    textIndent: `${task.indent / 4}em`,
+  const style = {
+    marginLeft: `${task.indent / 4}em`,
   }
 
   return (
-    <div className="flex flex-row items-center p-1 task-item" style={indent}>
+    <div
+      className="relative flex flex-row items-center h-10 p-1 border-t task-item"
+      style={style}
+    >
       <div className="checkbox">
         <input
           id={id}
@@ -349,25 +352,27 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
         />
         <label htmlFor={id}></label>
       </div>
-      <span className="ml-2">{task.title}</span>
+      <span className="flex-grow ml-2">{task.title}</span>
+      {isTracking() ? (
+        <Counter id={line} startTime={tracking.elapsedTime} />
+      ) : !task.actualTimes.isEmpty() ? (
+        <div className="counter">{task.actualTimes.toClockString()}</div>
+      ) : (
+        <div></div>
+      )}
       <div className="task-controll">
         {!isTracking() ? (
-          <button
-            className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-            onClick={startTracking}
-          >
-            Start
+          <button className="controll-button" onClick={startTracking}>
+            <svg className="icon">
+              <use xlinkHref="/icons.svg#icon-play" />
+            </svg>
           </button>
         ) : (
-          <div>
-            <button
-              className="px-4 py-2 font-bold text-white bg-blue-500 rounded hover:bg-blue-700"
-              onClick={stopTracking}
-            >
-              Stop
-            </button>
-            <Counter id={line} startTime={tracking.elapsedTime} />
-          </div>
+          <button className="controll-button" onClick={stopTracking}>
+            <svg className="icon">
+              <use xlinkHref="/icons.svg#icon-stop" />
+            </svg>
+          </button>
         )}
       </div>
     </div>
