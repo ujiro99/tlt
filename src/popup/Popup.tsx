@@ -340,7 +340,7 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
 
   return (
     <div
-      className="relative flex flex-row items-center h-10 p-1 border-t task-item"
+      className="relative flex flex-row items-center px-1 py-2 leading-relaxed border-t task-item"
       style={style}
     >
       <div className="checkbox">

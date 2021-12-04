@@ -36,6 +36,8 @@ h2 {
 
 .counter {
   font-family: monospace;
+
+  @apply ml-2;
 }
 
 .checkbox {
