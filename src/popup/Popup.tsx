@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createElement, ReactElement } from 'react'
+import React, { useEffect, createElement, ReactElement } from 'react'
 import {
   RecoilRoot,
   atom,
@@ -19,6 +19,8 @@ import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Task, TASK_EVENT } from '@/models/task'
 import { Time } from '@/models/time'
+
+import { Counter } from '@/components/counter'
 
 type ErrorFallbackProp = {
   error: Error
@@ -42,6 +44,7 @@ export default function Popup(): JSX.Element {
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <RecoilRoot>
         <React.Suspense fallback={<div>Loading...</div>}>
+          <Menu />
           <TaskList />
         </React.Suspense>
       </RecoilRoot>
@@ -117,24 +120,18 @@ const trackingStateList = atom({
   ],
 })
 
-type CounterProps = {
-  id: number
-  startTime: Time
+const MODE = {
+  EDIT: 'EDIT',
+  SHOW: 'SHOW',
 }
 
-function Counter(props: CounterProps) {
-  const [count, setCount] = useState(props.startTime.toSeconds())
-
-  useEffect(() => {
-    const timerId = setInterval(() => {
-      setCount((count) => count + 1)
-    }, 1000)
-    return () => clearInterval(timerId)
-  }, [])
-
-  const time = Time.parseSecond(count)
-  return <div className="counter">{time.toClockString()}</div>
-}
+/**
+ * Ui mode.
+ */
+const modeState = atom({
+  key: 'modeState',
+  default: MODE.EDIT,
+})
 
 function TaskListState() {
   const [textValue, setTextValue] = useRecoilState(taskListTextState)
@@ -182,13 +179,36 @@ const markedHtmlState = selector({
   },
 })
 
-function TaskList() {
+function Menu() {
+  const [mode, setMode] = useRecoilState(modeState)
+  const isEdit = mode === MODE.EDIT
+  const label = isEdit ? "Complete" : "Edit"
+
+  const toggleMode = () => {
+    const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
+    setMode(nextMode)
+  }
+
   return (
-    <>
-      <TaskTextarea />
-      <MarkdownHtml />
-    </>
+    <div className="text-right">
+      <button
+        className="w-20 py-1.5 my-2 text-xs right-1 bg-gray-100 hover:bg-gray-50 border border-gray-200 shadow rounded-md transition ease-out"
+        onClick={toggleMode}
+      >
+        {label}
+      </button>
+    </div>
   )
+}
+
+function TaskList() {
+  const mode = useRecoilValue(modeState)
+  switch (mode) {
+    case MODE.EDIT:
+      return <TaskTextarea />
+    case MODE.SHOW:
+      return <MarkdownHtml />
+  }
 }
 
 function convertMarkdownToHtml(text: string): JSX.Element {
@@ -215,9 +235,9 @@ function TaskTextarea() {
   }
 
   return (
-    <div className="h-80">
+    <div className="task-textarea">
       <textarea
-        className="w-full h-32 px-3 py-1 text-base text-gray-700 bg-white border border-gray-300 rounded outline-none resize-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 leading-6 transition-colors duration-200 ease-in-out"
+        className=""
         onChange={onChange}
         value={state.text}
       ></textarea>

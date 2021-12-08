@@ -11,7 +11,7 @@ h2 {
 
 #popup {
   width: 400px;
-  height: 500px;
+  height: 600px;
 
   @apply text-sm;
   @apply text-black;
@@ -141,5 +141,21 @@ h2 {
 
   100% {
     transform: scale(1);
+  }
+}
+
+.task-textarea {
+  height: calc(100% - 46px);
+
+  textarea {
+    line-height: 2.4;
+    @apply w-full;
+    @apply h-full;
+    @apply p-1;
+    @apply text-gray-700;
+    @apply outline-none;
+    @apply resize-none;
+    @apply rounded-md;
+    @apply bg-gray-50;
   }
 }
