@@ -43,8 +43,8 @@ export default function Popup(): JSX.Element {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <RecoilRoot>
+        <Menu />
         <React.Suspense fallback={<div>Loading...</div>}>
-          <Menu />
           <TaskList />
         </React.Suspense>
       </RecoilRoot>
@@ -400,5 +400,7 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
 }
 
 function MarkdownHtml() {
-  return useRecoilValue(markedHtmlState)
+  return <div className="h-full overflow-scroll"> 
+  {useRecoilValue(markedHtmlState)}
+  </div>
 }
