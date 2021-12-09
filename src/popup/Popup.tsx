@@ -130,7 +130,7 @@ const MODE = {
  */
 const modeState = atom({
   key: 'modeState',
-  default: MODE.EDIT,
+  default: MODE.SHOW,
 })
 
 function TaskListState() {
@@ -360,7 +360,7 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
 
   return (
     <div
-      className="relative flex flex-row items-center px-1 py-2 leading-relaxed border-t task-item"
+      className="relative flex flex-row items-center px-1 py-2 leading-relaxed border-t border-gray-200 task-item"
       style={style}
     >
       <div className="checkbox">
