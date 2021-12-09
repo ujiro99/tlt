@@ -2,6 +2,7 @@ const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const StylelintPlugin = require('stylelint-webpack-plugin')
+const WindiCSSWebpackPlugin = require('windicss-webpack-plugin')
 
 module.exports = {
   entry: {
@@ -54,5 +55,6 @@ module.exports = {
     new StylelintPlugin({
       configFile: `${path.resolve(__dirname, '')}/.stylelintrc.json`,
     }),
+    new WindiCSSWebpackPlugin()
   ],
 }

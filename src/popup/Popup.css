@@ -159,3 +159,8 @@ h2 {
     @apply bg-gray-50;
   }
 }
+
+.task-list-item {
+  @apply p-0;
+  @apply list-none;
+}
