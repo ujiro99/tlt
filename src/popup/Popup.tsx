@@ -182,7 +182,7 @@ const markedHtmlState = selector({
 function Menu() {
   const [mode, setMode] = useRecoilState(modeState)
   const isEdit = mode === MODE.EDIT
-  const label = isEdit ? "Complete" : "Edit"
+  const label = isEdit ? 'Complete' : 'Edit'
 
   const toggleMode = () => {
     const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
@@ -236,11 +236,7 @@ function TaskTextarea() {
 
   return (
     <div className="task-textarea">
-      <textarea
-        className=""
-        onChange={onChange}
-        value={state.text}
-      ></textarea>
+      <textarea className="" onChange={onChange} value={state.text}></textarea>
     </div>
   )
 }
@@ -360,7 +356,7 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
 
   return (
     <div
-      className="relative flex flex-row items-center px-1 py-2 leading-relaxed border-t border-gray-200 task-item"
+      className="relative flex flex-row items-center px-1 py-2 leading-relaxed task-item"
       style={style}
     >
       <div className="checkbox">
@@ -400,7 +396,5 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
 }
 
 function MarkdownHtml() {
-  return <div className="h-full overflow-scroll"> 
-  {useRecoilValue(markedHtmlState)}
-  </div>
+  return <div className="task-container">{useRecoilValue(markedHtmlState)}</div>
 }

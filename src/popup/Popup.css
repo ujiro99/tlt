@@ -146,16 +146,38 @@ h2 {
 
 .task-textarea {
   height: calc(100% - 46px);
+  padding-bottom: 10px;
 
   textarea {
-    line-height: 2.4;
+    line-height: 2;
     @apply w-full;
     @apply h-full;
-    @apply p-1;
-    @apply text-gray-700;
+    @apply p-4;
+    @apply text-gray-900;
     @apply outline-none;
     @apply resize-none;
     @apply rounded-md;
-    @apply bg-gray-50;
+    @apply bg-gray-100;
   }
+}
+
+.task-container {
+  @apply h-full;
+  @apply pb-20;
+  @apply overflow-scroll;
+}
+
+.task-list-item + .task-list-item {
+  @apply border-gray-200;
+  @apply border-t;
+}
+
+.task-list-item:first-child {
+  @apply border-gray-200;
+  @apply border-t;
+}
+
+.task-container > div > .contains-task-list {
+  @apply border-gray-200;
+  @apply border-b;
 }
