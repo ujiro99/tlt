@@ -1,0 +1,6 @@
+.counter {
+  font-family: monospace;
+
+  @apply ml-2;
+  @apply relative;
+}

@@ -6,6 +6,7 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil'
+import classnames from 'classnames';
 
 import { ErrorBoundary } from 'react-error-boundary'
 import type { Position } from 'unist'
@@ -350,13 +351,18 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
     return tracking.isTracking
   }
 
+  const taskItemClass = classnames({
+    "task-item": true,
+    "task-item--running": isTracking()
+  })
+
   const style = {
     marginLeft: `${task.indent / 4}em`,
   }
 
   return (
     <div
-      className="relative flex flex-row items-center px-1 py-2 leading-relaxed task-item"
+      className={taskItemClass}
       style={style}
     >
       <div className="checkbox">

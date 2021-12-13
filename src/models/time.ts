@@ -126,9 +126,9 @@ export class Time {
 
   public toClockString(): string {
     if (this._days > 0) {
-      return `${this._days}d ${pad(this._hours, 2)}:${pad(this._minutes, 2)}:${pad(this._seconds, 2)}`
+      return `${this._days}d ${pad(this._hours, 2)}:${pad(this._minutes, 2)}`
     } else {
-      return `${pad(this._hours, 2)}:${pad(this._minutes, 2)}:${pad(this._seconds, 2)}`
+      return `${pad(this._hours, 2)}:${pad(this._minutes, 2)}`
     }
   }
 

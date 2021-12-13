@@ -4,9 +4,11 @@ body {
 
 h1,
 h2 {
+  @apply font-bold;
   @apply text-base;
+  @apply text-gray-700;
   @apply pt-4;
-  @apply pb-2;
+  @apply pb-3;
 }
 
 #popup {
@@ -32,12 +34,6 @@ h2 {
   @apply text-indigo-300;
   @apply text-lg;
   @apply hover:text-indigo-600;
-}
-
-.counter {
-  font-family: monospace;
-
-  @apply ml-2;
 }
 
 .checkbox {
@@ -70,6 +66,7 @@ h2 {
     @apply focus:ring-indigo-200;
     @apply focus:ring-opacity-50;
     @apply ease-out;
+    @apply bg-white;
     cursor: pointer;
   }
 
@@ -125,13 +122,40 @@ h2 {
   );
   @apply absolute;
   @apply w-10;
+  @apply h-full;
   @apply right-0;
   @apply text-right;
   @apply pr-1;
 }
 
+.task-item {
+  @apply relative;
+  @apply flex;
+  @apply flex-row;
+  @apply items-center;
+  @apply px-2;
+  @apply py-2;
+  @apply leading-relaxed;
+
+  &--running {
+    animation: bg-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes bg-pulse {
+  0%,
+  100% {
+    background-color: rgba(229, 231, 235, 1);
+  }
+  50% {
+    background-color: rgba(229, 231, 235, 0.2);
+  }
+}
+
 .task-item:hover .task-controll {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: end;
 }
 
 @keyframes scale-up {
