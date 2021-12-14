@@ -20,13 +20,6 @@ const HOUR = 60
 const DAY = 24
 
 /**
- * Return the number as a zero-padded string.
- */
-function pad(num: number, len: number): string {
-  return `${num}`.padStart(len, '0')
-}
-
-/**
  * This class represents the elapsed time.
  */
 export class Time {
@@ -122,14 +115,6 @@ export class Time {
       str += `${this._minutes}m`
     }
     return str
-  }
-
-  public toClockString(): string {
-    if (this._days > 0) {
-      return `${this._days}d ${pad(this._hours, 2)}:${pad(this._minutes, 2)}`
-    } else {
-      return `${pad(this._hours, 2)}:${pad(this._minutes, 2)}`
-    }
   }
 
   public toSeconds(): number {

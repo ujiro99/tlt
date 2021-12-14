@@ -176,33 +176,6 @@ describe('isEmpty', () => {
   })
 })
 
-describe('toClockString', () => {
-  test('0 returns 00:00:00', () => {
-    const time = new Time()
-    expect(time.toClockString()).toBe('00:00:00')
-  })
-
-  test('1 seconds tobe 00:00:01', () => {
-    const time = Time.parseSecond(1)
-    expect(time.toClockString()).toBe('00:00:01')
-  })
-
-  test('121 seconds tobe 00:02:01', () => {
-    const time = Time.parseSecond(121)
-    expect(time.toClockString()).toBe('00:02:01')
-  })
-
-  test('1h 1m ls tobe 01:01:01', () => {
-    const time = Time.parseSecond(60 * 60 + 61)
-    expect(time.toClockString()).toBe('01:01:01')
-  })
-
-  test('1d 1h 1m tobe 1d 01:01:00', () => {
-    const time = new Time(0, 1, 1, 1)
-    expect(time.toClockString()).toBe('1d 01:01:00')
-  })
-})
-
 describe('calculateCarryUp', () => {
   test('23:59:59 + 00:00:01 returns 1d 00:00:00', () => {
     const timeA = Time.parseSecond(23 * HOUR_S + 59 * MINUTE_S + 59)

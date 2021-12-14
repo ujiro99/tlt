@@ -21,7 +21,7 @@ import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Task, TASK_EVENT } from '@/models/task'
 import { Time } from '@/models/time'
 
-import { Counter } from '@/components/counter'
+import { Counter, CounterStopped } from '@/components/counter'
 import { Checkbox } from '@/components/checkbox'
 import { TaskController } from '@/components/taskController'
 
@@ -376,9 +376,9 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
       />
       <span className="flex-grow ml-2">{task.title}</span>
       {isTracking() ? (
-        <Counter id={line} startTime={tracking.elapsedTime} />
+        <Counter startTime={tracking.elapsedTime} />
       ) : !task.actualTimes.isEmpty() ? (
-        <div className="counter">{task.actualTimes.toClockString()}</div>
+        <CounterStopped startTime={task.actualTimes} />
       ) : (
         <div></div>
       )}

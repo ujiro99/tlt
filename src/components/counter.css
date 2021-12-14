@@ -3,4 +3,9 @@
 
   @apply ml-2;
   @apply relative;
+
+  &__unit {
+    margin-left: 1px;
+    margin-right: 4px;
+  }
 }
