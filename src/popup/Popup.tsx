@@ -6,7 +6,7 @@ import {
   useRecoilState,
   useRecoilValue,
 } from 'recoil'
-import classnames from 'classnames';
+import classnames from 'classnames'
 
 import { ErrorBoundary } from 'react-error-boundary'
 import type { Position } from 'unist'
@@ -22,6 +22,8 @@ import { Task, TASK_EVENT } from '@/models/task'
 import { Time } from '@/models/time'
 
 import { Counter } from '@/components/counter'
+import { Checkbox } from '@/components/checkbox'
+import { TaskController } from '@/components/taskController'
 
 type ErrorFallbackProp = {
   error: Error
@@ -315,6 +317,11 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
   Log.d(task)
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (isTracking()) {
+      // If task has been tracking, stop automatically.
+      task.trackingStop(tracking.trackingStartTime)
+    }
+
     const checked = e.target.checked
     Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
     task.setComplete(checked)
@@ -352,8 +359,8 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
   }
 
   const taskItemClass = classnames({
-    "task-item": true,
-    "task-item--running": isTracking()
+    'task-item': true,
+    'task-item--running': isTracking(),
   })
 
   const style = {
@@ -361,19 +368,12 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
   }
 
   return (
-    <div
-      className={taskItemClass}
-      style={style}
-    >
-      <div className="checkbox">
-        <input
-          id={id}
-          type="checkbox"
-          checked={checkboxProps.checked}
-          onChange={toggleItemCompletion}
-        />
-        <label htmlFor={id}></label>
-      </div>
+    <div className={taskItemClass} style={style}>
+      <Checkbox
+        id={id}
+        checked={checkboxProps.checked}
+        onChange={toggleItemCompletion}
+      />
       <span className="flex-grow ml-2">{task.title}</span>
       {isTracking() ? (
         <Counter id={line} startTime={tracking.elapsedTime} />
@@ -382,21 +382,13 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
       ) : (
         <div></div>
       )}
-      <div className="task-controll">
-        {!isTracking() ? (
-          <button className="controll-button" onClick={startTracking}>
-            <svg className="icon">
-              <use xlinkHref="/icons.svg#icon-play" />
-            </svg>
-          </button>
-        ) : (
-          <button className="controll-button" onClick={stopTracking}>
-            <svg className="icon">
-              <use xlinkHref="/icons.svg#icon-stop" />
-            </svg>
-          </button>
-        )}
-      </div>
+      {!task.isComplete() && (
+        <TaskController
+          onClickStart={startTracking}
+          onClickStop={stopTracking}
+          isTracking={isTracking()}
+        />
+      )}
     </div>
   )
 }
