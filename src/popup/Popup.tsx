@@ -290,11 +290,11 @@ function transListItem(_props: unknown) {
   }
 
   if (subItem == null) {
-    return <li className={props.className}>{TaskItem(checkboxProps, line)}</li>
+    return <li className={props.className}><TaskItem checkboxProps={checkboxProps} line={line} /></li>
   } else {
     return (
       <li className={props.className}>
-        {TaskItem(checkboxProps, line)}
+        <TaskItem checkboxProps={checkboxProps} line={line} />
         <div>{subItem}</div>
       </li>
     )
@@ -307,7 +307,14 @@ type TaskCheckBox = {
   disabled: boolean
 }
 
-function TaskItem(checkboxProps: TaskCheckBox, line: number) {
+type TaskItemProps = {
+  checkboxProps: TaskCheckBox
+  line: number
+}
+
+function TaskItem(props: TaskItemProps) {
+  const checkboxProps = props.checkboxProps
+  const line = props.line
   const state = TaskListState()
   const [trackings, setTrackings] = useRecoilState(trackingStateList)
   const tracking = trackings.find((n) => n.line === line)
@@ -315,6 +322,11 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
   const id = `check-${task.id}`
 
   Log.d(task)
+
+  // On unmount, stop tracking, if task has been trakcing.
+  useEffect(function () {
+    return () => stopTracking()
+  })
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isTracking()) {
@@ -350,7 +362,9 @@ function TaskItem(checkboxProps: TaskCheckBox, line: number) {
   }
 
   const stopTracking = () => {
-    task.trackingStop(tracking.trackingStartTime)
+    if (isTracking()) {
+      task.trackingStop(tracking.trackingStartTime)
+    }
   }
 
   const isTracking = () => {
