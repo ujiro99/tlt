@@ -1,16 +1,24 @@
-const environment = process.env.NODE_ENV || 'development';
+/**
+ * Do not usually display.
+ */
+const verbose = true
 
 /**
  * Setting value to switch the debug log output from this module.
- *
  * true: enables all log. | false: disables debug log.
  */
-const isDebug = environment === "development";
+const environment = process.env.NODE_ENV || 'development'
+const isDebug = environment === 'development'
 
 interface ILog {
-  d: (msg: unknown) => void,
+  v: (msg: unknown) => void
+  d: (msg: unknown) => void
   w: (msg: unknown) => void
   e: (msg: unknown) => void
+}
+
+const nop = () => {
+  /* nothing to do */
 }
 
 /**
@@ -18,9 +26,13 @@ interface ILog {
  */
 const Log: ILog = {
   /**
+   * Output verbose level log.
+   */
+  v: verbose ? console.log : nop,
+  /**
    * Output debug level log.
    */
-  d: isDebug ? console.log : function() { /* nothing to do */ },
+  d: isDebug ? console.debug : nop,
   /**
    * Output warning level log.
    */
@@ -28,7 +40,7 @@ const Log: ILog = {
   /**
    * Output error level log.
    */
-  e: console.error.bind(console) as (msg: string) => void
-};
+  e: console.error.bind(console) as (msg: string) => void,
+}
 
-export default Log;
+export default Log

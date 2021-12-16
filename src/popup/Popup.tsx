@@ -18,6 +18,8 @@ import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
+import { Icon } from '@/services/icon'
+
 import { Task, TASK_EVENT } from '@/models/task'
 import { Time } from '@/models/time'
 
@@ -40,7 +42,7 @@ function ErrorFallback(prop: ErrorFallbackProp) {
 
 export default function Popup(): JSX.Element {
   useEffect(() => {
-    chrome.runtime.sendMessage({ popupMounted: true })
+    chrome.runtime.sendMessage({ command: 'popupMounted' })
   }, [])
 
   return (
@@ -317,7 +319,7 @@ function TaskItem(props: TaskItemProps) {
   const task = Task.parse(state.getTextByLine(line))
   const id = `check-${task.id}`
 
-  Log.d(task)
+  // Log.d(task)
 
   // On unmount, if task has been trakcing, stop automatically.
   useEffect(function () {
@@ -355,11 +357,16 @@ function TaskItem(props: TaskItemProps) {
       elapsedTime: task.actualTimes,
     }
     setTrackings([...trackings, newTracking])
+    chrome.runtime.sendMessage({
+      command: 'startTracking',
+      param: task.actualTimes.minutes,
+    })
   }
 
   const stopTracking = () => {
     if (isTracking()) {
       task.trackingStop(tracking.trackingStartTime)
+      chrome.runtime.sendMessage({ command: 'stopTracking' })
     }
   }
 
