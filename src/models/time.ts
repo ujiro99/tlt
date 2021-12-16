@@ -143,15 +143,15 @@ export class Time {
 
   private calculateCarryUp(): void {
     if (this._seconds >= MINUTE) {
-      this._minutes += this._seconds / MINUTE
+      this._minutes += Math.floor(this._seconds / MINUTE)
       this._seconds = this._seconds % MINUTE
     }
     if (this._minutes >= HOUR) {
-      this._hours += this._minutes / HOUR
+      this._hours += Math.floor(this._minutes / HOUR)
       this._minutes = this._minutes % HOUR
     }
     if (this._hours >= DAY) {
-      this._days += this._hours / DAY
+      this._days += Math.floor(this._hours / DAY)
       this._hours = this._hours % DAY
     }
   }
