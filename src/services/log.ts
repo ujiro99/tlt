@@ -1,7 +1,7 @@
 /**
  * Do not usually display.
  */
-const verbose = true
+const verbose = false
 
 /**
  * Setting value to switch the debug log output from this module.

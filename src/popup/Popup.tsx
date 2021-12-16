@@ -18,9 +18,8 @@ import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
-import { Icon } from '@/services/icon'
 
-import { Task, TASK_EVENT } from '@/models/task'
+import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 
 import { Counter, CounterStopped } from '@/components/counter'
@@ -329,24 +328,14 @@ function TaskItem(props: TaskItemProps) {
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isTracking()) {
       // If task has been tracking, stop automatically.
-      task.trackingStop(tracking.trackingStartTime)
+      stopTracking()
     }
 
     const checked = e.target.checked
     Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
     task.setComplete(checked)
+    void state.setTextByLine(line, task.toString())
   }
-
-  task.on(TASK_EVENT.STRING_CHANGE, (taskStr: string) => {
-    void state.setTextByLine(line, taskStr)
-  })
-
-  task.on(TASK_EVENT.TRACKING_STATE_CHANGE, (isTracking: boolean) => {
-    if (!isTracking) {
-      const newTrackings = trackings.filter((n) => n.line !== line)
-      setTrackings(newTrackings)
-    }
-  })
 
   const startTracking = () => {
     const trackingStartTime = task.trackingStart()
@@ -365,8 +354,11 @@ function TaskItem(props: TaskItemProps) {
 
   const stopTracking = () => {
     if (isTracking()) {
-      task.trackingStop(tracking.trackingStartTime)
       chrome.runtime.sendMessage({ command: 'stopTracking' })
+      const newTrackings = trackings.filter((n) => n.line !== line)
+      setTrackings(newTrackings)
+      task.trackingStop(tracking.trackingStartTime)
+      void state.setTextByLine(line, task.toString())
     }
   }
 

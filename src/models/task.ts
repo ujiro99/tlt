@@ -1,5 +1,3 @@
-import { EventEmitter } from 'events'
-
 import Log from '@/services/log'
 import { Time } from '@/models/time'
 
@@ -12,22 +10,6 @@ const TASK_STATE = {
   COMPLETE: 'COMPLETE',
 }
 type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
-
-/**
- * Represent the events of the Task.
- */
-export const TASK_EVENT = {
-  STRING_CHANGE: 'STRING_CHANGE',
-  TRACKING_STATE_CHANGE: 'TRACKING_STATE_CHANGE',
-}
-type TaskEvent = typeof TASK_EVENT[keyof typeof TASK_EVENT]
-
-/**
- * Represent the event listener of the Task.
- */
-type OnStringChangeListener = (taskStr: string) => void
-type OnTrackingStateChangeListener = (isTracking: boolean) => void
-type TaskEventListener = OnStringChangeListener | OnTrackingStateChangeListener
 
 export class Task {
   // for unique Id
@@ -109,7 +91,6 @@ export class Task {
   public estimatedTimes: Time
   public actualTimes: Time
 
-  private emitter: EventEmitter
   private _indent: number
 
   /**
@@ -121,7 +102,6 @@ export class Task {
     this.taskState = state
     this.actualTimes = time
     this._indent = indent
-    this.emitter = new EventEmitter()
   }
 
   /**
@@ -132,9 +112,6 @@ export class Task {
   public trackingStart(): number {
     Log.d('trackingStart: ' + this.title)
     this.taskState = TASK_STATE.RUNNING
-
-    this.emit(TASK_EVENT.TRACKING_STATE_CHANGE, this.isRunning())
-
     return Date.now()
   }
 
@@ -151,22 +128,15 @@ export class Task {
     const elapsedTime = Time.parseMs(elapsedTimeMs)
     this.actualTimes.add(elapsedTime)
     this.taskState = TASK_STATE.STOP
-
-    this.emit(TASK_EVENT.TRACKING_STATE_CHANGE, this.isRunning())
-    this.emit(TASK_EVENT.STRING_CHANGE, this.toString())
   }
 
   public setComplete(isComplete: boolean): void {
-    const prev = this.taskState
     if (isComplete) {
       this.taskState = TASK_STATE.COMPLETE
     } else {
       if (this.taskState !== TASK_STATE.RUNNING) {
         this.taskState = TASK_STATE.STOP
       }
-    }
-    if (prev !== this.taskState) {
-      this.emit(TASK_EVENT.STRING_CHANGE, this.toString())
     }
   }
 
@@ -185,11 +155,6 @@ export class Task {
     return str
   }
 
-  public on(event: TaskEvent, listener: TaskEventListener): this {
-    this.emitter.on(event, listener)
-    return this
-  }
-
   public isComplete(): boolean {
     return this.taskState === TASK_STATE.COMPLETE
   }
@@ -200,10 +165,5 @@ export class Task {
 
   public get indent(): number {
     return this._indent
-  }
-
-  private emit(event: TaskEvent, ...args: unknown[]): boolean {
-    Log.d('emit: ' + event)
-    return this.emitter.emit(event, ...args)
   }
 }
