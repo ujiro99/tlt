@@ -289,16 +289,12 @@ function transListItem(_props: unknown) {
     }
   }
 
-  if (subItem == null) {
-    return <li className={props.className}><TaskItem checkboxProps={checkboxProps} line={line} /></li>
-  } else {
-    return (
-      <li className={props.className}>
-        <TaskItem checkboxProps={checkboxProps} line={line} />
-        <div>{subItem}</div>
-      </li>
-    )
-  }
+  return (
+    <li className={props.className}>
+      <TaskItem checkboxProps={checkboxProps} line={line} />
+      {subItem == null ? <></> : <div>{subItem}</div>}
+    </li>
+  )
 }
 
 type TaskCheckBox = {
@@ -323,7 +319,7 @@ function TaskItem(props: TaskItemProps) {
 
   Log.d(task)
 
-  // On unmount, stop tracking, if task has been trakcing.
+  // On unmount, if task has been trakcing, stop automatically.
   useEffect(function () {
     return () => stopTracking()
   })
