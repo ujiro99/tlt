@@ -29,3 +29,43 @@ describe.each(testParseIndent)(`parse indent %s`, (str: string, indent:number) =
     expect(task.indent).toBe(indent)
   })
 })
+
+describe('trackingStart', () => {
+  test('changes its state', () => {
+    const task = Task.parse("- [ ] task title")
+    expect(task.isRunning()).toBe(false)
+    task.trackingStart()
+    expect(task.isRunning()).toBe(true)
+  });
+  test('returns current time', () => {
+    const task = Task.parse("- [ ] task title")
+    expect(task.isRunning()).toBe(false)
+    const now = task.trackingStart()
+    expect(now > 0).toBe(true)
+  });
+})
+
+describe('trackingStop', () => {
+  test('changes its state', () => {
+    const task = Task.parse("- [ ] task title")
+    const now = task.trackingStart()
+    expect(task.isRunning()).toBe(true)
+    task.trackingStop(now)
+    expect(task.isRunning()).toBe(false)
+  })
+
+  test('updates actual times: 1 minutes', () => {
+    const task = Task.parse("- [ ] task title")
+    const now = task.trackingStart()
+    task.trackingStop(now - 60 * 1000)
+    expect(task.actualTimes.minutes).toBe(1)
+  })
+
+  test('updates actual times: 1hours, 1 minutes', () => {
+    const task = Task.parse("- [ ] task title")
+    const now = task.trackingStart()
+    task.trackingStop(now - (60 * 60 * 1000 + 60 * 1000))
+    expect(task.actualTimes.minutes).toBe(1)
+    expect(task.actualTimes.hours).toBe(1)
+  })
+})

@@ -124,6 +124,11 @@ export class Task {
     this.emitter = new EventEmitter()
   }
 
+  /**
+   * Start tracking.
+   *
+   * @returns {number} Time when tracking started in millisconds.
+   */
   public trackingStart(): number {
     Log.d('trackingStart: ' + this.title)
     this.taskState = TASK_STATE.RUNNING
@@ -133,6 +138,10 @@ export class Task {
     return Date.now()
   }
 
+  /**
+   * Stop tracking.
+   * @param {number} trackingStartTime Time when tracking started in millisconds.
+   */
   public trackingStop(trackingStartTime: number): void {
     Log.d('trackingStop: ' + this.title)
     if (isNaN(trackingStartTime)) {
@@ -185,7 +194,7 @@ export class Task {
     return this.taskState === TASK_STATE.COMPLETE
   }
 
-  private isRunning(): boolean {
+  public isRunning(): boolean {
     return this.taskState === TASK_STATE.RUNNING
   }
 

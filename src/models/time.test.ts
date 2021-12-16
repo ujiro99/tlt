@@ -139,6 +139,15 @@ describe('add', () => {
     expect(time.days).toBe(0)
   })
 
+  test('30m + 31m -> 1h 1m', () => {
+    const time = Time.parseStr("30m");
+    const timeB = Time.parseStr("31m");
+    time.add(timeB)
+    expect(time.minutes).toBe(1)
+    expect(time.hours).toBe(1)
+    expect(time.days).toBe(0)
+  })
+
   test('1m + 1h -> 1h 1m', () => {
     const time = Time.parseStr("1m");
     const timeB = Time.parseStr("1h");
@@ -154,6 +163,15 @@ describe('add', () => {
     time.add(timeB)
     expect(time.minutes).toBe(0)
     expect(time.hours).toBe(1)
+    expect(time.days).toBe(1)
+  })
+
+  test('12h30m + 11h31m -> 1d 0h 1m', () => {
+    const time = Time.parseStr("12h30m");
+    const timeB = Time.parseStr("11h31m");
+    time.add(timeB)
+    expect(time.minutes).toBe(1)
+    expect(time.hours).toBe(0)
     expect(time.days).toBe(1)
   })
 
