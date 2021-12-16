@@ -16,12 +16,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Run the tests
+        run: npm test
+
       - name: Code Climate Coverage Action
         uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: f5fc2fbc071daa5dec408f54647a5d5ea0d72e8c568354e857f2b6028b1a0605
         with:
-          coverageCommand: npm test
           coverageLocations: |
             ${{github.workspace}}/coverage/lcov.info:lcov
 
