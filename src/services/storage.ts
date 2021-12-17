@@ -2,7 +2,9 @@ import Log from "@/services/log";
 
 export const STORAGE_KEY = {
   TASK_LIST_TEXT: "task_list_text",
-  TRACKING_STATE: "tracking_state"
+  TRACKING_STATE: "tracking_state",
+  TRACKING_START_MS: "tracking_start_ms",
+  ICON_START_MINUTES: "icon_start_minutes"
 }
 
 export const Storage = {

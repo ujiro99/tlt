@@ -18,7 +18,8 @@ import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
-import { Task, TASK_EVENT } from '@/models/task'
+
+import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 
 import { Counter, CounterStopped } from '@/components/counter'
@@ -40,14 +41,14 @@ function ErrorFallback(prop: ErrorFallbackProp) {
 
 export default function Popup(): JSX.Element {
   useEffect(() => {
-    chrome.runtime.sendMessage({ popupMounted: true })
+    chrome.runtime.sendMessage({ command: 'popupMounted' })
   }, [])
 
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <RecoilRoot>
-        <Menu />
         <React.Suspense fallback={<div>Loading...</div>}>
+          <Menu />
           <TaskList />
         </React.Suspense>
       </RecoilRoot>
@@ -183,13 +184,31 @@ const markedHtmlState = selector({
 })
 
 function Menu() {
+  const state = TaskListState()
+  const [trackings, setTrackings] = useRecoilState(trackingStateList)
   const [mode, setMode] = useRecoilState(modeState)
   const isEdit = mode === MODE.EDIT
   const label = isEdit ? 'Complete' : 'Edit'
 
   const toggleMode = () => {
     const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
+    if (nextMode === MODE.EDIT) {
+      // Automatically stop tracking before entering edit mode.
+      stopAllTracking()
+    }
     setMode(nextMode)
+  }
+
+  function stopAllTracking() {
+    for (const tracking of trackings) {
+      if (tracking.isTracking) {
+        const task = Task.parse(state.getTextByLine(tracking.line))
+        task.trackingStop(tracking.trackingStartTime)
+        void state.setTextByLine(tracking.line, task.toString())
+      }
+    }
+    chrome.runtime.sendMessage({ command: 'stopTracking' })
+    setTrackings([])
   }
 
   return (
@@ -317,34 +336,17 @@ function TaskItem(props: TaskItemProps) {
   const task = Task.parse(state.getTextByLine(line))
   const id = `check-${task.id}`
 
-  Log.d(task)
-
-  // On unmount, if task has been trakcing, stop automatically.
-  useEffect(function () {
-    return () => stopTracking()
-  })
-
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isTracking()) {
       // If task has been tracking, stop automatically.
-      task.trackingStop(tracking.trackingStartTime)
+      stopTracking()
     }
 
     const checked = e.target.checked
     Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
     task.setComplete(checked)
+    void state.setTextByLine(line, task.toString())
   }
-
-  task.on(TASK_EVENT.STRING_CHANGE, (taskStr: string) => {
-    void state.setTextByLine(line, taskStr)
-  })
-
-  task.on(TASK_EVENT.TRACKING_STATE_CHANGE, (isTracking: boolean) => {
-    if (!isTracking) {
-      const newTrackings = trackings.filter((n) => n.line !== line)
-      setTrackings(newTrackings)
-    }
-  })
 
   const startTracking = () => {
     const trackingStartTime = task.trackingStart()
@@ -355,11 +357,21 @@ function TaskItem(props: TaskItemProps) {
       elapsedTime: task.actualTimes,
     }
     setTrackings([...trackings, newTracking])
+    chrome.runtime.sendMessage({
+      command: 'startTracking',
+      param: task.actualTimes.minutes,
+    })
   }
 
   const stopTracking = () => {
     if (isTracking()) {
+      chrome.runtime.sendMessage({ command: 'stopTracking' })
+      const newTrackings = trackings.filter((n) => n.line !== line)
+      setTrackings(newTrackings)
+
+      // update markdown text
       task.trackingStop(tracking.trackingStartTime)
+      void state.setTextByLine(line, task.toString())
     }
   }
 
