@@ -1,5 +1,12 @@
 import Log from '@/services/log'
 import { Icon } from '@/services/icon'
+import { Storage, STORAGE_KEY } from '@/services/storage'
+
+/** Alarm name */
+const TIMER_NAME = 'ICON_TIMER'
+
+/** Hour in minutes */
+const HOUR = 60
 
 type Request = {
   command: string
@@ -25,15 +32,6 @@ chrome.runtime.onMessage.addListener((request: Request, _, sendResponse) => {
   return false
 })
 
-/** Interval time for tracking in millisconds */
-const INTERVAL_MINUTE = 60 * 1000
-
-/** Hour in minutes */
-const HOUR = 60
-
-/** interval id */
-let trackingId: number
-
 type OnMessageFuncs = {
   [key: string]: (param: unknown, sendResponse: () => void) => boolean
 }
@@ -52,12 +50,12 @@ const onMessageFuncs: OnMessageFuncs = {
   startTracking(startMinutes: number) {
     Icon.setText(`${startMinutes}m`)
 
-    trackingId = setInterval(() => {
-      startMinutes++
-      startMinutes = startMinutes % HOUR
-      Icon.setText(`${startMinutes}m`)
-    }, INTERVAL_MINUTE)
+    // save state to storage
+    void Storage.set(STORAGE_KEY.ICON_START_MINUTES, startMinutes)
+    void Storage.set(STORAGE_KEY.TRACKING_START_MS, Date.now())
 
+    // start timer
+    chrome.alarms.create(TIMER_NAME, { periodInMinutes: 1 })
     return true
   },
 
@@ -65,8 +63,29 @@ const onMessageFuncs: OnMessageFuncs = {
    * Stop tracking, and clear badge text.
    */
   stopTracking() {
-    clearInterval(trackingId)
+    void chrome.alarms.clear(TIMER_NAME)
     Icon.clearText()
     return true
   },
 }
+
+/**
+ * Display an icon using the saved time information.
+ */
+async function updateIconTime() {
+  const trackingStartTime = (await Storage.get(
+    STORAGE_KEY.TRACKING_START_MS,
+  )) as number
+  const startMinutes = (await Storage.get(
+    STORAGE_KEY.ICON_START_MINUTES,
+  )) as number
+  const elapsedMs = Date.now() - trackingStartTime
+  const elapsedMin = Math.floor(elapsedMs / (60 * 1000))
+  const time = (startMinutes + elapsedMin) % HOUR
+  Icon.setText(`${time}m`)
+}
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name !== TIMER_NAME) return
+  void updateIconTime()
+})
