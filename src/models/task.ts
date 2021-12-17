@@ -40,7 +40,7 @@ export class Task {
       const time = Task.parseTime(taskStr)
       return new Task(state, title, time, indent)
     }
-    Log.w("Can't find task: " + taskStr)
+    Log.v("Can't find task: " + taskStr)
     return null
   }
 
@@ -81,7 +81,7 @@ export class Task {
         return Time.parseStr(m[1])
       }
     }
-    Log.d(`can't find time: ${taskStr}`)
+    Log.v(`can't find time: ${taskStr}`)
     return new Time()
   }
 

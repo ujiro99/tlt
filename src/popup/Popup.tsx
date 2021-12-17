@@ -47,8 +47,8 @@ export default function Popup(): JSX.Element {
   return (
     <ErrorBoundary FallbackComponent={ErrorFallback}>
       <RecoilRoot>
-        <Menu />
         <React.Suspense fallback={<div>Loading...</div>}>
+          <Menu />
           <TaskList />
         </React.Suspense>
       </RecoilRoot>
@@ -184,13 +184,31 @@ const markedHtmlState = selector({
 })
 
 function Menu() {
+  const state = TaskListState()
+  const [trackings, setTrackings] = useRecoilState(trackingStateList)
   const [mode, setMode] = useRecoilState(modeState)
   const isEdit = mode === MODE.EDIT
   const label = isEdit ? 'Complete' : 'Edit'
 
   const toggleMode = () => {
     const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
+    if (nextMode === MODE.EDIT) {
+      // Automatically stop tracking before entering edit mode.
+      stopAllTracking()
+    }
     setMode(nextMode)
+  }
+
+  function stopAllTracking() {
+    for (const tracking of trackings) {
+      if (tracking.isTracking) {
+        const task = Task.parse(state.getTextByLine(tracking.line))
+        task.trackingStop(tracking.trackingStartTime)
+        void state.setTextByLine(tracking.line, task.toString())
+      }
+    }
+    chrome.runtime.sendMessage({ command: 'stopTracking' })
+    setTrackings([])
   }
 
   return (
@@ -318,13 +336,6 @@ function TaskItem(props: TaskItemProps) {
   const task = Task.parse(state.getTextByLine(line))
   const id = `check-${task.id}`
 
-  // Log.d(task)
-
-  // On unmount, if task has been trakcing, stop automatically.
-  useEffect(function () {
-    return () => stopTracking()
-  })
-
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isTracking()) {
       // If task has been tracking, stop automatically.
@@ -357,6 +368,8 @@ function TaskItem(props: TaskItemProps) {
       chrome.runtime.sendMessage({ command: 'stopTracking' })
       const newTrackings = trackings.filter((n) => n.line !== line)
       setTrackings(newTrackings)
+
+      // update markdown text
       task.trackingStop(tracking.trackingStartTime)
       void state.setTextByLine(line, task.toString())
     }

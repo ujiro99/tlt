@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener((request: Request, _, sendResponse) => {
   const param = request.param
 
   Log.d(`command: ${command}`)
-  Log.d(param)
+  if (param != null) Log.d(param)
 
   // onMessage must return "true" if response is async.
   const func = onMessageFuncs[command]
