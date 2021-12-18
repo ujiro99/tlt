@@ -9,6 +9,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeReact from 'rehype-react'
 
 import { taskListTextState } from '@/services/state'
+import Log from '@/services/log'
 
 import { TaskTextarea } from '@/components/taskTextarea'
 import { TaskItem, TaskCheckBox } from '@/components/taskItem'
@@ -67,7 +68,7 @@ const markedHtmlState = selector({
 })
 
 function convertMarkdownToHtml(text: string): JSX.Element {
-  // Log.d('exec convertMarkdownToHtml')
+  Log.v('exec convertMarkdownToHtml')
   return unified()
     .use(remarkParse)
     .use(remarkGfm)

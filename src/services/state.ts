@@ -1,8 +1,14 @@
 import { atom, selector, useRecoilState } from 'recoil'
-
+import {
+  TrackingState,
+  TimeObject,
+  ITaskListState,
+  ITaskState,
+} from '@/@types/state'
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 
+import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 
 /**
@@ -18,7 +24,7 @@ export const taskListTextState = atom({
   }),
 })
 
-export function TaskListState(): ITaskListState {
+export function TaskTextState(): ITaskListState {
   const [textValue, setTextValue] = useRecoilState(taskListTextState)
 
   const setText = async (value: string) => {
@@ -54,20 +60,6 @@ export function TaskListState(): ITaskListState {
       }
     },
   }
-}
-
-type TrackingState = {
-  line: number
-  isTracking: boolean
-  trackingStartTime: number /** [milli second] */
-  elapsedTime: Time
-}
-
-type TimeObject = {
-  _seconds: number
-  _minutes: number
-  _hours: number
-  _days: number
 }
 
 export const trackingStateList = atom({
@@ -111,3 +103,22 @@ export const trackingStateList = atom({
   ],
 })
 
+export function TaskState(): ITaskState {
+  const state = TaskTextState()
+  const [trackings, setTrackings] = useRecoilState(trackingStateList)
+
+  return {
+    stopAllTracking() {
+      Log.v('stopAllTracking')
+      for (const tracking of trackings) {
+        if (tracking.isTracking) {
+          const task = Task.parse(state.getTextByLine(tracking.line))
+          task.trackingStop(tracking.trackingStartTime)
+          void state.setTextByLine(tracking.line, task.toString())
+        }
+      }
+      chrome.runtime.sendMessage({ command: 'stopTracking' })
+      setTrackings([])
+    },
+  }
+}
