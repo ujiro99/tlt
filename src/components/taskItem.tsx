@@ -2,7 +2,7 @@ import React from 'react'
 import { useRecoilState } from 'recoil'
 import classnames from 'classnames'
 
-import { TaskListState, trackingStateList } from '@/services/state'
+import { TaskListState, TaskState, trackingStateList } from '@/services/state'
 import Log from '@/services/log'
 
 import { Task } from '@/models/task'
@@ -26,6 +26,7 @@ export function TaskItem(props: TaskItemProps): JSX.Element {
   const checkboxProps = props.checkboxProps
   const line = props.line
   const state = TaskListState()
+  const taskState = TaskState()
   const [trackings, setTrackings] = useRecoilState(trackingStateList)
   const tracking = trackings.find((n) => n.line === line)
   const task = Task.parse(state.getTextByLine(line))
@@ -44,6 +45,10 @@ export function TaskItem(props: TaskItemProps): JSX.Element {
   }
 
   const startTracking = () => {
+    // stop previous task.
+    taskState.stopAllTracking()
+
+    // start new task.
     const trackingStartTime = task.trackingStart()
     const newTracking = {
       line: line,
@@ -51,7 +56,7 @@ export function TaskItem(props: TaskItemProps): JSX.Element {
       trackingStartTime: trackingStartTime,
       elapsedTime: task.actualTimes,
     }
-    setTrackings([...trackings, newTracking])
+    setTrackings([newTracking])
     chrome.runtime.sendMessage({
       command: 'startTracking',
       param: task.actualTimes.minutes,
@@ -83,6 +88,8 @@ export function TaskItem(props: TaskItemProps): JSX.Element {
   const style = {
     marginLeft: `${task.indent / 4}em`,
   }
+
+  // Log.d(`${id} ${isTracking() ? 'tracking' : 'stop'}`)
 
   return (
     <div className={taskItemClass} style={style}>

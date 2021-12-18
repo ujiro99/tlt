@@ -1,14 +1,12 @@
 import React from 'react'
 import { atom, useRecoilState } from 'recoil'
 
-import { TaskListState, trackingStateList } from '@/services/state'
-
-import { Task } from '@/models/task'
+import { TaskState } from '@/services/state'
 
 export const MODE = {
   EDIT: 'EDIT',
   SHOW: 'SHOW',
-} as const;
+} as const
 export type MenuMode = typeof MODE[keyof typeof MODE]
 
 /**
@@ -20,31 +18,18 @@ export const modeState = atom<MenuMode>({
 })
 
 export function Menu(): JSX.Element {
-  const state = TaskListState()
-  const [trackings, setTrackings] = useRecoilState(trackingStateList)
   const [mode, setMode] = useRecoilState(modeState)
   const isEdit = mode === MODE.EDIT
   const label = isEdit ? 'Complete' : 'Edit'
+  const taskState = TaskState()
 
   const toggleMode = () => {
     const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
     if (nextMode === MODE.EDIT) {
       // Automatically stop tracking before entering edit mode.
-      stopAllTracking()
+      taskState.stopAllTracking()
     }
     setMode(nextMode)
-  }
-
-  function stopAllTracking() {
-    for (const tracking of trackings) {
-      if (tracking.isTracking) {
-        const task = Task.parse(state.getTextByLine(tracking.line))
-        task.trackingStop(tracking.trackingStartTime)
-        void state.setTextByLine(tracking.line, task.toString())
-      }
-    }
-    chrome.runtime.sendMessage({ command: 'stopTracking' })
-    setTrackings([])
   }
 
   return (
