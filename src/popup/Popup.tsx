@@ -1,7 +1,5 @@
 import React, { useEffect, createElement, ReactElement } from 'react'
-import { RecoilRoot, selector, useRecoilState, useRecoilValue } from 'recoil'
-import classnames from 'classnames'
-
+import { RecoilRoot, selector, useRecoilValue } from 'recoil'
 import { ErrorBoundary } from 'react-error-boundary'
 import type { Position } from 'unist'
 import { unified } from 'unified'
@@ -10,19 +8,10 @@ import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeReact from 'rehype-react'
 
-import Log from '@/services/log'
-import {
-  TaskListState,
-  taskListTextState,
-  trackingStateList,
-} from '@/services/state'
+import { taskListTextState } from '@/services/state'
 
-import { Task } from '@/models/task'
-
-import { Counter, CounterStopped } from '@/components/counter'
-import { Checkbox } from '@/components/checkbox'
-import { TaskController } from '@/components/taskController'
 import { TaskTextarea } from '@/components/taskTextarea'
+import { TaskItem, TaskCheckBox } from '@/components/taskItem'
 import { Menu, MODE, modeState } from '@/components/menu'
 
 type ErrorFallbackProp = {
@@ -55,14 +44,6 @@ export default function Popup(): JSX.Element {
   )
 }
 
-const markedHtmlState = selector({
-  key: 'markedHtmlState',
-  get: ({ get }) => {
-    const text = get(taskListTextState)
-    return convertMarkdownToHtml(text)
-  },
-})
-
 function TaskList() {
   const mode = useRecoilValue(modeState)
   switch (mode) {
@@ -72,6 +53,18 @@ function TaskList() {
       return <MarkdownHtml />
   }
 }
+
+function MarkdownHtml() {
+  return <div className="task-container">{useRecoilValue(markedHtmlState)}</div>
+}
+
+const markedHtmlState = selector({
+  key: 'markedHtmlState',
+  get: ({ get }) => {
+    const text = get(taskListTextState)
+    return convertMarkdownToHtml(text)
+  },
+})
 
 function convertMarkdownToHtml(text: string): JSX.Element {
   // Log.d('exec convertMarkdownToHtml')
@@ -140,107 +133,4 @@ function transListItem(_props: unknown) {
       {subItem == null ? <></> : <div>{subItem}</div>}
     </li>
   )
-}
-
-type TaskCheckBox = {
-  type: string
-  checked: boolean
-  disabled: boolean
-}
-
-type TaskItemProps = {
-  checkboxProps: TaskCheckBox
-  line: number
-}
-
-function TaskItem(props: TaskItemProps) {
-  const checkboxProps = props.checkboxProps
-  const line = props.line
-  const state = TaskListState()
-  const [trackings, setTrackings] = useRecoilState(trackingStateList)
-  const tracking = trackings.find((n) => n.line === line)
-  const task = Task.parse(state.getTextByLine(line))
-  const id = `check-${task.id}`
-
-  const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isTracking()) {
-      // If task has been tracking, stop automatically.
-      stopTracking()
-    }
-
-    const checked = e.target.checked
-    Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
-    task.setComplete(checked)
-    void state.setTextByLine(line, task.toString())
-  }
-
-  const startTracking = () => {
-    const trackingStartTime = task.trackingStart()
-    const newTracking = {
-      line: line,
-      isTracking: true,
-      trackingStartTime: trackingStartTime,
-      elapsedTime: task.actualTimes,
-    }
-    setTrackings([...trackings, newTracking])
-    chrome.runtime.sendMessage({
-      command: 'startTracking',
-      param: task.actualTimes.minutes,
-    })
-  }
-
-  const stopTracking = () => {
-    if (isTracking()) {
-      chrome.runtime.sendMessage({ command: 'stopTracking' })
-      const newTrackings = trackings.filter((n) => n.line !== line)
-      setTrackings(newTrackings)
-
-      // update markdown text
-      task.trackingStop(tracking.trackingStartTime)
-      void state.setTextByLine(line, task.toString())
-    }
-  }
-
-  const isTracking = () => {
-    if (tracking == null) return false
-    return tracking.isTracking
-  }
-
-  const taskItemClass = classnames({
-    'task-item': true,
-    'task-item--running': isTracking(),
-  })
-
-  const style = {
-    marginLeft: `${task.indent / 4}em`,
-  }
-
-  return (
-    <div className={taskItemClass} style={style}>
-      <Checkbox
-        id={id}
-        checked={checkboxProps.checked}
-        onChange={toggleItemCompletion}
-      />
-      <span className="flex-grow ml-2">{task.title}</span>
-      {isTracking() ? (
-        <Counter startTime={tracking.elapsedTime} />
-      ) : !task.actualTimes.isEmpty() ? (
-        <CounterStopped startTime={task.actualTimes} />
-      ) : (
-        <div></div>
-      )}
-      {!task.isComplete() && (
-        <TaskController
-          onClickStart={startTracking}
-          onClickStop={stopTracking}
-          isTracking={isTracking()}
-        />
-      )}
-    </div>
-  )
-}
-
-function MarkdownHtml() {
-  return <div className="task-container">{useRecoilValue(markedHtmlState)}</div>
 }
