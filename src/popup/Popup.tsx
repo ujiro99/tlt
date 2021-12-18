@@ -1,10 +1,5 @@
 import React, { useEffect, createElement, ReactElement } from 'react'
-import {
-  RecoilRoot,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-} from 'recoil'
+import { RecoilRoot, selector, useRecoilState, useRecoilValue } from 'recoil'
 import classnames from 'classnames'
 
 import { ErrorBoundary } from 'react-error-boundary'
@@ -16,13 +11,18 @@ import remarkRehype from 'remark-rehype'
 import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
-import { TaskListState, taskListTextState, trackingStateList } from '@/services/state'
+import {
+  TaskListState,
+  taskListTextState,
+  trackingStateList,
+} from '@/services/state'
 
 import { Task } from '@/models/task'
 
 import { Counter, CounterStopped } from '@/components/counter'
 import { Checkbox } from '@/components/checkbox'
 import { TaskController } from '@/components/taskController'
+import { TaskTextarea } from '@/components/taskTextarea'
 import { Menu, MODE, modeState } from '@/components/menu'
 
 type ErrorFallbackProp = {
@@ -87,20 +87,6 @@ function convertMarkdownToHtml(text: string): JSX.Element {
       },
     })
     .processSync(text).result
-}
-
-function TaskTextarea() {
-  const state = TaskListState()
-
-  const onChange = ({ target: { value } }) => {
-    void state.setText(value)
-  }
-
-  return (
-    <div className="task-textarea">
-      <textarea className="" onChange={onChange} value={state.text}></textarea>
-    </div>
-  )
 }
 
 type Node = {
