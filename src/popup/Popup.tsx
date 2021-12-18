@@ -1,7 +1,6 @@
 import React, { useEffect, createElement, ReactElement } from 'react'
 import {
   RecoilRoot,
-  atom,
   selector,
   useRecoilState,
   useRecoilValue,
@@ -17,14 +16,14 @@ import remarkRehype from 'remark-rehype'
 import rehypeReact from 'rehype-react'
 
 import Log from '@/services/log'
-import { STORAGE_KEY, Storage } from '@/services/storage'
+import { TaskListState, taskListTextState, trackingStateList } from '@/services/state'
 
 import { Task } from '@/models/task'
-import { Time } from '@/models/time'
 
 import { Counter, CounterStopped } from '@/components/counter'
 import { Checkbox } from '@/components/checkbox'
 import { TaskController } from '@/components/taskController'
+import { Menu, MODE, modeState } from '@/components/menu'
 
 type ErrorFallbackProp = {
   error: Error
@@ -56,125 +55,6 @@ export default function Popup(): JSX.Element {
   )
 }
 
-/**
- * Task text saved in chrome storage.
- */
-const taskListTextState = atom({
-  key: 'taskListTextState',
-  default: selector({
-    key: 'savedTaskListTextState',
-    get: async () => {
-      return (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as string
-    },
-  }),
-})
-
-type TrackingState = {
-  line: number
-  isTracking: boolean
-  trackingStartTime: number /** [milli second] */
-  elapsedTime: Time
-}
-
-type TimeObject = {
-  _seconds: number
-  _minutes: number
-  _hours: number
-  _days: number
-}
-
-const trackingStateList = atom({
-  key: 'trackingStateList',
-  default: selector({
-    key: 'savedTrackingStateList',
-    get: async () => {
-      const trackings = (await Storage.get(
-        STORAGE_KEY.TRACKING_STATE,
-      )) as TrackingState[]
-      if (!trackings) return []
-
-      return trackings.map((tracking) => {
-        // Convert time object to Time class's instance.
-        const obj = tracking.elapsedTime as unknown as TimeObject
-        tracking.elapsedTime = new Time(
-          obj._seconds,
-          obj._minutes,
-          obj._hours,
-          obj._days,
-        )
-
-        // If the tracking is in progress, update the elapsed time to resume counting.
-        if (tracking.isTracking) {
-          const elapsedTimeMs = Date.now() - tracking.trackingStartTime
-          const elapsedTime = Time.parseMs(elapsedTimeMs)
-          tracking.elapsedTime.add(elapsedTime)
-        }
-
-        return tracking
-      })
-    },
-  }),
-  effects_UNSTABLE: [
-    ({ onSet }) => {
-      onSet((state) => {
-        // Automatically save the tracking status.
-        void Storage.set(STORAGE_KEY.TRACKING_STATE, state)
-      })
-    },
-  ],
-})
-
-const MODE = {
-  EDIT: 'EDIT',
-  SHOW: 'SHOW',
-}
-
-/**
- * Ui mode.
- */
-const modeState = atom({
-  key: 'modeState',
-  default: MODE.SHOW,
-})
-
-function TaskListState() {
-  const [textValue, setTextValue] = useRecoilState(taskListTextState)
-
-  const setText = async (value: string) => {
-    setTextValue(value)
-    await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, value)
-  }
-
-  return {
-    text: textValue,
-    setText: async (value: string) => {
-      await setText(value)
-    },
-    getTextByLine: (line: number) => {
-      const lines = textValue.split(/\n/)
-      line = line - 1 //  line number starts from 1.
-
-      if (lines.length > line) return lines[line]
-      Log.e('The specified line does not exist.')
-      Log.d(`lines.length: ${lines.length}, line: ${line}`)
-      return ''
-    },
-    setTextByLine: async (line: number, text: string) => {
-      const lines = textValue.split(/\n/)
-      line = line - 1 //  line number starts from 1.
-
-      if (lines.length > line) {
-        lines[line] = text
-        const newText = lines.join('\n')
-        await setText(newText)
-      } else {
-        Log.e('The specified line does not exist.')
-        Log.d(`lines.length: ${lines.length}, line: ${line}`)
-      }
-    },
-  }
-}
-
 const markedHtmlState = selector({
   key: 'markedHtmlState',
   get: ({ get }) => {
@@ -182,46 +62,6 @@ const markedHtmlState = selector({
     return convertMarkdownToHtml(text)
   },
 })
-
-function Menu() {
-  const state = TaskListState()
-  const [trackings, setTrackings] = useRecoilState(trackingStateList)
-  const [mode, setMode] = useRecoilState(modeState)
-  const isEdit = mode === MODE.EDIT
-  const label = isEdit ? 'Complete' : 'Edit'
-
-  const toggleMode = () => {
-    const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
-    if (nextMode === MODE.EDIT) {
-      // Automatically stop tracking before entering edit mode.
-      stopAllTracking()
-    }
-    setMode(nextMode)
-  }
-
-  function stopAllTracking() {
-    for (const tracking of trackings) {
-      if (tracking.isTracking) {
-        const task = Task.parse(state.getTextByLine(tracking.line))
-        task.trackingStop(tracking.trackingStartTime)
-        void state.setTextByLine(tracking.line, task.toString())
-      }
-    }
-    chrome.runtime.sendMessage({ command: 'stopTracking' })
-    setTrackings([])
-  }
-
-  return (
-    <div className="text-right">
-      <button
-        className="w-20 py-1.5 my-2 text-xs right-1 bg-gray-100 hover:bg-gray-50 border border-gray-200 shadow rounded-md transition ease-out"
-        onClick={toggleMode}
-      >
-        {label}
-      </button>
-    </div>
-  )
-}
 
 function TaskList() {
   const mode = useRecoilValue(modeState)
