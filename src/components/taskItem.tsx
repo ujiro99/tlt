@@ -2,7 +2,7 @@ import React from 'react'
 import { useRecoilState } from 'recoil'
 import classnames from 'classnames'
 
-import { TaskListState, TaskState, trackingStateList } from '@/services/state'
+import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
 import Log from '@/services/log'
 
 import { Task } from '@/models/task'
@@ -25,7 +25,7 @@ type TaskItemProps = {
 export function TaskItem(props: TaskItemProps): JSX.Element {
   const checkboxProps = props.checkboxProps
   const line = props.line
-  const state = TaskListState()
+  const state = TaskTextState()
   const taskState = TaskState()
   const [trackings, setTrackings] = useRecoilState(trackingStateList)
   const tracking = trackings.find((n) => n.line === line)

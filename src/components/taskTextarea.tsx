@@ -1,9 +1,9 @@
 import React from 'react'
 
-import { TaskListState } from '@/services/state'
+import { TaskTextState } from '@/services/state'
 
 export function TaskTextarea(): JSX.Element {
-  const state = TaskListState()
+  const state = TaskTextState()
 
   const onChange = ({ target: { value } }) => {
     void state.setText(value)

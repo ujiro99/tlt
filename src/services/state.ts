@@ -24,7 +24,7 @@ export const taskListTextState = atom({
   }),
 })
 
-export function TaskListState(): ITaskListState {
+export function TaskTextState(): ITaskListState {
   const [textValue, setTextValue] = useRecoilState(taskListTextState)
 
   const setText = async (value: string) => {
@@ -104,7 +104,7 @@ export const trackingStateList = atom({
 })
 
 export function TaskState(): ITaskState {
-  const state = TaskListState()
+  const state = TaskTextState()
   const [trackings, setTrackings] = useRecoilState(trackingStateList)
 
   return {
