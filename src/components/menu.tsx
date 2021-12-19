@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { atom, useRecoilState } from 'recoil'
 
-import { TaskTextState, TaskState } from '@/services/state'
-
 import { Tooltip } from '@/components/tooltip'
+
+import { TaskTextState, TaskState } from '@/services/state'
+import { sleep } from '@/services/util'
 
 export const MODE = {
   EDIT: 'EDIT',
@@ -21,9 +22,14 @@ export const modeState = atom<MenuMode>({
 
 function Copy(): JSX.Element {
   const state = TaskTextState()
+  const [tooltipVisible, setTooltipVisible] = useState(false)
 
-  const copyMarkdown = () => {
-    void navigator.clipboard.writeText(state.text)
+  const copyMarkdown = async () => {
+    await navigator.clipboard.writeText(state.text)
+    await sleep(100)
+    setTooltipVisible(true)
+    await sleep(800)
+    setTooltipVisible(false)
   }
 
   return (
@@ -34,8 +40,8 @@ function Copy(): JSX.Element {
       <svg className="icon">
         <use xlinkHref="/icons.svg#icon-copy" />
       </svg>
-      <Tooltip show={true} location={'bottom'}>
-        <span>copied!</span>
+      <Tooltip show={tooltipVisible} location={'bottom'}>
+        <span>Copied!</span>
       </Tooltip>
     </button>
   )

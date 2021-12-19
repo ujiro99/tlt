@@ -1,7 +1,9 @@
 import React from 'react'
 import classnames from 'classnames'
+import { CSSTransition } from 'react-transition-group'
 
 import '@/components/tooltip.css'
+import '@/components/fadeIn.css'
 
 const TOOLTIP_POSITION = {
   TOP: 'top',
@@ -22,13 +24,11 @@ export function Tooltip(props: TooltipProp): JSX.Element {
   const location = props.location
   const className = classnames('tooltip__inner', `tooltip--${location}`)
 
-  if (show) {
-    return (
+  return (
+    <CSSTransition in={show} timeout={200} classNames="fade" unmountOnExit>
       <div className="tooltip">
         <div className={className}>{props.children}</div>
       </div>
-    )
-  } else {
-    return <></>
-  }
+    </CSSTransition>
+  )
 }

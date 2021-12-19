@@ -1,0 +1,18 @@
+.fade-enter {
+  animation: 0.2s fade forwards;
+}
+
+.fade-exit {
+  animation: 0.1s fade forwards;
+  animation-direction: reverse;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}

@@ -10,13 +10,11 @@
     @apply py-1;
     @apply px-2;
     @apply bg-gray-700;
-    @apply text-xs;
     @apply font-medium;
+    @apply text-xs;
     @apply text-white;
     @apply rounded-lg;
-    @apply shadow-sm;
-    @apply transition-opacity;
-    @apply duration-300;
+    @apply shadow;
 
     &:after {
       --triangle-height: 4px;
@@ -37,7 +35,7 @@
     transform: translateX(-50%);
 
     &:after {
-      right: 10px;
+      right: 14px;
       bottom: calc(0px - var(--triangle-height));
       border-bottom-width: 0;
       @apply border-t-gray-700;
@@ -50,7 +48,7 @@
     transform: translateX(-50%);
 
     &:after {
-      right: 10px;
+      right: 14px;
       top: calc(0px - var(--triangle-height));
       border-top-width: 0;
       @apply border-b-gray-700;
