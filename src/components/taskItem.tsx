@@ -1,8 +1,14 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { useRecoilState } from 'recoil'
 import classnames from 'classnames'
 
-import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
+import '@/components/TaskItem.css'
+
+import {
+  TaskTextState,
+  TaskState,
+  trackingStateList,
+} from '@/services/state'
 import Log from '@/services/log'
 
 import { Task } from '@/models/task'
@@ -80,6 +86,8 @@ export function TaskItem(props: TaskItemProps): JSX.Element {
     return tracking.isTracking
   }
 
+  Log.v(`${line} ${id} ${isTracking() ? 'tracking' : 'stop'}`)
+
   const taskItemClass = classnames({
     'task-item': true,
     'task-item--running': isTracking(),
@@ -89,10 +97,12 @@ export function TaskItem(props: TaskItemProps): JSX.Element {
     marginLeft: `${task.indent / 4}em`,
   }
 
-  // Log.d(`${id} ${isTracking() ? 'tracking' : 'stop'}`)
-
   return (
-    <div className={taskItemClass} style={style}>
+    <div
+      className={taskItemClass}
+      style={style}
+      data-line={line}
+    >
       <Checkbox
         id={id}
         checked={checkboxProps.checked}

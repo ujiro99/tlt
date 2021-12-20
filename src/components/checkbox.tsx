@@ -1,5 +1,7 @@
 import React from 'react'
 
+import '@/components/checkbox.css'
+
 type CheckboxProps = {
   id: string
   checked: boolean

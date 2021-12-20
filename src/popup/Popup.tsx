@@ -8,9 +8,13 @@ import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeReact from 'rehype-react'
 
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+
 import { taskListTextState } from '@/services/state'
 import Log from '@/services/log'
 
+import { DraggableListItem } from '@/components/DraggableListItem'
 import { TaskTextarea } from '@/components/taskTextarea'
 import { TaskItem, TaskCheckBox } from '@/components/taskItem'
 import { Menu, MODE, modeState } from '@/components/menu'
@@ -56,7 +60,13 @@ function TaskList() {
 }
 
 function MarkdownHtml() {
-  return <div className="task-container">{useRecoilValue(markedHtmlState)}</div>
+  return (
+    <DndProvider debugMode={true} backend={HTML5Backend}>
+      <div className="task-container">
+        {useRecoilValue(markedHtmlState)}
+      </div>
+    </DndProvider>
+  )
 }
 
 const markedHtmlState = selector({
@@ -129,9 +139,9 @@ function transListItem(_props: unknown) {
   }
 
   return (
-    <li className={props.className}>
+    <DraggableListItem className={props.className} line={line} >
       <TaskItem checkboxProps={checkboxProps} line={line} />
       {subItem == null ? <></> : <div>{subItem}</div>}
-    </li>
+    </DraggableListItem>
   )
 }

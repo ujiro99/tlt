@@ -22,20 +22,26 @@ export const taskListTextState = atom({
       return (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as string
     },
   }),
+  effects_UNSTABLE: [
+    ({onSet}) => {
+      onSet(text => {
+        void Storage.set(STORAGE_KEY.TASK_LIST_TEXT, text)
+      });
+    },
+  ],
 })
 
 export function TaskTextState(): ITaskListState {
   const [textValue, setTextValue] = useRecoilState(taskListTextState)
 
-  const setText = async (value: string) => {
+  const setText = (value: string) => {
     setTextValue(value)
-    await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, value)
   }
 
   return {
     text: textValue,
-    setText: async (value: string) => {
-      await setText(value)
+    setText: (value: string) => {
+      setText(value)
     },
     getTextByLine: (line: number) => {
       const lines = textValue.split(/\n/)
@@ -46,18 +52,48 @@ export function TaskTextState(): ITaskListState {
       Log.d(`lines.length: ${lines.length}, line: ${line}`)
       return ''
     },
-    setTextByLine: async (line: number, text: string) => {
+    setTextByLine: (line: number, text: string) => {
       const lines = textValue.split(/\n/)
       line = line - 1 //  line number starts from 1.
 
       if (lines.length > line) {
         lines[line] = text
         const newText = lines.join('\n')
-        await setText(newText)
+        setText(newText)
       } else {
         Log.e('The specified line does not exist.')
         Log.d(`lines.length: ${lines.length}, line: ${line}`)
       }
+    },
+    moveLines: (
+      currentPosition: number,
+      newPosition: number,
+      count = 1,
+    ) => {
+      if (currentPosition === newPosition) return
+
+      //  line number starts from 1.
+      currentPosition = currentPosition - 1
+      newPosition = newPosition - 1
+
+      const lines = textValue.split(/\n/)
+      if (newPosition > lines.length) {
+        newPosition = lines.length - 1
+      }
+
+      const sliced = lines.slice(currentPosition, currentPosition + count)
+
+      if (currentPosition < newPosition) {
+        lines.splice(newPosition + 1, 0, ...sliced) // insert new items
+        lines.splice(currentPosition, count) // remove old items
+      } else {
+        lines.splice(newPosition + 1, 0, ...sliced)
+        lines.splice(currentPosition + count, count)
+      }
+
+      // update state
+      const newText = lines.join('\n')
+      setText(newText)
     },
   }
 }
