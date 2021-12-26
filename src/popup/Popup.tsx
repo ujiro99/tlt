@@ -11,7 +11,7 @@ import rehypeReact from 'rehype-react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
-import { taskListTextState } from '@/services/state'
+import { taskListTextState, TaskTextState } from '@/services/state'
 import Log from '@/services/log'
 
 import { DraggableListItem } from '@/components/DraggableListItem'
@@ -138,8 +138,12 @@ function transListItem(_props: unknown) {
     }
   }
 
+  // Checks whether it is at the top of the list
+  const state = TaskTextState()
+  const isListTop = !state.isTaskStrByLine(line - 1)
+
   return (
-    <DraggableListItem className={props.className} line={line} >
+    <DraggableListItem className={props.className} line={line} isListTop={isListTop} >
       <TaskItem checkboxProps={checkboxProps} line={line} />
       {subItem == null ? <></> : <div>{subItem}</div>}
     </DraggableListItem>

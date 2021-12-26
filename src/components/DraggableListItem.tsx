@@ -1,8 +1,6 @@
-import React, { Children, useRef, cloneElement } from 'react'
+import React, { Children, useRef, useState, cloneElement } from 'react'
 import classnames from 'classnames'
 import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd'
-
-import Log from '@/services/log'
 
 import { TaskTextState } from '@/services/state'
 
@@ -19,6 +17,7 @@ interface DragItem {
 type Props = {
   line: number
   className: string
+  isListTop: boolean
   children: React.ReactElement | React.ReactElement[]
 }
 
@@ -26,6 +25,17 @@ export function DraggableListItem(props: Props): JSX.Element {
   const line = props.line
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
+  const [dropToTop, setDropToTop] = useState(false)
+
+  const dropAtTopOfList = (
+    monitor: DropTargetMonitor,
+  ) => {
+    const hoverBoundingRect = ref.current?.getBoundingClientRect()
+    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
+    const clientOffset = monitor.getClientOffset()
+    const hoverClientY = clientOffset.y - hoverBoundingRect.top
+    return hoverClientY < hoverMiddleY
+  }
 
   const [{ handlerId, isOver }, drop] = useDrop({
     accept: DnDItems.Task,
@@ -37,48 +47,32 @@ export function DraggableListItem(props: Props): JSX.Element {
         return
       }
       const dragIndex = item.index
-      const hoverIndex = line
+      let hoverIndex = line
 
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return
       }
 
-      /*
-      // Determine rectangle on screen
-      const hoverBoundingRect = ref.current?.getBoundingClientRect()
-
-      // Get vertical middle
-      const hoverMiddleY =
-        (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
-
-      // Determine mouse position
-      const clientOffset = monitor.getClientOffset()
-
-      // Get pixels to the top
-      const hoverClientY = clientOffset.y - hoverBoundingRect.top
-
-      // Only perform the move when the mouse has crossed half of the items height
-      // When dragging downwards, only move when the cursor is below 50%
-      // When dragging upwards, only move when the cursor is above 50%
-
-      // Dragging downwards
-      if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
-        return
+      if (props.isListTop) {
+        if (dropAtTopOfList(monitor)) {
+          hoverIndex--
+        }
       }
 
-      // Dragging upwards
-      if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
-        return
-      }
-      */
-
-      // Time to actually perform the action
-      Log.d(`${dragIndex} -> ${hoverIndex} : ${item.id}`)
       state.moveLines(dragIndex, hoverIndex)
-
-      // to avoid expensive index searches.
       item.index = hoverIndex
+    },
+    hover(_, monitor: DropTargetMonitor) {
+      setDropToTop(false)
+
+      if (!ref.current) {
+        return
+      }
+
+      if (props.isListTop && dropAtTopOfList(monitor)) {
+        setDropToTop(true)
+      }
     },
   })
 
@@ -97,6 +91,8 @@ export function DraggableListItem(props: Props): JSX.Element {
   const className = classnames(props.className, {
     'task-list-item--hover': isOver,
     'task-list-item--drag': isDragging,
+    'task-list-item--list-top': props.isListTop,
+    'task-list-item--drop-top': dropToTop,
   })
 
   const newChildren = Children.map(props.children, (child) => {
@@ -104,11 +100,7 @@ export function DraggableListItem(props: Props): JSX.Element {
   })
 
   return (
-    <li
-      className={className}
-      ref={ref}
-      data-handler-id={handlerId}
-    >
+    <li className={className} ref={ref} data-handler-id={handlerId}>
       {newChildren}
     </li>
   )

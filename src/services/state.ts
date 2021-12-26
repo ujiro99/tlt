@@ -44,8 +44,8 @@ export function TaskTextState(): ITaskListState {
       setText(value)
     },
     getTextByLine: (line: number) => {
-      const lines = textValue.split(/\n/)
       line = line - 1 //  line number starts from 1.
+      const lines = textValue.split(/\n/)
 
       if (lines.length > line) return lines[line]
       Log.e('The specified line does not exist.')
@@ -53,8 +53,8 @@ export function TaskTextState(): ITaskListState {
       return ''
     },
     setTextByLine: (line: number, text: string) => {
-      const lines = textValue.split(/\n/)
       line = line - 1 //  line number starts from 1.
+      const lines = textValue.split(/\n/)
 
       if (lines.length > line) {
         lines[line] = text
@@ -64,6 +64,11 @@ export function TaskTextState(): ITaskListState {
         Log.e('The specified line does not exist.')
         Log.d(`lines.length: ${lines.length}, line: ${line}`)
       }
+    },
+    isTaskStrByLine: (line: number) => {
+      line = line - 1 //  line number starts from 1.
+      const lines = textValue.split(/\n/)
+      return Task.isTaskStr(lines[line])
     },
     moveLines: (
       currentPosition: number,

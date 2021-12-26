@@ -19,6 +19,7 @@ interface ITaskListState {
   setText: (value: string) => void
   getTextByLine: (line: number) => string
   setTextByLine: (line: number, text: string) => void
+  isTaskStrByLine: (line: number) => boolean
   moveLines: (index: number, insertPosition: number, count?: number) => void
 }
 
