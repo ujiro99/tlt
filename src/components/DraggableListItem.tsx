@@ -2,6 +2,8 @@ import React, { Children, useRef, useState, cloneElement } from 'react'
 import classnames from 'classnames'
 import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd'
 
+import '@/components/DraggableListItem.css'
+
 import { TaskTextState } from '@/services/state'
 
 const DnDItems = {

@@ -1,0 +1,27 @@
+.task-list-item {
+  position: relative;
+
+  & + &,
+  &:first-child {
+    @apply border-t;
+    @apply border-gray-200;
+  }
+
+  &--drag {
+    opacity: 0.5;
+  }
+
+  &--hover::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    padding-bottom: 3px;
+    box-shadow: 0 2px 3px rgb(165, 180, 252);
+  }
+
+  &--hover.task-list-item--drop-top::after {
+    top: -3px;
+    bottom: auto;
+  }
+}

@@ -62,9 +62,7 @@ function TaskList() {
 function MarkdownHtml() {
   return (
     <DndProvider debugMode={true} backend={HTML5Backend}>
-      <div className="task-container">
-        {useRecoilValue(markedHtmlState)}
-      </div>
+      <div className="task-container">{useRecoilValue(markedHtmlState)}</div>
     </DndProvider>
   )
 }
@@ -87,6 +85,7 @@ function convertMarkdownToHtml(text: string): JSX.Element {
       createElement: createElement,
       passNode: true,
       components: {
+        ul: transListContainer,
         li: transListItem,
       },
     })
@@ -101,14 +100,14 @@ type Node = {
   type: string
 }
 
-type TransListItemProps = {
+type TransProps = {
   children: ReactElement[]
   className: string
   node: Node
 }
 
 function transListItem(_props: unknown) {
-  const props = _props as TransListItemProps
+  const props = _props as TransProps
 
   if (props.className !== 'task-list-item') {
     return <li className={props.className}>{props.children}</li>
@@ -124,6 +123,7 @@ function transListItem(_props: unknown) {
         checkboxProps = child.props as unknown as TaskCheckBox
         line = props.node.position.start.line
         break
+      case transListContainer:
       case 'ul':
         subItem = child
         break
@@ -143,9 +143,18 @@ function transListItem(_props: unknown) {
   const isListTop = !state.isTaskStrByLine(line - 1)
 
   return (
-    <DraggableListItem className={props.className} line={line} isListTop={isListTop} >
+    <DraggableListItem
+      className={props.className}
+      line={line}
+      isListTop={isListTop}
+    >
       <TaskItem checkboxProps={checkboxProps} line={line} />
       {subItem == null ? <></> : <div>{subItem}</div>}
     </DraggableListItem>
   )
+}
+
+function transListContainer(_props: unknown) {
+  const props = _props as TransProps
+  return <ul className={props.className}>{props.children}</ul>
 }
