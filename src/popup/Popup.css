@@ -37,11 +37,6 @@ h2 {
     @apply border-gray-200;
   }
 
-  &--mouse-down {
-    @apply border-b;
-    margin-bottom: -1px;
-  }
-
   &--hover {
     box-shadow: 0 2px 3px rgba(165, 180, 252, 1);
   }

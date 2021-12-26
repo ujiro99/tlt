@@ -1,13 +1,18 @@
 .task-item {
   @apply relative;
-  @apply flex;
-  @apply flex-row;
-  @apply items-center;
   @apply px-2;
   @apply py-2;
   @apply leading-relaxed;
+  @apply flex;
+  @apply flex-row;
+  @apply items-center;
 
-  overflow: hidden;
+  &__label {
+    @apply flex;
+    @apply flex-row;
+    @apply items-center;
+    width: calc(100% - 2.5rem);
+  }
 
   &--running {
     animation: bg-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -33,9 +38,11 @@
     rgba(255, 255, 255, 1) 40%,
     rgba(255, 255, 255, 1) 100%
   );
+
   @apply absolute;
   @apply w-10;
   @apply h-full;
+  @apply top-0;
   @apply right-0;
   @apply text-right;
   @apply pr-1;

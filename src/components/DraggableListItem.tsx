@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { Children, useRef, cloneElement } from 'react'
 import classnames from 'classnames'
 import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd'
 
@@ -19,14 +19,13 @@ interface DragItem {
 type Props = {
   line: number
   className: string
-  children?: React.ReactNode
+  children: React.ReactElement | React.ReactElement[]
 }
 
 export function DraggableListItem(props: Props): JSX.Element {
   const line = props.line
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
-  const [mouseDown, setMouseDown] = useState(false)
 
   const [{ handlerId, isOver }, drop] = useDrop({
     accept: DnDItems.Task,
@@ -83,7 +82,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     },
   })
 
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging }, drag, preview] = useDrag({
     type: DnDItems.Task,
     item: () => ({ index: line }),
     collect: (monitor) => {
@@ -98,7 +97,10 @@ export function DraggableListItem(props: Props): JSX.Element {
   const className = classnames(props.className, {
     'task-list-item--hover': isOver,
     'task-list-item--drag': isDragging,
-    'task-list-item--mouse-down': mouseDown
+  })
+
+  const newChildren = Children.map(props.children, (child) => {
+    return cloneElement(child, { preview: preview })
   })
 
   return (
@@ -106,11 +108,8 @@ export function DraggableListItem(props: Props): JSX.Element {
       className={className}
       ref={ref}
       data-handler-id={handlerId}
-      onMouseDown={() => setMouseDown(true)}
-      onMouseUp={() => setMouseDown(false)}
-      onMouseOut={() => setMouseDown(false)}
     >
-      {props.children}
+      {newChildren}
     </li>
   )
 }

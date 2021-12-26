@@ -1,14 +1,11 @@
-import React, {useState} from 'react'
+import React from 'react'
 import { useRecoilState } from 'recoil'
+import { ConnectDragPreview } from 'react-dnd'
 import classnames from 'classnames'
 
 import '@/components/TaskItem.css'
 
-import {
-  TaskTextState,
-  TaskState,
-  trackingStateList,
-} from '@/services/state'
+import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
 import Log from '@/services/log'
 
 import { Task } from '@/models/task'
@@ -28,7 +25,13 @@ type TaskItemProps = {
   line: number
 }
 
-export function TaskItem(props: TaskItemProps): JSX.Element {
+type DragProps = {
+  preview: ConnectDragPreview
+}
+
+export const TaskItem: React.FC<TaskItemProps> = (
+  props: TaskItemProps & DragProps,
+): JSX.Element => {
   const checkboxProps = props.checkboxProps
   const line = props.line
   const state = TaskTextState()
@@ -98,17 +101,15 @@ export function TaskItem(props: TaskItemProps): JSX.Element {
   }
 
   return (
-    <div
-      className={taskItemClass}
-      style={style}
-      data-line={line}
-    >
-      <Checkbox
-        id={id}
-        checked={checkboxProps.checked}
-        onChange={toggleItemCompletion}
-      />
-      <span className="flex-grow ml-2">{task.title}</span>
+    <div className={taskItemClass} style={style} data-line={line}>
+      <div className="task-item__label" ref={props.preview}>
+        <Checkbox
+          id={id}
+          checked={checkboxProps.checked}
+          onChange={toggleItemCompletion}
+        />
+        <span className="flex-grow ml-2">{task.title}</span>
+      </div>
       {isTracking() ? (
         <Counter startTime={tracking.elapsedTime} />
       ) : !task.actualTimes.isEmpty() ? (
