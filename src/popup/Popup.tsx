@@ -11,7 +11,7 @@ import rehypeReact from 'rehype-react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
-import { taskListTextState, TaskTextState } from '@/services/state'
+import { taskListTextState, TaskTextState, dragMotionState } from '@/services/state'
 import Log from '@/services/log'
 
 import { DraggableListItem } from '@/components/DraggableListItem'
@@ -86,7 +86,7 @@ function convertMarkdownToHtml(text: string): JSX.Element {
       passNode: true,
       components: {
         ul: transListContainer,
-        li: transListItem,
+        li: TransListItem,
       },
     })
     .processSync(text).result
@@ -106,8 +106,9 @@ type TransProps = {
   node: Node
 }
 
-function transListItem(_props: unknown) {
+function TransListItem(_props: unknown) {
   const props = _props as TransProps
+  const dragMotions = useRecoilValue(dragMotionState)
 
   if (props.className !== 'task-list-item') {
     return <li className={props.className}>{props.children}</li>
@@ -142,11 +143,15 @@ function transListItem(_props: unknown) {
   const state = TaskTextState()
   const isListTop = !state.isTaskStrByLine(line - 1)
 
+  const dragItem = dragMotions.find(n => n.line === line)
+  const dragTop = dragItem?.top
+
   return (
     <DraggableListItem
       className={props.className}
       line={line}
       isListTop={isListTop}
+      top={dragTop}
     >
       <TaskItem checkboxProps={checkboxProps} line={line} />
       {subItem == null ? <></> : <div>{subItem}</div>}

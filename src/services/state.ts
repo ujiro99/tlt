@@ -163,3 +163,13 @@ export function TaskState(): ITaskState {
     },
   }
 }
+
+type DragMotionState = {
+  line: number,
+  top: number
+}
+
+export const dragMotionState = atom<DragMotionState[]>({
+  key: 'dragMotionState',
+  default: []
+})

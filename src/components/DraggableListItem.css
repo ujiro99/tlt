@@ -1,5 +1,6 @@
 .task-list-item {
   position: relative;
+  top: 0;
 
   & + &,
   &:first-child {
