@@ -5,23 +5,35 @@ import React, {
   useEffect,
   cloneElement,
 } from 'react'
-import { useRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 import classnames from 'classnames'
 import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd'
 import { sleep } from '@/services/util'
 
 import '@/components/DraggableListItem.css'
 
-import { TaskTextState, dragMotionState } from '@/services/state'
+import {
+  TaskTextState,
+  dragMotionState,
+  DragMotionState,
+  MOTION_TYPE,
+  MotionType,
+} from '@/services/state'
 
 const DnDItems = {
   Task: 'Task',
 } as const
 
+interface MotionStyle {
+  transition?: string,
+  opacity?: number,
+  top?: number
+}
+
 interface DragItem {
   index: number
-  id: string
   type: string
+  height: number
 }
 
 type Props = {
@@ -29,66 +41,112 @@ type Props = {
   className: string
   isListTop: boolean
   top: number
+  motionType: MotionType
   children: React.ReactElement | React.ReactElement[]
 }
+
+const MotionDurationMS = 200;
 
 export function DraggableListItem(props: Props): JSX.Element {
   const line = props.line
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
   const [dropToTop, setDropToTop] = useState(false)
-  const [inMotion, setInMotion] = useState(false)
-  const [motionTop, setMotionTop] = useState(0)
-  const [_, setDragMotions] = useRecoilState(dragMotionState)
+  const [motionStyles, setMotionStyles] = useState<MotionStyle>({})
+  const setDragMotions = useSetRecoilState<DragMotionState[]>(dragMotionState)
+
+  const dropAtTopOfList = (monitor: DropTargetMonitor): boolean => {
+    const dropTargetRect = ref.current?.getBoundingClientRect()
+    const dropMiddleY = (dropTargetRect.bottom - dropTargetRect.top) / 2
+    const clientOffset = monitor.getClientOffset()
+    const hoverClientY = clientOffset.y - dropTargetRect.top
+    return hoverClientY < dropMiddleY
+  }
 
   // Apply motion animations.
   useEffect(() => {
     if (props.top != null && props.top !== 0) {
-      setInMotion(true)
+      // initial state
+      const styles: MotionStyle = { top: 0 }
+      if (props.motionType === MOTION_TYPE.FADE_IN) {
+        styles.opacity = 0
+      }
+      setMotionStyles(styles)
       void sleep(1).then(() => {
-        setMotionTop(props.top)
+        // enter animateion
+        const styles: MotionStyle = {}
+        styles.top = props.top
+        if (props.motionType === MOTION_TYPE.SLIDE) {
+          styles.transition = `top ${MotionDurationMS}ms ease-out`
+        } else if (props.motionType === MOTION_TYPE.FADE_IN) {
+          styles.transition = `opacity ${MotionDurationMS}ms ease-out`
+          styles.opacity = 1
+        }
+        setMotionStyles(styles)
       })
     } else {
-      setInMotion(false)
-      setMotionTop(0)
+      setMotionStyles({})
     }
-  }, [props.top])
+  }, [props.top, props.motionType])
 
-  const dropAtTopOfList = (monitor: DropTargetMonitor): boolean => {
-    const hoverBoundingRect = ref.current?.getBoundingClientRect()
-    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2
-    const clientOffset = monitor.getClientOffset()
-    const hoverClientY = clientOffset.y - hoverBoundingRect.top
-    return hoverClientY < hoverMiddleY
-  }
 
-  const setDropMotion = (dragIndex: number, hoverIndex: number): void => {
-    const dragItemRect = ref.current?.getBoundingClientRect()
-    const dragItemHeight = dragItemRect.bottom - dragItemRect.top
+  const setDropMotion = (
+    item: DragItem,
+    monitor: DropTargetMonitor,
+    dragIndex: number,
+    hoverIndex: number,
+  ): void => {
+    const newMotions: DragMotionState[] = []
 
-    const newMotions = []
+    // Element dragged
+    const dragItemHeight = item.height
+    const dropTargetRect = ref.current?.getBoundingClientRect()
+    const dragItemTop = monitor.getInitialSourceClientOffset().y
+    let dropY: number
+    if (dragIndex < hoverIndex) {
+      // drog to down
+      dropY = dropTargetRect.bottom - (dragItemTop + dragItemHeight)
+    } else {
+      // drog to up
+      dropY = dropTargetRect.bottom - dragItemTop
+      if (props.isListTop && dropAtTopOfList(monitor)) {
+        dropY = dropTargetRect.top - dragItemTop
+      }
+    }
+    newMotions.push({ line: dragIndex, top: dropY, type: MOTION_TYPE.FADE_IN })
+
+    // Elements between drag and drop
     if (dragIndex < hoverIndex) {
       // drog to down
       for (let i = dragIndex + 1; i <= hoverIndex; i++) {
-        newMotions.push({ line: i, top: -dragItemHeight })
+        newMotions.push({
+          line: i,
+          top: -dragItemHeight,
+          type: MOTION_TYPE.SLIDE,
+        })
       }
     } else {
       // drog to up
       for (let i = dragIndex - 1; i > hoverIndex; i--) {
-        newMotions.push({ line: i, top: dragItemHeight })
+        newMotions.push({
+          line: i,
+          top: dragItemHeight,
+          type: MOTION_TYPE.SLIDE,
+        })
       }
     }
-    console.log(newMotions)
+
     setDragMotions(newMotions)
   }
 
   const execDrop = async (
     item: DragItem,
+    monitor: DropTargetMonitor,
     dragIndex: number,
     hoverIndex: number,
   ) => {
-    setDropMotion(dragIndex, hoverIndex)
-    await sleep(1000)
+    setDropMotion(item, monitor, dragIndex, hoverIndex)
+    await sleep(MotionDurationMS)
     state.moveLines(dragIndex, hoverIndex)
     item.index = hoverIndex
     setDragMotions([])
@@ -106,18 +164,20 @@ export function DraggableListItem(props: Props): JSX.Element {
       const dragIndex = item.index
       let hoverIndex = line
 
+      if (props.isListTop && dropAtTopOfList(monitor)) {
+        hoverIndex--
+      }
+
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return
       }
-
-      if (props.isListTop) {
-        if (dropAtTopOfList(monitor)) {
-          hoverIndex--
-        }
+      // Don't replace items with previous element
+      if (dragIndex - 1 === hoverIndex) {
+        return
       }
 
-      void execDrop(item, dragIndex, hoverIndex)
+      void execDrop(item, monitor, dragIndex, hoverIndex)
     },
     hover(_, monitor: DropTargetMonitor) {
       setDropToTop(false)
@@ -134,7 +194,7 @@ export function DraggableListItem(props: Props): JSX.Element {
 
   const [{ isDragging }, drag, preview] = useDrag({
     type: DnDItems.Task,
-    item: () => ({ index: line }),
+    item: () => ({ index: line, height: ref.current.offsetHeight }),
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   })
 
@@ -156,10 +216,7 @@ export function DraggableListItem(props: Props): JSX.Element {
       className={className}
       ref={ref}
       data-handler-id={handlerId}
-      style={{
-        top: motionTop,
-        transition: inMotion ? 'top 1s ease-out' : null,
-      }}
+      style={motionStyles}
     >
       {newChildren}
     </li>

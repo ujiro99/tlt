@@ -144,14 +144,15 @@ function TransListItem(_props: unknown) {
   const isListTop = !state.isTaskStrByLine(line - 1)
 
   const dragItem = dragMotions.find(n => n.line === line)
-  const dragTop = dragItem?.top
+  console.log(dragItem)
 
   return (
     <DraggableListItem
       className={props.className}
       line={line}
       isListTop={isListTop}
-      top={dragTop}
+      top={dragItem?.top}
+      motionType={dragItem?.type}
     >
       <TaskItem checkboxProps={checkboxProps} line={line} />
       {subItem == null ? <></> : <div>{subItem}</div>}

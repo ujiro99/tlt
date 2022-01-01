@@ -164,9 +164,16 @@ export function TaskState(): ITaskState {
   }
 }
 
-type DragMotionState = {
+export const MOTION_TYPE = {
+  SLIDE: "SLIDE",
+  FADE_IN: "FADE_IN",
+} as const
+export type MotionType = typeof MOTION_TYPE[keyof typeof MOTION_TYPE]
+
+export type DragMotionState = {
   line: number,
   top: number
+  type: MotionType
 }
 
 export const dragMotionState = atom<DragMotionState[]>({
