@@ -1,5 +1,8 @@
 .task-list-item {
+  $this: &;
+
   position: relative;
+  width: 100%;
   top: 0;
 
   & + &,
@@ -12,7 +15,8 @@
     opacity: 0.5;
   }
 
-  &--hover::after {
+  &--hover:not($(this)--parent)::after,
+  $(this)--parent$(this)--hover > .task-item::after {
     content: '';
     position: absolute;
     width: 100%;

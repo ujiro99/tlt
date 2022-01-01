@@ -1,4 +1,4 @@
-import React, { useEffect, createElement, ReactElement } from 'react'
+import React, { useState, useRef, useEffect, createElement, ReactElement } from 'react'
 import { RecoilRoot, selector, useRecoilValue } from 'recoil'
 import { ErrorBoundary } from 'react-error-boundary'
 import type { Position } from 'unist'
@@ -17,6 +17,7 @@ import {
   dragMotionState,
 } from '@/services/state'
 import Log from '@/services/log'
+import { sleep } from '@/services/util'
 
 import { DraggableListItem } from '@/components/DraggableListItem'
 import { TaskTextarea } from '@/components/taskTextarea'
@@ -89,7 +90,7 @@ function convertMarkdownToHtml(text: string): JSX.Element {
       createElement: createElement,
       passNode: true,
       components: {
-        ul: transListContainer,
+        ul: TransListContainer,
         li: TransListItem,
       },
     })
@@ -128,7 +129,7 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
         checkboxProps = child.props as unknown as TaskCheckBox
         line = props.node.position.start.line
         break
-      case transListContainer:
+      case TransListContainer:
       case 'ul':
         subItem = child
         subItemCount = child.props.children.filter(
@@ -162,13 +163,36 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
       hasChildren={subItem != null}
       childrenCount={subItemCount}
     >
-      <TaskItem checkboxProps={checkboxProps} line={line} />
-      <>{subItem || subItem}</>
+      {subItem ? (
+        <>
+          <TaskItem checkboxProps={checkboxProps} line={line} />
+          {subItem}
+        </>
+      ) : (
+        <TaskItem checkboxProps={checkboxProps} line={line} />
+      )}
     </DraggableListItem>
   )
 }
 
-function transListContainer(_props: unknown) {
-  const props = _props as TransProps
-  return <ul className={props.className}>{props.children}</ul>
+const TransListContainer: React.FC<unknown> = (props: TransProps): JSX.Element => {
+  const [ height, setHeight] = useState<number>()
+  const ref = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    void sleep(10).then(() => {
+      setHeight(ref.current?.offsetHeight)
+    })
+  }, [])
+
+  interface Styles {
+    height?: number
+  }
+
+  const styles: Styles = {}
+  if (height > 0) {
+    styles.height = height
+  }
+
+  return <ul ref={ref} style={styles} className={props.className}>{props.children}</ul>
 }

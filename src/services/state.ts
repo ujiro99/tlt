@@ -74,6 +74,7 @@ export function TaskTextState(): ITaskListState {
       currentPosition: number,
       newPosition: number,
       count = 1,
+      indent?: number
     ) => {
       if (currentPosition === newPosition) return
 
@@ -86,7 +87,11 @@ export function TaskTextState(): ITaskListState {
         newPosition = lines.length - 1
       }
 
-      const sliced = lines.slice(currentPosition, currentPosition + count)
+      let sliced = lines.slice(currentPosition, currentPosition + count)
+      if (indent != null) {
+        const indentStr = ''.padStart(indent, ' ')
+        sliced = sliced.map(line => `${indentStr}${line.trimLeft()}`)
+      }
 
       if (currentPosition < newPosition) {
         lines.splice(newPosition + 1, 0, ...sliced) // insert new items
@@ -167,6 +172,7 @@ export function TaskState(): ITaskState {
 export const MOTION_TYPE = {
   SLIDE: "SLIDE",
   FADE_IN: "FADE_IN",
+  FIXED: "FIXED",
 } as const
 export type MotionType = typeof MOTION_TYPE[keyof typeof MOTION_TYPE]
 

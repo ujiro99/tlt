@@ -4,11 +4,14 @@ import React, {
   useState,
   useEffect,
   cloneElement,
+  CSSProperties,
 } from 'react'
 import { useSetRecoilState } from 'recoil'
 import classnames from 'classnames'
 import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd'
 import { sleep } from '@/services/util'
+
+import { Task } from '@/models/task'
 
 import '@/components/DraggableListItem.css'
 
@@ -23,12 +26,6 @@ import {
 const DnDItems = {
   Task: 'Task',
 } as const
-
-interface MotionStyle {
-  transition?: string
-  opacity?: number
-  top?: number
-}
 
 interface DragItem {
   index: number
@@ -49,14 +46,14 @@ type Props = {
   children: React.ReactElement | React.ReactElement[]
 }
 
-const MotionDurationMS = 200
+const MotionDurationMS = 5000
 
 export function DraggableListItem(props: Props): JSX.Element {
   const line = props.line
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
   const [dropToTop, setDropToTop] = useState(false)
-  const [motionStyles, setMotionStyles] = useState<MotionStyle>({})
+  const [motionStyles, setMotionStyles] = useState<CSSProperties>({})
   const setDragMotions = useSetRecoilState<DragMotionState[]>(dragMotionState)
 
   const dropAtTopOfList = (monitor: DropTargetMonitor): boolean => {
@@ -72,14 +69,14 @@ export function DraggableListItem(props: Props): JSX.Element {
   useEffect(() => {
     if (props.top != null && props.top !== 0) {
       // initial state
-      const styles: MotionStyle = { top: 0 }
+      const styles: CSSProperties = { top: 0 }
       if (props.motionType === MOTION_TYPE.FADE_IN) {
         styles.opacity = 0
       }
       setMotionStyles(styles)
       void sleep(1).then(() => {
         // enter animateion
-        const styles: MotionStyle = {}
+        const styles: CSSProperties = {}
         styles.top = props.top
         if (props.motionType === MOTION_TYPE.SLIDE) {
           styles.transition = `top ${MotionDurationMS}ms ease-out`
@@ -151,7 +148,8 @@ export function DraggableListItem(props: Props): JSX.Element {
   ) => {
     calcDragMotions(item, monitor, dragIndex, hoverIndex)
     await sleep(MotionDurationMS)
-    state.moveLines(dragIndex, hoverIndex, item.childrenCount + 1)
+    const task = Task.parse(state.getTextByLine(hoverIndex + 1))
+    state.moveLines(dragIndex, hoverIndex, item.childrenCount + 1, task.indent)
     item.index = hoverIndex
     // finish animations.
     setDragMotions([])
@@ -218,7 +216,7 @@ export function DraggableListItem(props: Props): JSX.Element {
   })
 
   const newChildren = Children.map(props.children, (child) => {
-    return cloneElement(child, { preview: preview })
+      return cloneElement(child, { preview: preview })
   })
 
   return (
