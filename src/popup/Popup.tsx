@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, createElement, ReactElement } from 'react'
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  createElement,
+  ReactElement,
+} from 'react'
 import { RecoilRoot, selector, useRecoilValue } from 'recoil'
 import { ErrorBoundary } from 'react-error-boundary'
 import type { Position } from 'unist'
@@ -175,15 +181,17 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
   )
 }
 
-const TransListContainer: React.FC<unknown> = (props: TransProps): JSX.Element => {
-  const [ height, setHeight] = useState<number>()
+const TransListContainer: React.FC<unknown> = (
+  props: TransProps,
+): JSX.Element => {
+  const [height, setHeight] = useState<number>()
   const ref = useRef<HTMLUListElement>(null)
 
   useEffect(() => {
     void sleep(10).then(() => {
       setHeight(ref.current?.offsetHeight)
     })
-  }, [])
+  }, [props.children])
 
   interface Styles {
     height?: number
@@ -194,5 +202,9 @@ const TransListContainer: React.FC<unknown> = (props: TransProps): JSX.Element =
     styles.height = height
   }
 
-  return <ul ref={ref} style={styles} className={props.className}>{props.children}</ul>
+  return (
+    <ul ref={ref} style={styles} className={props.className}>
+      {props.children}
+    </ul>
+  )
 }
