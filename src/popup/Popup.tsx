@@ -11,7 +11,11 @@ import rehypeReact from 'rehype-react'
 import { DndProvider } from 'react-dnd'
 import { HTML5Backend } from 'react-dnd-html5-backend'
 
-import { taskListTextState, TaskTextState, dragMotionState } from '@/services/state'
+import {
+  taskListTextState,
+  TaskTextState,
+  dragMotionState,
+} from '@/services/state'
 import Log from '@/services/log'
 
 import { DraggableListItem } from '@/components/DraggableListItem'
@@ -106,8 +110,7 @@ type TransProps = {
   node: Node
 }
 
-function TransListItem(_props: unknown) {
-  const props = _props as TransProps
+const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
   const dragMotions = useRecoilValue(dragMotionState)
 
   if (props.className !== 'task-list-item') {
@@ -117,6 +120,7 @@ function TransListItem(_props: unknown) {
   let checkboxProps: TaskCheckBox
   let line: number
   let subItem: ReactElement
+  let subItemCount = 0
   let p: JSX.ElementChildrenAttribute
   for (const child of props.children) {
     switch (child.type) {
@@ -127,6 +131,9 @@ function TransListItem(_props: unknown) {
       case transListContainer:
       case 'ul':
         subItem = child
+        subItemCount = child.props.children.filter(
+          (n) => n.props?.className === 'task-list-item',
+        ).length
         break
       case 'p':
         p = child.props as JSX.ElementChildrenAttribute
@@ -143,8 +150,7 @@ function TransListItem(_props: unknown) {
   const state = TaskTextState()
   const isListTop = !state.isTaskStrByLine(line - 1)
 
-  const dragItem = dragMotions.find(n => n.line === line)
-  console.log(dragItem)
+  const dragItem = dragMotions.find((n) => n.line === line)
 
   return (
     <DraggableListItem
@@ -153,9 +159,11 @@ function TransListItem(_props: unknown) {
       isListTop={isListTop}
       top={dragItem?.top}
       motionType={dragItem?.type}
+      hasChildren={subItem != null}
+      childrenCount={subItemCount}
     >
       <TaskItem checkboxProps={checkboxProps} line={line} />
-      {subItem == null ? <></> : <div>{subItem}</div>}
+      <>{subItem || subItem}</>
     </DraggableListItem>
   )
 }

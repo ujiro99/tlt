@@ -25,8 +25,8 @@ const DnDItems = {
 } as const
 
 interface MotionStyle {
-  transition?: string,
-  opacity?: number,
+  transition?: string
+  opacity?: number
   top?: number
 }
 
@@ -34,6 +34,8 @@ interface DragItem {
   index: number
   type: string
   height: number
+  hasChildren: boolean
+  childrenCount: number
 }
 
 type Props = {
@@ -42,10 +44,12 @@ type Props = {
   isListTop: boolean
   top: number
   motionType: MotionType
+  hasChildren: boolean
+  childrenCount: number
   children: React.ReactElement | React.ReactElement[]
 }
 
-const MotionDurationMS = 200;
+const MotionDurationMS = 200
 
 export function DraggableListItem(props: Props): JSX.Element {
   const line = props.line
@@ -59,6 +63,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     const dropTargetRect = ref.current?.getBoundingClientRect()
     const dropMiddleY = (dropTargetRect.bottom - dropTargetRect.top) / 2
     const clientOffset = monitor.getClientOffset()
+    if (clientOffset == null) return false
     const hoverClientY = clientOffset.y - dropTargetRect.top
     return hoverClientY < dropMiddleY
   }
@@ -89,8 +94,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     }
   }, [props.top, props.motionType])
 
-
-  const setDropMotion = (
+  const calcDragMotions = (
     item: DragItem,
     monitor: DropTargetMonitor,
     dragIndex: number,
@@ -101,7 +105,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     // Element dragged
     const dragItemHeight = item.height
     const dropTargetRect = ref.current?.getBoundingClientRect()
-    const dragItemTop = monitor.getInitialSourceClientOffset().y
+    const dragItemTop = monitor.getInitialSourceClientOffset()?.y
     let dropY: number
     if (dragIndex < hoverIndex) {
       // drog to down
@@ -118,7 +122,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     // Elements between drag and drop
     if (dragIndex < hoverIndex) {
       // drog to down
-      for (let i = dragIndex + 1; i <= hoverIndex; i++) {
+      for (let i = dragIndex + 1 + item.childrenCount; i <= hoverIndex; i++) {
         newMotions.push({
           line: i,
           top: -dragItemHeight,
@@ -145,10 +149,11 @@ export function DraggableListItem(props: Props): JSX.Element {
     dragIndex: number,
     hoverIndex: number,
   ) => {
-    setDropMotion(item, monitor, dragIndex, hoverIndex)
+    calcDragMotions(item, monitor, dragIndex, hoverIndex)
     await sleep(MotionDurationMS)
-    state.moveLines(dragIndex, hoverIndex)
+    state.moveLines(dragIndex, hoverIndex, item.childrenCount + 1)
     item.index = hoverIndex
+    // finish animations.
     setDragMotions([])
   }
 
@@ -194,7 +199,12 @@ export function DraggableListItem(props: Props): JSX.Element {
 
   const [{ isDragging }, drag, preview] = useDrag({
     type: DnDItems.Task,
-    item: () => ({ index: line, height: ref.current.offsetHeight }),
+    item: () => ({
+      index: line,
+      height: ref.current.offsetHeight,
+      hasChildren: props.hasChildren,
+      childrenCount: props.childrenCount,
+    }),
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   })
 
