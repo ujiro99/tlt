@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { CSSProperties } from 'react'
 import { useRecoilState } from 'recoil'
 import { ConnectDragPreview } from 'react-dnd'
 import classnames from 'classnames'
@@ -23,6 +23,7 @@ export type TaskCheckBox = {
 type TaskItemProps = {
   checkboxProps: TaskCheckBox
   line: number
+  style?: CSSProperties
 }
 
 type DragProps = {
@@ -98,6 +99,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
   const style = {
     marginLeft: `${task.indent / 4}em`,
+    ...props.style,
   }
 
   return (

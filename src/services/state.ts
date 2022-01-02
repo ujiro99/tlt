@@ -11,6 +11,8 @@ import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 
+import { DragMotionProps } from '@/hooks/useDragMotion'
+
 /**
  * Task text saved in chrome storage.
  */
@@ -23,10 +25,10 @@ export const taskListTextState = atom({
     },
   }),
   effects_UNSTABLE: [
-    ({onSet}) => {
-      onSet(text => {
+    ({ onSet }) => {
+      onSet((text) => {
         void Storage.set(STORAGE_KEY.TASK_LIST_TEXT, text)
-      });
+      })
     },
   ],
 })
@@ -74,7 +76,7 @@ export function TaskTextState(): ITaskListState {
       currentPosition: number,
       newPosition: number,
       count = 1,
-      indent?: number
+      indent?: number,
     ) => {
       if (currentPosition === newPosition) return
 
@@ -90,7 +92,7 @@ export function TaskTextState(): ITaskListState {
       let sliced = lines.slice(currentPosition, currentPosition + count)
       if (indent != null) {
         const indentStr = ''.padStart(indent, ' ')
-        sliced = sliced.map(line => `${indentStr}${line.trimLeft()}`)
+        sliced = sliced.map((line) => `${indentStr}${line.trimLeft()}`)
       }
 
       if (currentPosition < newPosition) {
@@ -170,19 +172,17 @@ export function TaskState(): ITaskState {
 }
 
 export const MOTION_TYPE = {
-  SLIDE: "SLIDE",
-  FADE_IN: "FADE_IN",
-  FIXED: "FIXED",
+  SLIDE: 'SLIDE',
+  FADE_IN: 'FADE_IN',
 } as const
 export type MotionType = typeof MOTION_TYPE[keyof typeof MOTION_TYPE]
 
 export type DragMotionState = {
-  line: number,
-  top: number
-  type: MotionType
+  line: number
+  props: DragMotionProps
 }
 
 export const dragMotionState = atom<DragMotionState[]>({
   key: 'dragMotionState',
-  default: []
+  default: [],
 })

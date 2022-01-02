@@ -7,6 +7,7 @@ import {
   MotionDurationMS,
   useDragMotion,
   useMotionCalculator,
+  DragMotionProps,
 } from '@/hooks/useDragMotion'
 
 import { Task } from '@/models/task'
@@ -17,7 +18,6 @@ import {
   TaskTextState,
   dragMotionState,
   DragMotionState,
-  MotionType,
 } from '@/services/state'
 
 const DnDItems = {
@@ -36,8 +36,8 @@ type Props = {
   line: number
   className: string
   isListTop: boolean
-  top: number
-  motionType: MotionType
+  inList: boolean
+  motionParams: DragMotionProps
   hasChildren: boolean
   childrenCount: number
   children: React.ReactElement | React.ReactElement[]
@@ -48,16 +48,16 @@ export function DraggableListItem(props: Props): JSX.Element {
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
   const [dropToTop, setDropToTop] = useState(false)
-  const setDragMotions = useSetRecoilState<DragMotionState[]>(dragMotionState)
 
-  const motionStyles = useDragMotion({
-    top: props.top,
-    motionType: props.motionType,
-  })
+  const setDragMotions = useSetRecoilState<DragMotionState[]>(dragMotionState)
+  const motionStyles = useDragMotion(props.motionParams, props.hasChildren)
   const calcDragMotions = useMotionCalculator()
 
   const dropAtTopOfList = (monitor: DropTargetMonitor): boolean => {
-    const dropTargetRect = ref.current?.getBoundingClientRect()
+    let dropTargetRect = ref.current?.getBoundingClientRect()
+    if (props.hasChildren) {
+      dropTargetRect = ref.current.children[0].getBoundingClientRect()
+    }
     const dropMiddleY = (dropTargetRect.bottom - dropTargetRect.top) / 2
     const clientOffset = monitor.getClientOffset()
     if (clientOffset == null) return false
@@ -71,22 +71,45 @@ export function DraggableListItem(props: Props): JSX.Element {
     dragIndex: number,
     hoverIndex: number,
   ) => {
+    let dropTargetRect = ref.current.getBoundingClientRect()
+    let marginLeft: string
+    let indent: number
+    if (props.hasChildren) {
+      dropTargetRect = ref.current.children[0].getBoundingClientRect()
+      const dragTask = Task.parse(state.getTextByLine(dragIndex))
+      const task = Task.parse(state.getTextByLine(hoverIndex + 1))
+      const dragIndent = dragTask.indent
+      indent = task.indent
+      marginLeft = `${(indent - dragIndent) / 4}em`
+    }
+    if (props.inList) {
+      const dragTask = Task.parse(state.getTextByLine(dragIndex))
+      const task = Task.parse(state.getTextByLine(hoverIndex))
+      const dragIndent = dragTask.indent
+      indent = task.indent
+      marginLeft = `${(indent - dragIndent) / 4}em`
+    }
     const newMotions = calcDragMotions({
       item,
       monitor,
       dragIndex,
       hoverIndex,
-      dropTargetRect: ref.current?.getBoundingClientRect(),
+      dropTargetRect,
       isListTop: props.isListTop,
       dropAtTopOfList: dropAtTopOfList(monitor),
+      marginLeft,
     })
+    // Start animations.
+    console.log(newMotions)
     setDragMotions(newMotions)
-
+    // Wait animations finished.
     await sleep(MotionDurationMS)
-    const task = Task.parse(state.getTextByLine(hoverIndex + 1))
-    state.moveLines(dragIndex, hoverIndex, item.childrenCount + 1, task.indent)
+
+    // Perform a row move
+    state.moveLines(dragIndex, hoverIndex, item.childrenCount + 1, indent)
     item.index = hoverIndex
-    // finish animations.
+
+    // Reset styles.
     setDragMotions([])
   }
 
@@ -97,6 +120,9 @@ export function DraggableListItem(props: Props): JSX.Element {
     },
     drop(item: DragItem, monitor: DropTargetMonitor) {
       if (!ref.current) {
+        return
+      }
+      if (!monitor.canDrop()) {
         return
       }
       const dragIndex = item.index
@@ -148,6 +174,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     'task-list-item--drag': isDragging,
     'task-list-item--list-top': props.isListTop,
     'task-list-item--drop-top': dropToTop,
+    'task-list-item--parent': props.hasChildren,
   })
 
   const newChildren = Children.map(props.children, (child) => {

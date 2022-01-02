@@ -30,6 +30,8 @@ import { TaskTextarea } from '@/components/taskTextarea'
 import { TaskItem, TaskCheckBox } from '@/components/taskItem'
 import { Menu, MODE, modeState } from '@/components/menu'
 
+import { useDragMotion } from '@/hooks/useDragMotion'
+
 type ErrorFallbackProp = {
   error: Error
 }
@@ -118,14 +120,18 @@ type TransProps = {
 }
 
 const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
+  const line = props.node.position.start.line
+  const inList = props.node.position.start.column > 1
+
   const dragMotions = useRecoilValue(dragMotionState)
+  const dragItem = dragMotions.find((n) => n.line === line)
+  const motionStyles = useDragMotion(dragItem?.props)
 
   if (props.className !== 'task-list-item') {
     return <li className={props.className}>{props.children}</li>
   }
 
   let checkboxProps: TaskCheckBox
-  let line: number
   let subItem: ReactElement
   let subItemCount = 0
   let p: JSX.ElementChildrenAttribute
@@ -133,7 +139,6 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
     switch (child.type) {
       case 'input':
         checkboxProps = child.props as unknown as TaskCheckBox
-        line = props.node.position.start.line
         break
       case TransListContainer:
       case 'ul':
@@ -146,7 +151,6 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
         p = child.props as JSX.ElementChildrenAttribute
         checkboxProps = (p.children as ReactElement[])[0]
           .props as unknown as TaskCheckBox
-        line = props.node.position.start.line
         break
       default:
         break
@@ -157,21 +161,23 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
   const state = TaskTextState()
   const isListTop = !state.isTaskStrByLine(line - 1)
 
-  const dragItem = dragMotions.find((n) => n.line === line)
-
   return (
     <DraggableListItem
       className={props.className}
       line={line}
       isListTop={isListTop}
-      top={dragItem?.top}
-      motionType={dragItem?.type}
+      inList={inList}
+      motionParams={dragItem?.props}
       hasChildren={subItem != null}
       childrenCount={subItemCount}
     >
       {subItem ? (
         <>
-          <TaskItem checkboxProps={checkboxProps} line={line} />
+          <TaskItem
+            checkboxProps={checkboxProps}
+            line={line}
+            style={motionStyles}
+          />
           {subItem}
         </>
       ) : (
@@ -188,9 +194,7 @@ const TransListContainer: React.FC<unknown> = (
   const ref = useRef<HTMLUListElement>(null)
 
   useEffect(() => {
-    void sleep(10).then(() => {
-      setHeight(ref.current?.offsetHeight)
-    })
+    void sleep(10).then(() => setHeight(ref.current?.offsetHeight))
   }, [props.children])
 
   interface Styles {
