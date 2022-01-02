@@ -125,7 +125,7 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
 
   const dragMotions = useRecoilValue(dragMotionState)
   const dragItem = dragMotions.find((n) => n.line === line)
-  const motionStyles = useDragMotion(dragItem?.props)
+  const motionStyles = useDragMotion(dragItem?.props, false, true)
 
   if (props.className !== 'task-list-item') {
     return <li className={props.className}>{props.children}</li>

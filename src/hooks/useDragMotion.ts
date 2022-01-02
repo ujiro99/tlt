@@ -16,7 +16,8 @@ export type DragMotionProps = {
 
 export function useDragMotion(
   props: DragMotionProps,
-  hasChildren?: boolean
+  hasChildren?: boolean,
+  isInner?: boolean
 ): CSSProperties {
   const [motionStyles, setMotionStyles] = useState<CSSProperties>({})
   props = props || { top: null, motionType: null }
@@ -28,6 +29,10 @@ export function useDragMotion(
       return
     }
     if (hasChildren && props.motionType === MOTION_TYPE.SLIDE) {
+      setMotionStyles({})
+      return
+    }
+    if (isInner && props.motionType === MOTION_TYPE.FADE_IN) {
       setMotionStyles({})
       return
     }
@@ -52,7 +57,7 @@ export function useDragMotion(
       }
       setMotionStyles(styles)
     })
-  }, [props.top, props.motionType, props.marginLeft, hasChildren])
+  }, [props.top, props.motionType, props.marginLeft, hasChildren, isInner])
 
   return motionStyles
 }
