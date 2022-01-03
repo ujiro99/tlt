@@ -91,8 +91,13 @@ export function TaskTextState(): ITaskListState {
 
       let sliced = lines.slice(currentPosition, currentPosition + count)
       if (indent != null) {
-        const indentStr = ''.padStart(indent, ' ')
-        sliced = sliced.map((line) => `${indentStr}${line.trimLeft()}`)
+        const topTask = Task.parse(sliced[0])
+        const indentDiff = indent - topTask.indent
+        sliced = sliced.map((line) => {
+          const t = Task.parse(line)
+          t.indent = t.indent + indentDiff
+          return t.toString()
+        })
       }
 
       if (currentPosition < newPosition) {

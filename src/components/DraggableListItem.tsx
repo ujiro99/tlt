@@ -84,16 +84,17 @@ export function DraggableListItem(props: Props): JSX.Element {
     } else {
       const dragTask = Task.parse(state.getTextByLine(dragIndex))
 
-      let dragTarggetIndex = hoverIndex
+      let dragTargetIndex = hoverIndex
       if (props.isListTop && dropAtTopOfList(monitor)) {
-        dragTarggetIndex++
+        dragTargetIndex++
       }
 
-      const task = Task.parse(state.getTextByLine(dragTarggetIndex))
+      const task = Task.parse(state.getTextByLine(dragTargetIndex))
       const dragIndent = dragTask.indent
       indent = task.indent
       marginLeft = `${(indent - dragIndent) / 4}em`
     }
+
     const newMotions = calcDragMotions({
       item,
       monitor,

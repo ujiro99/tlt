@@ -166,4 +166,8 @@ export class Task {
   public get indent(): number {
     return this._indent
   }
+
+  public set indent(indent: number) {
+    this._indent = indent
+  }
 }

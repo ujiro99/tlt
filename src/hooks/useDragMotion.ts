@@ -6,7 +6,7 @@ import { DragMotionState, MOTION_TYPE, MotionType } from '@/services/state'
 
 import { DragItem } from '@/components/DraggableListItem'
 
-export const MotionDurationMS = 5000
+export const MotionDurationMS = 200
 
 export type DragMotionProps = {
   motionType: MotionType
