@@ -71,27 +71,27 @@ export function DraggableListItem(props: Props): JSX.Element {
     dragIndex: number,
     hoverIndex: number,
   ) => {
+    // When dropping on an element with subtasks, calculate motions
+    // based on the size of the element without subtasks.
     let dropTargetRect = ref.current.getBoundingClientRect()
-    let marginLeft: string
-    let indent: number
     if (props.hasChildren) {
       dropTargetRect = ref.current.children[0].getBoundingClientRect()
-      const dragTask = Task.parse(state.getTextByLine(dragIndex))
-      const task = Task.parse(state.getTextByLine(hoverIndex + 1))
-      const dragIndent = dragTask.indent
-      indent = task.indent
-      marginLeft = `${(indent - dragIndent) / 4}em`
-    } else {
-      const dragTask = Task.parse(state.getTextByLine(dragIndex))
+    }
 
-      let dragTargetIndex = hoverIndex
-      if (props.isListTop && dropAtTopOfList(monitor)) {
-        dragTargetIndex++
-      }
+    let dropTargetIndex = hoverIndex
+    if (props.hasChildren) {
+      dropTargetIndex++
+    } else if (props.isListTop && dropAtTopOfList(monitor)) {
+      dropTargetIndex++
+    }
 
-      const task = Task.parse(state.getTextByLine(dragTargetIndex))
-      const dragIndent = dragTask.indent
-      indent = task.indent
+    const dragTask = Task.parse(state.getTextByLine(dragIndex))
+    const dragIndent = dragTask.indent
+    const task = Task.parse(state.getTextByLine(dropTargetIndex))
+    const indent = task.indent
+
+    let marginLeft: string
+    if (indent - dragIndent !== 0) {
       marginLeft = `${(indent - dragIndent) / 4}em`
     }
 
@@ -106,7 +106,6 @@ export function DraggableListItem(props: Props): JSX.Element {
       marginLeft,
     })
     // Start animations.
-    console.log(newMotions)
     setDragMotions(newMotions)
     // Wait animations finished.
     await sleep(MotionDurationMS)
