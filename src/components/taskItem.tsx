@@ -7,6 +7,7 @@ import '@/components/TaskItem.css'
 
 import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
 import Log from '@/services/log'
+import { indentToMargin } from '@/services/util'
 
 import { Task } from '@/models/task'
 
@@ -98,7 +99,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   })
 
   const style = {
-    marginLeft: `${task.indent / 4}em`,
+    marginLeft: indentToMargin(task.indent),
     ...props.style,
   }
 

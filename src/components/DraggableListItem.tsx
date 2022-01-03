@@ -90,11 +90,6 @@ export function DraggableListItem(props: Props): JSX.Element {
     const task = Task.parse(state.getTextByLine(dropTargetIndex))
     const indent = task.indent
 
-    let marginLeft: string
-    if (indent - dragIndent !== 0) {
-      marginLeft = `${(indent - dragIndent) / 4}em`
-    }
-
     const newMotions = calcDragMotions({
       item,
       monitor,
@@ -103,7 +98,7 @@ export function DraggableListItem(props: Props): JSX.Element {
       dropTargetRect,
       isListTop: props.isListTop,
       dropAtTopOfList: dropAtTopOfList(monitor),
-      marginLeft,
+      indent: indent - dragIndent,
     })
     // Start animations.
     setDragMotions(newMotions)

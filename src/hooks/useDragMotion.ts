@@ -1,6 +1,6 @@
 import { useState, useEffect, CSSProperties } from 'react'
 import { DropTargetMonitor } from 'react-dnd'
-import { sleep } from '@/services/util'
+import { sleep, indentToMargin } from '@/services/util'
 
 import { DragMotionState, MOTION_TYPE, MotionType } from '@/services/state'
 
@@ -70,7 +70,7 @@ type useMotionCalcProps = {
   dropTargetRect: DOMRect
   dropAtTopOfList: boolean
   isListTop: boolean
-  marginLeft: string | number
+  indent: number
 }
 
 export function useMotionCalculator(): (
@@ -84,7 +84,7 @@ export function useMotionCalculator(): (
     dropTargetRect,
     dropAtTopOfList,
     isListTop,
-    marginLeft,
+    indent,
   }: useMotionCalcProps) => {
     const newMotions: DragMotionState[] = []
 
@@ -106,7 +106,9 @@ export function useMotionCalculator(): (
       line: dragIndex,
       props: { top: dropY, motionType: MOTION_TYPE.FADE_IN },
     })
-    if (marginLeft !== 0) {
+
+    if (indent !== 0) {
+      const marginLeft = indentToMargin(indent)
       newMotions[newMotions.length - 1].props.marginLeft = marginLeft
     }
 
