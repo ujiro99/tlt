@@ -11,6 +11,8 @@ import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 
+import { DragMotionProps } from '@/hooks/useDragMotion'
+
 /**
  * Task text saved in chrome storage.
  */
@@ -22,42 +24,93 @@ export const taskListTextState = atom({
       return (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as string
     },
   }),
+  effects_UNSTABLE: [
+    ({ onSet }) => {
+      onSet((text) => {
+        void Storage.set(STORAGE_KEY.TASK_LIST_TEXT, text)
+      })
+    },
+  ],
 })
 
 export function TaskTextState(): ITaskListState {
   const [textValue, setTextValue] = useRecoilState(taskListTextState)
 
-  const setText = async (value: string) => {
+  const setText = (value: string) => {
     setTextValue(value)
-    await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, value)
   }
 
   return {
     text: textValue,
-    setText: async (value: string) => {
-      await setText(value)
+    setText: (value: string) => {
+      setText(value)
     },
     getTextByLine: (line: number) => {
-      const lines = textValue.split(/\n/)
       line = line - 1 //  line number starts from 1.
+      const lines = textValue.split(/\n/)
 
       if (lines.length > line) return lines[line]
       Log.e('The specified line does not exist.')
       Log.d(`lines.length: ${lines.length}, line: ${line}`)
       return ''
     },
-    setTextByLine: async (line: number, text: string) => {
-      const lines = textValue.split(/\n/)
+    setTextByLine: (line: number, text: string) => {
       line = line - 1 //  line number starts from 1.
+      const lines = textValue.split(/\n/)
 
       if (lines.length > line) {
         lines[line] = text
         const newText = lines.join('\n')
-        await setText(newText)
+        setText(newText)
       } else {
         Log.e('The specified line does not exist.')
         Log.d(`lines.length: ${lines.length}, line: ${line}`)
       }
+    },
+    isTaskStrByLine: (line: number) => {
+      line = line - 1 //  line number starts from 1.
+      const lines = textValue.split(/\n/)
+      return Task.isTaskStr(lines[line])
+    },
+    moveLines: (
+      currentPosition: number,
+      newPosition: number,
+      count = 1,
+      indent?: number,
+    ) => {
+      if (currentPosition === newPosition) return
+
+      //  line number starts from 1.
+      currentPosition = currentPosition - 1
+      newPosition = newPosition - 1
+
+      const lines = textValue.split(/\n/)
+      if (newPosition > lines.length) {
+        newPosition = lines.length - 1
+      }
+
+      let sliced = lines.slice(currentPosition, currentPosition + count)
+      if (indent != null) {
+        const topTask = Task.parse(sliced[0])
+        const indentDiff = indent - topTask.indent
+        sliced = sliced.map((line) => {
+          const t = Task.parse(line)
+          t.indent = t.indent + indentDiff
+          return t.toString()
+        })
+      }
+
+      if (currentPosition < newPosition) {
+        lines.splice(newPosition + 1, 0, ...sliced) // insert new items
+        lines.splice(currentPosition, count) // remove old items
+      } else {
+        lines.splice(newPosition + 1, 0, ...sliced)
+        lines.splice(currentPosition + count, count)
+      }
+
+      // update state
+      const newText = lines.join('\n')
+      setText(newText)
     },
   }
 }
@@ -122,3 +175,19 @@ export function TaskState(): ITaskState {
     },
   }
 }
+
+export const MOTION_TYPE = {
+  SLIDE: 'SLIDE',
+  FADE_IN: 'FADE_IN',
+} as const
+export type MotionType = typeof MOTION_TYPE[keyof typeof MOTION_TYPE]
+
+export type DragMotionState = {
+  line: number
+  props: DragMotionProps
+}
+
+export const dragMotionState = atom<DragMotionState[]>({
+  key: 'dragMotionState',
+  default: [],
+})

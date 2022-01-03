@@ -30,144 +30,6 @@ h2 {
   fill: currentColor;
 }
 
-.controll-button {
-  @apply text-indigo-300;
-  @apply text-lg;
-  @apply hover:text-indigo-600;
-}
-
-.checkbox {
-  --box-size: 18px;
-
-  position: relative;
-  width: var(--box-size);
-  height: var(--box-size);
-
-  input[type='checkbox'] {
-    position: absolute;
-    visibility: hidden;
-    width: var(--box-size);
-    height: var(--box-size);
-  }
-
-  label {
-    position: relative;
-    display: inline-block;
-    width: var(--box-size);
-    height: var(--box-size);
-    @apply rounded;
-    @apply border;
-    @apply border-gray-300;
-    @apply shadow-sm;
-    @apply hover:border-indigo-300;
-    @apply focus:border-indigo-300;
-    @apply focus:ring;
-    @apply focus:ring-offset-0;
-    @apply focus:ring-indigo-200;
-    @apply focus:ring-opacity-50;
-    @apply ease-out;
-    @apply bg-white;
-    cursor: pointer;
-  }
-
-  input[type='checkbox']:checked + label {
-    @apply bg-indigo-500;
-    animation: scale-up 0.15s ease-out;
-  }
-
-  input[type='checkbox'] + label:before,
-  input[type='checkbox'] + label:after {
-    content: '';
-    width: 0;
-    height: 0;
-    position: absolute;
-    background-color: white;
-
-    @apply rounded;
-  }
-
-  input[type='checkbox']:checked + label:before,
-  input[type='checkbox']:checked + label:after {
-    background-color: white;
-    height: 2px;
-  }
-
-  input[type='checkbox']:checked + label:before {
-    width: 6px;
-    top: 7px;
-    left: 4px;
-    transform: rotate(45deg);
-    transform-origin: 0% 0%;
-    transition: width 50ms ease;
-  }
-
-  input[type='checkbox']:checked + label:after {
-    width: 10px;
-    top: 11px;
-    left: 6px;
-    transform: rotate(305deg);
-    transform-origin: 0% 0%;
-    transition: width 150ms ease 50ms;
-  }
-}
-
-.task-controll {
-  display: none;
-  background: rgb(249, 250, 251);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 40%,
-    rgba(255, 255, 255, 1) 100%
-  );
-  @apply absolute;
-  @apply w-10;
-  @apply h-full;
-  @apply right-0;
-  @apply text-right;
-  @apply pr-1;
-}
-
-.task-item {
-  @apply relative;
-  @apply flex;
-  @apply flex-row;
-  @apply items-center;
-  @apply px-2;
-  @apply py-2;
-  @apply leading-relaxed;
-
-  &--running {
-    animation: bg-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-  }
-}
-
-@keyframes bg-pulse {
-  0%,
-  100% {
-    background-color: rgba(229, 231, 235, 1);
-  }
-  50% {
-    background-color: rgba(229, 231, 235, 0.2);
-  }
-}
-
-.task-item:hover .task-controll {
-  display: flex;
-  align-items: center;
-  justify-content: end;
-}
-
-@keyframes scale-up {
-  0% {
-    transform: scale(0.8);
-  }
-
-  100% {
-    transform: scale(1);
-  }
-}
-
 .task-textarea {
   height: calc(100% - 46px);
   padding-bottom: 10px;
@@ -186,19 +48,10 @@ h2 {
 }
 
 .task-container {
+  @apply relative;
   @apply h-full;
   @apply pb-20;
   @apply overflow-scroll;
-}
-
-.task-list-item + .task-list-item {
-  @apply border-gray-200;
-  @apply border-t;
-}
-
-.task-list-item:first-child {
-  @apply border-gray-200;
-  @apply border-t;
 }
 
 .task-container > div > .contains-task-list {

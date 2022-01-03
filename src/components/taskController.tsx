@@ -7,8 +7,14 @@ type TaskControllerProps = {
 }
 
 export function TaskController(props: TaskControllerProps): JSX.Element {
+
+  // Stop event bubbling to avoid a parent element hide this component.
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation()
+  }
+
   return (
-    <div className="task-controll">
+    <div className="task-controll" onMouseDown={stopPropagation}>
       {!props.isTracking ? (
         <button className="controll-button" onClick={props.onClickStart}>
           <svg className="icon">

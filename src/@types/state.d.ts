@@ -16,9 +16,11 @@ type TimeObject = {
 
 interface ITaskListState {
   text: string
-  setText: (value: string) => Promise<void>
+  setText: (value: string) => void
   getTextByLine: (line: number) => string
-  setTextByLine: (line: number, text: string) => Promise<void>
+  setTextByLine: (line: number, text: string) => void
+  isTaskStrByLine: (line: number) => boolean
+  moveLines: (index: number, insertPosition: number, count?: number, indent?: number) => void
 }
 
 interface ITaskState {

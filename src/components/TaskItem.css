@@ -1,0 +1,66 @@
+.task-item {
+  @apply relative;
+  @apply px-2;
+  @apply py-2;
+  @apply leading-relaxed;
+  @apply flex;
+  @apply flex-row;
+  @apply items-center;
+
+  &__label {
+    @apply flex;
+    @apply flex-row;
+    @apply items-center;
+    width: calc(100% - 2.5rem);
+  }
+
+  &--running {
+    animation: bg-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+@keyframes bg-pulse {
+  0%,
+  100% {
+    background-color: rgba(229, 231, 235, 1);
+  }
+  50% {
+    background-color: rgba(229, 231, 235, 0.2);
+  }
+}
+
+.task-controll {
+  display: none;
+  background: rgb(249, 250, 251);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 40%,
+    rgba(255, 255, 255, 1) 100%
+  );
+
+  @apply absolute;
+  @apply w-10;
+  @apply h-full;
+  @apply top-0;
+  @apply right-0;
+  @apply text-right;
+  @apply pr-1;
+}
+
+.task-item:hover .task-controll {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+}
+
+.task-list-item--mouse-down .task-item:hover .task-controll,
+.task-list-item--hover .task-item:hover .task-controll {
+  display: none;
+}
+
+.controll-button {
+  @apply text-indigo-300;
+  @apply text-lg;
+  @apply hover:text-indigo-600;
+}

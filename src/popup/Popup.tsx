@@ -1,4 +1,10 @@
-import React, { useEffect, createElement, ReactElement } from 'react'
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  createElement,
+  ReactElement,
+} from 'react'
 import { RecoilRoot, selector, useRecoilValue } from 'recoil'
 import { ErrorBoundary } from 'react-error-boundary'
 import type { Position } from 'unist'
@@ -8,12 +14,23 @@ import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
 import rehypeReact from 'rehype-react'
 
-import { taskListTextState } from '@/services/state'
-import Log from '@/services/log'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
 
+import {
+  taskListTextState,
+  TaskTextState,
+  dragMotionState,
+} from '@/services/state'
+import Log from '@/services/log'
+import { sleep } from '@/services/util'
+
+import { DraggableListItem } from '@/components/DraggableListItem'
 import { TaskTextarea } from '@/components/taskTextarea'
 import { TaskItem, TaskCheckBox } from '@/components/taskItem'
 import { Menu, MODE, modeState } from '@/components/menu'
+
+import { useDragMotion } from '@/hooks/useDragMotion'
 
 type ErrorFallbackProp = {
   error: Error
@@ -56,7 +73,11 @@ function TaskList() {
 }
 
 function MarkdownHtml() {
-  return <div className="task-container">{useRecoilValue(markedHtmlState)}</div>
+  return (
+    <DndProvider debugMode={true} backend={HTML5Backend}>
+      <div className="task-container">{useRecoilValue(markedHtmlState)}</div>
+    </DndProvider>
+  )
 }
 
 const markedHtmlState = selector({
@@ -77,7 +98,8 @@ function convertMarkdownToHtml(text: string): JSX.Element {
       createElement: createElement,
       passNode: true,
       components: {
-        li: transListItem,
+        ul: TransListContainer,
+        li: TransListItem,
       },
     })
     .processSync(text).result
@@ -91,47 +113,104 @@ type Node = {
   type: string
 }
 
-type TransListItemProps = {
+type TransProps = {
   children: ReactElement[]
   className: string
   node: Node
 }
 
-function transListItem(_props: unknown) {
-  const props = _props as TransListItemProps
+const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
+  const line = props.node.position.start.line
+  const inList = props.node.position.start.column > 1
+
+  const dragMotions = useRecoilValue(dragMotionState)
+  const dragItem = dragMotions.find((n) => n.line === line)
+  const motionStyles = useDragMotion(dragItem?.props, false, true)
 
   if (props.className !== 'task-list-item') {
     return <li className={props.className}>{props.children}</li>
   }
 
   let checkboxProps: TaskCheckBox
-  let line: number
   let subItem: ReactElement
+  let subItemCount = 0
   let p: JSX.ElementChildrenAttribute
   for (const child of props.children) {
     switch (child.type) {
       case 'input':
         checkboxProps = child.props as unknown as TaskCheckBox
-        line = props.node.position.start.line
         break
+      case TransListContainer:
       case 'ul':
         subItem = child
+        subItemCount = child.props.children.filter(
+          (n) => n.props?.className === 'task-list-item',
+        ).length
         break
       case 'p':
         p = child.props as JSX.ElementChildrenAttribute
         checkboxProps = (p.children as ReactElement[])[0]
           .props as unknown as TaskCheckBox
-        line = props.node.position.start.line
         break
       default:
         break
     }
   }
 
+  // Checks whether it is at the top of the list
+  const state = TaskTextState()
+  const isListTop = !state.isTaskStrByLine(line - 1)
+
   return (
-    <li className={props.className}>
-      <TaskItem checkboxProps={checkboxProps} line={line} />
-      {subItem == null ? <></> : <div>{subItem}</div>}
-    </li>
+    <DraggableListItem
+      className={props.className}
+      line={line}
+      isListTop={isListTop}
+      inList={inList}
+      motionParams={dragItem?.props}
+      hasChildren={subItem != null}
+      childrenCount={subItemCount}
+    >
+      {subItem ? (
+        <>
+          <TaskItem
+            checkboxProps={checkboxProps}
+            line={line}
+            style={motionStyles}
+          />
+          {subItem}
+        </>
+      ) : (
+        <TaskItem checkboxProps={checkboxProps} line={line} />
+      )}
+    </DraggableListItem>
+  )
+}
+
+const TransListContainer: React.FC<unknown> = (
+  props: TransProps,
+): JSX.Element => {
+  const [height, setHeight] = useState<number>()
+  const ref = useRef<HTMLUListElement>(null)
+
+  useEffect(() => {
+    void sleep(1)
+      .then(() => setHeight(0))
+      .then(() => setHeight(ref.current?.scrollHeight))
+  }, [props.children])
+
+  interface Styles {
+    height?: number
+  }
+
+  const styles: Styles = {}
+  if (height > 0) {
+    styles.height = height
+  }
+
+  return (
+    <ul ref={ref} style={styles} className={props.className}>
+      {props.children}
+    </ul>
   )
 }

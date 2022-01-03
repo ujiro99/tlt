@@ -1,0 +1,37 @@
+.task-list-item {
+  $this: &;
+
+  position: relative;
+  width: 100%;
+  top: 0;
+
+  & + &,
+  &:first-child {
+    @apply border-t;
+    @apply border-gray-200;
+  }
+
+  &--drag {
+    opacity: 0.5;
+  }
+
+  $(this)--drop-hover:not($(this)--parent)::after,
+  $(this)--drop-hover$(this)--parent > .task-item::after {
+    content: '';
+    position: absolute;
+    padding-bottom: 3px;
+    box-shadow: 0 2px 3px rgb(165, 180, 252);
+    /* fullwidth */
+    width: 100vw;
+    bottom: 0px;
+    left: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+  }
+
+  $(this)--drop-hover:not($(this)--parent)$(this)--drop-top::after,
+  $(this)--drop-hover$(this)--parent$(this)--drop-top > .task-item::after {
+    top: -3px;
+    bottom: auto;
+  }
+}
