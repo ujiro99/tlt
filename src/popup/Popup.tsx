@@ -194,7 +194,10 @@ const TransListContainer: React.FC<unknown> = (
   const ref = useRef<HTMLUListElement>(null)
 
   useEffect(() => {
-    void sleep(10).then(() => setHeight(ref.current?.offsetHeight))
+    void sleep(10).then(() => {
+      console.log(ref.current?.scrollHeight)
+      setHeight(ref.current?.scrollHeight)
+    })
   }, [props.children])
 
   interface Styles {

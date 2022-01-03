@@ -81,10 +81,15 @@ export function DraggableListItem(props: Props): JSX.Element {
       const dragIndent = dragTask.indent
       indent = task.indent
       marginLeft = `${(indent - dragIndent) / 4}em`
-    }
-    if (props.inList) {
+    } else {
       const dragTask = Task.parse(state.getTextByLine(dragIndex))
-      const task = Task.parse(state.getTextByLine(hoverIndex))
+
+      let dragTarggetIndex = hoverIndex
+      if (props.isListTop && dropAtTopOfList(monitor)) {
+        dragTarggetIndex++
+      }
+
+      const task = Task.parse(state.getTextByLine(dragTarggetIndex))
       const dragIndent = dragTask.indent
       indent = task.indent
       marginLeft = `${(indent - dragIndent) / 4}em`
