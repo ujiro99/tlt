@@ -48,7 +48,6 @@ export function DraggableListItem(props: Props): JSX.Element {
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
   const [dropToTop, setDropToTop] = useState(false)
-
   const setDragMotions = useSetRecoilState<DragMotionState[]>(dragMotionState)
   const motionStyles = useDragMotion(props.motionParams, props.hasChildren)
   const calcDragMotions = useMotionCalculator()
@@ -116,7 +115,10 @@ export function DraggableListItem(props: Props): JSX.Element {
   const [{ handlerId, isOver }, drop] = useDrop({
     accept: DnDItems.Task,
     collect(monitor) {
-      return { handlerId: monitor.getHandlerId(), isOver: monitor.isOver() }
+      return {
+        handlerId: monitor.getHandlerId(),
+        isOver: monitor.isOver({ shallow: true }),
+      }
     },
     drop(item: DragItem, monitor: DropTargetMonitor) {
       if (!ref.current) {
@@ -170,8 +172,8 @@ export function DraggableListItem(props: Props): JSX.Element {
   drag(drop(ref))
 
   const className = classnames(props.className, {
-    'task-list-item--hover': isOver,
     'task-list-item--drag': isDragging,
+    'task-list-item--drop-hover': isOver,
     'task-list-item--list-top': props.isListTop,
     'task-list-item--drop-top': dropToTop,
     'task-list-item--parent': props.hasChildren,

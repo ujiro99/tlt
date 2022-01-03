@@ -15,17 +15,22 @@
     opacity: 0.5;
   }
 
-  &--hover:not($(this)--parent)::after,
-  $(this)--parent$(this)--hover > .task-item::after {
+  $(this)--drop-hover:not($(this)--parent)::after,
+  $(this)--drop-hover$(this)--parent > .task-item::after {
     content: '';
     position: absolute;
-    width: 100%;
-    bottom: 0px;
     padding-bottom: 3px;
     box-shadow: 0 2px 3px rgb(165, 180, 252);
+    /* fullwidth */
+    width: 100vw;
+    bottom: 0px;
+    left: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
   }
 
-  &--hover.task-list-item--drop-top::after {
+  $(this)--drop-hover:not($(this)--parent)$(this)--drop-top::after,
+  $(this)--drop-hover$(this)--parent$(this)--drop-top > .task-item::after {
     top: -3px;
     bottom: auto;
   }
