@@ -142,6 +142,14 @@ export function DraggableListItem(props: Props): JSX.Element {
       if (dragIndex - 1 === hoverIndex) {
         return
       }
+      // Don't drop in subtasks.
+      if (
+        item.hasChildren &&
+        dragIndex < hoverIndex &&
+        dragIndex + item.childrenCount >= hoverIndex
+      ) {
+        return
+      }
 
       void execDrop(item, monitor, dragIndex, hoverIndex)
     },
