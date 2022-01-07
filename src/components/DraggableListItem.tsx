@@ -100,7 +100,6 @@ export function DraggableListItem(props: Props): JSX.Element {
       indent: indent - dragIndent,
     })
     // Start animations.
-    console.log(newMotions)
     setDragMotions(newMotions)
     // Wait animations finished.
     await sleep(MotionDurationMS)

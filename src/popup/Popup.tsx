@@ -193,8 +193,6 @@ const TransHeading: React.FC<unknown> = (props: TransProps): JSX.Element => {
   const motionStyles = useDragMotion(dragItem?.props)
 
   const TagName = props.node.tagName as keyof JSX.IntrinsicElements
-  console.log(props.node.tagName)
-  console.log(motionStyles)
 
   return (
     <TagName style={motionStyles} className={props.className}>
