@@ -1,6 +1,4 @@
 import React, {
-  useState,
-  useRef,
   useEffect,
   createElement,
   ReactElement,
@@ -23,7 +21,6 @@ import {
   dragMotionState,
 } from '@/services/state'
 import Log from '@/services/log'
-import { sleep } from '@/services/util'
 
 import { DraggableListItem } from '@/components/DraggableListItem'
 import { TaskTextarea } from '@/components/taskTextarea'
@@ -98,7 +95,6 @@ function convertMarkdownToHtml(text: string): JSX.Element {
       createElement: createElement,
       passNode: true,
       components: {
-        ul: TransListContainer,
         li: TransListItem,
         h1: TransHeading,
         h2: TransHeading,
@@ -144,7 +140,6 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
       case 'input':
         checkboxProps = child.props as unknown as TaskCheckBox
         break
-      case TransListContainer:
       case 'ul':
         subItem = child
         subItemCount = child.props.children.filter(
@@ -188,34 +183,6 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
         <TaskItem checkboxProps={checkboxProps} line={line} />
       )}
     </DraggableListItem>
-  )
-}
-
-const TransListContainer: React.FC<unknown> = (
-  props: TransProps,
-): JSX.Element => {
-  const [height, setHeight] = useState<number>()
-  const ref = useRef<HTMLUListElement>(null)
-
-  useEffect(() => {
-    void sleep(1)
-      .then(() => setHeight(0))
-      .then(() => setHeight(ref.current?.scrollHeight))
-  }, [props.children])
-
-  interface Styles {
-    height?: number
-  }
-
-  const styles: Styles = {}
-  if (height > 0) {
-    styles.height = height
-  }
-
-  return (
-    <ul ref={ref} style={styles} className={props.className}>
-      {props.children}
-    </ul>
   )
 }
 
