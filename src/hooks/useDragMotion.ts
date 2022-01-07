@@ -17,7 +17,7 @@ export type DragMotionProps = {
 export function useDragMotion(
   props: DragMotionProps,
   hasChildren?: boolean,
-  isInner?: boolean
+  isInner?: boolean,
 ): CSSProperties {
   const [motionStyles, setMotionStyles] = useState<CSSProperties>({})
   props = props || { top: null, motionType: null }
@@ -88,13 +88,18 @@ export function useMotionCalculator(): (
   }: useMotionCalcProps) => {
     const newMotions: DragMotionState[] = []
 
+    //
     // Element dragged
+    //
     const dragItemHeight = item.height
     const dragItemTop = monitor.getInitialSourceClientOffset()?.y
     let dropY: number
     if (dragIndex < hoverIndex) {
       // drog to down
       dropY = dropTargetRect.bottom - (dragItemTop + dragItemHeight)
+      if (isListTop && dropAtTopOfList) {
+        dropY = dropTargetRect.top - (dragItemTop + dragItemHeight)
+      }
     } else {
       // drog to up
       dropY = dropTargetRect.bottom - dragItemTop
@@ -106,13 +111,15 @@ export function useMotionCalculator(): (
       line: dragIndex,
       props: { top: dropY, motionType: MOTION_TYPE.FADE_IN },
     })
-
+    // Calculate margin-left when dropped to subtasks.
     if (indent !== 0) {
       const marginLeft = indentToMargin(indent)
       newMotions[newMotions.length - 1].props.marginLeft = marginLeft
     }
 
+    //
     // Elements between drag and drop
+    //
     if (dragIndex < hoverIndex) {
       // drog to down
       for (let i = dragIndex + 1 + item.childrenCount; i <= hoverIndex; i++) {

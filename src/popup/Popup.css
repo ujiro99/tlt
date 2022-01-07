@@ -3,12 +3,27 @@ body {
 }
 
 h1,
-h2 {
+h2,
+h3,
+h4 {
   @apply font-bold;
+  @apply relative;
+}
+
+h1,
+h2 {
   @apply text-base;
   @apply text-gray-700;
   @apply pt-4;
   @apply pb-3;
+}
+
+h3,
+h4 {
+  @apply text-sm;
+  @apply text-gray-600;
+  @apply pt-2;
+  @apply pb-2;
 }
 
 #popup {
