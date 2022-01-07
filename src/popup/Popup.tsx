@@ -100,6 +100,10 @@ function convertMarkdownToHtml(text: string): JSX.Element {
       components: {
         ul: TransListContainer,
         li: TransListItem,
+        h1: TransHeading,
+        h2: TransHeading,
+        h3: TransHeading,
+        h4: TransHeading
       },
     })
     .processSync(text).result
@@ -212,5 +216,22 @@ const TransListContainer: React.FC<unknown> = (
     <ul ref={ref} style={styles} className={props.className}>
       {props.children}
     </ul>
+  )
+}
+
+const TransHeading: React.FC<unknown> = (props: TransProps): JSX.Element => {
+  const line = props.node.position.start.line
+  const dragMotions = useRecoilValue(dragMotionState)
+  const dragItem = dragMotions.find((n) => n.line === line)
+  const motionStyles = useDragMotion(dragItem?.props)
+
+  const TagName = props.node.tagName as keyof JSX.IntrinsicElements
+  console.log(props.node.tagName)
+  console.log(motionStyles)
+
+  return (
+    <TagName style={motionStyles} className={props.className}>
+      {props.children}
+    </TagName>
   )
 }
