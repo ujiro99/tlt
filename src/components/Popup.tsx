@@ -29,6 +29,8 @@ import { Menu, MODE, modeState } from '@/components/Menu'
 
 import { useDragMotion } from '@/hooks/useDragMotion'
 
+import '@/components/Popup.css'
+
 type ErrorFallbackProp = {
   error: Error
 }
@@ -142,7 +144,8 @@ const TransListItem: React.FC<unknown> = (props: TransProps): JSX.Element => {
         break
       case 'ul':
         subItem = child
-        subItemCount = child.props.children.filter(
+        p = child.props as JSX.ElementChildrenAttribute
+        subItemCount = (p.children as ReactElement<TransProps>[]).filter(
           (n) => n.props?.className === 'task-list-item',
         ).length
         break
