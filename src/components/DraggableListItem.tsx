@@ -17,7 +17,7 @@ import '@/components/DraggableListItem.css'
 import {
   TaskTextState,
   dragMotionState,
-  DragMotionState,
+  DragMotionState
 } from '@/services/state'
 
 const DnDItems = {

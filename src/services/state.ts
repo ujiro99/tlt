@@ -16,7 +16,7 @@ import { DragMotionProps } from '@/hooks/useDragMotion'
 /**
  * Task text saved in chrome storage.
  */
-export const taskListTextState = atom({
+const taskListTextState = atom({
   key: 'taskListTextState',
   default: selector({
     key: 'savedTaskListTextState',
@@ -35,9 +35,33 @@ export const taskListTextState = atom({
 
 export function TaskTextState(): ITaskListState {
   const [textValue, setTextValue] = useRecoilState(taskListTextState)
+  const [trackings, setTrackings] = useRecoilState(trackingStateList)
 
   const setText = (value: string) => {
     setTextValue(value)
+  }
+
+  /**
+   * Update the line information in the tracking status according to the line movement.
+   */
+  function updateTrackingStatePosition(from: number, dest: number) {
+    const newTracking = trackings.map((n) => {
+      if (n.line === from) {
+        let newLine = dest
+        if (from > dest) {
+          newLine++
+        }
+        return { ...n, line: newLine }
+      } else if (from < n.line && n.line <= dest) {
+        // When drag and drop to down, move elements in between up.
+        return { ...n, line: n.line - 1 }
+      } else if (from > n.line && n.line >= dest) {
+        // When drag and drop to up, move elements in between down.
+        return { ...n, line: n.line + 1 }
+      }
+      return n
+    })
+    setTrackings(newTracking)
   }
 
   return {
@@ -80,7 +104,10 @@ export function TaskTextState(): ITaskListState {
     ) => {
       if (currentPosition === newPosition) return
 
-      //  line number starts from 1.
+      // Update tracking state.
+      updateTrackingStatePosition(currentPosition, newPosition)
+
+      // line number starts from 1.
       currentPosition = currentPosition - 1
       newPosition = newPosition - 1
 
@@ -115,7 +142,7 @@ export function TaskTextState(): ITaskListState {
   }
 }
 
-export const trackingStateList = atom({
+export const trackingStateList = atom<TrackingState[]>({
   key: 'trackingStateList',
   default: selector({
     key: 'savedTrackingStateList',
