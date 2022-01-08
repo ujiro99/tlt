@@ -6,7 +6,8 @@ import Log from '@/services/log'
 import { sleep, indentToMargin } from '@/services/util'
 import { DragItem } from '@/components/DraggableListItem'
 
-export const MotionDurationMS = 200
+const MotionDurationMS = 250
+const MotionEase = "cubic-bezier(0.0, 0.0, 0.2, 1)"
 
 const MOTION_TYPE = {
   SLIDE: 'SLIDE',
@@ -67,9 +68,9 @@ export function useDragMotion(
       // enter animateion
       const styles: CSSProperties = { top: props.top }
       if (props.motionType === MOTION_TYPE.SLIDE) {
-        styles.transition = `top ${MotionDurationMS}ms ease-out`
+        styles.transition = `top ${MotionDurationMS}ms ${MotionEase}`
       } else if (props.motionType === MOTION_TYPE.FADE_IN) {
-        styles.transition = `opacity ${MotionDurationMS}ms ease-out`
+        styles.transition = `opacity ${MotionDurationMS}ms ${MotionEase}`
         styles.opacity = 1
       }
       if (props.marginLeft) {
@@ -168,7 +169,7 @@ export function useMotionExecuter(): (args: useMotionProps) => Promise<void> {
     Log.v('start animations')
     setDragMotions(newMotions)
     // Wait animations finished.
-    await sleep(MotionDurationMS)
+    await sleep(MotionDurationMS + 100)
     // Reset styles.
     setDragMotions([])
     Log.v('finish animations')
