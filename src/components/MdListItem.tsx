@@ -1,9 +1,8 @@
 import React, { ReactElement } from 'react'
-import { useRecoilValue } from 'recoil'
 
 import { DraggableListItem } from '@/components/DraggableListItem'
 import { TaskItem, TaskCheckBox } from '@/components/TaskItem'
-import { TaskTextState, dragMotionState } from '@/services/state'
+import { TaskTextState } from '@/services/state'
 import { useDragMotion } from '@/hooks/useDragMotion'
 import { TransProps } from 'popup'
 
@@ -12,10 +11,7 @@ export const MdListItem: React.FC<unknown> = (
 ): JSX.Element => {
   const line = props.node.position.start.line
   const inList = props.node.position.start.column > 1
-
-  const dragMotions = useRecoilValue(dragMotionState)
-  const dragItem = dragMotions.find((n) => n.line === line)
-  const motionStyles = useDragMotion(dragItem?.props, false, true)
+  const motionStyles = useDragMotion(line, false, true)
 
   if (props.className !== 'task-list-item') {
     return <li className={props.className}>{props.children}</li>
@@ -57,7 +53,6 @@ export const MdListItem: React.FC<unknown> = (
       line={line}
       isListTop={isListTop}
       inList={inList}
-      motionParams={dragItem?.props}
       hasChildren={subItem != null}
       childrenCount={subItemCount}
     >

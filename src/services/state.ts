@@ -11,8 +11,6 @@ import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 
-import { DragMotionProps } from '@/hooks/useDragMotion'
-
 /**
  * Task text saved in chrome storage.
  */
@@ -202,19 +200,3 @@ export function TaskState(): ITaskState {
     },
   }
 }
-
-export const MOTION_TYPE = {
-  SLIDE: 'SLIDE',
-  FADE_IN: 'FADE_IN',
-} as const
-export type MotionType = typeof MOTION_TYPE[keyof typeof MOTION_TYPE]
-
-export type DragMotionState = {
-  line: number
-  props: DragMotionProps
-}
-
-export const dragMotionState = atom<DragMotionState[]>({
-  key: 'dragMotionState',
-  default: [],
-})
