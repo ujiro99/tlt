@@ -11,9 +11,9 @@ import { indentToMargin } from '@/services/util'
 
 import { Task } from '@/models/task'
 
-import { Counter, CounterStopped } from '@/components/counter'
-import { Checkbox } from '@/components/checkbox'
-import { TaskController } from '@/components/taskController'
+import { Counter, CounterStopped } from '@/components/Counter'
+import { Checkbox } from '@/components/Checkbox'
+import { TaskController } from '@/components/TaskController'
 
 export type TaskCheckBox = {
   type: string

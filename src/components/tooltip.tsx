@@ -2,7 +2,7 @@ import React from 'react'
 import classnames from 'classnames'
 import { CSSTransition } from 'react-transition-group'
 
-import '@/components/tooltip.css'
+import '@/components/Tooltip.css'
 import '@/components/fadeIn.css'
 
 const TOOLTIP_POSITION = {

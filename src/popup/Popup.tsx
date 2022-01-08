@@ -23,9 +23,9 @@ import {
 import Log from '@/services/log'
 
 import { DraggableListItem } from '@/components/DraggableListItem'
-import { TaskTextarea } from '@/components/taskTextarea'
-import { TaskItem, TaskCheckBox } from '@/components/taskItem'
-import { Menu, MODE, modeState } from '@/components/menu'
+import { TaskTextarea } from '@/components/TaskTextarea'
+import { TaskItem, TaskCheckBox } from '@/components/TaskItem'
+import { Menu, MODE, modeState } from '@/components/Menu'
 
 import { useDragMotion } from '@/hooks/useDragMotion'
 
