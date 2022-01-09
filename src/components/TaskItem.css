@@ -3,9 +3,11 @@
   @apply px-2;
   @apply py-2;
   @apply leading-relaxed;
+  @apply min-h-[40px];
   @apply flex;
   @apply flex-row;
   @apply items-center;
+  @apply focus:bg-indigo-50;
 
   &__label {
     @apply flex;
@@ -60,6 +62,7 @@
 }
 
 .controll-button {
+  @apply flex;
   @apply text-indigo-300;
   @apply text-lg;
   @apply hover:text-indigo-600;

@@ -1,8 +1,8 @@
 import React from 'react'
 
 type TaskControllerProps = {
-  onClickStart: () => void
-  onClickStop: () => void
+  onClickStart: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onClickStop: (e: React.MouseEvent<HTMLButtonElement>) => void
   isTracking: boolean
 }
 

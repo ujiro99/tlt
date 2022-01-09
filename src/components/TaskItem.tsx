@@ -3,17 +3,17 @@ import { useRecoilState } from 'recoil'
 import { ConnectDragPreview } from 'react-dnd'
 import classnames from 'classnames'
 
-import '@/components/TaskItem.css'
-
 import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
 import Log from '@/services/log'
 import { indentToMargin } from '@/services/util'
-
+import { useEditable } from '@/hooks/useEditable'
 import { Task } from '@/models/task'
-
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
 import { TaskController } from '@/components/TaskController'
+import { LineEditor } from '@/components/LineEditor'
+
+import '@/components/TaskItem.css'
 
 export type TaskCheckBox = {
   type: string
@@ -39,6 +39,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const state = TaskTextState()
   const taskState = TaskState()
   const [trackings, setTrackings] = useRecoilState(trackingStateList)
+  const [isEditing, focusOrEdit] = useEditable(line)
   const tracking = trackings.find((n) => n.line === line)
   const task = Task.parse(state.getTextByLine(line))
   const id = `check-${task.id}`
@@ -46,7 +47,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isTracking()) {
       // If task has been tracking, stop automatically.
-      stopTracking()
+      stopTracking(e)
     }
 
     const checked = e.target.checked
@@ -55,7 +56,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     void state.setTextByLine(line, task.toString())
   }
 
-  const startTracking = () => {
+  const startTracking = (e: React.MouseEvent<HTMLButtonElement>) => {
     // stop previous task.
     taskState.stopAllTracking()
 
@@ -72,9 +73,11 @@ export const TaskItem: React.FC<TaskItemProps> = (
       command: 'startTracking',
       param: task.actualTimes.minutes,
     })
+
+    e.stopPropagation()
   }
 
-  const stopTracking = () => {
+  const stopTracking = (e: React.MouseEvent<HTMLButtonElement>|React.ChangeEvent<HTMLInputElement>) => {
     if (isTracking()) {
       chrome.runtime.sendMessage({ command: 'stopTracking' })
       const newTrackings = trackings.filter((n) => n.line !== line)
@@ -84,6 +87,12 @@ export const TaskItem: React.FC<TaskItemProps> = (
       task.trackingStop(tracking.trackingStartTime)
       void state.setTextByLine(line, task.toString())
     }
+
+    e.stopPropagation()
+  }
+
+  const onClick = () => {
+    focusOrEdit()
   }
 
   const isTracking = () => {
@@ -103,8 +112,12 @@ export const TaskItem: React.FC<TaskItemProps> = (
     ...props.style,
   }
 
+  if (isEditing) {
+    return <LineEditor line={line} />
+  }
+
   return (
-    <div className={taskItemClass} style={style} data-line={line}>
+    <div tabIndex={0} className={taskItemClass} style={style} data-line={line} onClick={onClick}>
       <div className="task-item__label" ref={props.preview}>
         <Checkbox
           id={id}
