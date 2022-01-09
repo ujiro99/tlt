@@ -11,12 +11,10 @@ import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 
-import { DragMotionProps } from '@/hooks/useDragMotion'
-
 /**
  * Task text saved in chrome storage.
  */
-export const taskListTextState = atom({
+const taskListTextState = atom({
   key: 'taskListTextState',
   default: selector({
     key: 'savedTaskListTextState',
@@ -35,9 +33,46 @@ export const taskListTextState = atom({
 
 export function TaskTextState(): ITaskListState {
   const [textValue, setTextValue] = useRecoilState(taskListTextState)
+  const [trackings, setTrackings] = useRecoilState(trackingStateList)
 
   const setText = (value: string) => {
     setTextValue(value)
+  }
+
+  /**
+   * Update the line information in the tracking status according to the line movement.
+   */
+  function updateTrackingStatePosition(
+    from: number,
+    dest: number,
+    count: number,
+  ) {
+    const newTracking = trackings.map((n) => {
+      if (n.line === from) {
+        let newLine = dest
+        if (from > dest) {
+          newLine++
+        }
+        return { ...n, line: newLine }
+      } else if (count > 1 && from < n.line && n.line <= from + count) {
+        // elements in subtasks
+        let diff: number
+        if (from > dest) {
+          diff = dest - from + 1
+        } else {
+          diff = dest - from - count + 1
+        }
+        return { ...n, line: n.line + diff }
+      } else if (from < n.line && n.line <= dest) {
+        // When drag and drop to down, elements in between be moved up.
+        return { ...n, line: n.line - 1 }
+      } else if (from > n.line && n.line >= dest) {
+        // When drag and drop to up, elements in between be moved down.
+        return { ...n, line: n.line + 1 }
+      }
+      return n
+    })
+    setTrackings(newTracking)
   }
 
   return {
@@ -80,7 +115,10 @@ export function TaskTextState(): ITaskListState {
     ) => {
       if (currentPosition === newPosition) return
 
-      //  line number starts from 1.
+      // Update tracking state.
+      updateTrackingStatePosition(currentPosition, newPosition, count)
+
+      // line number starts from 1.
       currentPosition = currentPosition - 1
       newPosition = newPosition - 1
 
@@ -115,7 +153,7 @@ export function TaskTextState(): ITaskListState {
   }
 }
 
-export const trackingStateList = atom({
+export const trackingStateList = atom<TrackingState[]>({
   key: 'trackingStateList',
   default: selector({
     key: 'savedTrackingStateList',
@@ -176,18 +214,8 @@ export function TaskState(): ITaskState {
   }
 }
 
-export const MOTION_TYPE = {
-  SLIDE: 'SLIDE',
-  FADE_IN: 'FADE_IN',
-} as const
-export type MotionType = typeof MOTION_TYPE[keyof typeof MOTION_TYPE]
-
-export type DragMotionState = {
-  line: number
-  props: DragMotionProps
+export function clearStorage(): void {
+  for (const key in STORAGE_KEY) {
+    void Storage.set(STORAGE_KEY[key], null)
+  }
 }
-
-export const dragMotionState = atom<DragMotionState[]>({
-  key: 'dragMotionState',
-  default: [],
-})

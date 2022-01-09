@@ -5,7 +5,7 @@ const StylelintPlugin = require('stylelint-webpack-plugin')
 
 module.exports = {
   entry: {
-    'dist/js/popup': path.join(__dirname, 'src/popup/index.tsx'),
+    'dist/js/popup': path.join(__dirname, 'src/index.tsx'),
     'dist/eventPage': path.join(__dirname, 'src/eventPage.ts'),
   },
   output: {

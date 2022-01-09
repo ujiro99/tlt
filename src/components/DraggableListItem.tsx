@@ -1,24 +1,12 @@
 import React, { Children, useRef, useState, cloneElement } from 'react'
-import { useSetRecoilState } from 'recoil'
 import classnames from 'classnames'
 import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd'
-import { sleep } from '@/services/util'
-import {
-  MotionDurationMS,
-  useDragMotion,
-  useMotionCalculator,
-  DragMotionProps,
-} from '@/hooks/useDragMotion'
 
+import { useDragMotion, useMotionExecuter } from '@/hooks/useDragMotion'
 import { Task } from '@/models/task'
+import { TaskTextState } from '@/services/state'
 
 import '@/components/DraggableListItem.css'
-
-import {
-  TaskTextState,
-  dragMotionState,
-  DragMotionState,
-} from '@/services/state'
 
 const DnDItems = {
   Task: 'Task',
@@ -37,7 +25,6 @@ type Props = {
   className: string
   isListTop: boolean
   inList: boolean
-  motionParams: DragMotionProps
   hasChildren: boolean
   childrenCount: number
   children: React.ReactElement | React.ReactElement[]
@@ -48,9 +35,8 @@ export function DraggableListItem(props: Props): JSX.Element {
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
   const [dropToTop, setDropToTop] = useState(false)
-  const setDragMotions = useSetRecoilState<DragMotionState[]>(dragMotionState)
-  const motionStyles = useDragMotion(props.motionParams, props.hasChildren)
-  const calcDragMotions = useMotionCalculator()
+  const motionStyles = useDragMotion(line, props.hasChildren)
+  const execDragMotions = useMotionExecuter()
 
   const dropAtTopOfList = (monitor: DropTargetMonitor): boolean => {
     let dropTargetRect = ref.current?.getBoundingClientRect()
@@ -89,7 +75,8 @@ export function DraggableListItem(props: Props): JSX.Element {
     const task = Task.parse(state.getTextByLine(dropTargetIndex))
     const indent = task.indent
 
-    const newMotions = calcDragMotions({
+    // Start animations.
+    await execDragMotions({
       item,
       monitor,
       dragIndex,
@@ -99,17 +86,10 @@ export function DraggableListItem(props: Props): JSX.Element {
       dropAtTopOfList: dropAtTopOfList(monitor),
       indent: indent - dragIndent,
     })
-    // Start animations.
-    setDragMotions(newMotions)
-    // Wait animations finished.
-    await sleep(MotionDurationMS)
 
     // Perform a row move
     state.moveLines(dragIndex, hoverIndex, item.childrenCount + 1, indent)
     item.index = hoverIndex
-
-    // Reset styles.
-    setDragMotions([])
   }
 
   const [{ handlerId, isOver }, drop] = useDrop({

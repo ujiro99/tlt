@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 
 import { Time } from '@/models/time'
 
-import '@/components/counter.css'
+import '@/components/Counter.css'
 
 type CounterProps = {
   startTime: Time

@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { atom, useRecoilState } from 'recoil'
 
-import { Tooltip } from '@/components/tooltip'
+import { Tooltip } from '@/components/Tooltip'
 
-import { TaskTextState, TaskState } from '@/services/state'
+import { TaskTextState, TaskState, clearStorage } from '@/services/state'
 import { sleep } from '@/services/util'
 
 export const MODE = {
@@ -19,6 +19,31 @@ export const modeState = atom<MenuMode>({
   key: 'modeState',
   default: MODE.SHOW,
 })
+
+function Clear(): JSX.Element {
+  const [tooltipVisible, setTooltipVisible] = useState(false)
+
+  const copyMarkdown = async () => {
+    chrome.runtime.sendMessage({ command: 'stopTracking' })
+    clearStorage()
+    await sleep(100)
+    setTooltipVisible(true)
+    await sleep(800)
+    setTooltipVisible(false)
+  }
+
+  return (
+    <button
+      className="hidden py-1.5 px-2 my-2 mx-2 text-xs bg-gray-100 hover:bg-gray-50 border-none shadow rounded-md transition ease-out"
+      onClick={copyMarkdown}
+    >
+      Clear
+      <Tooltip show={tooltipVisible} location={'bottom'}>
+        <span>Cleared!</span>
+      </Tooltip>
+    </button>
+  )
+}
 
 function Copy(): JSX.Element {
   const state = TaskTextState()
@@ -64,6 +89,7 @@ export function Menu(): JSX.Element {
 
   return (
     <div className="text-right">
+      <Clear />
       <Copy />
       <button
         className="w-20 py-1.5 ml-2 my-2 text-xs right-1 bg-gray-100 hover:bg-gray-50 border-none shadow rounded-md transition ease-out"

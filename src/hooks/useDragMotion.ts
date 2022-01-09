@@ -1,26 +1,47 @@
 import { useState, useEffect, CSSProperties } from 'react'
+import { atom, useRecoilValue, useSetRecoilState } from 'recoil'
 import { DropTargetMonitor } from 'react-dnd'
+
+import Log from '@/services/log'
 import { sleep, indentToMargin } from '@/services/util'
-
-import { DragMotionState, MOTION_TYPE, MotionType } from '@/services/state'
-
 import { DragItem } from '@/components/DraggableListItem'
 
-export const MotionDurationMS = 200
+const MotionDurationMS = 250
+const MotionEase = "cubic-bezier(0.0, 0.0, 0.2, 1)"
 
-export type DragMotionProps = {
+const MOTION_TYPE = {
+  SLIDE: 'SLIDE',
+  FADE_IN: 'FADE_IN',
+} as const
+type MotionType = typeof MOTION_TYPE[keyof typeof MOTION_TYPE]
+
+type DragMotionState = {
+  line: number
+  props: DragMotionProps
+}
+
+const dragMotionState = atom<DragMotionState[]>({
+  key: 'dragMotionState',
+  default: [],
+})
+
+type DragMotionProps = {
   motionType: MotionType
   top: number
   marginLeft?: string | number
 }
 
+const emptyProp = { top: null, motionType: null }
+
 export function useDragMotion(
-  props: DragMotionProps,
+  line: number,
   hasChildren?: boolean,
   isInner?: boolean,
 ): CSSProperties {
   const [motionStyles, setMotionStyles] = useState<CSSProperties>({})
-  props = props || { top: null, motionType: null }
+  const dragMotions = useRecoilValue<DragMotionState[]>(dragMotionState)
+  const dragMotion = dragMotions.find((n) => n.line === line)
+  const props: DragMotionProps = dragMotion?.props || emptyProp
 
   // Apply motion animations.
   useEffect(() => {
@@ -47,9 +68,9 @@ export function useDragMotion(
       // enter animateion
       const styles: CSSProperties = { top: props.top }
       if (props.motionType === MOTION_TYPE.SLIDE) {
-        styles.transition = `top ${MotionDurationMS}ms ease-out`
+        styles.transition = `top ${MotionDurationMS}ms ${MotionEase}`
       } else if (props.motionType === MOTION_TYPE.FADE_IN) {
-        styles.transition = `opacity ${MotionDurationMS}ms ease-out`
+        styles.transition = `opacity ${MotionDurationMS}ms ${MotionEase}`
         styles.opacity = 1
       }
       if (props.marginLeft) {
@@ -62,7 +83,7 @@ export function useDragMotion(
   return motionStyles
 }
 
-type useMotionCalcProps = {
+type useMotionProps = {
   item: DragItem
   monitor: DropTargetMonitor
   dragIndex: number
@@ -73,10 +94,10 @@ type useMotionCalcProps = {
   indent: number
 }
 
-export function useMotionCalculator(): (
-  args: useMotionCalcProps,
-) => DragMotionState[] {
-  return ({
+export function useMotionExecuter(): (args: useMotionProps) => Promise<void> {
+  const setDragMotions = useSetRecoilState<DragMotionState[]>(dragMotionState)
+
+  return async ({
     item,
     monitor,
     dragIndex,
@@ -85,7 +106,7 @@ export function useMotionCalculator(): (
     dropAtTopOfList,
     isListTop,
     indent,
-  }: useMotionCalcProps) => {
+  }: useMotionProps) => {
     const newMotions: DragMotionState[] = []
 
     //
@@ -144,6 +165,13 @@ export function useMotionCalculator(): (
       }
     }
 
-    return newMotions
+    // start animations in useEffect.
+    Log.v('start animations')
+    setDragMotions(newMotions)
+    // Wait animations finished.
+    await sleep(MotionDurationMS + 100)
+    // Reset styles.
+    setDragMotions([])
+    Log.v('finish animations')
   }
 }

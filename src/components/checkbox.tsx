@@ -1,6 +1,6 @@
 import React from 'react'
 
-import '@/components/checkbox.css'
+import '@/components/Checkbox.css'
 
 type CheckboxProps = {
   id: string
