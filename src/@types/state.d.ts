@@ -16,6 +16,7 @@ type TimeObject = {
 
 interface ITaskListState {
   text: string
+  lineCount: number,
   setText: (value: string) => void
   getTextByLine: (line: number) => string
   setTextByLine: (line: number, text: string) => void

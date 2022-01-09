@@ -8,6 +8,7 @@ import { TaskTextarea } from '@/components/TaskTextarea'
 import { Menu, MODE, modeState } from '@/components/Menu'
 import { MdHeading } from '@/components/MdHeading'
 import { MdListItem } from '@/components/MdListItem'
+import { EmptyLine } from '@/components/EmptyLine'
 import { TaskTextState } from '@/services/state'
 import { useMarkdown } from '@/hooks/useMarkdown'
 import '@/components/Popup.css'
@@ -51,7 +52,10 @@ function MarkdownHtml() {
 
   return (
     <DndProvider debugMode={true} backend={HTML5Backend}>
-      <div className="task-container">{converted}</div>
+      <div className="task-container">
+        {converted}
+        <EmptyLine />
+      </div>
     </DndProvider>
   )
 }

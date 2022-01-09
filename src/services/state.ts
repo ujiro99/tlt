@@ -35,6 +35,8 @@ export function TaskTextState(): ITaskListState {
   const [textValue, setTextValue] = useRecoilState(taskListTextState)
   const [trackings, setTrackings] = useRecoilState(trackingStateList)
 
+  const lines = textValue.split(/\n/)
+
   const setText = (value: string) => {
     setTextValue(value)
   }
@@ -77,24 +79,29 @@ export function TaskTextState(): ITaskListState {
 
   return {
     text: textValue,
+    lineCount: lines.length,
     setText: (value: string) => {
       setText(value)
     },
     getTextByLine: (line: number) => {
       line = line - 1 //  line number starts from 1.
-      const lines = textValue.split(/\n/)
 
       if (lines.length > line) return lines[line]
+      if (lines.length === line) return ''
       Log.e('The specified line does not exist.')
       Log.d(`lines.length: ${lines.length}, line: ${line}`)
       return ''
     },
     setTextByLine: (line: number, text: string) => {
       line = line - 1 //  line number starts from 1.
-      const lines = textValue.split(/\n/)
 
       if (lines.length > line) {
         lines[line] = text
+        const newText = lines.join('\n')
+        setText(newText)
+      } else if (lines.length === line) {
+        if (text == null || text.length === 0) return
+        lines.push(text)
         const newText = lines.join('\n')
         setText(newText)
       } else {
@@ -104,7 +111,6 @@ export function TaskTextState(): ITaskListState {
     },
     isTaskStrByLine: (line: number) => {
       line = line - 1 //  line number starts from 1.
-      const lines = textValue.split(/\n/)
       return Task.isTaskStr(lines[line])
     },
     moveLines: (
@@ -122,7 +128,6 @@ export function TaskTextState(): ITaskListState {
       currentPosition = currentPosition - 1
       newPosition = newPosition - 1
 
-      const lines = textValue.split(/\n/)
       if (newPosition > lines.length) {
         newPosition = lines.length - 1
       }
