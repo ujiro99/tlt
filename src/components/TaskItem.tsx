@@ -97,6 +97,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   const onClick = () => {
+    if (isTracking()) return
     focusOrEdit()
   }
 
