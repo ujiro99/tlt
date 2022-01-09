@@ -42,7 +42,11 @@ export function TaskTextState(): ITaskListState {
   /**
    * Update the line information in the tracking status according to the line movement.
    */
-  function updateTrackingStatePosition(from: number, dest: number) {
+  function updateTrackingStatePosition(
+    from: number,
+    dest: number,
+    count: number,
+  ) {
     const newTracking = trackings.map((n) => {
       if (n.line === from) {
         let newLine = dest
@@ -50,11 +54,20 @@ export function TaskTextState(): ITaskListState {
           newLine++
         }
         return { ...n, line: newLine }
+      } else if (count > 1 && from < n.line && n.line <= from + count) {
+        // elements in subtasks
+        let diff: number
+        if (from > dest) {
+          diff = dest - from + 1
+        } else {
+          diff = dest - from - count + 1
+        }
+        return { ...n, line: n.line + diff }
       } else if (from < n.line && n.line <= dest) {
-        // When drag and drop to down, move elements in between up.
+        // When drag and drop to down, elements in between be moved up.
         return { ...n, line: n.line - 1 }
       } else if (from > n.line && n.line >= dest) {
-        // When drag and drop to up, move elements in between down.
+        // When drag and drop to up, elements in between be moved down.
         return { ...n, line: n.line + 1 }
       }
       return n
@@ -103,7 +116,7 @@ export function TaskTextState(): ITaskListState {
       if (currentPosition === newPosition) return
 
       // Update tracking state.
-      updateTrackingStatePosition(currentPosition, newPosition)
+      updateTrackingStatePosition(currentPosition, newPosition, count)
 
       // line number starts from 1.
       currentPosition = currentPosition - 1
@@ -198,5 +211,11 @@ export function TaskState(): ITaskState {
       chrome.runtime.sendMessage({ command: 'stopTracking' })
       setTrackings([])
     },
+  }
+}
+
+export function clearStorage(): void {
+  for (const key in STORAGE_KEY) {
+    void Storage.set(STORAGE_KEY[key], null)
   }
 }
