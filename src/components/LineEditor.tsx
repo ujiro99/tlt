@@ -28,7 +28,7 @@ export function LineEditor(props: Props): JSX.Element {
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
       state.setTextByLine(line, text)
       finishEdit()
     }
@@ -36,7 +36,7 @@ export function LineEditor(props: Props): JSX.Element {
 
   return (
     <TextareaAutosize
-      className={`${props.className} w-full py-2 leading-relaxed outline-0 mb-[-5px] min-h-[40px]`}
+      className={`${props.className} w-full py-2 leading-relaxed outline-0 mb-[-5px] min-h-[40px] cursor-text`}
       value={text}
       onBlur={onBlur}
       onChange={onChange}

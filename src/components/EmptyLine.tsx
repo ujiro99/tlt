@@ -14,7 +14,7 @@ export const EmptyLine: React.FC<unknown> = (): JSX.Element => {
   return (
     <div
       tabIndex={0}
-      className="h-[40px] focus:bg-indigo-50"
+      className="h-[40px] focus:bg-indigo-50 cursor-pointer"
       onClick={focusOrEdit}
     ></div>
   )
