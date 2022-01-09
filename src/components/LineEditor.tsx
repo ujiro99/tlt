@@ -6,12 +6,13 @@ import { useEditFinish } from '@/hooks/useEditable'
 
 type Props = {
   line: number
+  className?: string
 }
 
 export function LineEditor(props: Props): JSX.Element {
   const line = props.line
   const state = TaskTextState()
-  const [text, setText] = useState("")
+  const [text, setText] = useState('')
   const finishEdit = useEditFinish()
 
   function onBlur() {
@@ -35,7 +36,7 @@ export function LineEditor(props: Props): JSX.Element {
 
   return (
     <TextareaAutosize
-      className="w-full py-2 leading-relaxed outline-0 mb-[-5px] min-h-[40px]"
+      className={`${props.className} w-full py-2 leading-relaxed outline-0 mb-[-5px] min-h-[40px]`}
       value={text}
       onBlur={onBlur}
       onChange={onChange}

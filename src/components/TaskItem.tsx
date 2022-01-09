@@ -6,11 +6,12 @@ import classnames from 'classnames'
 import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
 import Log from '@/services/log'
 import { indentToMargin } from '@/services/util'
-import { useEditable } from '@/hooks/useEditable'
 import { Task } from '@/models/task'
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
 import { TaskController } from '@/components/TaskController'
+
+import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
 
 import '@/components/TaskItem.css'
@@ -77,7 +78,11 @@ export const TaskItem: React.FC<TaskItemProps> = (
     e.stopPropagation()
   }
 
-  const stopTracking = (e: React.MouseEvent<HTMLButtonElement>|React.ChangeEvent<HTMLInputElement>) => {
+  const stopTracking = (
+    e:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.ChangeEvent<HTMLInputElement>,
+  ) => {
     if (isTracking()) {
       chrome.runtime.sendMessage({ command: 'stopTracking' })
       const newTrackings = trackings.filter((n) => n.line !== line)
@@ -117,7 +122,13 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   return (
-    <div tabIndex={0} className={taskItemClass} style={style} data-line={line} onClick={onClick}>
+    <div
+      tabIndex={0}
+      className={taskItemClass}
+      style={style}
+      data-line={line}
+      onClick={onClick}
+    >
       <div className="task-item__label" ref={props.preview}>
         <Checkbox
           id={id}
