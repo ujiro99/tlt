@@ -15,6 +15,7 @@ const DnDItems = {
 export interface DragItem {
   index: number
   type: string
+  top: number
   height: number
   hasChildren: boolean
   childrenCount: number
@@ -60,7 +61,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     // based on the size of the element without subtasks.
     let dropTargetRect = ref.current.getBoundingClientRect()
     if (props.hasChildren) {
-      dropTargetRect = ref.current.children[0].getBoundingClientRect()
+      dropTargetRect = ref.current.children[0].children[0].getBoundingClientRect()
     }
 
     let dropTargetIndex = hoverIndex
@@ -78,7 +79,6 @@ export function DraggableListItem(props: Props): JSX.Element {
     // Start animations.
     await execDragMotions({
       item,
-      monitor,
       dragIndex,
       hoverIndex,
       dropTargetRect,
@@ -151,6 +151,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     item: () => ({
       index: line,
       height: ref.current.offsetHeight,
+      top: ref.current.getBoundingClientRect().top,
       hasChildren: props.hasChildren,
       childrenCount: props.childrenCount,
     }),

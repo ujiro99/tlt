@@ -9,6 +9,7 @@
   @apply items-center;
   @apply focus:bg-indigo-50;
   @apply cursor-pointer;
+  @apply select-none;
 
   &__label {
     @apply flex;

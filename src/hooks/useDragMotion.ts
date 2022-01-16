@@ -1,6 +1,5 @@
 import { useState, useEffect, CSSProperties } from 'react'
 import { atom, useRecoilValue, useSetRecoilState } from 'recoil'
-import { DropTargetMonitor } from 'react-dnd'
 
 import Log from '@/services/log'
 import { sleep, indentToMargin } from '@/services/util'
@@ -85,7 +84,6 @@ export function useDragMotion(
 
 type useMotionProps = {
   item: DragItem
-  monitor: DropTargetMonitor
   dragIndex: number
   hoverIndex: number
   dropTargetRect: DOMRect
@@ -99,7 +97,6 @@ export function useMotionExecuter(): (args: useMotionProps) => Promise<void> {
 
   return async ({
     item,
-    monitor,
     dragIndex,
     hoverIndex,
     dropTargetRect,
@@ -113,8 +110,7 @@ export function useMotionExecuter(): (args: useMotionProps) => Promise<void> {
     // Element dragged
     //
     const dragItemHeight = item.height
-    // TODO fix height of list
-    const dragItemTop = monitor.getInitialSourceClientOffset()?.y
+    const dragItemTop = item.top
     let dropY: number
     if (dragIndex < hoverIndex) {
       // drog to down
@@ -129,6 +125,7 @@ export function useMotionExecuter(): (args: useMotionProps) => Promise<void> {
         dropY = dropTargetRect.top - dragItemTop
       }
     }
+    console.log(dropY)
     newMotions.push({
       line: dragIndex,
       props: { top: dropY, motionType: MOTION_TYPE.FADE_IN },

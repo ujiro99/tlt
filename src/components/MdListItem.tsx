@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react'
 
 import { DraggableListItem } from '@/components/DraggableListItem'
 import { TaskItem, TaskCheckBox } from '@/components/TaskItem'
+import { TaskItemContiner } from '@/components/TaskItemContainer'
 import { TaskTextState } from '@/services/state'
 import { useDragMotion } from '@/hooks/useDragMotion'
 import { TransProps } from 'popup'
@@ -57,14 +58,14 @@ export const MdListItem: React.FC<unknown> = (
       childrenCount={subItemCount}
     >
       {subItem ? (
-        <>
+        <TaskItemContiner>
           <TaskItem
             checkboxProps={checkboxProps}
             line={line}
             style={motionStyles}
           />
           {subItem}
-        </>
+        </TaskItemContiner>
       ) : (
         <TaskItem checkboxProps={checkboxProps} line={line} />
       )}

@@ -27,7 +27,7 @@
   @apply flex;
   @apply text-gray-300;
   @apply text-2xl;
-  @apply hover:text-gray-400;
+  @apply hover:text-gray-500;
   @apply cursor-move;
   @apply ml-[-6px];
 }

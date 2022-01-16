@@ -1,6 +1,7 @@
 .task-list-item {
   $this: &;
 
+  @apply bg-white;
   position: relative;
   width: 100%;
   top: 0;
