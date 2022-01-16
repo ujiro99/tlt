@@ -1,6 +1,5 @@
 import React, { CSSProperties } from 'react'
 import { useRecoilState } from 'recoil'
-import { ConnectDragPreview } from 'react-dnd'
 import classnames from 'classnames'
 
 import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
@@ -13,6 +12,8 @@ import { TaskController } from '@/components/TaskController'
 
 import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
+
+import type { DragSource, DragPreview } from 'dnd'
 
 import '@/components/TaskItem.css'
 
@@ -28,12 +29,8 @@ type TaskItemProps = {
   style?: CSSProperties
 }
 
-type DragProps = {
-  preview: ConnectDragPreview
-}
-
 export const TaskItem: React.FC<TaskItemProps> = (
-  props: TaskItemProps & DragProps,
+  props: TaskItemProps & DragSource & DragPreview
 ): JSX.Element => {
   const checkboxProps = props.checkboxProps
   const line = props.line
@@ -129,8 +126,9 @@ export const TaskItem: React.FC<TaskItemProps> = (
       style={style}
       data-line={line}
       onClick={onClick}
+      ref={props.preview}
     >
-      <div className="task-item__label" ref={props.preview}>
+      <div className="task-item__label">
         <Checkbox
           id={id}
           checked={checkboxProps.checked}
@@ -145,13 +143,13 @@ export const TaskItem: React.FC<TaskItemProps> = (
       ) : (
         <div></div>
       )}
-      {!task.isComplete() && (
-        <TaskController
-          onClickStart={startTracking}
-          onClickStop={stopTracking}
-          isTracking={isTracking()}
-        />
-      )}
+      <TaskController
+        onClickStart={startTracking}
+        onClickStop={stopTracking}
+        isTracking={isTracking()}
+        isComplete={task.isComplete()}
+        drag={props.drag}
+      />
     </div>
   )
 }

@@ -113,6 +113,7 @@ export function useMotionExecuter(): (args: useMotionProps) => Promise<void> {
     // Element dragged
     //
     const dragItemHeight = item.height
+    // TODO fix height of list
     const dragItemTop = monitor.getInitialSourceClientOffset()?.y
     let dropY: number
     if (dragIndex < hoverIndex) {

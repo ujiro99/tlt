@@ -157,7 +157,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   })
 
-  drag(drop(ref))
+  drop(ref)
 
   const className = classnames(props.className, {
     'task-list-item--drag': isDragging,
@@ -168,7 +168,7 @@ export function DraggableListItem(props: Props): JSX.Element {
   })
 
   const newChildren = Children.map(props.children, (child) => {
-    return cloneElement(child, { preview: preview })
+    return cloneElement(child, { drag: drag, preview: preview })
   })
 
   return (

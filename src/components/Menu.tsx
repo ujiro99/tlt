@@ -88,7 +88,7 @@ export function Menu(): JSX.Element {
   }
 
   return (
-    <div className="text-right">
+    <div className="text-right  px-2.5">
       <Clear />
       <Copy />
       <button

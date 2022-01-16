@@ -19,7 +19,6 @@
 
   &--running {
     animation: bg-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-    @apply cursor-progress;
   }
 }
 
@@ -33,25 +32,6 @@
   }
 }
 
-.task-controll {
-  display: none;
-  background: rgb(249, 250, 251);
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 1) 40%,
-    rgba(255, 255, 255, 1) 100%
-  );
-
-  @apply absolute;
-  @apply w-10;
-  @apply h-full;
-  @apply top-0;
-  @apply right-0;
-  @apply text-right;
-  @apply pr-1;
-}
-
 .task-item:hover .task-controll {
   display: flex;
   align-items: center;
@@ -61,11 +41,4 @@
 .task-list-item--mouse-down .task-item:hover .task-controll,
 .task-list-item--hover .task-item:hover .task-controll {
   display: none;
-}
-
-.controll-button {
-  @apply flex;
-  @apply text-indigo-300;
-  @apply text-lg;
-  @apply hover:text-indigo-600;
 }

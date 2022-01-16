@@ -8,7 +8,7 @@ import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
 
 const baseClass =
-  'font-bold relative text-gray-700 leading-normal focus:bg-indigo-50 cursor-pointer'
+  'font-bold relative text-gray-700 leading-normal focus:bg-indigo-50 cursor-pointer px-3'
 const otherClass = {
   h1: 'text-base pt-4 pb-3',
   h2: 'text-base pt-4 pb-3',
