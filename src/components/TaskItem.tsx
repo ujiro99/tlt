@@ -1,19 +1,21 @@
 import React, { CSSProperties } from 'react'
 import { useRecoilState } from 'recoil'
-import { ConnectDragPreview } from 'react-dnd'
 import classnames from 'classnames'
-
-import '@/components/TaskItem.css'
 
 import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
 import Log from '@/services/log'
 import { indentToMargin } from '@/services/util'
-
 import { Task } from '@/models/task'
-
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
 import { TaskController } from '@/components/TaskController'
+
+import { useEditable } from '@/hooks/useEditable'
+import { LineEditor } from '@/components/LineEditor'
+
+import type { DragSource, DragPreview } from 'dnd'
+
+import '@/components/TaskItem.css'
 
 export type TaskCheckBox = {
   type: string
@@ -27,18 +29,15 @@ type TaskItemProps = {
   style?: CSSProperties
 }
 
-type DragProps = {
-  preview: ConnectDragPreview
-}
-
 export const TaskItem: React.FC<TaskItemProps> = (
-  props: TaskItemProps & DragProps,
+  props: TaskItemProps & DragSource & DragPreview
 ): JSX.Element => {
   const checkboxProps = props.checkboxProps
   const line = props.line
   const state = TaskTextState()
   const taskState = TaskState()
   const [trackings, setTrackings] = useRecoilState(trackingStateList)
+  const [isEditing, focusOrEdit] = useEditable(line)
   const tracking = trackings.find((n) => n.line === line)
   const task = Task.parse(state.getTextByLine(line))
   const id = `check-${task.id}`
@@ -46,7 +45,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isTracking()) {
       // If task has been tracking, stop automatically.
-      stopTracking()
+      stopTracking(e)
     }
 
     const checked = e.target.checked
@@ -55,7 +54,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     void state.setTextByLine(line, task.toString())
   }
 
-  const startTracking = () => {
+  const startTracking = (e: React.MouseEvent<HTMLButtonElement>) => {
     // stop previous task.
     taskState.stopAllTracking()
 
@@ -72,9 +71,15 @@ export const TaskItem: React.FC<TaskItemProps> = (
       command: 'startTracking',
       param: task.actualTimes.minutes,
     })
+
+    e.stopPropagation()
   }
 
-  const stopTracking = () => {
+  const stopTracking = (
+    e:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.ChangeEvent<HTMLInputElement>,
+  ) => {
     if (isTracking()) {
       chrome.runtime.sendMessage({ command: 'stopTracking' })
       const newTrackings = trackings.filter((n) => n.line !== line)
@@ -84,6 +89,13 @@ export const TaskItem: React.FC<TaskItemProps> = (
       task.trackingStop(tracking.trackingStartTime)
       void state.setTextByLine(line, task.toString())
     }
+
+    e.stopPropagation()
+  }
+
+  const onClick = () => {
+    if (isTracking()) return
+    focusOrEdit()
   }
 
   const isTracking = () => {
@@ -103,9 +115,20 @@ export const TaskItem: React.FC<TaskItemProps> = (
     ...props.style,
   }
 
+  if (isEditing) {
+    return <LineEditor line={line} />
+  }
+
   return (
-    <div className={taskItemClass} style={style} data-line={line}>
-      <div className="task-item__label" ref={props.preview}>
+    <div
+      tabIndex={0}
+      className={taskItemClass}
+      style={style}
+      data-line={line}
+      onClick={onClick}
+      ref={props.preview}
+    >
+      <div className="task-item__label">
         <Checkbox
           id={id}
           checked={checkboxProps.checked}
@@ -120,13 +143,13 @@ export const TaskItem: React.FC<TaskItemProps> = (
       ) : (
         <div></div>
       )}
-      {!task.isComplete() && (
-        <TaskController
-          onClickStart={startTracking}
-          onClickStop={stopTracking}
-          isTracking={isTracking()}
-        />
-      )}
+      <TaskController
+        onClickStart={startTracking}
+        onClickStop={stopTracking}
+        isTracking={isTracking()}
+        isComplete={task.isComplete()}
+        drag={props.drag}
+      />
     </div>
   )
 }

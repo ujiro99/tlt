@@ -9,8 +9,13 @@ type CheckboxProps = {
 }
 
 export function Checkbox(props: CheckboxProps): JSX.Element {
+  // Stop event bubbling to avoid editting.
+  const stopPropagation = (e: React.MouseEvent) => {
+    e.stopPropagation()
+  }
+
   return (
-    <div className="checkbox">
+    <div className="checkbox" onClick={stopPropagation}>
       <input
         id={props.id}
         type="checkbox"

@@ -3,6 +3,7 @@
 
   @apply ml-2;
   @apply relative;
+  @apply text-xs;
 
   &__unit {
     margin-left: 1px;

@@ -2,30 +2,6 @@ body {
   margin: 0;
 }
 
-h1,
-h2,
-h3,
-h4 {
-  @apply font-bold;
-  @apply relative;
-}
-
-h1,
-h2 {
-  @apply text-base;
-  @apply text-gray-700;
-  @apply pt-4;
-  @apply pb-3;
-}
-
-h3,
-h4 {
-  @apply text-sm;
-  @apply text-gray-600;
-  @apply pt-2;
-  @apply pb-2;
-}
-
 #popup {
   width: 400px;
   height: 600px;
@@ -33,7 +9,6 @@ h4 {
   @apply text-sm;
   @apply text-black;
   @apply antialiased;
-  @apply px-2.5;
 }
 
 .icon {
@@ -72,4 +47,6 @@ h4 {
 .task-container > div > .contains-task-list {
   @apply border-gray-200;
   @apply border-b;
+  @apply ml-[10px];
+  @apply mr-[12px];
 }

@@ -1,0 +1,33 @@
+.task-controll {
+  display: none;
+  background: rgb(249, 250, 251);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 1) 40%,
+    rgba(255, 255, 255, 1) 100%
+  );
+
+  @apply absolute;
+  @apply w-20;
+  @apply h-full;
+  @apply top-0;
+  @apply right-0;
+  @apply text-right;
+  @apply pr-1;
+}
+.controll-button {
+  @apply flex;
+  @apply text-indigo-300;
+  @apply text-3xl;
+  @apply hover:text-indigo-600;
+}
+
+.controll-dnd {
+  @apply flex;
+  @apply text-gray-300;
+  @apply text-2xl;
+  @apply hover:text-gray-500;
+  @apply cursor-move;
+  @apply ml-[-6px];
+}

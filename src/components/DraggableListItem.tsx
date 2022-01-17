@@ -15,6 +15,7 @@ const DnDItems = {
 export interface DragItem {
   index: number
   type: string
+  top: number
   height: number
   hasChildren: boolean
   childrenCount: number
@@ -60,7 +61,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     // based on the size of the element without subtasks.
     let dropTargetRect = ref.current.getBoundingClientRect()
     if (props.hasChildren) {
-      dropTargetRect = ref.current.children[0].getBoundingClientRect()
+      dropTargetRect = ref.current.children[0].children[0].getBoundingClientRect()
     }
 
     let dropTargetIndex = hoverIndex
@@ -78,7 +79,6 @@ export function DraggableListItem(props: Props): JSX.Element {
     // Start animations.
     await execDragMotions({
       item,
-      monitor,
       dragIndex,
       hoverIndex,
       dropTargetRect,
@@ -151,13 +151,14 @@ export function DraggableListItem(props: Props): JSX.Element {
     item: () => ({
       index: line,
       height: ref.current.offsetHeight,
+      top: ref.current.getBoundingClientRect().top,
       hasChildren: props.hasChildren,
       childrenCount: props.childrenCount,
     }),
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   })
 
-  drag(drop(ref))
+  drop(ref)
 
   const className = classnames(props.className, {
     'task-list-item--drag': isDragging,
@@ -168,7 +169,7 @@ export function DraggableListItem(props: Props): JSX.Element {
   })
 
   const newChildren = Children.map(props.children, (child) => {
-    return cloneElement(child, { preview: preview })
+    return cloneElement(child, { drag: drag, preview: preview })
   })
 
   return (
