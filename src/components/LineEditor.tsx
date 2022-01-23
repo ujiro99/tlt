@@ -9,19 +9,31 @@ type Props = {
   className?: string
 }
 
+const DEFAULT = "- [ ] ";
+
 export function LineEditor(props: Props): JSX.Element {
   const line = props.line
   const state = TaskTextState()
   const [text, setText] = useState('')
   const finishEdit = useEditFinish()
 
-  function onBlur() {
-    state.setTextByLine(line, text)
+  function finish() {
+    if (text !== DEFAULT) {
+      state.setTextByLine(line, text)
+    }
     finishEdit()
   }
 
+  function onBlur() {
+    finish()
+  }
+
   function onFocus() {
-    setText(state.getTextByLine(line))
+    let current = state.getTextByLine(line);
+    if (!current) {
+      current = DEFAULT
+    }
+    setText(current)
   }
 
   function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -30,8 +42,7 @@ export function LineEditor(props: Props): JSX.Element {
 
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) {
-      state.setTextByLine(line, text)
-      finishEdit()
+      finish()
     }
   }
 
