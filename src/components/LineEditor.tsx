@@ -17,6 +17,7 @@ export function LineEditor(props: Props): JSX.Element {
 
   function onBlur() {
     state.setTextByLine(line, text)
+    finishEdit()
   }
 
   function onFocus() {
