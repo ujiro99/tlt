@@ -30,10 +30,13 @@
 .controll-dnd {
   @apply flex;
   @apply text-gray-300;
-  @apply text-xl;
   @apply hover:text-gray-600;
   @apply cursor-move;
-  @apply ml-[-6px];
+  @apply ml-[-2px];
+
+  & svg {
+    @apply h-[1.6em];
+  }
 
   &:hover svg {
     @apply drop-shadow-md;
