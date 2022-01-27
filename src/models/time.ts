@@ -121,6 +121,10 @@ export class Time {
     return this._days * DAY_S + this._hours * HOUR_S + this._minutes * MINUTE_S + this._seconds
   }
 
+  public toMinutes(): number {
+    return this.toSeconds() / MINUTE_S
+  }
+
   public isEmpty(): boolean {
     return this._days === 0 && this._hours === 0 && this._minutes === 0
   }

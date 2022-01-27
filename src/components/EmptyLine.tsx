@@ -9,13 +9,17 @@ export const EmptyLine: React.FC<unknown> = (): JSX.Element => {
   const [isEditing, focusOrEdit] = useEditable(line)
 
   if (isEditing) {
-    return <LineEditor line={line} />
+    return <LineEditor className="m-2" line={line} />
   }
   return (
     <div
       tabIndex={0}
-      className="h-[40px] focus:bg-indigo-50 cursor-pointer"
+      className="h-[40px] rounded-l m-2 mb-0 hover:bg-gray-100 focus:bg-indigo-50 cursor-pointer group text-center leading-10"
       onClick={focusOrEdit}
-    ></div>
+    >
+      <span className="text-gray-600 opacity-0 group-hover:opacity-100 duration-200 transition-opacity group-hover:duration-500">
+        Add a new task.
+      </span>
+    </div>
   )
 }

@@ -48,11 +48,10 @@ const onMessageFuncs: OnMessageFuncs = {
    * @param startMinutes {number} Elapsed time when measurement is started in minutes.
    */
   startTracking(startMinutes: number) {
-    Icon.setText(`${startMinutes}m`)
-
     // save state to storage
     void Storage.set(STORAGE_KEY.ICON_START_MINUTES, startMinutes)
     void Storage.set(STORAGE_KEY.TRACKING_START_MS, Date.now())
+    void updateIconTime()
 
     // start timer
     chrome.alarms.create(TIMER_NAME, { periodInMinutes: 1 })
@@ -81,8 +80,13 @@ async function updateIconTime() {
   )) as number
   const elapsedMs = Date.now() - trackingStartTime
   const elapsedMin = Math.floor(elapsedMs / (60 * 1000))
-  const time = (startMinutes + elapsedMin) % HOUR
-  Icon.setText(`${time}m`)
+  const currentMin = startMinutes + elapsedMin
+  if (currentMin >= HOUR) {
+    const time = (startMinutes + elapsedMin) / HOUR
+    Icon.setText(`${time.toFixed(1)}h`)
+  } else {
+    Icon.setText(`${currentMin}m`)
+  }
 }
 
 chrome.alarms.onAlarm.addListener((alarm) => {
