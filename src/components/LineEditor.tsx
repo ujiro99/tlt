@@ -10,6 +10,7 @@ type Props = {
 }
 
 const DEFAULT = "- [ ] ";
+const KEYCODE_ENTER = 13
 
 export function LineEditor(props: Props): JSX.Element {
   const line = props.line
@@ -41,7 +42,7 @@ export function LineEditor(props: Props): JSX.Element {
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.keyCode === KEYCODE_ENTER && !e.shiftKey) {
       finish()
     }
   }
