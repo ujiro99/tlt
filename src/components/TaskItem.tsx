@@ -69,7 +69,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     setTrackings([newTracking])
     chrome.runtime.sendMessage({
       command: 'startTracking',
-      param: task.actualTimes.minutes,
+      param: task.actualTimes.toMinutes(),
     })
 
     e.stopPropagation()
