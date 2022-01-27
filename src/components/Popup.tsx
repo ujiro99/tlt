@@ -21,7 +21,7 @@ export default function Popup(): JSX.Element {
   return (
     <ErrorFallback>
       <RecoilRoot>
-        <React.Suspense fallback={<div>Loading...</div>}>
+        <React.Suspense fallback={<div></div>}>
           <Menu />
           <TaskList />
         </React.Suspense>

@@ -5,10 +5,10 @@ import '@/css/tailwind.css'
 import '@/css/tailwind-utils.css'
 import Popup from '@/components/Popup'
 
-function initPoupup() {
-  chrome.tabs.query({ active: true, currentWindow: true }, (tab) => {
+document.addEventListener(
+  'DOMContentLoaded',
+  function () {
     ReactDOM.render(<Popup />, document.getElementById('popup'))
-  })
-}
-
-void initPoupup()
+  },
+  false,
+)
