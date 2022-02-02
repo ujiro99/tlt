@@ -35,7 +35,7 @@ export function DraggableListItem(props: Props): JSX.Element {
   const line = props.line
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
-  const [dropToTop, setDropToTop] = useState(false)
+  const [dropUpperHalf, setDropUpperHalf] = useState(false)
   const motionStyles = useDragMotion(line, props.hasChildren)
   const execDragMotions = useMotionExecuter()
 
@@ -138,14 +138,14 @@ export function DraggableListItem(props: Props): JSX.Element {
       void execDrop(item, dragIndex, hoverIndex, upperHalf)
     },
     hover(_, monitor: DropTargetMonitor) {
-      setDropToTop(false)
+      setDropUpperHalf(false)
 
       if (!ref.current) {
         return
       }
 
       if (isDropPositionUpperHalf(monitor)) {
-        setDropToTop(true)
+        setDropUpperHalf(true)
       }
     },
   })
@@ -168,7 +168,7 @@ export function DraggableListItem(props: Props): JSX.Element {
     'task-list-item--drag': isDragging,
     'task-list-item--drop-hover': isOver,
     'task-list-item--list-top': props.isListTop,
-    'task-list-item--drop-top': dropToTop,
+    'task-list-item--drop-top': dropUpperHalf,
     'task-list-item--parent': props.hasChildren,
   })
 

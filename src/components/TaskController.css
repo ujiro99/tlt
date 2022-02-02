@@ -32,7 +32,7 @@
   @apply text-gray-300;
   @apply hover:text-gray-600;
   @apply cursor-move;
-  @apply ml-[-2px];
+  @apply ml-[2px];
 
   & svg {
     @apply h-[1.6em];
