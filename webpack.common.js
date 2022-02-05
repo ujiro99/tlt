@@ -2,6 +2,7 @@ const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const StylelintPlugin = require('stylelint-webpack-plugin')
+const WebpackNotifierPlugin = require('webpack-notifier')
 
 module.exports = {
   entry: {
@@ -54,5 +55,8 @@ module.exports = {
     new StylelintPlugin({
       configFile: `${path.resolve(__dirname, '')}/.stylelintrc.json`,
     }),
+    new WebpackNotifierPlugin({title: function (params) {
+      return `[${params.status}] ${params.message}`;
+    }}),
   ],
 }
