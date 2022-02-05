@@ -5,7 +5,7 @@ import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd'
 import { useDragMotion, useMotionExecuter } from '@/hooks/useDragMotion'
 import { Task } from '@/models/task'
 import { TaskTextState } from '@/services/state'
-
+import Log from '@/services/log'
 import '@/components/DraggableListItem.css'
 
 const DnDItems = {
@@ -27,8 +27,39 @@ type Props = {
   isListTop: boolean
   inList: boolean
   hasChildren: boolean
-  childrenCount: number
   children: React.ReactElement | React.ReactElement[]
+}
+
+const DRAGGABLE_ITEM_CLASS = 'draggable-item'
+const INNER_ITEM_CLASS = 'task-item'
+
+function countChildren(rootElemnt: Element) {
+  const queue: Element[] = [rootElemnt]
+  let count = 0
+
+  // breadth first search
+  try {
+    while (queue.length > 0) {
+      const elm = queue.shift()
+      if (elm.className.indexOf(INNER_ITEM_CLASS) >= 0) {
+        // Do not scan to the inside of task-item.
+        continue
+      }
+      if (elm.children.length > 0) {
+        const children = Array.from(elm.children)
+        queue.push(...children)
+        count += children.filter(
+          (child) =>
+            child.className.indexOf &&
+            child.className.indexOf(DRAGGABLE_ITEM_CLASS) >= 0,
+        ).length
+      }
+    }
+  } catch (e) {
+    Log.w(e)
+  }
+
+  return count
 }
 
 export function DraggableListItem(props: Props): JSX.Element {
@@ -61,7 +92,8 @@ export function DraggableListItem(props: Props): JSX.Element {
     // based on the size of the element without subtasks.
     let dropTargetRect = ref.current.getBoundingClientRect()
     if (props.hasChildren) {
-      dropTargetRect = ref.current.children[0].children[0].getBoundingClientRect()
+      dropTargetRect =
+        ref.current.children[0].children[0].getBoundingClientRect()
     }
 
     if (upperHalf) {
@@ -157,14 +189,14 @@ export function DraggableListItem(props: Props): JSX.Element {
       height: ref.current.offsetHeight,
       top: ref.current.getBoundingClientRect().top,
       hasChildren: props.hasChildren,
-      childrenCount: props.childrenCount,
+      childrenCount: countChildren(ref.current),
     }),
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   })
 
   drop(ref)
 
-  const className = classnames(props.className, {
+  const className = classnames(props.className, DRAGGABLE_ITEM_CLASS, {
     'task-list-item--drag': isDragging,
     'task-list-item--drop-hover': isOver,
     'task-list-item--list-top': props.isListTop,
