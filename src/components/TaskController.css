@@ -15,6 +15,8 @@
   @apply right-0;
   @apply text-right;
   @apply pr-1;
+  @apply select-none;
+  @apply cursor-default;
 }
 .controll-button {
   @apply flex;
