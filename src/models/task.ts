@@ -20,7 +20,7 @@ export class Task {
   private static indentRegexp = /^ +/
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
-  private static timeRegexp = /~((\d+d)?(\d+h)?(\d+m)?)/
+  private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
 
   // utility for creating unique Id
   static getId(): number {

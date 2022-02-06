@@ -31,25 +31,26 @@ export function Counter(props: CounterProps): JSX.Element {
 
 export function CounterStopped(props: CounterProps): JSX.Element {
   const time = props.startTime
-  if (time.days > 0) {
-    return (
-      <div className="counter">
-        <span className="counter__days">{time.days}</span>
-        <span className="counter__unit">d</span>
-        <span className="counter__hours">{time.hours}</span>
-        <span className="counter__unit">h</span>
-        <span className="counter__minutes">{pad(time.minutes, 2)}</span>
-        <span className="counter__unit">m</span>
-      </div>
-    )
-  } else {
-    return (
-      <div className="counter">
-        <span className="counter__hours">{time.hours}</span>
-        <span className="counter__unit">h</span>
-        <span className="counter__minutes">{pad(time.minutes, 2)}</span>
-        <span className="counter__unit">m</span>
-      </div>
-    )
-  }
+  return (
+    <div className="counter">
+      {time.days > 0 ? (
+        <>
+          <span className="counter__days">{time.days}</span>
+          <span className="counter__unit">d</span>
+        </>
+      ) : (
+        <></>
+      )}
+      {time.hours > 0 ? (
+        <>
+          <span className="counter__hours">{time.hours}</span>
+          <span className="counter__unit">h</span>
+        </>
+      ) : (
+        <></>
+      )}
+      <span className="counter__minutes">{pad(time.minutes, 2)}</span>
+      <span className="counter__unit">m</span>
+    </div>
+  )
 }
