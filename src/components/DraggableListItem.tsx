@@ -5,7 +5,7 @@ import { useDrag, useDrop, DropTargetMonitor } from 'react-dnd'
 import { useDragMotion, useMotionExecuter } from '@/hooks/useDragMotion'
 import { Task } from '@/models/task'
 import { TaskTextState } from '@/services/state'
-
+import Log from '@/services/log'
 import '@/components/DraggableListItem.css'
 
 const DnDItems = {
@@ -27,19 +27,50 @@ type Props = {
   isListTop: boolean
   inList: boolean
   hasChildren: boolean
-  childrenCount: number
   children: React.ReactElement | React.ReactElement[]
+}
+
+const DRAGGABLE_ITEM_CLASS = 'draggable-item'
+const INNER_ITEM_CLASS = 'task-item'
+
+function countChildren(rootElemnt: Element) {
+  const queue: Element[] = [rootElemnt]
+  let count = 0
+
+  // breadth first search
+  try {
+    while (queue.length > 0) {
+      const elm = queue.shift()
+      if (elm.className.indexOf(INNER_ITEM_CLASS) >= 0) {
+        // Do not scan to the inside of task-item.
+        continue
+      }
+      if (elm.children.length > 0) {
+        const children = Array.from(elm.children)
+        queue.push(...children)
+        count += children.filter(
+          (child) =>
+            child.className.indexOf &&
+            child.className.indexOf(DRAGGABLE_ITEM_CLASS) >= 0,
+        ).length
+      }
+    }
+  } catch (e) {
+    Log.w(e)
+  }
+
+  return count
 }
 
 export function DraggableListItem(props: Props): JSX.Element {
   const line = props.line
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
-  const [dropToTop, setDropToTop] = useState(false)
+  const [dropUpperHalf, setDropUpperHalf] = useState(false)
   const motionStyles = useDragMotion(line, props.hasChildren)
   const execDragMotions = useMotionExecuter()
 
-  const dropAtTopOfList = (monitor: DropTargetMonitor): boolean => {
+  const isDropPositionUpperHalf = (monitor: DropTargetMonitor): boolean => {
     let dropTargetRect = ref.current?.getBoundingClientRect()
     if (props.hasChildren) {
       dropTargetRect = ref.current.children[0].getBoundingClientRect()
@@ -53,21 +84,26 @@ export function DraggableListItem(props: Props): JSX.Element {
 
   const execDrop = async (
     item: DragItem,
-    monitor: DropTargetMonitor,
     dragIndex: number,
     hoverIndex: number,
+    upperHalf: boolean,
   ) => {
     // When dropping on an element with subtasks, calculate motions
     // based on the size of the element without subtasks.
     let dropTargetRect = ref.current.getBoundingClientRect()
     if (props.hasChildren) {
-      dropTargetRect = ref.current.children[0].children[0].getBoundingClientRect()
+      dropTargetRect =
+        ref.current.children[0].children[0].getBoundingClientRect()
+    }
+
+    if (upperHalf) {
+      hoverIndex--
     }
 
     let dropTargetIndex = hoverIndex
     if (props.hasChildren) {
       dropTargetIndex++
-    } else if (props.isListTop && dropAtTopOfList(monitor)) {
+    } else if (props.isListTop && upperHalf) {
       dropTargetIndex++
     }
 
@@ -82,8 +118,7 @@ export function DraggableListItem(props: Props): JSX.Element {
       dragIndex,
       hoverIndex,
       dropTargetRect,
-      isListTop: props.isListTop,
-      dropAtTopOfList: dropAtTopOfList(monitor),
+      upperHalf: upperHalf,
       indent: indent - dragIndent,
     })
 
@@ -108,18 +143,19 @@ export function DraggableListItem(props: Props): JSX.Element {
         return
       }
       const dragIndex = item.index
-      let hoverIndex = line
-
-      if (props.isListTop && dropAtTopOfList(monitor)) {
-        hoverIndex--
-      }
+      const hoverIndex = line
+      const upperHalf = isDropPositionUpperHalf(monitor)
 
       // Don't replace items with themselves
       if (dragIndex === hoverIndex) {
         return
       }
-      // Don't replace items with previous element
-      if (dragIndex - 1 === hoverIndex) {
+      // Don't replace items with previous element's bottom half.
+      if (dragIndex - 1 === hoverIndex && !upperHalf) {
+        return
+      }
+      // Don't replace items with next element's top half.
+      if (dragIndex + 1 === hoverIndex && upperHalf) {
         return
       }
       // Don't drop in subtasks.
@@ -131,17 +167,17 @@ export function DraggableListItem(props: Props): JSX.Element {
         return
       }
 
-      void execDrop(item, monitor, dragIndex, hoverIndex)
+      void execDrop(item, dragIndex, hoverIndex, upperHalf)
     },
     hover(_, monitor: DropTargetMonitor) {
-      setDropToTop(false)
+      setDropUpperHalf(false)
 
       if (!ref.current) {
         return
       }
 
-      if (props.isListTop && dropAtTopOfList(monitor)) {
-        setDropToTop(true)
+      if (isDropPositionUpperHalf(monitor)) {
+        setDropUpperHalf(true)
       }
     },
   })
@@ -153,18 +189,18 @@ export function DraggableListItem(props: Props): JSX.Element {
       height: ref.current.offsetHeight,
       top: ref.current.getBoundingClientRect().top,
       hasChildren: props.hasChildren,
-      childrenCount: props.childrenCount,
+      childrenCount: countChildren(ref.current),
     }),
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   })
 
   drop(ref)
 
-  const className = classnames(props.className, {
+  const className = classnames(props.className, DRAGGABLE_ITEM_CLASS, {
     'task-list-item--drag': isDragging,
     'task-list-item--drop-hover': isOver,
     'task-list-item--list-top': props.isListTop,
-    'task-list-item--drop-top': dropToTop,
+    'task-list-item--drop-top': dropUpperHalf,
     'task-list-item--parent': props.hasChildren,
   })
 

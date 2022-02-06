@@ -55,8 +55,11 @@ module.exports = {
     new StylelintPlugin({
       configFile: `${path.resolve(__dirname, '')}/.stylelintrc.json`,
     }),
-    new WebpackNotifierPlugin({title: function (params) {
-      return `[${params.status}] ${params.message}`;
-    }}),
+    new WebpackNotifierPlugin({
+      title: function (params) {
+        return `[${params.status}] ${params.message}`
+      },
+      alwaysNotify: true,
+    }),
   ],
 }

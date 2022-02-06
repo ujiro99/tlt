@@ -20,7 +20,6 @@ export const MdListItem: React.FC<unknown> = (
 
   let checkboxProps: TaskCheckBox
   let subItem: ReactElement
-  let subItemCount = 0
   let p: JSX.ElementChildrenAttribute
   for (const child of props.children) {
     switch (child.type) {
@@ -29,10 +28,6 @@ export const MdListItem: React.FC<unknown> = (
         break
       case 'ul':
         subItem = child
-        p = child.props as JSX.ElementChildrenAttribute
-        subItemCount = (p.children as ReactElement<TransProps>[]).filter(
-          (n) => n.props?.className === 'task-list-item',
-        ).length
         break
       case 'p':
         p = child.props as JSX.ElementChildrenAttribute
@@ -55,7 +50,6 @@ export const MdListItem: React.FC<unknown> = (
       isListTop={isListTop}
       inList={inList}
       hasChildren={subItem != null}
-      childrenCount={subItemCount}
     >
       {subItem ? (
         <TaskItemContiner>

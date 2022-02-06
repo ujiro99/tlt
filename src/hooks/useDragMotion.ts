@@ -87,8 +87,7 @@ type useMotionProps = {
   dragIndex: number
   hoverIndex: number
   dropTargetRect: DOMRect
-  dropAtTopOfList: boolean
-  isListTop: boolean
+  upperHalf: boolean
   indent: number
 }
 
@@ -100,8 +99,7 @@ export function useMotionExecuter(): (args: useMotionProps) => Promise<void> {
     dragIndex,
     hoverIndex,
     dropTargetRect,
-    dropAtTopOfList,
-    isListTop,
+    upperHalf,
     indent,
   }: useMotionProps) => {
     const newMotions: DragMotionState[] = []
@@ -115,17 +113,17 @@ export function useMotionExecuter(): (args: useMotionProps) => Promise<void> {
     if (dragIndex < hoverIndex) {
       // drog to down
       dropY = dropTargetRect.bottom - (dragItemTop + dragItemHeight)
-      if (isListTop && dropAtTopOfList) {
+      if (upperHalf) {
         dropY = dropTargetRect.top - (dragItemTop + dragItemHeight)
       }
     } else {
       // drog to up
       dropY = dropTargetRect.bottom - dragItemTop
-      if (isListTop && dropAtTopOfList) {
+      if (upperHalf) {
         dropY = dropTargetRect.top - dragItemTop
       }
     }
-    console.log(dropY)
+    Log.d(dropY)
     newMotions.push({
       line: dragIndex,
       props: { top: dropY, motionType: MOTION_TYPE.FADE_IN },
