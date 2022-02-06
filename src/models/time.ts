@@ -50,8 +50,8 @@ export class Time {
   static parseStr(timeStr: string): Time {
     const timeRegexps = [
       { type: TIME_TYPE.MINUTE, regexp: /(\d+)m/ },
-      { type: TIME_TYPE.HOUR, regexp: /(\d+)h/ },
-      { type: TIME_TYPE.DAY, regexp: /(\d+)d/ },
+      { type: TIME_TYPE.HOUR, regexp: /(\d+(?:\.\d+)?)h/ },
+      { type: TIME_TYPE.DAY, regexp: /(\d+(?:\.\d+)?)d/ },
     ]
 
     const time = new Time()
@@ -62,14 +62,28 @@ export class Time {
         if (!value) continue
         switch (tr.type) {
           case TIME_TYPE.MINUTE:
-            time._minutes = Number(value)
+            time._minutes += Number(value)
             break
-          case TIME_TYPE.HOUR:
-            time._hours = Number(value)
+          case TIME_TYPE.HOUR: {
+            const hour = Number(value)
+            const hourInt = Math.floor(hour)
+            const hourDecimal = hour - hourInt
+            time._hours += hourInt
+            time._minutes += Math.floor(hourDecimal * HOUR)
             break
-          case TIME_TYPE.DAY:
-            time._days = Number(value)
+          }
+          case TIME_TYPE.DAY: {
+            const days = Number(value)
+            const daysInt = Math.floor(days)
+            const daysDecimal = days - Math.floor(days)
+            time._days += daysInt
+            const hour = (daysDecimal) * DAY
+            const hourInt = Math.floor(hour)
+            const hourDecimal = hour - hourInt
+            time._hours += hourInt
+            time._minutes += Math.floor(hourDecimal * HOUR)
             break
+          }
         }
       }
     }

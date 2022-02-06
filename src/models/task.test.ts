@@ -4,6 +4,11 @@ const testParseTable = [
   ["- [ ] task title", "task title", "", false],
   ["- [x] task title", "task title", "", true],
   ["- [ ] tasktitle ~2h", "tasktitle", "2h", false],
+  ["- [ ] tasktitle ~1m", "tasktitle", "1m", false],
+  ["- [ ] tasktitle ~2.1h", "tasktitle", "2h6m", false],
+  ["- [ ] tasktitle ~2.1h4m", "tasktitle", "2h10m", false],
+  ["- [ ] tasktitle ~0.1d1h1m", "tasktitle", "3h25m", false],
+  ["- [ ] tasktitle ~1.1d1h1m", "tasktitle", "1d3h25m", false],
   ["- [ ] task title ~30m #sp:1", "task title", "30m", false],
 ]
 
