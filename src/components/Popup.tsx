@@ -6,11 +6,11 @@ import { HTML5Backend } from 'react-dnd-html5-backend'
 import { ErrorFallback } from '@/components/ErrorFallback'
 import { TaskTextarea } from '@/components/TaskTextarea'
 import { Menu, MODE, modeState } from '@/components/Menu'
-import { MdHeading } from '@/components/MdHeading'
-import { MdListItem } from '@/components/MdListItem'
+import { TaskContainer } from '@/components/TaskContainer'
 import { EmptyLine } from '@/components/EmptyLine'
 import { TaskTextState } from '@/services/state'
-import { useMarkdown } from '@/hooks/useMarkdown'
+import { Parser } from '@/services/parser'
+
 import '@/components/Popup.css'
 
 export default function Popup(): JSX.Element {
@@ -42,18 +42,12 @@ function TaskList() {
 
 function MarkdownHtml() {
   const state = TaskTextState()
-  const converted = useMarkdown(state.text, {
-    li: MdListItem,
-    h1: MdHeading,
-    h2: MdHeading,
-    h3: MdHeading,
-    h4: MdHeading,
-  })
+  const rootNode = Parser.parseMd(state.text)
 
   return (
     <DndProvider debugMode={true} backend={HTML5Backend}>
       <div className="task-container">
-        {converted}
+        <TaskContainer nodes={rootNode.children} />
         <EmptyLine />
       </div>
     </DndProvider>

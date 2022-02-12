@@ -1,5 +1,6 @@
 import React from 'react'
 import type { DragSource } from 'dnd'
+import { DragIndicator } from '@/components/DragIndicator'
 import '@/components/TaskController.css'
 
 type TaskControllerProps = {
@@ -39,11 +40,7 @@ export function TaskController(
   return (
     <div className="task-controll" onMouseDown={stopPropagation}>
       {!props.isComplete && <PlayStopButton {...props} />}
-      <button className="controll-dnd" ref={props.drag}>
-        <svg className="icon">
-          <use xlinkHref="/icons.svg#icon-drag-indicator" />
-        </svg>
-      </button>
+      <DragIndicator ref={props.drag} />
     </div>
   )
 }

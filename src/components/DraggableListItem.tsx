@@ -24,10 +24,9 @@ export interface DragItem {
 type Props = {
   line: number
   className: string
-  isListTop: boolean
-  inList: boolean
   hasChildren: boolean
   children: React.ReactElement | React.ReactElement[]
+  isHeading?: boolean
 }
 
 const DRAGGABLE_ITEM_CLASS = 'draggable-item'
@@ -41,7 +40,10 @@ function countChildren(rootElemnt: Element) {
   try {
     while (queue.length > 0) {
       const elm = queue.shift()
-      if (elm.className.indexOf(INNER_ITEM_CLASS) >= 0) {
+      if (
+        !elm.className.indexOf ||
+        elm.className.indexOf(INNER_ITEM_CLASS) >= 0
+      ) {
         // Do not scan to the inside of task-item.
         continue
       }
@@ -103,14 +105,13 @@ export function DraggableListItem(props: Props): JSX.Element {
     let dropTargetIndex = hoverIndex
     if (props.hasChildren) {
       dropTargetIndex++
-    } else if (props.isListTop && upperHalf) {
-      dropTargetIndex++
     }
 
     const dragTask = Task.parse(state.getTextByLine(dragIndex))
-    const dragIndent = dragTask.indent
+    const isTask = !!dragTask
+    const dragIndent = isTask ? dragTask.indent : 0
     const task = Task.parse(state.getTextByLine(dropTargetIndex))
-    const indent = task.indent
+    const indent = task ? task.indent : 0
 
     // Start animations.
     await execDragMotions({
@@ -123,7 +124,12 @@ export function DraggableListItem(props: Props): JSX.Element {
     })
 
     // Perform a row move
-    state.moveLines(dragIndex, hoverIndex, item.childrenCount + 1, indent)
+    state.moveLines(
+      dragIndex,
+      hoverIndex,
+      item.childrenCount + 1,
+      isTask ? indent : null,
+    )
     item.index = hoverIndex
   }
 
@@ -197,11 +203,10 @@ export function DraggableListItem(props: Props): JSX.Element {
   drop(ref)
 
   const className = classnames(props.className, DRAGGABLE_ITEM_CLASS, {
-    'task-list-item--drag': isDragging,
-    'task-list-item--drop-hover': isOver,
-    'task-list-item--list-top': props.isListTop,
-    'task-list-item--drop-top': dropUpperHalf,
-    'task-list-item--parent': props.hasChildren,
+    [`${DRAGGABLE_ITEM_CLASS}--drag`]: isDragging,
+    [`${DRAGGABLE_ITEM_CLASS}--drop-hover`]: isOver,
+    [`${DRAGGABLE_ITEM_CLASS}--drop-top`]: dropUpperHalf,
+    [`${DRAGGABLE_ITEM_CLASS}--parent`]: props.hasChildren,
   })
 
   const newChildren = Children.map(props.children, (child) => {

@@ -5,10 +5,14 @@ type Props = {
   children: React.ReactElement | React.ReactElement[]
 }
 
-export const TaskItemContiner: React.FC<Props> = (
-  props: Props & DragSource & DragPreview
+export const DragItemContainer: React.FC<Props> = (
+  props: Props & DragSource & DragPreview,
 ): JSX.Element => {
   const newChildren = Children.map(props.children, (child) => {
+    if (child.type === "ul") {
+      // Does not target sub-items.
+      return child
+    }
     return cloneElement(child, { drag: props.drag })
   })
 

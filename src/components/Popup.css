@@ -43,10 +43,3 @@ body {
   @apply pb-14;
   @apply overflow-scroll;
 }
-
-.task-container > div > .contains-task-list {
-  @apply border-gray-200;
-  @apply border-b;
-  @apply ml-[10px];
-  @apply mr-[12px];
-}

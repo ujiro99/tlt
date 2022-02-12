@@ -1,13 +1,13 @@
 .task-item {
   @apply relative;
-  @apply px-2;
+  @apply pl-4;
+  @apply pr-2;
   @apply py-2;
-  @apply leading-relaxed;
   @apply min-h-[40px];
+  @apply leading-relaxed;
   @apply flex;
   @apply flex-row;
   @apply items-center;
-  @apply focus:bg-indigo-50;
   @apply cursor-pointer;
   @apply select-none;
 

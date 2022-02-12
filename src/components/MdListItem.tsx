@@ -1,65 +1,45 @@
-import React, { ReactElement } from 'react'
+import React from 'react'
 
 import { DraggableListItem } from '@/components/DraggableListItem'
+import { TaskContainer } from '@/components/TaskContainer'
 import { TaskItem, TaskCheckBox } from '@/components/TaskItem'
-import { TaskItemContiner } from '@/components/TaskItemContainer'
-import { TaskTextState } from '@/services/state'
+import { DragItemContainer } from '@/components/DragItemContainer'
 import { useDragMotion } from '@/hooks/useDragMotion'
-import { TransProps } from 'popup'
+import { Node } from '@/models/node'
+import { Task } from '@/models/task'
 
-export const MdListItem: React.FC<unknown> = (
-  props: TransProps,
+type Props = {
+  node: Node,
+}
+
+export const MdListItem: React.FC<Props> = (
+  props: Props,
 ): JSX.Element => {
-  const line = props.node.position.start.line
-  const inList = props.node.position.start.column > 1
+  const node = props.node
+  const line = node.line
   const motionStyles = useDragMotion(line, false, true)
-
-  if (props.className !== 'task-list-item') {
-    return <li className={props.className}>{props.children}</li>
+  const task = node.data as Task
+  const hasChildren = node.children.length > 0
+  const checkboxProps: TaskCheckBox = {
+    checked: task.isComplete(),
+    disabled: false
   }
-
-  let checkboxProps: TaskCheckBox
-  let subItem: ReactElement
-  let p: JSX.ElementChildrenAttribute
-  for (const child of props.children) {
-    switch (child.type) {
-      case 'input':
-        checkboxProps = child.props as unknown as TaskCheckBox
-        break
-      case 'ul':
-        subItem = child
-        break
-      case 'p':
-        p = child.props as JSX.ElementChildrenAttribute
-        checkboxProps = (p.children as ReactElement[])[0]
-          .props as unknown as TaskCheckBox
-        break
-      default:
-        break
-    }
-  }
-
-  // Checks whether it is at the top of the list
-  const state = TaskTextState()
-  const isListTop = !state.isTaskStrByLine(line - 1)
 
   return (
     <DraggableListItem
-      className={props.className}
+      className={'task-list-item'}
       line={line}
-      isListTop={isListTop}
-      inList={inList}
-      hasChildren={subItem != null}
+      hasChildren={hasChildren}
     >
-      {subItem ? (
-        <TaskItemContiner>
+      {hasChildren ? (
+        <DragItemContainer>
           <TaskItem
             checkboxProps={checkboxProps}
             line={line}
             style={motionStyles}
           />
-          {subItem}
-        </TaskItemContiner>
+          <TaskContainer nodes={node.children} />
+        </DragItemContainer>
       ) : (
         <TaskItem checkboxProps={checkboxProps} line={line} />
       )}

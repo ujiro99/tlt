@@ -1,9 +1,10 @@
-.task-list-item {
+.draggable-item {
   $this: &;
-
   position: relative;
   width: 100%;
   top: 0;
+
+  @apply list-none;
 
   & + &,
   &:first-child {

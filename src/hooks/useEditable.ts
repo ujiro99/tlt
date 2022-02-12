@@ -24,7 +24,7 @@ export function useEditable(line: number): useEditableReturn {
     return focusLine === line && editingLine === line
   }
 
-  function focusOrEdit() {
+  const focusOrEdit = useCallback(() => {
     if (focusLine === line) {
       Log.v(`edit line: ${line}`)
       setEditingLine(line)
@@ -33,7 +33,7 @@ export function useEditable(line: number): useEditableReturn {
       setFocusLine(line)
       setEditingLine(0)
     }
-  }
+  }, [line, focusLine])
 
   return [isEditing(), focusOrEdit]
 }

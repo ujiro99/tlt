@@ -2,23 +2,21 @@ import React, { CSSProperties } from 'react'
 import { useRecoilState } from 'recoil'
 import classnames from 'classnames'
 
-import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
 import Log from '@/services/log'
+import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
 import { indentToMargin } from '@/services/util'
 import { Task } from '@/models/task'
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
 import { TaskController } from '@/components/TaskController'
-
-import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
+import { useEditable } from '@/hooks/useEditable'
 
 import type { DragSource, DragPreview } from 'dnd'
 
 import '@/components/TaskItem.css'
 
 export type TaskCheckBox = {
-  type: string
   checked: boolean
   disabled: boolean
 }
@@ -30,7 +28,7 @@ type TaskItemProps = {
 }
 
 export const TaskItem: React.FC<TaskItemProps> = (
-  props: TaskItemProps & DragSource & DragPreview
+  props: TaskItemProps & DragSource & DragPreview,
 ): JSX.Element => {
   const checkboxProps = props.checkboxProps
   const line = props.line
@@ -105,18 +103,20 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
   Log.v(`${line} ${id} ${isTracking() ? 'tracking' : 'stop'}`)
 
-  const taskItemClass = classnames({
-    'task-item': true,
-    'task-item--running': isTracking(),
-  })
+  const taskItemClass = classnames(
+    {
+      'task-item--running': isTracking(),
+    },
+    ['task-item', 'focus:bg-indigo-50'],
+  )
 
   const style = {
-    marginLeft: indentToMargin(task.indent),
+    textIndent: indentToMargin(task.indent),
     ...props.style,
   }
 
   if (isEditing) {
-    return <LineEditor line={line} />
+    return <LineEditor className="ml-[10px]" line={line} />
   }
 
   return (
