@@ -12,7 +12,7 @@ type Props = {
   node: Node,
 }
 
-export const MdListItem: React.FC<Props> = (
+export const MdTaskItem: React.FC<Props> = (
   props: Props,
 ): JSX.Element => {
   const node = props.node
