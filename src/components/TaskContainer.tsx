@@ -2,6 +2,7 @@ import React from 'react'
 import { Node, HeadingNode, NODE_TYPE } from '@/models/node'
 import { MdHeading } from '@/components/MdHeading'
 import { MdTaskItem } from '@/components/MdTaskItem'
+import { MdText } from '@/components/MdText'
 
 type Props = {
   nodes: Node[]
@@ -16,7 +17,7 @@ export const TaskContainer: React.FC<Props> = (
     } else if (node.type === NODE_TYPE.HEADING) {
       return <MdHeading key={node.key} node={node as HeadingNode} />
     } else {
-      return <li key={node.key}>{node.data}</li>
+      return <MdText key={node.key} node={node} />
     }
   })
 

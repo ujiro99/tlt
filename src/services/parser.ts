@@ -6,7 +6,7 @@ const HEADING_REGEXP = /^(#+) (.+)$/
 
 export const Parser = {
   parseMd(markdown: string): Node {
-    Log.d('start parse')
+    Log.v('start parse')
     const root = new Node(NODE_TYPE.ROOT, 0, null)
     let parent = root
     let level = 0
@@ -47,7 +47,7 @@ export const Parser = {
         root.children.push(newNode)
         parent = newNode
         level = 0
-      } else {
+      } else if (val.length > 0) {
         // other text
         const newNode = new Node(NODE_TYPE.OTHER, line, val, parent)
         parent.children.push(newNode)
