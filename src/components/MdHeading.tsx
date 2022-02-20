@@ -1,13 +1,12 @@
 import React from 'react'
 import classnames from 'classnames'
 
-import { TaskContainer } from '@/components/TaskContainer'
 import { useDragMotion } from '@/hooks/useDragMotion'
 import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
+import { TaskContainer } from '@/components/TaskContainer'
 import { DraggableListItem } from '@/components/DraggableListItem'
 import { DragIndicator } from '@/components/DragIndicator'
-import { DragItemContainer } from '@/components/DragItemContainer'
 import { HeadingNode } from '@/models/node'
 import Log from '@/services/log'
 
@@ -84,10 +83,8 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
       isHeading={true}
       hasChildren={true}
     >
-      <DragItemContainer>
-        <Heading heading={tagName} text={props.node.data} />
-        {hasChildren ? <TaskContainer nodes={props.node.children} /> : null}
-      </DragItemContainer>
+      <Heading heading={tagName} text={props.node.data} />
+      {hasChildren ? <TaskContainer nodes={props.node.children} /> : null}
     </DraggableListItem>
   )
 }

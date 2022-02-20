@@ -12,7 +12,7 @@ import { TaskController } from '@/components/TaskController'
 import { LineEditor } from '@/components/LineEditor'
 import { useEditable } from '@/hooks/useEditable'
 
-import type { DragSource, DragPreview } from 'dnd'
+import type { DragSource } from 'dnd'
 
 import '@/components/TaskItem.css'
 
@@ -28,7 +28,7 @@ type TaskItemProps = {
 }
 
 export const TaskItem: React.FC<TaskItemProps> = (
-  props: TaskItemProps & DragSource & DragPreview,
+  props: TaskItemProps & DragSource,
 ): JSX.Element => {
   const checkboxProps = props.checkboxProps
   const line = props.line
@@ -126,7 +126,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
       style={style}
       data-line={line}
       onClick={onClick}
-      ref={props.preview}
     >
       <div className="task-item__label">
         <Checkbox

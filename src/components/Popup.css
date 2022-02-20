@@ -40,6 +40,8 @@ body {
 .task-container {
   @apply relative;
   @apply h-full;
-  @apply pb-14;
   @apply overflow-scroll;
+  @apply pb-14;
+  padding-left: 10px;
+  padding-right: 10px;
 }

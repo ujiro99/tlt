@@ -19,7 +19,7 @@ const taskListTextState = atom({
   default: selector({
     key: 'savedTaskListTextState',
     get: async () => {
-      return (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as string
+      return ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as string) || ''
     },
   }),
   effects_UNSTABLE: [

@@ -68,11 +68,11 @@ export function DraggableListItem(props: Props): JSX.Element {
   const line = props.line
   const ref = useRef<HTMLLIElement>(null)
   const state = TaskTextState()
-  const [dropUpperHalf, setDropUpperHalf] = useState(false)
   const motionStyles = useDragMotion(line, props.hasChildren)
   const execDragMotions = useMotionExecuter()
 
   const isDropPositionUpperHalf = (monitor: DropTargetMonitor): boolean => {
+    if (!ref.current) return false
     let dropTargetRect = ref.current?.getBoundingClientRect()
     if (props.hasChildren) {
       dropTargetRect = ref.current.children[0].getBoundingClientRect()
@@ -175,17 +175,6 @@ export function DraggableListItem(props: Props): JSX.Element {
 
       void execDrop(item, dragIndex, hoverIndex, upperHalf)
     },
-    hover(_, monitor: DropTargetMonitor) {
-      setDropUpperHalf(false)
-
-      if (!ref.current) {
-        return
-      }
-
-      if (isDropPositionUpperHalf(monitor)) {
-        setDropUpperHalf(true)
-      }
-    },
   })
 
   const [{ isDragging }, drag, preview] = useDrag({
@@ -200,17 +189,23 @@ export function DraggableListItem(props: Props): JSX.Element {
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   })
 
-  drop(ref)
+  preview(drop(ref))
 
   const className = classnames(props.className, DRAGGABLE_ITEM_CLASS, {
     [`${DRAGGABLE_ITEM_CLASS}--drag`]: isDragging,
     [`${DRAGGABLE_ITEM_CLASS}--drop-hover`]: isOver,
-    [`${DRAGGABLE_ITEM_CLASS}--drop-top`]: dropUpperHalf,
     [`${DRAGGABLE_ITEM_CLASS}--parent`]: props.hasChildren,
   })
 
   const newChildren = Children.map(props.children, (child) => {
-    return cloneElement(child, { drag: drag, preview: preview })
+    if (child == null) {
+      return child
+    }
+    if (child.type === 'ul') {
+      // Does not target sub-items.
+      return child
+    }
+    return cloneElement(child, { drag: drag })
   })
 
   return (

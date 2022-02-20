@@ -9,7 +9,7 @@ import { DragIndicator } from '@/components/DragIndicator'
 import { Node } from '@/models/node'
 // import Log from '@/services/log'
 
-import type { DragSource, DragPreview } from 'dnd'
+import type { DragSource } from 'dnd'
 
 const baseClass =
   'relative leading-normal focus:bg-indigo-50 cursor-pointer px-3 py-2 min-h-[40px] group'
@@ -23,7 +23,7 @@ export const MdText = (props: Props): JSX.Element => {
   const motionStyles = useDragMotion(line)
 
   const MdTextInner: React.FC<Props> = (
-    props: Props & DragSource & DragPreview,
+    props: Props & DragSource,
   ): JSX.Element => {
     const [isEditing, focusOrEdit] = useEditable(line)
     if (isEditing) {
@@ -35,7 +35,6 @@ export const MdText = (props: Props): JSX.Element => {
         className={classnames(baseClass)}
         onClick={focusOrEdit}
         style={motionStyles}
-        ref={props.preview}
       >
         <span>{props.node.data}</span>
         <div className="absolute top-0 right-0 flex items-center invisible h-full pr-4 group-hover:visible">
