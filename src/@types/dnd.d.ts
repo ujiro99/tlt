@@ -1,10 +1,7 @@
-import { ConnectDragSource, ConnectDragPreview } from 'react-dnd'
+import { Node } from '@/models/node'
 
-declare module 'dnd' {
-  type DragSource = {
-    drag: ConnectDragSource
-  }
-  type DragPreview = {
-    preview: ConnectDragPreview
-  }
+export interface FlattenedNode extends Node {
+  parentId: null | string
+  depth: number
+  index: number
 }

@@ -3,7 +3,6 @@ import React from 'react'
 import { DraggableListItem } from '@/components/DraggableListItem'
 import { TaskContainer } from '@/components/TaskContainer'
 import { TaskItem, TaskCheckBox } from '@/components/TaskItem'
-// import { useDragMotion } from '@/hooks/useDragMotion'
 import { Node } from '@/models/node'
 import { Task } from '@/models/task'
 
@@ -14,7 +13,6 @@ type Props = {
 export const MdTaskItem: React.FC<Props> = (props: Props): JSX.Element => {
   const node = props.node
   const line = node.line
-  // const motionStyles = useDragMotion(line, false, true)
   const task = node.data as Task
   const hasChildren = node.children.length > 0
   const checkboxProps: TaskCheckBox = {
@@ -24,8 +22,9 @@ export const MdTaskItem: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <DraggableListItem
+      nodeId={`${node.id}`}
+      index={line}
       className={'task-list-item'}
-      line={line}
       hasChildren={hasChildren}
     >
       <TaskItem checkboxProps={checkboxProps} line={line} />

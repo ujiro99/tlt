@@ -47,7 +47,7 @@ export const Parser = {
         root.children.push(newNode)
         parent = newNode
         level = 0
-      } else if (val.length > 0) {
+      } else {
         // other text
         const newNode = new Node(NODE_TYPE.OTHER, line, val, parent)
         parent.children.push(newNode)

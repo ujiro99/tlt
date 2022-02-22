@@ -12,8 +12,6 @@ import { TaskController } from '@/components/TaskController'
 import { LineEditor } from '@/components/LineEditor'
 import { useEditable } from '@/hooks/useEditable'
 
-import type { DragSource } from 'dnd'
-
 import '@/components/TaskItem.css'
 
 export type TaskCheckBox = {
@@ -28,7 +26,7 @@ type TaskItemProps = {
 }
 
 export const TaskItem: React.FC<TaskItemProps> = (
-  props: TaskItemProps & DragSource,
+  props: TaskItemProps,
 ): JSX.Element => {
   const checkboxProps = props.checkboxProps
   const line = props.line
@@ -147,7 +145,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
         onClickStop={stopTracking}
         isTracking={isTracking()}
         isComplete={task.isComplete()}
-        drag={props.drag}
       />
     </div>
   )

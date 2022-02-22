@@ -18,7 +18,7 @@ export class Node {
   public parent: Node
   public children: Node[]
 
-  private _key: number
+  private _id: string
 
   public constructor(
     type: NodeType,
@@ -31,11 +31,11 @@ export class Node {
     this.data = data
     this.parent = parent
     this.children = [] as Node[]
-    this._key = Math.random()
+    this._id = `${Math.random()}`
   }
 
-  public get key(): number {
-    return this._key
+  public get id(): string {
+    return this._id
   }
 }
 
@@ -53,4 +53,10 @@ export class HeadingNode extends Node {
     super(type, line, data, parent)
     this.level = level
   }
+}
+
+export interface FlattenedNode extends Node {
+  parentKey: null | string
+  depth: number
+  index: number
 }

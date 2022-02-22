@@ -1,16 +1,12 @@
 import React from 'react'
 import classnames from 'classnames'
 
-import { useDragMotion } from '@/hooks/useDragMotion'
 import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
 import { TaskContainer } from '@/components/TaskContainer'
 import { DraggableListItem } from '@/components/DraggableListItem'
-import { DragIndicator } from '@/components/DragIndicator'
 import { HeadingNode } from '@/models/node'
 import Log from '@/services/log'
-
-import type { DragSource } from 'dnd'
 
 const baseClass =
   'font-bold relative text-gray-700 leading-normal focus:bg-indigo-50 cursor-pointer px-3'
@@ -38,7 +34,6 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   Log.v(props.node.data)
   const line = props.node.line
   const hasChildren = props.node.children.length > 0
-  const motionStyles = useDragMotion(line)
 
   const tagName = (
     props.node.level <= 6 ? `h${props.node.level}` : `h6`
@@ -50,7 +45,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
     otherClass[tagName],
   )
 
-  const Heading: React.FC<Props> = (props: Props & DragSource): JSX.Element => {
+  const Heading: React.FC<Props> = (props: Props): JSX.Element => {
     const TagName = props.heading
     const [isEditing, focusOrEdit] = useEditable(line)
     if (isEditing) {
@@ -66,12 +61,8 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
         tabIndex={0}
         className={classNames}
         onClick={focusOrEdit}
-        style={motionStyles}
       >
         <TagName>{props.text}</TagName>
-        <div className="absolute top-0 right-0 flex items-center invisible h-full pr-4 group-hover:visible">
-          <DragIndicator ref={props.drag} />
-        </div>
       </div>
     )
   }
@@ -79,7 +70,8 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   return (
     <DraggableListItem
       className={'heading'}
-      line={line}
+      nodeId={`${props.node.id}`}
+      index={line}
       isHeading={true}
       hasChildren={true}
     >

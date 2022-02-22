@@ -1,6 +1,4 @@
 import React from 'react'
-import type { DragSource } from 'dnd'
-import { DragIndicator } from '@/components/DragIndicator'
 import '@/components/TaskController.css'
 
 type TaskControllerProps = {
@@ -29,9 +27,7 @@ function PlayStopButton(props: PlayStopProps) {
   )
 }
 
-export function TaskController(
-  props: TaskControllerProps & DragSource,
-): JSX.Element {
+export function TaskController( props: TaskControllerProps): JSX.Element {
   // Stop event bubbling to avoid a parent element hide this component.
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -40,7 +36,6 @@ export function TaskController(
   return (
     <div className="task-controll" onMouseDown={stopPropagation}>
       {!props.isComplete && <PlayStopButton {...props} />}
-      <DragIndicator ref={props.drag} />
     </div>
   )
 }
