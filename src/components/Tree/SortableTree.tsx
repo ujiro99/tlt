@@ -89,8 +89,8 @@ export function SortableTree({
   indicator,
   indentationWidth = 50,
   removable,
-}: Props) {
-  const [items, setItems] = useState(() => defaultItems);
+}: Props): JSX.Element {
+  const [items, setItems] = useState<TreeItems>(() => defaultItems);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const [offsetLeft, setOffsetLeft] = useState(0);
@@ -249,9 +249,7 @@ export function SortableTree({
 
     if (projected && over) {
       const {depth, parentId} = projected;
-      const clonedItems: FlattenedItem[] = JSON.parse(
-        JSON.stringify(flattenTree(items))
-      );
+      const clonedItems: FlattenedItem[] = flattenTree(items)
       const overIndex = clonedItems.findIndex(({id}) => id === over.id);
       const activeIndex = clonedItems.findIndex(({id}) => id === active.id);
       const activeTreeItem = clonedItems[activeIndex];
@@ -294,7 +292,7 @@ export function SortableTree({
     eventName: string,
     activeId: string,
     overId?: string
-  ) {
+  ): string {
     if (overId && projected) {
       if (eventName !== 'onDragEnd') {
         if (
@@ -311,16 +309,14 @@ export function SortableTree({
         }
       }
 
-      const clonedItems: FlattenedItem[] = JSON.parse(
-        JSON.stringify(flattenTree(items))
-      );
+      const clonedItems: FlattenedItem[] = flattenTree(items)
       const overIndex = clonedItems.findIndex(({id}) => id === overId);
       const activeIndex = clonedItems.findIndex(({id}) => id === activeId);
       const sortedItems = arrayMove(clonedItems, activeIndex, overIndex);
 
       const previousItem = sortedItems[overIndex - 1];
 
-      let announcement;
+      let announcement: string;
       const movedVerb = eventName === 'onDragEnd' ? 'dropped' : 'moved';
       const nestedVerb = eventName === 'onDragEnd' ? 'dropped' : 'nested';
 
@@ -345,8 +341,6 @@ export function SortableTree({
 
       return announcement;
     }
-
-    return;
   }
 }
 

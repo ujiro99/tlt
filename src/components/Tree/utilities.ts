@@ -2,10 +2,17 @@ import {arrayMove} from '@dnd-kit/sortable';
 
 import type {FlattenedItem, TreeItem, TreeItems} from './types';
 
-export const iOS = /iPad|iPhone|iPod/.test(navigator.platform);
+export const iOS = /iP(hone|(o|a)d)/.test(navigator.userAgent)
 
 function getDragDepth(offset: number, indentationWidth: number) {
   return Math.round(offset / indentationWidth);
+}
+
+interface Projection {
+  depth: number;
+  maxDepth: number;
+  minDepth: number;
+  parentId: string | null;
 }
 
 export function getProjection(
@@ -14,7 +21,7 @@ export function getProjection(
   overId: string,
   dragOffset: number,
   indentationWidth: number
-) {
+): Projection {
   const overItemIndex = items.findIndex(({id}) => id === overId);
   const activeItemIndex = items.findIndex(({id}) => id === activeId);
   const activeItem = items[activeItemIndex];
@@ -110,7 +117,7 @@ export function buildTree(flattenedItems: FlattenedItem[]): TreeItems {
   return root.children;
 }
 
-export function findItem(items: TreeItem[], itemId: string) {
+export function findItem(items: TreeItem[], itemId: string): TreeItem {
   return items.find(({id}) => id === itemId);
 }
 
@@ -137,8 +144,8 @@ export function findItemDeep(
   return undefined;
 }
 
-export function removeItem(items: TreeItems, id: string) {
-  const newItems = [];
+export function removeItem(items: TreeItems, id: string): TreeItems {
+  const newItems = [] as TreeItems;
 
   for (const item of items) {
     if (item.id === id) {
@@ -160,7 +167,7 @@ export function setProperty<T extends keyof TreeItem>(
   id: string,
   property: T,
   setter: (value: TreeItem[T]) => TreeItem[T]
-) {
+): TreeItems {
   for (const item of items) {
     if (item.id === id) {
       item[property] = setter(item[property]);
@@ -185,7 +192,7 @@ function countChildren(items: TreeItem[], count = 0): number {
   }, count);
 }
 
-export function getChildCount(items: TreeItems, id: string) {
+export function getChildCount(items: TreeItems, id: string): number {
   if (!id) {
     return 0;
   }
@@ -195,7 +202,7 @@ export function getChildCount(items: TreeItems, id: string) {
   return item ? countChildren(item.children) : 0;
 }
 
-export function removeChildrenOf(items: FlattenedItem[], ids: string[]) {
+export function removeChildrenOf(items: FlattenedItem[], ids: string[]): FlattenedItem[] {
   const excludeParentIds = [...ids];
 
   return items.filter((item) => {

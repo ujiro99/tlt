@@ -1,7 +1,7 @@
 import React, {forwardRef, HTMLAttributes} from 'react';
 import classNames from 'classnames';
 
-import {Action, Handle, Remove} from '../../../../components';
+import {Action, Handle, Remove} from '../';
 import styles from './TreeItem.module.css';
 
 export interface Props extends HTMLAttributes<HTMLLIElement> {
@@ -22,7 +22,7 @@ export interface Props extends HTMLAttributes<HTMLLIElement> {
 }
 
 export const TreeItem = forwardRef<HTMLDivElement, Props>(
-  (
+  function _TreeItem(
     {
       childCount,
       clone,
@@ -40,9 +40,9 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
       value,
       wrapperRef,
       ...props
-    },
+    }: Props,
     ref
-  ) => {
+  ) {
     return (
       <li
         className={classNames(
