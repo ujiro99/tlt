@@ -23,10 +23,15 @@ module.exports = {
       {
         test: /\.css$/,
         use: [
-          MiniCssExtractPlugin.loader,
+          {
+            loader: MiniCssExtractPlugin.loader,
+          },
           {
             loader: 'css-loader',
-            options: { importLoaders: 1, sourceMap: true },
+            options: {
+              sourceMap: true,
+              esModule: true,
+            },
           },
           {
             loader: 'postcss-loader',
