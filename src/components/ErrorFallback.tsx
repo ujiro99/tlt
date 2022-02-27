@@ -8,8 +8,8 @@ type ErrorFallbackProp = {
 function Fallback(prop: ErrorFallbackProp): JSX.Element {
   return (
     <div role="alert">
-      <p>Something went wrong:</p>
-      <pre>{prop.error.message}</pre>
+      <p>Something went wrong</p>
+      <pre className="whitespace-normal">{prop.error.message}</pre>
     </div>
   )
 }
