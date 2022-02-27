@@ -38,8 +38,3 @@
   align-items: center;
   justify-content: flex-end;
 }
-
-.task-list-item--mouse-down .task-item:hover .task-controll,
-.task-list-item--hover .task-item:hover .task-controll {
-  display: none;
-}

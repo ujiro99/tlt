@@ -4,7 +4,6 @@ import classnames from 'classnames'
 
 import Log from '@/services/log'
 import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
-import { indentToMargin } from '@/services/util'
 import { Task } from '@/models/task'
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
@@ -109,7 +108,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
   )
 
   const style = {
-    textIndent: indentToMargin(task.indent),
     ...props.style,
   }
 

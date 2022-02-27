@@ -3,7 +3,6 @@ import classnames from 'classnames'
 
 import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
-import { DraggableListItem } from '@/components/DraggableListItem'
 import { Node } from '@/models/node'
 // import Log from '@/services/log'
 
@@ -30,13 +29,8 @@ export const MdText = (props: Props): JSX.Element => {
   }
 
   return (
-    <DraggableListItem
-      className={'raw-text'}
-      nodeId={`${props.node.id}`}
-      index={line}
-      hasChildren={false}
-    >
+    <div className='w-full raw-text' >
       <MdTextInner node={props.node} />
-    </DraggableListItem>
+    </div>
   )
 }

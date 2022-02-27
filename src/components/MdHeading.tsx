@@ -3,13 +3,11 @@ import classnames from 'classnames'
 
 import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
-import { TaskContainer } from '@/components/TaskContainer'
-import { DraggableListItem } from '@/components/DraggableListItem'
 import { HeadingNode } from '@/models/node'
 import Log from '@/services/log'
 
 const baseClass =
-  'font-bold relative text-gray-700 leading-normal focus:bg-indigo-50 cursor-pointer px-3'
+  'font-bold relative text-gray-700 leading-normal focus:bg-indigo-50 cursor-pointer px-3 group'
 const otherClass = {
   h1: 'text-base pt-4 pb-3',
   h2: 'text-base pt-4 pb-3',
@@ -33,14 +31,11 @@ type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 export const MdHeading = (props: NodeProps): JSX.Element => {
   Log.v(props.node.data)
   const line = props.node.line
-  const hasChildren = props.node.children.length > 0
 
   const tagName = (
     props.node.level <= 6 ? `h${props.node.level}` : `h6`
   ) as HeadingTag
   const classNames = classnames(
-    'group',
-    'focus:bg-indigo-50',
     baseClass,
     otherClass[tagName],
   )
@@ -68,15 +63,8 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   }
 
   return (
-    <DraggableListItem
-      className={'heading'}
-      nodeId={`${props.node.id}`}
-      index={line}
-      isHeading={true}
-      hasChildren={true}
-    >
+    <div className='w-full' >
       <Heading heading={tagName} text={props.node.data} />
-      {hasChildren ? <TaskContainer nodes={props.node.children} /> : null}
-    </DraggableListItem>
+    </div>
   )
 }

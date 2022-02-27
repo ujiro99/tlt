@@ -73,7 +73,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(function _TreeItem(
             {collapseIcon}
           </Action>
         )}
-        <span className={styles.Text}>{value}</span>
+        {props.children}
         {!clone && onRemove && <Remove onClick={onRemove} />}
         {clone && childCount && childCount > 1 ? (
           <span className={styles.Count}>{childCount}</span>

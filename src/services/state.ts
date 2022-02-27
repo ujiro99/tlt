@@ -14,7 +14,7 @@ import { Time } from '@/models/time'
 /**
  * Task text saved in chrome storage.
  */
-const taskListTextState = atom({
+export const taskListTextState = atom({
   key: 'taskListTextState',
   default: selector({
     key: 'savedTaskListTextState',

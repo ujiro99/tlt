@@ -1,4 +1,6 @@
-import { Node, FlattenedNode } from '@/models/node'
+import { Node, NODE_TYPE } from '@/models/node'
+import type { TreeItems } from '@/components/Tree/types'
+import Log from '@/services/log'
 
 /**
  * Stops processing for the specified time.
@@ -17,16 +19,26 @@ export function indentToMargin(indent: number): string {
   return `${indent / 4}em`
 }
 
-export function flatten(
-  nodes: Node[],
-  parentId: string | null = null,
-  depth = 0,
-): FlattenedNode[] {
-  return nodes.reduce<FlattenedNode[]>((acc, cur, index) => {
-    return [
-      ...acc,
-      { ...cur, parentId, depth, index } as unknown as FlattenedNode,
-      ...flatten(cur.children, cur.id, depth + 1),
-    ]
-  }, [])
+export function treeItemsToNodes(items: TreeItems): Node[] {
+  const queue: TreeItems = [...items]
+  const parent = new Node(NODE_TYPE.ROOT, 0, null)
+
+  try {
+    while (queue.length > 0) {
+      const elm = queue.shift()
+      const node = Node.tryParse(elm)
+      if (node) {
+        parent.children.push(node)
+      }
+
+      if (elm.children.length > 0) {
+        const nodes = treeItemsToNodes(elm.children)
+        node.children = nodes
+      }
+    }
+  } catch (e) {
+    Log.e(e)
+  }
+
+  return parent.children
 }
