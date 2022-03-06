@@ -7,14 +7,15 @@ import {
 } from '@/@types/state'
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
-
+import { Parser } from '@/services/parser'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
+import { Node, nodeToString } from '@/models/node'
 
 /**
  * Task text saved in chrome storage.
  */
-export const taskListTextState = atom({
+const taskListTextState = atom({
   key: 'taskListTextState',
   default: selector({
     key: 'savedTaskListTextState',
@@ -31,8 +32,28 @@ export const taskListTextState = atom({
   ],
 })
 
+const nodeState = atom({
+  key: 'nodeState',
+  default: selector({
+    key: 'nodeStateSelctor',
+    get: ({get}) => {
+      const text = get(taskListTextState)
+      return Parser.parseMd(text)
+    },
+  }),
+  effects_UNSTABLE: [
+    ({ onSet }) => {
+      onSet((node) => {
+        const text = nodeToString(node)
+        void Storage.set(STORAGE_KEY.TASK_LIST_TEXT, text)
+      })
+    },
+  ],
+})
+
 export function TaskTextState(): ITaskListState {
   const [textValue, setTextValue] = useRecoilState(taskListTextState)
+  const [node, setNode] = useRecoilState(nodeState)
   const [trackings, setTrackings] = useRecoilState(trackingStateList)
 
   const lines = textValue.split(/\n/)
@@ -155,6 +176,12 @@ export function TaskTextState(): ITaskListState {
       const newText = lines.join('\n')
       setText(newText)
     },
+    getNode: () => {
+      return node
+    },
+    setNode: (node: Node) => {
+      setNode(node)
+    }
   }
 }
 

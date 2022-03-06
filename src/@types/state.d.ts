@@ -1,4 +1,5 @@
 import { Time } from '@/models/time'
+import { Node } from '@/models/node'
 
 type TrackingState = {
   line: number
@@ -22,6 +23,8 @@ interface ITaskListState {
   setTextByLine: (line: number, text: string) => void
   isTaskStrByLine: (line: number) => boolean
   moveLines: (index: number, insertPosition: number, count?: number, indent?: number) => void
+  getNode: () => Node
+  setNode: (node: Node) => void
 }
 
 interface ITaskState {

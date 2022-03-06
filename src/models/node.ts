@@ -64,7 +64,7 @@ export class Node implements TreeItem {
     data: Task | string,
     parent?: Node,
   ) {
-    this.id = data ? data.toString() : "null"
+    this.id = `${Math.random()}`
     this.type = type
     this.line = line
     this.data = data

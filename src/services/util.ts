@@ -19,7 +19,7 @@ export function indentToMargin(indent: number): string {
   return `${indent / 4}em`
 }
 
-export function treeItemsToNodes(items: TreeItems): Node[] {
+export function treeItemsToNode(items: TreeItems): Node {
   const queue: TreeItems = [...items]
   const parent = new Node(NODE_TYPE.ROOT, 0, null)
 
@@ -32,13 +32,12 @@ export function treeItemsToNodes(items: TreeItems): Node[] {
       }
 
       if (elm.children.length > 0) {
-        const nodes = treeItemsToNodes(elm.children)
-        node.children = nodes
+        node.children = treeItemsToNode(elm.children).children
       }
     }
   } catch (e) {
     Log.e(e)
   }
 
-  return parent.children
+  return parent
 }
