@@ -15,7 +15,7 @@ type TimeObject = {
   _days: number
 }
 
-interface ITaskListState {
+interface ITaskManager {
   text: string
   lineCount: number,
   setText: (value: string) => void
@@ -25,8 +25,4 @@ interface ITaskListState {
   moveLines: (index: number, insertPosition: number, count?: number, indent?: number) => void
   getNode: () => Node
   setNode: (node: Node) => void
-}
-
-interface ITaskState {
-  stopAllTracking: () => void
 }

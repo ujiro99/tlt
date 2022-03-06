@@ -1,17 +1,17 @@
 import React from 'react'
 
-import { TaskTextState } from '@/services/state'
+import { useTaskManager } from '@/hooks/useTaskManager'
 
 export function TaskTextarea(): JSX.Element {
-  const state = TaskTextState()
+  const manager = useTaskManager()
 
   const onChange = ({ target: { value } }) => {
-    void state.setText(value)
+    void manager.setText(value)
   }
 
   return (
     <div className="task-textarea">
-      <textarea className="" onChange={onChange} value={state.text}></textarea>
+      <textarea className="" onChange={onChange} value={manager.text}></textarea>
     </div>
   )
 }

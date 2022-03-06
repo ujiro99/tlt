@@ -38,7 +38,7 @@ import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates'
 import { SortableTreeItem } from './components'
 
 import { useItemAdapter } from '@/hooks/useItemAdapter'
-import { TaskTextState } from '@/services/state'
+import { useTaskManager } from '@/hooks/useTaskManager'
 import { treeItemsToNode } from '@/services/util'
 
 const measuring = {
@@ -73,7 +73,7 @@ export function SortableTree({
     overId: string
   } | null>(null)
 
-  const state = TaskTextState()
+  const manager = useTaskManager()
   const [defaultNode] = useItemAdapter()
   const [root, setItems] = useState(defaultNode)
   const items = root.children
@@ -247,7 +247,7 @@ export function SortableTree({
   function setTreeItems(newItems: TreeItems) {
     setItems(treeItemsToNode(newItems))
     // update persistent data
-    state.setNode(treeItemsToNode(newItems))
+    manager.setNode(treeItemsToNode(newItems))
   }
 
   function handleDragCancel() {

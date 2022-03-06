@@ -1,4 +1,5 @@
 import React from 'react'
+
 import {
   Node,
   HeadingNode,
@@ -8,9 +9,7 @@ import {
 import { MdHeading } from '@/components/MdHeading'
 import { MdTaskItem } from '@/components/MdTaskItem'
 import { MdText } from '@/components/MdText'
-
-import { TaskTextState } from '@/services/state'
-
+import { useTaskManager } from '@/hooks/useTaskManager'
 import Log from '@/services/log'
 
 type useItemAdapterReturn = [
@@ -19,8 +18,8 @@ type useItemAdapterReturn = [
 ]
 
 export function useItemAdapter(): useItemAdapterReturn {
-  const state = TaskTextState()
-  const rootNode = state.getNode()
+  const manager = useTaskManager()
+  const rootNode = manager.getNode()
 
   const getItem = (id: string): JSX.Element => {
     const node = findNode(id, rootNode)

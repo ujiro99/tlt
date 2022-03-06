@@ -1,9 +1,9 @@
 import React, { CSSProperties } from 'react'
-import { useRecoilState } from 'recoil'
 import classnames from 'classnames'
 
 import Log from '@/services/log'
-import { TaskTextState, TaskState, trackingStateList } from '@/services/state'
+import { useTaskManager } from '@/hooks/useTaskManager'
+import { useTrackingState } from '@/hooks/useTrackingState'
 import { Task } from '@/models/task'
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
@@ -29,12 +29,11 @@ export const TaskItem: React.FC<TaskItemProps> = (
 ): JSX.Element => {
   const checkboxProps = props.checkboxProps
   const line = props.line
-  const state = TaskTextState()
-  const taskState = TaskState()
-  const [trackings, setTrackings] = useRecoilState(trackingStateList)
+  const manager = useTaskManager()
+  const { trackings, setTrackings, stopAllTracking } = useTrackingState()
   const [isEditing, focusOrEdit] = useEditable(line)
   const tracking = trackings.find((n) => n.line === line)
-  const task = Task.parse(state.getTextByLine(line))
+  const task = Task.parse(manager.getTextByLine(line))
   const id = `check-${task.id}`
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,12 +45,12 @@ export const TaskItem: React.FC<TaskItemProps> = (
     const checked = e.target.checked
     Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
     task.setComplete(checked)
-    void state.setTextByLine(line, task.toString())
+    void manager.setTextByLine(line, task.toString())
   }
 
   const startTracking = (e: React.MouseEvent<HTMLButtonElement>) => {
     // stop previous task.
-    taskState.stopAllTracking()
+    stopAllTracking()
 
     // start new task.
     const trackingStartTime = task.trackingStart()
@@ -82,7 +81,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
       // update markdown text
       task.trackingStop(tracking.trackingStartTime)
-      void state.setTextByLine(line, task.toString())
+      void manager.setTextByLine(line, task.toString())
     }
 
     e.stopPropagation()
