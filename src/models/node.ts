@@ -144,11 +144,14 @@ export function replaceNode(
   const parent = target.parent
   if (parent == null) return
 
-  // keep a id of the node.
+  // keep some data of the node.
   node.id = target.id
+  node.line = target.line
+  node.parent = parent
 
-  parent.children = parent.children.filter((n) => n.id !== target.id)
-  parent.children.push(node)
+  parent.children = parent.children.map((n) => {
+    return (n.id === target.id) ? target : n
+  })
 }
 
 export function nodeToString(root: Node | Node[]): string {

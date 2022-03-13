@@ -130,6 +130,10 @@ export function SortableTree({
     }
   }, [flattenedItems, offsetLeft])
 
+  useEffect(() => {
+    setItems(defaultNode)
+  }, [defaultNode])
+
   const announcements: Announcements = {
     onDragStart(id) {
       return `Picked up ${id}.`

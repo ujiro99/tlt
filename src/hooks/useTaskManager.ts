@@ -51,6 +51,7 @@ export function useTaskManager(): ITaskManager {
   const [root, setNode] = useRecoilState(nodeState)
 
   const flatten = flat([root])
+  flatten.shift() // remove a Root element.
 
   const getNodeByLine = (line: number): Node | null => {
     return findNode(root, (n) => n.line === line)
@@ -59,6 +60,8 @@ export function useTaskManager(): ITaskManager {
   const setNodeByLine = (node: Node, line: number) => {
     const [cloned] = clone([root])
     if (line > flatten.length) {
+      node.line = flatten.length + 1
+      node.parent = cloned
       cloned.children.push(node)
     } else {
       replaceNode(cloned, node, (n) => n.line === line)
