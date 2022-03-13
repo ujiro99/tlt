@@ -11,7 +11,7 @@ export function TaskTextarea(): JSX.Element {
 
   return (
     <div className="task-textarea">
-      <textarea className="" onChange={onChange} value={manager.text}></textarea>
+      <textarea className="" onChange={onChange} value={manager.getText()}></textarea>
     </div>
   )
 }

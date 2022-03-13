@@ -6,6 +6,7 @@ import Log from '@/services/log'
 import { TrackingState, TimeObject } from '@/@types/state'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
+import { findNode } from '@/models/node'
 
 export const trackingStateList = atom<TrackingState[]>({
   key: 'trackingStateList',
@@ -60,13 +61,17 @@ export function useTrackingState(): useTrackingStateReturn {
 
   function stopAllTracking() {
     Log.v('stopAllTracking')
+    const root = manager.getRoot()
     for (const tracking of trackings) {
       if (tracking.isTracking) {
-        const task = Task.parse(manager.getTextByLine(tracking.line))
-        task.trackingStop(tracking.trackingStartTime)
-        void manager.setTextByLine(tracking.line, task.toString())
+        const node = findNode(root, (n) => n.line === tracking.line)
+        const task = node.data
+        if (task instanceof Task) {
+          task.trackingStop(tracking.trackingStartTime)
+        }
       }
     }
+    manager.setNode(root)
     chrome.runtime.sendMessage({ command: 'stopTracking' })
     setTrackings([])
   }

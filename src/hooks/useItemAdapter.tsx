@@ -19,10 +19,10 @@ type useItemAdapterReturn = [
 
 export function useItemAdapter(): useItemAdapterReturn {
   const manager = useTaskManager()
-  const rootNode = manager.getNode()
+  const rootNode = manager.getRoot()
 
   const getItem = (id: string): JSX.Element => {
-    const node = findNode(id, rootNode)
+    const node = findNode(rootNode, (n) => n.id === id)
     if (!node) {
       Log.e(`${id} not found!`)
       // return null

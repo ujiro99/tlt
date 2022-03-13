@@ -58,7 +58,7 @@ function Copy(): JSX.Element {
   const [tooltipVisible, setTooltipVisible] = useState(false)
 
   const copyMarkdown = async () => {
-    await navigator.clipboard.writeText(manager.text)
+    await navigator.clipboard.writeText(manager.getText())
     await sleep(100)
     setTooltipVisible(true)
     await sleep(800)

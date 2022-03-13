@@ -33,7 +33,8 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const { trackings, setTrackings, stopAllTracking } = useTrackingState()
   const [isEditing, focusOrEdit] = useEditable(line)
   const tracking = trackings.find((n) => n.line === line)
-  const task = Task.parse(manager.getTextByLine(line))
+  const node = manager.getNodeByLine(line)
+  const task = node.data as Task
   const id = `check-${task.id}`
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,7 +46,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     const checked = e.target.checked
     Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
     task.setComplete(checked)
-    void manager.setTextByLine(line, task.toString())
+    manager.setNodeByLine(node, line)
   }
 
   const startTracking = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -78,10 +79,8 @@ export const TaskItem: React.FC<TaskItemProps> = (
       chrome.runtime.sendMessage({ command: 'stopTracking' })
       const newTrackings = trackings.filter((n) => n.line !== line)
       setTrackings(newTrackings)
-
-      // update markdown text
       task.trackingStop(tracking.trackingStartTime)
-      void manager.setTextByLine(line, task.toString())
+      manager.setNodeByLine(node, line)
     }
 
     e.stopPropagation()

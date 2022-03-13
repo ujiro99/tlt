@@ -34,15 +34,7 @@ export class Node implements TreeItem {
 
   public static tryParse(obj: unknown): Node | null {
     if (
-      hasProperties(
-        obj,
-        'type',
-        'line',
-        'data',
-        'parent',
-        'children',
-        'id',
-      )
+      hasProperties(obj, 'type', 'line', 'data', 'parent', 'children', 'id')
     ) {
       const type = obj.type as NodeType
       const line = obj.line as number
@@ -76,6 +68,14 @@ export class Node implements TreeItem {
     if (this.type === NODE_TYPE.ROOT) return ''
     return this.data.toString()
   }
+
+  public clone(): Node {
+    const c = new Node(this.type, this.line, this.data, this.parent)
+    c.id = this.id
+    c.children = [...this.children]
+    c.collapsed = this.collapsed
+    return c
+  }
 }
 
 export class HeadingNode extends Node {
@@ -98,25 +98,57 @@ export class HeadingNode extends Node {
   }
 }
 
-export function findNode(id: string, root: Node): Node | null {
+export function flat(nodes: Node[]): Node[] {
+  return nodes.reduce<Node[]>((acc, cur) => {
+    return [...acc, cur, ...flat(cur.children)]
+  }, [])
+}
+
+export function clone(nodes: Node[]): Node[] {
+  return nodes.map<Node>((a) => {
+    const b = a.clone()
+    b.children = clone(b.children)
+    return b
+  })
+}
+
+type Predicate = (n: Node) => boolean
+
+export function findNode(root: Node, predicate: Predicate): Node | null {
   const queue: Node[] = [root]
 
   // breadth first search
   try {
     while (queue.length > 0) {
       const elm = queue.shift()
-      if (elm.id === id) {
+      if (predicate(elm)) {
         return elm
       }
       if (elm.children.length > 0) {
-        const children = Array.from(elm.children)
-        queue.push(...children)
+        queue.push(...elm.children)
       }
     }
   } catch (e) {
     Log.w(e)
   }
   return null
+}
+
+export function replaceNode(
+  root: Node,
+  node: Node,
+  predicate: Predicate,
+): void {
+  const target = findNode(root, predicate)
+  if (target == null) return
+  const parent = target.parent
+  if (parent == null) return
+
+  // keep a id of the node.
+  node.id = target.id
+
+  parent.children = parent.children.filter((n) => n.id !== target.id)
+  parent.children.push(node)
 }
 
 export function nodeToString(root: Node | Node[]): string {
