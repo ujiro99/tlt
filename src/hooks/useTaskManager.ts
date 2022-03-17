@@ -5,11 +5,11 @@ import { Parser } from '@/services/parser'
 import {
   Node,
   nodeToString,
-  flat,
   clone,
   findNode,
   replaceNode,
 } from '@/models/node'
+import { flat } from '@/models/flattenedNode'
 
 /**
  * Task text saved in chrome storage.
@@ -50,7 +50,7 @@ interface ITaskManager {
 export function useTaskManager(): ITaskManager {
   const [root, setNode] = useRecoilState(nodeState)
 
-  const flatten = flat([root])
+  const flatten = flat(root)
   flatten.shift() // remove a Root element.
 
   const getNodeByLine = (line: number): Node | null => {

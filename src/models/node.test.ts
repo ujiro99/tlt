@@ -1,4 +1,4 @@
-import { Node, nodeToString } from '@/models/node'
+import { nodeToString } from '@/models/node'
 import { Parser } from '@/services/parser'
 
 describe('nodeToString', () => {
@@ -18,6 +18,23 @@ describe('nodeToString', () => {
     const rootNode = Parser.parseMd('some text')
     const text = nodeToString(rootNode)
     expect(text).toBe('some text')
+  });
+
+  test('nested task', () => {
+    const expectStr = `- [ ] parent
+  - [ ] child`
+    const rootNode = Parser.parseMd(expectStr)
+    const text = nodeToString(rootNode)
+    expect(text).toBe(expectStr)
+  });
+
+  test('nested task 2 level', () => {
+    const expectStr = `- [ ] parent
+  - [ ] child
+    - [x] grandchild`
+    const rootNode = Parser.parseMd(expectStr)
+    const text = nodeToString(rootNode)
+    expect(text).toBe(expectStr)
   });
 
 })

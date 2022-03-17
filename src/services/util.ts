@@ -10,15 +10,6 @@ export function sleep(msec: number): Promise<unknown> {
   return new Promise((resolve) => setTimeout(resolve, msec))
 }
 
-/**
- * Convert indent width to margin.
- * @param {number} Number of indent spaces
- * @return margin left.
- */
-export function indentToMargin(indent: number): string {
-  return `${indent / 4}em`
-}
-
 export function treeItemsToNode(items: TreeItems): Node {
   const queue: TreeItems = [...items]
   const parent = new Node(NODE_TYPE.ROOT, 0, null)

@@ -1,6 +1,7 @@
 import { TreeItem } from '@/components/Tree/types'
 import { Task } from '@/models/task'
 import Log from '@/services/log'
+import { flat } from './flattenedNode'
 
 /**
  * Represent types of the Node.
@@ -98,12 +99,6 @@ export class HeadingNode extends Node {
   }
 }
 
-export function flat(nodes: Node[]): Node[] {
-  return nodes.reduce<Node[]>((acc, cur) => {
-    return [...acc, cur, ...flat(cur.children)]
-  }, [])
-}
-
 export function clone(nodes: Node[]): Node[] {
   return nodes.map<Node>((a) => {
     const b = a.clone()
@@ -150,35 +145,26 @@ export function replaceNode(
   node.parent = parent
 
   parent.children = parent.children.map((n) => {
-    return (n.id === target.id) ? target : n
+    return n.id === target.id ? target : n
   })
 }
 
-export function nodeToString(root: Node | Node[]): string {
-  const queue: Node[] = []
-  const lines = []
+function depthToIndent(depth: number): number {
+  return depth * 2
+}
 
-  if (Array.isArray(root)) {
-    queue.unshift(...root)
-  } else {
-    if (root.type === NODE_TYPE.ROOT) {
-      queue.unshift(...root.children)
-    } else {
-      queue.unshift(root)
+export function nodeToString(root: Node): string {
+  const flatten = flat(root)
+  const lines = flatten.map((item) => {
+    if (item.node.type === NODE_TYPE.TASK) {
+      let task = item.node.data as Task
+      task = task.clone()
+      task.indent = depthToIndent(item.depth)
+      item.node = item.node.clone()
+      item.node.data = task
     }
-  }
-
-  try {
-    while (queue.length > 0) {
-      const elm = queue.shift()
-      lines.push(elm.toString())
-      if (elm.children.length > 0) {
-        queue.unshift(...elm.children)
-      }
-    }
-  } catch (e) {
-    Log.w(e)
-  }
+    return item.node.toString()
+  })
 
   return lines.join('\n')
 }

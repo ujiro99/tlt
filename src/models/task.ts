@@ -90,8 +90,7 @@ export class Task {
   public taskState: TaskState
   public estimatedTimes: Time
   public actualTimes: Time
-
-  private _indent: number
+  public indent: number
 
   /**
    * Constructor called only by the parse function.
@@ -101,7 +100,7 @@ export class Task {
     this.title = title
     this.taskState = state
     this.actualTimes = time
-    this._indent = indent
+    this.indent = indent
   }
 
   /**
@@ -141,7 +140,7 @@ export class Task {
   }
 
   public toString(): string {
-    const indent = ''.padStart(this._indent, ' ')
+    const indent = ''.padStart(this.indent, ' ')
     let str = `${indent}- [ ] ${this.title}`
     // state
     if (this.isComplete()) {
@@ -163,11 +162,10 @@ export class Task {
     return this.taskState === TASK_STATE.RUNNING
   }
 
-  public get indent(): number {
-    return this._indent
-  }
-
-  public set indent(indent: number) {
-    this._indent = indent
+  public clone(): Task {
+    const newTask = new Task(this.taskState, this.title, this.actualTimes, this.indent)
+    newTask.id = this.id
+    newTask.estimatedTimes = this.estimatedTimes
+    return newTask
   }
 }
