@@ -23,23 +23,19 @@ export const Parser = {
 
           if (level === newLevel) {
             // Insert as a sibling.
-            const newNode = new Node(NODE_TYPE.TASK, line, task, parent)
-            parent.children.push(newNode)
+            // Do not change parent.
           } else if (level < newLevel) {
             // Insert as a child of the previous element.
             const prev = parent.children[parent.children.length - 1]
-            if (prev && prev.type === NODE_TYPE.TASK) parent = prev
-
-            const newNode = new Node(NODE_TYPE.TASK, line, task, parent)
-            parent.children.push(newNode)
-            level = newLevel
+            if (prev && prev.canHaveChildren()) parent = prev
           } else if (level > newLevel) {
             // Insert as a child of parent of parent.
             parent = parent.parent
-            const newNode = new Node(NODE_TYPE.TASK, line, task, parent)
-            parent.children.push(newNode)
-            level = newLevel
           }
+
+          const newNode = new Node(NODE_TYPE.TASK, line, task, parent)
+          parent.children.push(newNode)
+          level = newLevel
         } else if (HEADING_REGEXP.test(val)) {
           // heading
           const m = HEADING_REGEXP.exec(val)
@@ -52,12 +48,13 @@ export const Parser = {
             root,
           )
           root.children.push(newNode)
-          parent = newNode
+          parent = root
           level = 0
         } else {
           // other text
-          const newNode = new Node(NODE_TYPE.OTHER, line, val, parent)
-          parent.children.push(newNode)
+          const newNode = new Node(NODE_TYPE.OTHER, line, val, root)
+          root.children.push(newNode)
+          parent = root
           level = 0
         }
       } catch (e) {

@@ -41,6 +41,7 @@ export class Node implements TreeItem {
       const line = obj.line as number
       const data = obj.data as string
       const parent = obj.parent as Node
+
       const node = new Node(type, line, data, parent)
       const children = obj.children as Array<Node>
       node.children.push(...children)
@@ -77,11 +78,37 @@ export class Node implements TreeItem {
     c.collapsed = this.collapsed
     return c
   }
+
+  public canHaveChildren(): boolean {
+    if (this.type === NODE_TYPE.ROOT) return false
+    if (this.type === NODE_TYPE.OTHER) return false
+    return true
+  }
 }
 
 export class HeadingNode extends Node {
   public level: number
   public data: string
+
+  public static tryParse(obj: unknown): HeadingNode | null {
+    if (
+      hasProperties(obj, 'type', 'line', 'data', 'parent', 'children', 'id', 'level')
+    ) {
+      const type = obj.type as NodeType
+      const line = obj.line as number
+      const data = obj.data as string
+      const parent = obj.parent as Node
+      const level = obj.level as number
+
+      const node = new HeadingNode(type, line, data, level, parent)
+      const children = obj.children as Array<Node>
+      node.children.push(...children)
+      node.id = obj.id as string
+      return node
+    } else {
+      return null
+    }
+  }
 
   public constructor(
     type: NodeType,

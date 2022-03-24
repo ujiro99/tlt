@@ -27,9 +27,20 @@ describe('parserMd', () => {
     expect(rootNode.children[0].type).toBe(NODE_TYPE.OTHER)
   })
 
-  test('parse a h2 with a subtask', () => {
+  test('parse a h2 and a task', () => {
     const text = `## heading
 - [ ] text`
+    const rootNode = Parser.parseMd(text)
+    const h2 = rootNode.children[0] as HeadingNode
+    expect(h2.type).toBe(NODE_TYPE.HEADING)
+    expect(h2.level).toBe(2)
+    const t = rootNode.children[1]
+    expect(t.type).toBe(NODE_TYPE.TASK)
+  })
+
+  test('parse a h2 with a subtask', () => {
+    const text = `## heading
+  - [ ] text`
     const rootNode = Parser.parseMd(text)
     const h2 = rootNode.children[0] as HeadingNode
     expect(h2.type).toBe(NODE_TYPE.HEADING)
@@ -72,16 +83,43 @@ describe('parserMd', () => {
     const rootNode = Parser.parseMd(text)
     const head1 = rootNode.children[0]
     expect(head1.type).toBe(NODE_TYPE.HEADING)
-    const t1 = head1.children[0]
+    const t1 = rootNode.children[1]
     expect(t1.type).toBe(NODE_TYPE.TASK)
     expect(t1.children[0].type).toBe(NODE_TYPE.TASK)
     expect(t1.children[1].type).toBe(NODE_TYPE.TASK)
-    const t2 = head1.children[1]
+    const t2 = rootNode.children[2]
     expect(t2.type).toBe(NODE_TYPE.TASK)
-
-    const head2 = rootNode.children[1]
+    const other = rootNode.children[3]
+    expect(other.type).toBe(NODE_TYPE.OTHER)
+    const head2 = rootNode.children[4]
     expect(head2.type).toBe(NODE_TYPE.HEADING)
     const t3 = head2.children[0]
     expect(t3.type).toBe(NODE_TYPE.TASK)
   })
+
+  test('parse tasks 2', () => {
+    const text = `# heading1
+- [ ] task
+  - [ ] task2
+
+## heading2
+- [ ] task3`
+    const rootNode = Parser.parseMd(text)
+    const h1 = rootNode.children[0]
+    expect(h1.type).toBe(NODE_TYPE.HEADING)
+
+    const t1 = rootNode.children[1]
+    expect(t1.type).toBe(NODE_TYPE.TASK)
+    expect(t1.children[0].type).toBe(NODE_TYPE.TASK)
+
+    const empty = rootNode.children[2]
+    expect(empty.type).toBe(NODE_TYPE.OTHER)
+
+    const h2 = rootNode.children[3]
+    expect(h2.type).toBe(NODE_TYPE.HEADING)
+
+    const t2 = rootNode.children[4]
+    expect(t2.type).toBe(NODE_TYPE.TASK)
+  })
+
 })
