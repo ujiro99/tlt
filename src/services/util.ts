@@ -10,7 +10,22 @@ export function sleep(msec: number): Promise<unknown> {
   return new Promise((resolve) => setTimeout(resolve, msec))
 }
 
-// TODO refactoring.
+function tryParse(obj: unknown): Node | HeadingNode | null {
+  let node: Node
+  node = HeadingNode.tryParse(obj)
+  if (node) {
+    return node
+  }
+  node = Node.tryParse(obj)
+  if (node) {
+    return node
+  }
+}
+
+/**
+ * Convert TreeItems to Node.
+ * @param {TreeItems} items Convertion target.
+ */
 export function treeItemsToNode(items: TreeItems): Node {
   let queue: TreeItems = [...items]
   let parent = new Node(NODE_TYPE.ROOT, 0, null)
@@ -25,21 +40,13 @@ export function treeItemsToNode(items: TreeItems): Node {
 
   try {
     while (queue.length > 0) {
-      const elm = queue.shift()
-
-      let node: Node
-      node = HeadingNode.tryParse(elm)
+      const obj = queue.shift()
+      const node = tryParse(obj)
       if (node) {
         parent.children.push(node)
-      } else {
-        node = Node.tryParse(elm)
-        if (node) {
-          parent.children.push(node)
+        if (obj.children.length > 0) {
+          node.children = treeItemsToNode(obj.children).children
         }
-      }
-
-      if (elm.children.length > 0) {
-        node.children = treeItemsToNode(elm.children).children
       }
     }
   } catch (e) {
