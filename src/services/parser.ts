@@ -22,14 +22,16 @@ export const Parser = {
         const depth = Math.floor(getIndentCount(val) / 2)
         if (prevDepth === depth) {
           // Insert as a sibling.
-          // Do not change parent.
+          // Keep parent.
         } else if (prevDepth < depth) {
           // Insert as a child of the previous element.
           const prev = parent.children[parent.children.length - 1]
           if (prev) parent = prev
         } else if (prevDepth > depth) {
-          // Insert as a child of parent of parent.
-          parent = parent.parent
+          // Lift up.
+          for (let d = prevDepth - depth; d > 0; d--) {
+            parent = parent.parent
+          }
         }
         prevDepth = depth
 

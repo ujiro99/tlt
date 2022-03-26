@@ -99,27 +99,21 @@ describe('parserMd', () => {
 
   test('parse tasks 2', () => {
     const text = `# heading1
-- [ ] task
-  - [ ] task2
-
+  - [ ] task
+    - [ ] task2
 ## heading2
-- [ ] task3`
+  - [ ] task3`
     const rootNode = Parser.parseMd(text)
     const h1 = rootNode.children[0]
     expect(h1.type).toBe(NODE_TYPE.HEADING)
 
-    const t1 = rootNode.children[1]
+    const t1 = h1.children[0]
     expect(t1.type).toBe(NODE_TYPE.TASK)
     expect(t1.children[0].type).toBe(NODE_TYPE.TASK)
 
-    const empty = rootNode.children[2]
-    expect(empty.type).toBe(NODE_TYPE.OTHER)
-
-    const h2 = rootNode.children[3]
+    const h2 = rootNode.children[1]
     expect(h2.type).toBe(NODE_TYPE.HEADING)
-
-    const t2 = rootNode.children[4]
-    expect(t2.type).toBe(NODE_TYPE.TASK)
+    expect(h2.children[0].type).toBe(NODE_TYPE.TASK)
   })
 
   test('parse text in heading', () => {
