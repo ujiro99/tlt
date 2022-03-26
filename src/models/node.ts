@@ -78,12 +78,6 @@ export class Node implements TreeItem {
     c.collapsed = this.collapsed
     return c
   }
-
-  public canHaveChildren(): boolean {
-    if (this.type === NODE_TYPE.ROOT) return false
-    if (this.type === NODE_TYPE.OTHER) return false
-    return true
-  }
 }
 
 export class HeadingNode extends Node {
@@ -176,8 +170,8 @@ export function replaceNode(
   })
 }
 
-function depthToIndent(depth: number): number {
-  return depth * 2
+function depthToIndent(depth: number): string {
+  return "".padStart(depth * 2, " ")
 }
 
 export function nodeToString(root: Node): string {
@@ -186,11 +180,11 @@ export function nodeToString(root: Node): string {
     if (item.node.type === NODE_TYPE.TASK) {
       let task = item.node.data as Task
       task = task.clone()
-      task.indent = depthToIndent(item.depth)
       item.node = item.node.clone()
       item.node.data = task
     }
-    return item.node.toString()
+    const indent = depthToIndent(item.depth)
+    return `${indent}${item.node.toString()}`
   })
 
   return lines.join('\n')

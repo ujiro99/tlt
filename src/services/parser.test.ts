@@ -122,4 +122,37 @@ describe('parserMd', () => {
     expect(t2.type).toBe(NODE_TYPE.TASK)
   })
 
+  test('parse text in heading', () => {
+    const text = `# heading1
+  some text`
+    const rootNode = Parser.parseMd(text)
+    const h1 = rootNode.children[0]
+    expect(h1.type).toBe(NODE_TYPE.HEADING)
+    const other = h1.children[0]
+    expect(other.type).toBe(NODE_TYPE.OTHER)
+  })
+
+  test('parse heading in heading', () => {
+    const text = `# heading1
+  ## heading2`
+    const rootNode = Parser.parseMd(text)
+    const h1 = rootNode.children[0]
+    expect(h1.type).toBe(NODE_TYPE.HEADING)
+    const h2 = h1.children[0]
+    expect(h2.type).toBe(NODE_TYPE.HEADING)
+  })
+
+  test('parse task and heading in heading', () => {
+    const text = `# heading1
+  - [ ] child
+  ## heading2`
+    const rootNode = Parser.parseMd(text)
+    const h1 = rootNode.children[0]
+    expect(h1.type).toBe(NODE_TYPE.HEADING)
+    const t = h1.children[0]
+    expect(t.type).toBe(NODE_TYPE.TASK)
+    const h2 = h1.children[1]
+    expect(h2.type).toBe(NODE_TYPE.HEADING)
+  })
+
 })

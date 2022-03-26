@@ -39,7 +39,7 @@ describe('treeItemsToNode', () => {
     expect(h1.toString()).toBe("# heading")
     const task = h1.children[0]
     expect(task.type).toBe(NODE_TYPE.TASK)
-    expect(task.toString()).toBe("  - [ ] text")
+    expect(task.toString()).toBe("- [ ] text")
   })
 
   test('to any string', () => {

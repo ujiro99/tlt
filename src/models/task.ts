@@ -17,7 +17,6 @@ export class Task {
 
   // Regular expressions for markdown parsing
   private static taskRegexp = /- (\[\s\]|\[x\])\s.+$/
-  private static indentRegexp = /^ +/
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
@@ -34,22 +33,13 @@ export class Task {
 
   public static parse(taskStr: string): Task {
     if (Task.isTaskStr(taskStr)) {
-      const indent = Task.parseIndent(taskStr)
       const state = Task.parseState(taskStr)
       const title = Task.parseTitle(taskStr)
       const time = Task.parseTime(taskStr)
-      return new Task(state, title, time, indent)
+      return new Task(state, title, time)
     }
     Log.v("Can't find task: " + taskStr)
     return null
-  }
-
-  private static parseIndent(taskStr: string): number {
-    if (Task.indentRegexp.test(taskStr)) {
-      const m = Task.indentRegexp.exec(taskStr)
-      return m[0].length
-    }
-    return 0
   }
 
   private static parseState(taskStr: string): TaskState {
@@ -90,17 +80,15 @@ export class Task {
   public taskState: TaskState
   public estimatedTimes: Time
   public actualTimes: Time
-  public indent: number
 
   /**
    * Constructor called only by the parse function.
    */
-  private constructor(state: TaskState, title: string, time: Time, indent: number) {
+  private constructor(state: TaskState, title: string, time: Time) {
     this.id = Task.getId()
     this.title = title
     this.taskState = state
     this.actualTimes = time
-    this.indent = indent
   }
 
   /**
@@ -140,8 +128,7 @@ export class Task {
   }
 
   public toString(): string {
-    const indent = ''.padStart(this.indent, ' ')
-    let str = `${indent}- [ ] ${this.title}`
+    let str = `- [ ] ${this.title}`
     // state
     if (this.isComplete()) {
       str = str.replace('[ ]', '[x]')
@@ -163,7 +150,7 @@ export class Task {
   }
 
   public clone(): Task {
-    const newTask = new Task(this.taskState, this.title, this.actualTimes, this.indent)
+    const newTask = new Task(this.taskState, this.title, this.actualTimes)
     newTask.id = this.id
     newTask.estimatedTimes = this.estimatedTimes
     return newTask

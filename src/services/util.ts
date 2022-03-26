@@ -55,3 +55,17 @@ export function treeItemsToNode(items: TreeItems): Node {
 
   return parent
 }
+
+/**
+ * Count the number of indents.
+ * @param {string} str String to be counted.
+ * @return Number of indent spaces.
+ */
+export function getIndentCount(str: string): number {
+  const indentRegexp = /^ +/
+  if (indentRegexp.test(str)) {
+    const m = indentRegexp.exec(str)
+    return m[0].length
+  }
+  return 0
+}
