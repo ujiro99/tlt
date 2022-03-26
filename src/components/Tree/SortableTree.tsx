@@ -72,6 +72,7 @@ export function SortableTree({
     parentId: string | null
     overId: string
   } | null>(null)
+  const [moved, setMoved] = useState(false)
 
   const manager = useTaskManager()
   const [defaultNode] = useItemAdapter()
@@ -222,6 +223,7 @@ export function SortableTree({
 
   function handleDragMove({ delta }: DragMoveEvent) {
     setOffsetLeft(delta.x)
+    setMoved(true)
   }
 
   function handleDragOver({ over }: DragOverEvent) {
@@ -232,7 +234,7 @@ export function SortableTree({
     console.log('handleDragEnd')
     resetState()
 
-    if (projected && over) {
+    if (projected && over && moved) {
       const { depth, parentId } = projected
       const clonedItems: FlattenedItem[] = flattenTree(items)
       const overIndex = clonedItems.findIndex(({ id }) => id === over.id)
@@ -263,6 +265,7 @@ export function SortableTree({
     setActiveId(null)
     setOffsetLeft(0)
     setCurrentPosition(null)
+    setMoved(false)
 
     document.body.style.setProperty('cursor', '')
   }
