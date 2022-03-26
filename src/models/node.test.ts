@@ -45,9 +45,7 @@ describe('nodeToString', () => {
       some text
       - [ ] task`
     const rootNode = Parser.parseMd(expectStr)
-    console.log(rootNode)
     const text = nodeToString(rootNode)
-    console.log(text)
     expect(text).toBe(expectStr)
   })
 })
