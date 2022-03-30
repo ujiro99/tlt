@@ -115,15 +115,24 @@ export class HeadingNode extends Node {
     this.level = level
   }
 
+  public clone(): HeadingNode {
+    const c = new HeadingNode(this.type, this.line, this.data, this.level, this.parent)
+    c.id = this.id
+    c.children = [...this.children]
+    c.collapsed = this.collapsed
+    return c
+  }
+
   public toString(): string {
     return ''.padStart(this.level, '#') + ' ' + this.data
   }
 }
 
-export function clone(nodes: Node[]): Node[] {
+export function clone(nodes: Node[], parent?: Node): Node[] {
   return nodes.map<Node>((a) => {
     const b = a.clone()
-    b.children = clone(b.children)
+    b.parent = parent
+    b.children = clone(b.children, b)
     return b
   })
 }
@@ -166,7 +175,7 @@ export function replaceNode(
   node.parent = parent
 
   parent.children = parent.children.map((n) => {
-    return n.id === target.id ? target : n
+    return n.id === node.id ? node : n
   })
 }
 

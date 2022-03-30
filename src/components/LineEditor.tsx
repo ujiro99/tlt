@@ -45,6 +45,8 @@ export function LineEditor(props: Props): JSX.Element {
     if (e.keyCode === KEYCODE_ENTER && !e.shiftKey) {
       finish()
     }
+    // Prevent key events to reach the SortableTree.
+    e.stopPropagation()
   }
 
   return (
