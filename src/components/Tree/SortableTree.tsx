@@ -37,7 +37,6 @@ import type { FlattenedItem, SensorContext, TreeItems } from './types'
 import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates'
 import { SortableTreeItem } from './components'
 
-import { useItemAdapter } from '@/hooks/useItemAdapter'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { treeItemsToNode } from '@/services/util'
 
@@ -75,7 +74,7 @@ export function SortableTree({
   const [moved, setMoved] = useState(false)
 
   const manager = useTaskManager()
-  const [defaultNode] = useItemAdapter()
+  const defaultNode = manager.getRoot()
   const [root, setItems] = useState(defaultNode)
   const items = root.children
 

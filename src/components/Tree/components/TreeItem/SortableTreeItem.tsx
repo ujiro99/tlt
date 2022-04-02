@@ -35,7 +35,7 @@ export function SortableTreeItem({ id, depth, ...props }: Props): JSX.Element {
     transition,
   }
 
-  const [rootNode, getItem] = useItemAdapter()
+  const [getItem] = useItemAdapter()
   const item = getItem(id)
 
   return (

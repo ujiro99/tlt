@@ -13,7 +13,6 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import Log from '@/services/log'
 
 type useItemAdapterReturn = [
-  rootNode: Node,
   getItem: (id: string) => JSX.Element,
 ]
 
@@ -39,5 +38,5 @@ export function useItemAdapter(): useItemAdapterReturn {
     }
   }
 
-  return [rootNode, getItem]
+  return [getItem]
 }
