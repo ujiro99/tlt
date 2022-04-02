@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react'
+import React, { useEffect, CSSProperties } from 'react'
 import classnames from 'classnames'
 
 import Log from '@/services/log'
@@ -30,12 +30,20 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const checkboxProps = props.checkboxProps
   const line = props.line
   const manager = useTaskManager()
-  const { trackings, setTrackings, stopAllTracking } = useTrackingState()
+  const { trackings, addTracking, removeTracking, stopOtherTracking } = useTrackingState()
   const [isEditing, focusOrEdit] = useEditable(line)
   const tracking = trackings.find((n) => n.line === line)
   const node = manager.getNodeByLine(line)
   const task = node.data as Task
   const id = `check-${task.id}`
+  const isRunning = task.isRunning()
+
+  useEffect(() => {
+    if (isRunning) {
+      // stop previous task.
+      stopOtherTracking(line)
+    }
+  }, [isRunning])
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isTracking()) {
@@ -50,22 +58,25 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   const startTracking = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // stop previous task.
-    stopAllTracking()
+    // Clone the objects for updating.
+    const newNode = node.clone()
+    const newTask = newNode.data as Task
 
     // start new task.
-    const trackingStartTime = task.trackingStart()
+    const trackingStartTime = newTask.trackingStart()
     const newTracking = {
       line: line,
       isTracking: true,
       trackingStartTime: trackingStartTime,
-      elapsedTime: task.actualTimes,
+      elapsedTime: newTask.actualTimes,
     }
-    setTrackings([newTracking])
+    addTracking(newTracking)
     chrome.runtime.sendMessage({
       command: 'startTracking',
-      param: task.actualTimes.toMinutes(),
+      param: newTask.actualTimes.toMinutes(),
     })
+
+    manager.setNodeByLine(newNode, line)
 
     e.stopPropagation()
   }
@@ -77,10 +88,13 @@ export const TaskItem: React.FC<TaskItemProps> = (
   ) => {
     if (isTracking()) {
       chrome.runtime.sendMessage({ command: 'stopTracking' })
-      const newTrackings = trackings.filter((n) => n.line !== line)
-      setTrackings(newTrackings)
-      task.trackingStop(tracking.trackingStartTime)
-      manager.setNodeByLine(node, line)
+      removeTracking(line)
+
+      // Clone the objects for updating.
+      const newNode = node.clone()
+      const newTask = newNode.data as Task
+      newTask.trackingStop(tracking.trackingStartTime)
+      manager.setNodeByLine(newNode, line)
     }
 
     e.stopPropagation()

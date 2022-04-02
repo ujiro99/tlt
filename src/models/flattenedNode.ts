@@ -27,6 +27,7 @@ function flatten(
 }
 
 export function flat(root: INode): FlattenedNode[] {
+  if (!root) return []
   return flatten(root.children)
 }
 

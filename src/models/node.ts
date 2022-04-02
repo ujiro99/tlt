@@ -88,6 +88,9 @@ export class Node implements TreeItem, INode {
     c.id = this.id
     c.children = [...this.children]
     c.collapsed = this.collapsed
+    if (this.data instanceof Task) {
+      c.data = this.data.clone()
+    }
     return c
   }
 }

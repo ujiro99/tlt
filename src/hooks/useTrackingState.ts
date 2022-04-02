@@ -51,8 +51,10 @@ export const trackingStateList = atom<TrackingState[]>({
 
 interface useTrackingStateReturn {
   trackings: TrackingState[]
-  setTrackings: (trackings: TrackingState[]) => void
+  addTracking: (tracking: TrackingState) => void
+  removeTracking: (line: number) => void
   stopAllTracking: () => void
+  stopOtherTracking: (line: number) => void
 }
 
 export function useTrackingState(): useTrackingStateReturn {
@@ -61,20 +63,46 @@ export function useTrackingState(): useTrackingStateReturn {
 
   function stopAllTracking() {
     Log.v('stopAllTracking')
+    stopTracking()
+  }
+
+  function stopOtherTracking(line: number) {
+    Log.v('stopOtherTracking')
+    stopTracking(line)
+  }
+
+  function stopTracking(exceptLine?: number) {
     const root = manager.getRoot()
     for (const tracking of trackings) {
-      if (tracking.isTracking) {
+      if (tracking.isTracking && tracking.line !== exceptLine) {
         const node = findNode(root, (n) => n.line === tracking.line)
-        const task = node.data
-        if (task instanceof Task) {
-          task.trackingStop(tracking.trackingStartTime)
+        if (node && node.data instanceof Task) {
+          // Clone the objects for updating.
+          const newNode = node.clone()
+          const newTask = newNode.data as Task
+          newTask.trackingStop(tracking.trackingStartTime)
+          // TODO fix to be update multiple nodes.
+          manager.setNodeByLine(newNode, tracking.line)
         }
       }
     }
-    manager.setNode(root)
     chrome.runtime.sendMessage({ command: 'stopTracking' })
-    setTrackings([])
+    setTrackings(trackings.filter((n) => {
+      return n.line === exceptLine
+    }))
   }
 
-  return { trackings, setTrackings, stopAllTracking }
+  function addTracking(tracking: TrackingState) {
+    const newVal = [...trackings, tracking]
+    setTrackings(newVal)
+  }
+
+  function removeTracking(line: number) {
+    const newVal = trackings.filter((n) => {
+      return n.line !== line
+    })
+    setTrackings(newVal)
+  }
+
+  return { trackings, addTracking, removeTracking, stopAllTracking, stopOtherTracking }
 }

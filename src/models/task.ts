@@ -88,6 +88,7 @@ export class Task {
     this.id = Task.getId()
     this.title = title
     this.taskState = state
+    this.estimatedTimes = new Time()
     this.actualTimes = time
   }
 
@@ -152,7 +153,8 @@ export class Task {
   public clone(): Task {
     const newTask = new Task(this.taskState, this.title, this.actualTimes)
     newTask.id = this.id
-    newTask.estimatedTimes = this.estimatedTimes
+    newTask.estimatedTimes = this.estimatedTimes.clone()
+    newTask.actualTimes = this.actualTimes.clone()
     return newTask
   }
 }
