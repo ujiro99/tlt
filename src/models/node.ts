@@ -200,6 +200,7 @@ export function replaceNode(
   node.id = target.id
   node.line = target.line
   node.parent = parent
+  node.children = target.children
 
   parent.children = parent.children.map((n) => {
     return n.id === node.id ? node : n
