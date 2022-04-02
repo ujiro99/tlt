@@ -1,11 +1,11 @@
-import { Node } from './node'
+import { INode } from './node'
 
 export class FlattenedNode {
-  public node: Node
+  public node: INode
   public parentId: null | string
   public depth: number
 
-  constructor(node: Node, parentId: string, depth: number) {
+  constructor(node: INode, parentId: string, depth: number) {
     this.node = node
     this.parentId = parentId
     this.depth = depth
@@ -13,7 +13,7 @@ export class FlattenedNode {
 }
 
 function flatten(
-  items: Node[],
+  items: INode[],
   parentId: string | null = null,
   depth = 0,
 ): FlattenedNode[] {
@@ -26,7 +26,7 @@ function flatten(
   }, [])
 }
 
-export function flat(root: Node): FlattenedNode[] {
+export function flat(root: INode): FlattenedNode[] {
   return flatten(root.children)
 }
 

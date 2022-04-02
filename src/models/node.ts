@@ -24,7 +24,19 @@ function hasProperties<K extends string>(
   return x instanceof Object && name.every((prop) => prop in x)
 }
 
-export class Node implements TreeItem {
+export interface INode {
+  type: NodeType
+  line: number
+  data: Task | string
+  parent: Node
+  children: Node[]
+  id: string
+
+  toString(): string
+  clone(): INode
+}
+
+export class Node implements TreeItem, INode {
   public type: NodeType
   public line: number
   public data: Task | string
@@ -86,7 +98,16 @@ export class HeadingNode extends Node {
 
   public static tryParse(obj: unknown): HeadingNode | null {
     if (
-      hasProperties(obj, 'type', 'line', 'data', 'parent', 'children', 'id', 'level')
+      hasProperties(
+        obj,
+        'type',
+        'line',
+        'data',
+        'parent',
+        'children',
+        'id',
+        'level',
+      )
     ) {
       const type = obj.type as NodeType
       const line = obj.line as number
@@ -116,7 +137,13 @@ export class HeadingNode extends Node {
   }
 
   public clone(): HeadingNode {
-    const c = new HeadingNode(this.type, this.line, this.data, this.level, this.parent)
+    const c = new HeadingNode(
+      this.type,
+      this.line,
+      this.data,
+      this.level,
+      this.parent,
+    )
     c.id = this.id
     c.children = [...this.children]
     c.collapsed = this.collapsed
@@ -180,7 +207,7 @@ export function replaceNode(
 }
 
 function depthToIndent(depth: number): string {
-  return "".padStart(depth * 2, " ")
+  return ''.padStart(depth * 2, ' ')
 }
 
 export function nodeToString(root: Node): string {

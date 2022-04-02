@@ -51,7 +51,6 @@ export function useTaskManager(): ITaskManager {
   const [root, setNode] = useRecoilState(nodeState)
 
   const flatten = flat(root)
-  flatten.shift() // remove a Root element.
 
   const getNodeByLine = (line: number): Node | null => {
     return findNode(root, (n) => n.line === line)
