@@ -51,7 +51,7 @@ export function LineEditor(props: Props): JSX.Element {
 
   return (
     <TextareaAutosize
-      className={`${props.className} align-top w-full py-2 leading-relaxed outline-0 min-h-[40px] cursor-text resize-none`}
+      className={`${props.className} align-top font-mono w-full py-2 leading-relaxed outline-0 min-h-[40px] cursor-text resize-none`}
       value={text}
       onBlur={onBlur}
       onChange={onChange}
