@@ -110,7 +110,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   if (isEditing) {
-    return <LineEditor className="ml-[10px]" line={line} />
+    return <LineEditor className="indent-[10px]" line={line} />
   }
 
   return (
