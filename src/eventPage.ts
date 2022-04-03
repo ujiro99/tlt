@@ -13,7 +13,7 @@ type Request = {
   param: unknown
 }
 
-chrome.runtime.onMessage.addListener((request: Request, _, sendResponse) => {
+chrome.runtime.onMessage.addListener((request: Request, _: chrome.runtime.MessageSender, sendResponse) => {
   // do not use async/await here !
 
   const command = request.command

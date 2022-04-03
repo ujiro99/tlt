@@ -1,4 +1,4 @@
-import React, { useEffect, CSSProperties } from 'react'
+import React, { useState, useEffect, CSSProperties } from 'react'
 import classnames from 'classnames'
 
 import Log from '@/services/log'
@@ -29,22 +29,26 @@ export const TaskItem: React.FC<TaskItemProps> = (
 ): JSX.Element => {
   const checkboxProps = props.checkboxProps
   const line = props.line
+  const [started, setStarted] = useState(false)
   const manager = useTaskManager()
   const { trackings, addTracking, removeTracking, stopOtherTracking } =
     useTrackingState()
   const [isEditing, focusOrEdit] = useEditable(line)
   const tracking = trackings.find((n) => n.line === line)
+  const isTracking = tracking == null ? false : tracking.isTracking
   const node = manager.getNodeByLine(line)
   const task = node.data as Task
   const id = `check-${task.id}`
-  const isRunning = task.isRunning()
+
+  Log.v(`${line} ${id} ${isTracking ? 'tracking' : 'stop'}`)
 
   useEffect(() => {
-    if (isRunning) {
+    if (started) {
       // stop previous task.
       stopOtherTracking(line)
+      setStarted(false)
     }
-  }, [isRunning, line])
+  }, [started, line])
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation()
@@ -55,7 +59,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     const newNode = node.clone()
     const newTask = newNode.data as Task
 
-    if (isTracking()) {
+    if (isTracking) {
       // If task has been tracking, stop automatically.
       chrome.runtime.sendMessage({ command: 'stopTracking' })
       removeTracking(line)
@@ -87,13 +91,14 @@ export const TaskItem: React.FC<TaskItemProps> = (
       param: newTask.actualTimes.toMinutes(),
     })
 
+    setStarted(true)
     manager.setNodeByLine(newNode, line)
   }
 
   const stopTracking = (e: React.SyntheticEvent) => {
     e.stopPropagation()
 
-    if (isTracking()) {
+    if (isTracking) {
       chrome.runtime.sendMessage({ command: 'stopTracking' })
       removeTracking(line)
 
@@ -106,20 +111,13 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   const onClick = () => {
-    if (isTracking()) return
+    if (isTracking) return
     focusOrEdit()
   }
 
-  const isTracking = () => {
-    if (tracking == null) return false
-    return tracking.isTracking
-  }
-
-  Log.v(`${line} ${id} ${isTracking() ? 'tracking' : 'stop'}`)
-
   const taskItemClass = classnames(
     {
-      'task-item--running': isTracking(),
+      'task-item--running': isTracking,
     },
     ['task-item', 'focus:bg-indigo-50'],
   )
@@ -148,7 +146,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
         />
         <span className="flex-grow ml-2">{task.title}</span>
       </div>
-      {isTracking() ? (
+      {isTracking ? (
         <Counter startTime={tracking.elapsedTime} />
       ) : !task.actualTimes.isEmpty() ? (
         <CounterStopped startTime={task.actualTimes} />
@@ -158,7 +156,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
       <TaskController
         onClickStart={startTracking}
         onClickStop={stopTracking}
-        isTracking={isTracking()}
+        isTracking={isTracking}
         isComplete={task.isComplete()}
       />
     </div>
