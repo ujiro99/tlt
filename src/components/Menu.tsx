@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { atom, useRecoilState } from 'recoil'
 
+import { CalendarIcon } from '@/components/CalendarIcon'
 import { Tooltip } from '@/components/Tooltip'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
@@ -67,7 +68,7 @@ function Copy(): JSX.Element {
 
   return (
     <button
-      className="w-8 py-1.5 my-2 text-xs text-gray-500 bg-gray-100 hover:bg-gray-50 border-none shadow rounded-md transition ease-out"
+      className="w-8 py-1.5 my-2 text-s text-gray-500 bg-gray-100 hover:bg-gray-50 border-none shadow rounded-md transition ease-out"
       onClick={copyMarkdown}
     >
       <svg className="icon">
@@ -96,15 +97,20 @@ export function Menu(): JSX.Element {
   }
 
   return (
-    <div className="text-right  px-2.5">
-      <Clear />
-      <Copy />
-      <button
-        className="w-20 py-1.5 ml-2 my-2 text-xs right-1 bg-gray-100 hover:bg-gray-50 border-none shadow rounded-md transition ease-out"
-        onClick={toggleMode}
-      >
-        {label}
-      </button>
+    <div className="px-2.5 flex">
+      <div>
+        <CalendarIcon />
+      </div>
+      <div className="text-right grow">
+        <Clear />
+        <Copy />
+        <button
+          className="w-20 py-2 my-2 ml-2 text-xs bg-gray-100 border-none shadow right-1 hover:bg-gray-50 rounded-md transition ease-out"
+          onClick={toggleMode}
+        >
+          {label}
+        </button>
+      </div>
     </div>
   )
 }
