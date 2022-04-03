@@ -87,7 +87,6 @@ export function useTrackingState(): useTrackingStateReturn {
         }
       }
     }
-    chrome.runtime.sendMessage({ command: 'stopTracking' })
     setTrackings(trackings.filter((n) => {
       return n.line === exceptLine
     }))
@@ -96,6 +95,10 @@ export function useTrackingState(): useTrackingStateReturn {
   const addTracking = useCallback((tracking: TrackingState) => {
     const newVal = [...trackings, tracking]
     setTrackings(newVal)
+    chrome.runtime.sendMessage({
+      command: 'startTracking',
+      param: tracking.elapsedTime.toMinutes(),
+    })
   }, [trackings])
 
   const removeTracking = useCallback((line: number) => {
@@ -103,6 +106,7 @@ export function useTrackingState(): useTrackingStateReturn {
       return n.line !== line
     })
     setTrackings(newVal)
+    chrome.runtime.sendMessage({ command: 'stopTracking' })
   }, [trackings])
 
   return { trackings, addTracking, removeTracking, stopAllTracking, stopOtherTracking }

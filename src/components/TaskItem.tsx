@@ -61,7 +61,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
     if (isTracking) {
       // If task has been tracking, stop automatically.
-      chrome.runtime.sendMessage({ command: 'stopTracking' })
       removeTracking(line)
       newTask.trackingStop(tracking.trackingStartTime)
     }
@@ -86,10 +85,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
       elapsedTime: newTask.actualTimes,
     }
     addTracking(newTracking)
-    chrome.runtime.sendMessage({
-      command: 'startTracking',
-      param: newTask.actualTimes.toMinutes(),
-    })
 
     setStarted(true)
     manager.setNodeByLine(newNode, line)
@@ -99,7 +94,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
     e.stopPropagation()
 
     if (isTracking) {
-      chrome.runtime.sendMessage({ command: 'stopTracking' })
       removeTracking(line)
 
       // Clone the objects for updating.

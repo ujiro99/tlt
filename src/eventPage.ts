@@ -72,6 +72,7 @@ const onMessageFuncs: OnMessageFuncs = {
  * Display an icon using the saved time information.
  */
 async function updateIconTime() {
+  Log.d("updateIconTime")
   const trackingStartTime = (await Storage.get(
     STORAGE_KEY.TRACKING_START_MS,
   )) as number
@@ -85,7 +86,7 @@ async function updateIconTime() {
     const time = (startMinutes + elapsedMin) / HOUR
     Icon.setText(`${time.toFixed(1)}h`)
   } else {
-    Icon.setText(`${currentMin}m`)
+    Icon.setText(`${Math.floor(currentMin)}m`)
   }
 }
 
