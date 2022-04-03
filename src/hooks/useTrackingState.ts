@@ -53,9 +53,9 @@ export const trackingStateList = atom<TrackingState[]>({
 interface useTrackingStateReturn {
   trackings: TrackingState[]
   addTracking: (tracking: TrackingState) => void
-  removeTracking: (line: number) => void
+  removeTracking: (nodeId: string) => void
   stopAllTracking: () => void
-  stopOtherTracking: (line: number) => void
+  stopOtherTracking: (nodeId: string) => void
 }
 
 export function useTrackingState(): useTrackingStateReturn {
@@ -65,49 +65,67 @@ export function useTrackingState(): useTrackingStateReturn {
   const stopAllTracking = useCallback(() => {
     Log.d('stopAllTracking')
     stopTrackings()
+    chrome.runtime.sendMessage({ command: 'stopTracking' })
   }, [trackings])
 
-  const stopOtherTracking = useCallback((line: number) => {
-    Log.d('stopOtherTracking')
-    stopTrackings(line)
-  }, [trackings])
+  const stopOtherTracking = useCallback(
+    (nodeId: string) => {
+      Log.d('stopOtherTracking')
+      stopTrackings(nodeId)
+    },
+    [trackings],
+  )
 
-  const stopTrackings = (exceptLine?: number) => {
+  const stopTrackings = (exceptNodeId?: string) => {
     const root = manager.getRoot()
     for (const tracking of trackings) {
-      if (tracking.isTracking && tracking.line !== exceptLine) {
-        const node = findNode(root, (n) => n.line === tracking.line)
+      if (tracking.isTracking && tracking.nodeId !== exceptNodeId) {
+        const node = findNode(root, (n) => n.id === tracking.nodeId)
         if (node && node.data instanceof Task) {
           // Clone the objects for updating.
           const newNode = node.clone()
           const newTask = newNode.data as Task
           newTask.trackingStop(tracking.trackingStartTime)
           // TODO fix to be update multiple nodes.
-          manager.setNodeByLine(newNode, tracking.line)
+          manager.setNodeByLine(newNode, node.line)
         }
       }
     }
-    setTrackings(trackings.filter((n) => {
-      return n.line === exceptLine
-    }))
+    setTrackings(
+      trackings.filter((n) => {
+        return n.nodeId === exceptNodeId
+      }),
+    )
   }
 
-  const addTracking = useCallback((tracking: TrackingState) => {
-    const newVal = [...trackings, tracking]
-    setTrackings(newVal)
-    chrome.runtime.sendMessage({
-      command: 'startTracking',
-      param: tracking.elapsedTime.toMinutes(),
-    })
-  }, [trackings])
+  const addTracking = useCallback(
+    (tracking: TrackingState) => {
+      const newVal = [...trackings, tracking]
+      setTrackings(newVal)
+      chrome.runtime.sendMessage({
+        command: 'startTracking',
+        param: tracking.elapsedTime.toMinutes(),
+      })
+    },
+    [trackings],
+  )
 
-  const removeTracking = useCallback((line: number) => {
-    const newVal = trackings.filter((n) => {
-      return n.line !== line
-    })
-    setTrackings(newVal)
-    chrome.runtime.sendMessage({ command: 'stopTracking' })
-  }, [trackings])
+  const removeTracking = useCallback(
+    (nodeId: string) => {
+      const newVal = trackings.filter((n) => {
+        return n.nodeId !== nodeId
+      })
+      setTrackings(newVal)
+      chrome.runtime.sendMessage({ command: 'stopTracking' })
+    },
+    [trackings],
+  )
 
-  return { trackings, addTracking, removeTracking, stopAllTracking, stopOtherTracking }
+  return {
+    trackings,
+    addTracking,
+    removeTracking,
+    stopAllTracking,
+    stopOtherTracking,
+  }
 }

@@ -34,10 +34,10 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const { trackings, addTracking, removeTracking, stopOtherTracking } =
     useTrackingState()
   const [isEditing, focusOrEdit] = useEditable(line)
-  const tracking = trackings.find((n) => n.line === line)
-  const isTracking = tracking == null ? false : tracking.isTracking
   const node = manager.getNodeByLine(line)
   const task = node.data as Task
+  const tracking = trackings.find((n) => n.nodeId === node.id)
+  const isTracking = tracking == null ? false : tracking.isTracking
   const id = `check-${task.id}`
 
   Log.v(`${line} ${id} ${isTracking ? 'tracking' : 'stop'}`)
@@ -45,10 +45,10 @@ export const TaskItem: React.FC<TaskItemProps> = (
   useEffect(() => {
     if (started) {
       // stop previous task.
-      stopOtherTracking(line)
+      stopOtherTracking(node.id)
       setStarted(false)
     }
-  }, [started, line])
+  }, [started, node])
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation()
@@ -61,7 +61,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
     if (isTracking) {
       // If task has been tracking, stop automatically.
-      removeTracking(line)
+      removeTracking(node.id)
       newTask.trackingStop(tracking.trackingStartTime)
     }
     newTask.setComplete(checked)
@@ -79,7 +79,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     // start new task.
     const trackingStartTime = newTask.trackingStart()
     const newTracking = {
-      line: line,
+      nodeId: node.id,
       isTracking: true,
       trackingStartTime: trackingStartTime,
       elapsedTime: newTask.actualTimes,
@@ -94,7 +94,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     e.stopPropagation()
 
     if (isTracking) {
-      removeTracking(line)
+      removeTracking(node.id)
 
       // Clone the objects for updating.
       const newNode = node.clone()
