@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { atom, selector, useRecoilState } from 'recoil'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
@@ -61,17 +62,17 @@ export function useTrackingState(): useTrackingStateReturn {
   const manager = useTaskManager()
   const [trackings, setTrackings] = useRecoilState(trackingStateList)
 
-  function stopAllTracking() {
-    Log.v('stopAllTracking')
-    stopTracking()
-  }
+  const stopAllTracking = useCallback(() => {
+    Log.d('stopAllTracking')
+    stopTrackings()
+  }, [trackings])
 
-  function stopOtherTracking(line: number) {
-    Log.v('stopOtherTracking')
-    stopTracking(line)
-  }
+  const stopOtherTracking = useCallback((line: number) => {
+    Log.d('stopOtherTracking')
+    stopTrackings(line)
+  }, [trackings])
 
-  function stopTracking(exceptLine?: number) {
+  const stopTrackings = (exceptLine?: number) => {
     const root = manager.getRoot()
     for (const tracking of trackings) {
       if (tracking.isTracking && tracking.line !== exceptLine) {
@@ -92,17 +93,17 @@ export function useTrackingState(): useTrackingStateReturn {
     }))
   }
 
-  function addTracking(tracking: TrackingState) {
+  const addTracking = useCallback((tracking: TrackingState) => {
     const newVal = [...trackings, tracking]
     setTrackings(newVal)
-  }
+  }, [trackings])
 
-  function removeTracking(line: number) {
+  const removeTracking = useCallback((line: number) => {
     const newVal = trackings.filter((n) => {
       return n.line !== line
     })
     setTrackings(newVal)
-  }
+  }, [trackings])
 
   return { trackings, addTracking, removeTracking, stopAllTracking, stopOtherTracking }
 }
