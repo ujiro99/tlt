@@ -14,7 +14,7 @@
   @apply top-0;
   @apply right-0;
   @apply text-right;
-  @apply pr-1;
+  @apply pr-[12px];
   @apply select-none;
   @apply cursor-default;
 }

@@ -34,19 +34,15 @@ body {
     @apply resize-none;
     @apply rounded-md;
     @apply bg-gray-100;
+    @apply font-mono;
   }
 }
 
 .task-container {
   @apply relative;
   @apply h-full;
-  @apply pb-14;
   @apply overflow-scroll;
-}
-
-.task-container > div > .contains-task-list {
-  @apply border-gray-200;
-  @apply border-b;
-  @apply ml-[10px];
-  @apply mr-[12px];
+  @apply pb-14;
+  padding-left: 10px;
+  padding-right: 10px;
 }

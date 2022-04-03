@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
-import { TaskTextState } from '@/services/state'
+import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditFinish } from '@/hooks/useEditable'
 
 type Props = {
@@ -14,13 +14,13 @@ const KEYCODE_ENTER = 13
 
 export function LineEditor(props: Props): JSX.Element {
   const line = props.line
-  const state = TaskTextState()
+  const manager = useTaskManager()
   const [text, setText] = useState('')
   const finishEdit = useEditFinish()
 
   function finish() {
     if (text !== DEFAULT) {
-      state.setTextByLine(line, text)
+      manager.setTextByLine(line, text)
     }
     finishEdit()
   }
@@ -30,7 +30,7 @@ export function LineEditor(props: Props): JSX.Element {
   }
 
   function onFocus() {
-    let current = state.getTextByLine(line);
+    let current = manager.getTextByLine(line);
     if (!current) {
       current = DEFAULT
     }
@@ -42,14 +42,16 @@ export function LineEditor(props: Props): JSX.Element {
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
-    if (e.keyCode === KEYCODE_ENTER && !e.shiftKey) {
+    if (e.keyCode === KEYCODE_ENTER) {
       finish()
     }
+    // Prevent key events to reach the SortableTree.
+    e.stopPropagation()
   }
 
   return (
     <TextareaAutosize
-      className={`${props.className} w-full py-2 leading-relaxed outline-0 mb-[-5px] min-h-[40px] cursor-text`}
+      className={`${props.className} align-top font-mono w-full py-2 leading-relaxed outline-0 min-h-[40px] cursor-text resize-none`}
       value={text}
       onBlur={onBlur}
       onChange={onChange}

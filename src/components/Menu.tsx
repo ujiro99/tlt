@@ -3,8 +3,16 @@ import { atom, useRecoilState } from 'recoil'
 
 import { Tooltip } from '@/components/Tooltip'
 
-import { TaskTextState, TaskState, clearStorage } from '@/services/state'
+import { useTaskManager } from '@/hooks/useTaskManager'
+import { useTrackingState } from '@/hooks/useTrackingState'
 import { sleep } from '@/services/util'
+import { STORAGE_KEY, Storage } from '@/services/storage'
+
+function clearStorage(): void {
+  for (const key in STORAGE_KEY) {
+    void Storage.set(STORAGE_KEY[key], null)
+  }
+}
 
 export const MODE = {
   EDIT: 'EDIT',
@@ -46,11 +54,11 @@ function Clear(): JSX.Element {
 }
 
 function Copy(): JSX.Element {
-  const state = TaskTextState()
+  const manager = useTaskManager()
   const [tooltipVisible, setTooltipVisible] = useState(false)
 
   const copyMarkdown = async () => {
-    await navigator.clipboard.writeText(state.text)
+    await navigator.clipboard.writeText(manager.getText())
     await sleep(100)
     setTooltipVisible(true)
     await sleep(800)
@@ -73,16 +81,16 @@ function Copy(): JSX.Element {
 }
 
 export function Menu(): JSX.Element {
+  const { stopAllTracking } = useTrackingState()
   const [mode, setMode] = useRecoilState(modeState)
   const isEdit = mode === MODE.EDIT
   const label = isEdit ? 'Complete' : 'Edit'
-  const taskState = TaskState()
 
   const toggleMode = () => {
     const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
     if (nextMode === MODE.EDIT) {
       // Automatically stop tracking before entering edit mode.
-      taskState.stopAllTracking()
+      stopAllTracking()
     }
     setMode(nextMode)
   }

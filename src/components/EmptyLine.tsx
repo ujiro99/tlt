@@ -1,11 +1,11 @@
 import React from 'react'
-import { TaskTextState } from '@/services/state'
+import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
 
 export const EmptyLine: React.FC<unknown> = (): JSX.Element => {
-  const state = TaskTextState()
-  const line = state.lineCount + 1
+  const manager = useTaskManager()
+  const line = manager.lineCount + 1
   const [isEditing, focusOrEdit] = useEditable(line)
 
   if (isEditing) {

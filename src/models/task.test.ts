@@ -21,20 +21,6 @@ describe.each(testParseTable)(`parse %s`, (str: string, title: string, time: str
   })
 })
 
-const testParseIndent = [
-  ["- [ ] task title", 0],
-  ["    - [x] task title", 4],
-  ["        - [ ] tasktitle ~2h", 8],
-  ["            - [ ] task title ~30m #sp:1", 12],
-]
-
-describe.each(testParseIndent)(`parse indent %s`, (str: string, indent:number) => {
-  test(`returns ${indent}`, () => {
-    const task = Task.parse(str)
-    expect(task.indent).toBe(indent)
-  })
-})
-
 describe('trackingStart', () => {
   test('changes its state', () => {
     const task = Task.parse("- [ ] task title")

@@ -159,6 +159,10 @@ export class Time {
     return this._days;
   }
 
+  public clone(): Time {
+    return new Time(this._seconds, this._minutes, this._hours, this._days)
+  }
+
   private calculateCarryUp(): void {
     if (this._seconds >= MINUTE) {
       this._minutes += Math.floor(this._seconds / MINUTE)

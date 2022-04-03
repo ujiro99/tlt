@@ -1,7 +1,7 @@
 import { Time } from '@/models/time'
 
 type TrackingState = {
-  line: number
+  nodeId: string
   isTracking: boolean
   trackingStartTime: number /** [milli second] */
   elapsedTime: Time
@@ -12,18 +12,4 @@ type TimeObject = {
   _minutes: number
   _hours: number
   _days: number
-}
-
-interface ITaskListState {
-  text: string
-  lineCount: number,
-  setText: (value: string) => void
-  getTextByLine: (line: number) => string
-  setTextByLine: (line: number, text: string) => void
-  isTaskStrByLine: (line: number) => boolean
-  moveLines: (index: number, insertPosition: number, count?: number, indent?: number) => void
-}
-
-interface ITaskState {
-  stopAllTracking: () => void
 }

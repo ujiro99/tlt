@@ -1,18 +1,28 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-import { TaskTextState } from '@/services/state'
+import { useTaskManager } from '@/hooks/useTaskManager'
 
 export function TaskTextarea(): JSX.Element {
-  const state = TaskTextState()
+  const manager = useTaskManager()
+  const [text, setText] = useState(manager.getText())
 
   const onChange = ({ target: { value } }) => {
-    void state.setText(value)
+    setText(value)
+  }
+
+  const onBlur = () => {
+    // Update the global scope data.
+    manager.setText(text)
   }
 
   return (
     <div className="task-textarea">
-      <textarea className="" onChange={onChange} value={state.text}></textarea>
+      <textarea
+        className=""
+        onChange={onChange}
+        onBlur={onBlur}
+        value={text}
+      ></textarea>
     </div>
   )
 }
-
