@@ -30,7 +30,8 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const checkboxProps = props.checkboxProps
   const line = props.line
   const manager = useTaskManager()
-  const { trackings, addTracking, removeTracking, stopOtherTracking } = useTrackingState()
+  const { trackings, addTracking, removeTracking, stopOtherTracking } =
+    useTrackingState()
   const [isEditing, focusOrEdit] = useEditable(line)
   const tracking = trackings.find((n) => n.line === line)
   const node = manager.getNodeByLine(line)
@@ -43,21 +44,31 @@ export const TaskItem: React.FC<TaskItemProps> = (
       // stop previous task.
       stopOtherTracking(line)
     }
-  }, [isRunning])
+  }, [isRunning, line])
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (isTracking()) {
-      // If task has been tracking, stop automatically.
-      stopTracking(e)
-    }
+    e.stopPropagation()
 
     const checked = e.target.checked
     Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
-    task.setComplete(checked)
-    manager.setNodeByLine(node, line)
+
+    const newNode = node.clone()
+    const newTask = newNode.data as Task
+
+    if (isTracking()) {
+      // If task has been tracking, stop automatically.
+      chrome.runtime.sendMessage({ command: 'stopTracking' })
+      removeTracking(line)
+      newTask.trackingStop(tracking.trackingStartTime)
+    }
+    newTask.setComplete(checked)
+
+    manager.setNodeByLine(newNode, line)
   }
 
-  const startTracking = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const startTracking = (e: React.SyntheticEvent) => {
+    e.stopPropagation()
+
     // Clone the objects for updating.
     const newNode = node.clone()
     const newTask = newNode.data as Task
@@ -77,15 +88,11 @@ export const TaskItem: React.FC<TaskItemProps> = (
     })
 
     manager.setNodeByLine(newNode, line)
-
-    e.stopPropagation()
   }
 
-  const stopTracking = (
-    e:
-      | React.MouseEvent<HTMLButtonElement>
-      | React.ChangeEvent<HTMLInputElement>,
-  ) => {
+  const stopTracking = (e: React.SyntheticEvent) => {
+    e.stopPropagation()
+
     if (isTracking()) {
       chrome.runtime.sendMessage({ command: 'stopTracking' })
       removeTracking(line)
@@ -96,8 +103,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
       newTask.trackingStop(tracking.trackingStartTime)
       manager.setNodeByLine(newNode, line)
     }
-
-    e.stopPropagation()
   }
 
   const onClick = () => {
