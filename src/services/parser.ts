@@ -14,6 +14,9 @@ export const Parser = {
     let prevDepth = 0
 
     const lines = markdown.split(/\n/)
+    if (lines.length === 1 && lines[0].length === 0) {
+      return root
+    }
     lines.forEach((val, idx) => {
       try {
         // line number starts from 1.

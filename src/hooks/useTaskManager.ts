@@ -2,14 +2,35 @@ import { atom, selector, useRecoilState } from 'recoil'
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Parser } from '@/services/parser'
-import {
-  Node,
-  nodeToString,
-  clone,
-  findNode,
-  replaceNode,
-} from '@/models/node'
+import { Node, nodeToString, clone, findNode, replaceNode } from '@/models/node'
 import { flat } from '@/models/flattenedNode'
+import { format } from 'date-fns'
+
+const KeyDatePrefix = 'date-'
+
+const keyDate = `${KeyDatePrefix}${format(new Date(), 'yyyyMMdd')}`
+
+interface TaskStringObject {
+  [key: string]: string
+}
+
+async function loadData(): Promise<Node> {
+  const json = (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskStringObject || {}
+
+  // TODO:
+  // If today's task data does not exist,
+  // copy the uncompleted data from the most recent past data.
+  const todayText = json[keyDate] || ''
+  return Parser.parseMd(todayText)
+}
+
+async function saveData(
+  root: Node,
+): Promise<boolean | chrome.runtime.LastError> {
+  const json = (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskStringObject || {}
+  json[keyDate] = nodeToString(root)
+  return Storage.set(STORAGE_KEY.TASK_LIST_TEXT, json)
+}
 
 /**
  * Task text saved in chrome storage.
@@ -19,17 +40,14 @@ const nodeState = atom({
   default: selector({
     key: 'nodeStateSelctor',
     get: async () => {
-      const text =
-        ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as string) || ''
-      return Parser.parseMd(text)
+      return await loadData()
     },
   }),
   effects_UNSTABLE: [
     ({ onSet }) => {
       onSet((root: Node) => {
         Log.d(`onSet nodeState`)
-        const text = nodeToString(root)
-        void Storage.set(STORAGE_KEY.TASK_LIST_TEXT, text)
+        void saveData(root)
       })
     },
   ],
