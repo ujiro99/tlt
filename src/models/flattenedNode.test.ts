@@ -1,5 +1,5 @@
 import { flat } from '@/models/flattenedNode'
-import { NODE_TYPE } from '@/models/Node'
+import { NODE_TYPE } from '@/models/node'
 import { Parser } from '@/services/parser'
 
 describe('flat', () => {
