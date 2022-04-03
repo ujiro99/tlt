@@ -27,15 +27,17 @@ function PlayStopButton(props: PlayStopProps) {
   )
 }
 
-export function TaskController( props: TaskControllerProps): JSX.Element {
+export function TaskController(props: TaskControllerProps): JSX.Element {
   // Stop event bubbling to avoid a parent element hide this component.
   const stopPropagation = (e: React.MouseEvent) => {
     e.stopPropagation()
   }
 
   return (
-    <div className="task-controll" onMouseDown={stopPropagation}>
-      {!props.isComplete && <PlayStopButton {...props} />}
-    </div>
+    !props.isComplete && (
+      <div className="task-controll" onMouseDown={stopPropagation}>
+        <PlayStopButton {...props} />
+      </div>
+    )
   )
 }
