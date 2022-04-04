@@ -6,30 +6,49 @@ import { Node, nodeToString, clone, findNode, replaceNode } from '@/models/node'
 import { flat } from '@/models/flattenedNode'
 import { format } from 'date-fns'
 
-const KeyDatePrefix = 'date-'
-
-const keyDate = `${KeyDatePrefix}${format(new Date(), 'yyyyMMdd')}`
-
-interface TaskStringObject {
-  [key: string]: string
+enum TaskRecordType {
+  Date,
 }
 
+interface TaskRecord {
+  key: string
+  type: TaskRecordType
+  data: string
+}
+
+type TaskRecordArray = TaskRecord[]
+
+const keyDate = `${format(new Date(), 'yyyyMMdd')}`
+
 async function loadData(): Promise<Node> {
-  const json = (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskStringObject || {}
+  const records =
+    ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
+  Log.d(records)
 
   // TODO:
   // If today's task data does not exist,
   // copy the uncompleted data from the most recent past data.
-  const todayText = json[keyDate] || ''
-  return Parser.parseMd(todayText)
+  const record = records.find((r) => r.key === keyDate)
+  if (record) return Parser.parseMd(record.data)
+  return Parser.parseMd('')
 }
 
 async function saveData(
   root: Node,
 ): Promise<boolean | chrome.runtime.LastError> {
-  const json = (await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskStringObject || {}
-  json[keyDate] = nodeToString(root)
-  return Storage.set(STORAGE_KEY.TASK_LIST_TEXT, json)
+  const records =
+    ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
+  let record = records.find((r) => r.key === keyDate)
+  if (!record) {
+    record = {
+      key: keyDate,
+      type: TaskRecordType.Date,
+      data: '',
+    }
+    records.push(record)
+  }
+  record.data = nodeToString(root)
+  return Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
 }
 
 /**
