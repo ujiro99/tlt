@@ -83,6 +83,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
       isTracking: true,
       trackingStartTime: trackingStartTime,
       elapsedTime: newTask.actualTimes,
+      line
     }
     addTracking(newTracking)
 

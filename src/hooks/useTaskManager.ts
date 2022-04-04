@@ -35,7 +35,7 @@ async function saveData(
 /**
  * Task text saved in chrome storage.
  */
-const nodeState = atom({
+export const nodeState = atom({
   key: 'nodeState',
   default: selector({
     key: 'nodeStateSelctor',
