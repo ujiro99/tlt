@@ -93,6 +93,13 @@ export class Node implements TreeItem, INode {
     }
     return c
   }
+
+  public isComplete(): boolean {
+    if (this.type === NODE_TYPE.TASK) {
+      return (this.data as Task).isComplete()
+    }
+    return false
+  }
 }
 
 export class HeadingNode extends Node {
@@ -187,6 +194,37 @@ export function findNode(root: Node, predicate: Predicate): Node | null {
     Log.w(e)
   }
   return null
+}
+
+export function filterNode(root: Node, predicate: Predicate): Node {
+  const queue: Node[] = [root]
+  const flatten: Node[] = []
+
+  // breadth first search
+  try {
+    while (queue.length > 0) {
+      const elm = queue.shift()
+      flatten.push(elm)
+      if (elm.children.length > 0) {
+        queue.push(...elm.children)
+      }
+    }
+
+    const reverse = flatten.reverse()
+
+    // remove nodes
+    reverse.forEach((n) => {
+      const match = predicate(n)
+      if (!match && n.children.length === 0) {
+        // remove
+        const parent = n.parent
+        parent.children = parent.children.filter((c) => c.id === n.id)
+      }
+    })
+  } catch (e) {
+    Log.w(e)
+  }
+  return root
 }
 
 export function replaceNode(

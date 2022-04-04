@@ -2,7 +2,14 @@ import { atom, selector, useRecoilState } from 'recoil'
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Parser } from '@/services/parser'
-import { Node, nodeToString, clone, findNode, replaceNode } from '@/models/node'
+import {
+  Node,
+  nodeToString,
+  clone,
+  findNode,
+  replaceNode,
+  filterNode,
+} from '@/models/node'
 import { flat } from '@/models/flattenedNode'
 import { format } from 'date-fns'
 
@@ -20,17 +27,28 @@ type TaskRecordArray = TaskRecord[]
 
 const keyDate = `${format(new Date(), 'yyyyMMdd')}`
 
+// void Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
+
 async function loadData(): Promise<Node> {
   const records =
     ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
   Log.d(records)
 
-  // TODO:
-  // If today's task data does not exist,
-  // copy the uncompleted data from the most recent past data.
   const record = records.find((r) => r.key === keyDate)
-  if (record) return Parser.parseMd(record.data)
-  return Parser.parseMd('')
+  if (record) {
+    return Parser.parseMd(record.data)
+  } else {
+    // If today's task data does not exist,
+    // copy the uncompleted data from the most recent past data.
+    const lastRecord = records.pop()
+    if (lastRecord) {
+      const lastRoot = Parser.parseMd(lastRecord.data)
+      return filterNode(lastRoot, (n) => !n.isComplete())
+    } else {
+      // Nothing to load.
+      return Parser.parseMd('')
+    }
+  }
 }
 
 async function saveData(
