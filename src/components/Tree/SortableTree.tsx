@@ -318,7 +318,9 @@ export function SortableTree({
 
       if (!previousItem) {
         const nextItem = sortedItems[overIndex + 1]
-        announcement = `${activeId} was ${movedVerb} before ${nextItem.id}.`
+        if (nextItem) {
+          announcement = `${activeId} was ${movedVerb} before ${nextItem.id}.`
+        }
       } else {
         if (projected.depth > previousItem.depth) {
           announcement = `${activeId} was ${nestedVerb} under ${previousItem.id}.`
