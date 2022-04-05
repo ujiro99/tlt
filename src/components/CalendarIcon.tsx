@@ -4,6 +4,8 @@ import 'react-calendar/dist/Calendar.css'
 import Modal from 'react-modal'
 import { add, sub, differenceInCalendarDays } from 'date-fns';
 
+import '@/components/Calendar.css'
+
 function isSameDay(a, b) {
   return differenceInCalendarDays(a, b) === 0;
 }
