@@ -114,7 +114,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     {
       'task-item--running': isTracking,
     },
-    ['task-item', 'focus:bg-indigo-50'],
+    ['task-item', 'item-color'],
   )
 
   const style = {

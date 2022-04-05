@@ -10,7 +10,7 @@ type Props = {
 }
 
 const baseClass =
-  'w-full raw-text relative leading-normal focus:bg-indigo-50 cursor-pointer px-3 py-2 min-h-[40px] group'
+  'w-full raw-text relative leading-normal cursor-pointer px-3 py-2 min-h-[40px] group item-color'
 
 export const MdText = (props: Props): JSX.Element => {
   const line = props.node.line
