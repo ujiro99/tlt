@@ -216,9 +216,9 @@ export function filterNode(root: Node, predicate: Predicate): Node {
     reverse.forEach((n) => {
       const match = predicate(n)
       if (!match && n.children.length === 0) {
-        // remove
+        // remove a node
         const parent = n.parent
-        parent.children = parent.children.filter((c) => c.id === n.id)
+        parent.children = parent.children.filter((c) => c.id !== n.id)
       }
     })
   } catch (e) {

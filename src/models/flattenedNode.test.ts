@@ -13,8 +13,7 @@ describe('flat', () => {
   test('empty text', () => {
     const root = Parser.parseMd('')
     const flatten = flat(root)
-    expect(flatten.length).toBe(1)
-    expect(flatten[0].node.toString()).toBe('')
+    expect(flatten.length).toBe(0)
   })
 
   test('2 lines', () => {
