@@ -38,6 +38,7 @@ import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates'
 import { SortableTreeItem } from './components'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
+import { useTrackingState } from '@/hooks/useTrackingState'
 import { treeItemsToNode } from '@/services/util'
 
 const measuring = {
@@ -77,6 +78,8 @@ export function SortableTree({
   const defaultNode = manager.getRoot()
   const [root, setItems] = useState(defaultNode)
   const items = root.children
+
+  const { moveTracking } = useTrackingState()
 
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items)
@@ -248,6 +251,7 @@ export function SortableTree({
 
       const sortedItems = arrayMove(clonedItems, activeIndex, overIndex)
       const newItems = buildTree(sortedItems)
+      moveTracking(activeIndex + 1, overIndex + 1)
 
       setTreeItems(newItems)
     }

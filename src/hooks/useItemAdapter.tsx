@@ -23,7 +23,7 @@ export function useItemAdapter(): useItemAdapterReturn {
   const getItem = (id: string): JSX.Element => {
     const node = findNode(rootNode, (n) => n.id === id)
     if (!node) {
-      Log.e(`${id} not found!`)
+      Log.v(`${id} not found!`)
       // return null
       const empty = new Node(NODE_TYPE.OTHER, -1, '')
       return <MdText node={empty} />

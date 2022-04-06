@@ -29,65 +29,81 @@ const keyDate = `${format(new Date(), 'yyyyMMdd')}`
 
 // void Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
 
-async function loadData(): Promise<Node> {
-  const records =
-    ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
-  Log.d(records)
-
-  const record = records.find((r) => r.key === keyDate)
-  if (record) {
-    return Parser.parseMd(record.data)
-  } else {
-    // If today's task data does not exist,
-    // copy the uncompleted data from the most recent past data.
-    const lastRecord = records.pop()
-    if (lastRecord) {
-      const lastRoot = Parser.parseMd(lastRecord.data)
-      return filterNode(lastRoot, (n) => !n.isComplete())
-    } else {
-      // Nothing to load.
-      return Parser.parseMd('')
-    }
-  }
-}
-
-async function saveData(
-  root: Node,
-): Promise<boolean | chrome.runtime.LastError> {
-  const records =
-    ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
-  let record = records.find((r) => r.key === keyDate)
-  if (!record) {
-    record = {
-      key: keyDate,
-      type: TaskRecordType.Date,
-      data: '',
-    }
-    records.push(record)
-  }
-  record.data = nodeToString(root)
-  return Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
-}
+/**
+ * All of TaskRecords saved in chrome storage.
+ */
+const taskRecordsState = atom({
+  key: 'taskRecordsState',
+  default: selector({
+    key: 'nodeStateSelctor',
+    get: async () => {
+      Log.d(`get taskRecordsState`)
+      const records =
+        ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) ||
+        []
+      Log.d(records)
+      return records
+    },
+  }),
+  effects: [
+    ({ onSet }) => {
+      onSet((records: TaskRecordArray) => {
+        Log.d(`onSet taskRecordsState`)
+        void Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
+      })
+    },
+  ],
+})
 
 /**
  * Task text saved in chrome storage.
  */
-export const nodeState = atom({
-  key: 'nodeState',
-  default: selector({
-    key: 'nodeStateSelctor',
-    get: async () => {
-      return await loadData()
-    },
-  }),
-  effects_UNSTABLE: [
-    ({ onSet }) => {
-      onSet((root: Node) => {
-        Log.d(`onSet nodeState`)
-        void saveData(root)
-      })
-    },
-  ],
+export const nodeSelector = selector<Node>({
+  key: 'nodeSelector',
+  get: ({ get }) => {
+    Log.d(`get nodeSelector`)
+    const records = get(taskRecordsState)
+    const record = records.find((r) => r.key === keyDate)
+    if (record) {
+      return Parser.parseMd(record.data)
+    } else {
+      // If today's task data does not exist,
+      // copy the uncompleted data from the most recent past data.
+      const lastRecord = records[records.length - 1]
+      if (lastRecord) {
+        const lastRoot = Parser.parseMd(lastRecord.data)
+        return filterNode(lastRoot, (n) => !n.isComplete())
+      } else {
+        // Nothing to load.
+        return Parser.parseMd('')
+      }
+    }
+  },
+  set: ({ get, set }, newRoot: Node) => {
+    Log.d(`set nodeSelector`)
+    let found = false
+    let records = get(taskRecordsState)
+    records = records.map((r) => {
+      if (r.key === keyDate) {
+        found = true
+        return {
+          ...r,
+          data: nodeToString(newRoot),
+        }
+      } else {
+        return r
+      }
+    })
+    if (!found) {
+      const record = {
+        key: keyDate,
+        type: TaskRecordType.Date,
+        data: '',
+      }
+      records.push(record)
+    }
+    set(taskRecordsState, records)
+  },
 })
 
 interface ITaskManager {
@@ -103,7 +119,7 @@ interface ITaskManager {
 }
 
 export function useTaskManager(): ITaskManager {
-  const [root, setNode] = useRecoilState(nodeState)
+  const [root, setNode] = useRecoilState(nodeSelector)
 
   const flatten = flat(root)
 

@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { atom, selector, useRecoilState } from 'recoil'
 
-import { nodeState, useTaskManager } from '@/hooks/useTaskManager'
+import { nodeSelector, useTaskManager } from '@/hooks/useTaskManager'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import Log from '@/services/log'
 import { TrackingState, TimeObject } from '@/@types/state'
@@ -9,11 +9,11 @@ import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 import { findNode } from '@/models/node'
 
-export const trackingStateList = atom<TrackingState[]>({
-  key: 'trackingStateList',
+const trackingState = atom<TrackingState[]>({
+  key: 'trackingState',
   default: selector({
     key: 'savedTrackingStateList',
-    get: async ({get}) => {
+    get: async () => {
       const trackings = (await Storage.get(
         STORAGE_KEY.TRACKING_STATE,
       )) as TrackingState[]
@@ -35,13 +35,6 @@ export const trackingStateList = atom<TrackingState[]>({
           const elapsedTime = Time.parseMs(elapsedTimeMs)
           tracking.elapsedTime.add(elapsedTime)
         }
-
-        // Since the node id changes with each parsing, find and update the new id
-        // using the line number as a key.
-        const root = get(nodeState)
-        const node = findNode(root, (n) => n.line === tracking.line)
-        if (node) tracking.nodeId = node.id
-
         return tracking
       })
     },
@@ -56,17 +49,42 @@ export const trackingStateList = atom<TrackingState[]>({
   ],
 })
 
+const trackingStateSelector = selector<TrackingState[]>({
+  key: 'trackingStateSelector',
+  get: ({ get }) => {
+    const trackings = get(trackingState)
+    const root = get(nodeSelector)
+
+    // Since the node id changes with each parsing, find and update the new id
+    // using the line number as a key.
+    return trackings.map((t) => {
+      const node = findNode(root, (n) => n.line === t.line)
+      if (node) {
+        return {
+          ...t,
+          nodeId: node.id
+        }
+      } 
+      return t
+    })
+  },
+  set: ({ set }, state) => {
+    set(trackingState, state)
+  },
+})
+
 interface useTrackingStateReturn {
   trackings: TrackingState[]
   addTracking: (tracking: TrackingState) => void
   removeTracking: (nodeId: string) => void
+  moveTracking: (from: number, to: number) => void
   stopAllTracking: () => void
   stopOtherTracking: (nodeId: string) => void
 }
 
 export function useTrackingState(): useTrackingStateReturn {
   const manager = useTaskManager()
-  const [trackings, setTrackings] = useRecoilState(trackingStateList)
+  const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
 
   const stopAllTracking = useCallback(() => {
     Log.d('stopAllTracking')
@@ -127,10 +145,27 @@ export function useTrackingState(): useTrackingStateReturn {
     [trackings],
   )
 
+  const moveTracking = useCallback(
+    (from: number, to: number) => {
+      const newVal = trackings.map((n) => {
+        if(n.line === from) {
+          return {
+            ...n,
+            line: to
+          }
+        }
+        return n
+      })
+      setTrackings(newVal)
+    },
+    [trackings],
+  )
+
   return {
     trackings,
     addTracking,
     removeTracking,
+    moveTracking,
     stopAllTracking,
     stopOtherTracking,
   }
