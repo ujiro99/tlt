@@ -1,4 +1,5 @@
-import { atom, selector, useRecoilState } from 'recoil'
+import { useEffect } from 'react'
+import { atom, selector, useRecoilState, useRecoilValue} from 'recoil'
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Parser } from '@/services/parser'
@@ -29,6 +30,17 @@ const keyDate = `${format(new Date(), 'yyyyMMdd')}`
 
 // void Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
 
+const loadRecords = async (): Promise<TaskRecordArray> => {
+  const records =
+    ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
+  Log.d(records)
+  return records
+}
+
+const saveRecords = async (records: TaskRecordArray) => {
+   return Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
+}
+
 /**
  * All of TaskRecords saved in chrome storage.
  */
@@ -38,27 +50,15 @@ const taskRecordsState = atom({
     key: 'nodeStateSelctor',
     get: async () => {
       Log.d(`get taskRecordsState`)
-      const records =
-        ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) ||
-        []
-      Log.d(records)
-      return records
+      return await loadRecords()
     },
-  }),
-  effects: [
-    ({ onSet }) => {
-      onSet((records: TaskRecordArray) => {
-        Log.d(`onSet taskRecordsState`)
-        void Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
-      })
-    },
-  ],
+  })
 })
 
 /**
  * Task text saved in chrome storage.
  */
-export const nodeSelector = selector<Node>({
+export const taskRecordSelector = selector<Node>({
   key: 'nodeSelector',
   get: ({ get }) => {
     Log.d(`get nodeSelector`)
@@ -79,31 +79,17 @@ export const nodeSelector = selector<Node>({
       }
     }
   },
-  set: ({ get, set }, newRoot: Node) => {
-    Log.d(`set nodeSelector`)
-    let found = false
-    let records = get(taskRecordsState)
-    records = records.map((r) => {
-      if (r.key === keyDate) {
-        found = true
-        return {
-          ...r,
-          data: nodeToString(newRoot),
-        }
-      } else {
-        return r
-      }
-    })
-    if (!found) {
-      const record = {
-        key: keyDate,
-        type: TaskRecordType.Date,
-        data: '',
-      }
-      records.push(record)
-    }
-    set(taskRecordsState, records)
-  },
+})
+
+const nodeState = atom<Node>({
+  key: 'nodeState',
+  default: selector({
+    key: 'nodeStateSelector',
+    get: ({ get }) => {
+      Log.d(`get nodeStateSelector`)
+      return get(taskRecordSelector)
+    },
+  }),
 })
 
 interface ITaskManager {
@@ -117,9 +103,8 @@ interface ITaskManager {
   setNodeByLine: (node: Node, line: number) => void
   setNode: (node: Node) => void
 }
-
 export function useTaskManager(): ITaskManager {
-  const [root, setNode] = useRecoilState(nodeSelector)
+  const [root, setRoot] = useRecoilState(nodeState)
 
   const flatten = flat(root)
 
@@ -136,7 +121,7 @@ export function useTaskManager(): ITaskManager {
     } else {
       replaceNode(cloned, node, (n) => n.line === line)
     }
-    setNode(cloned)
+    setRoot(cloned)
   }
 
   return {
@@ -145,7 +130,7 @@ export function useTaskManager(): ITaskManager {
     },
     setText: (value: string) => {
       const root = Parser.parseMd(value)
-      setNode(root)
+      setRoot(root)
     },
     lineCount: flatten.length,
     getTextByLine: (line: number) => {
@@ -161,6 +146,40 @@ export function useTaskManager(): ITaskManager {
     },
     getNodeByLine,
     setNodeByLine,
-    setNode: setNode,
+    setNode: setRoot,
+  }
+}
+
+export function useTaskStorage(): void {
+  const records = useRecoilValue(taskRecordsState)
+  const root = useRecoilValue(nodeState)
+
+  useEffect(() => {
+    Log.d('root changed')
+    saveToStorage()
+  }, [root])
+
+  const saveToStorage = () => {
+    let found = false
+    const newRecords = records.map((r) => {
+      if (r.key === keyDate) {
+        found = true
+        return {
+          ...r,
+          data: nodeToString(root),
+        }
+      } else {
+        return r
+      }
+    })
+    if (!found) {
+      const record = {
+        key: keyDate,
+        type: TaskRecordType.Date,
+        data: '',
+      }
+      records.push(record)
+    }
+    void saveRecords(newRecords)
   }
 }

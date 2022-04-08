@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { atom, selector, useRecoilState } from 'recoil'
 
-import { nodeSelector, useTaskManager } from '@/hooks/useTaskManager'
+import { taskRecordSelector, useTaskManager } from '@/hooks/useTaskManager'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import Log from '@/services/log'
 import { TrackingState, TimeObject } from '@/@types/state'
@@ -53,7 +53,7 @@ const trackingStateSelector = selector<TrackingState[]>({
   key: 'trackingStateSelector',
   get: ({ get }) => {
     const trackings = get(trackingState)
-    const root = get(nodeSelector)
+    const root = get(taskRecordSelector)
 
     // Since the node id changes with each parsing, find and update the new id
     // using the line number as a key.

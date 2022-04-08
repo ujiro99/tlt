@@ -5,6 +5,7 @@ import { TaskTextarea } from '@/components/TaskTextarea'
 import { Menu, MODE, modeState } from '@/components/Menu'
 import { EmptyLine } from '@/components/EmptyLine'
 import { SortableTree } from '@/components/Tree/SortableTree'
+import { useTaskStorage } from '@/hooks/useTaskManager'
 
 import '@/components/Popup.css'
 
@@ -26,6 +27,7 @@ export default function Popup(): JSX.Element {
 }
 
 function TaskList() {
+  useTaskStorage()
   const mode = useRecoilValue(modeState)
   switch (mode) {
     case MODE.EDIT:
