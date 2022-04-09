@@ -69,7 +69,7 @@ const taskRecordsState = atom({
 /**
  * Task text saved in chrome storage.
  */
-export const taskRecordSelector = selector<Node>({
+const taskRecordSelector = selector<Node>({
   key: 'taskRecordSelector',
   get: ({ get }) => {
     const records = get(taskRecordsState)
@@ -93,7 +93,7 @@ export const taskRecordSelector = selector<Node>({
   },
 })
 
-const nodeState = atom<Node>({
+export const nodeState = atom<Node>({
   key: 'nodeState',
   default: selector({
     key: 'nodeStateSelector',
