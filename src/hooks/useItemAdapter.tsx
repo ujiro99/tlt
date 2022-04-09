@@ -3,7 +3,6 @@ import React from 'react'
 import {
   Node,
   HeadingNode,
-  findNode,
   NODE_TYPE,
 } from '@/models/node'
 import { MdHeading } from '@/components/MdHeading'
@@ -21,7 +20,7 @@ export function useItemAdapter(): useItemAdapterReturn {
   const rootNode = manager.getRoot()
 
   const getItem = (id: string): JSX.Element => {
-    const node = findNode(rootNode, (n) => n.id === id)
+    const node = rootNode.find((n) => n.id === id)
     if (!node) {
       Log.w(`${id} not found!`)
       // return null

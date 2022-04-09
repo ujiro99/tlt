@@ -7,7 +7,6 @@ import Log from '@/services/log'
 import { TrackingState, TimeObject } from '@/@types/state'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
-import { findNode } from '@/models/node'
 
 const trackingState = atom<TrackingState[]>({
   key: 'trackingState',
@@ -58,7 +57,7 @@ const trackingStateSelector = selector<TrackingState[]>({
     // Since the node id changes with each parsing, find and update the new id
     // using the line number as a key.
     return trackings.map((t) => {
-      const node = findNode(root, (n) => n.line === t.line)
+      const node = root.find((n) => n.line === t.line)
       if (node) {
         return {
           ...t,
@@ -104,7 +103,7 @@ export function useTrackingState(): useTrackingStateReturn {
     const root = manager.getRoot()
     for (const tracking of trackings) {
       if (tracking.isTracking && tracking.nodeId !== exceptNodeId) {
-        const node = findNode(root, (n) => n.id === tracking.nodeId)
+        const node = root.find((n) => n.id === tracking.nodeId)
         if (node && node.data instanceof Task) {
           // Clone the objects for updating.
           const newNode = node.clone()

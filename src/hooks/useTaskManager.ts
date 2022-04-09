@@ -12,10 +12,6 @@ import { Parser } from '@/services/parser'
 import {
   Node,
   nodeToString,
-  clone,
-  findNode,
-  replaceNode,
-  filterNode,
 } from '@/models/node'
 import { flat } from '@/models/flattenedNode'
 import { dateToKey } from '@/services/util'
@@ -88,7 +84,7 @@ export const taskRecordSelector = selector<Node>({
       const lastRecord = records[records.length - 1]
       if (lastRecord) {
         const lastRoot = Parser.parseMd(lastRecord.data)
-        return filterNode(lastRoot, (n) => !n.isComplete())
+        return lastRoot.filter((n) => !n.isComplete())
       } else {
         // Nothing to load.
         return Parser.parseMd('')
@@ -127,19 +123,20 @@ export function useTaskManager(): ITaskManager {
   const flatten = flat(root)
 
   const getNodeByLine = (line: number): Node | null => {
-    return findNode(root, (n) => n.line === line)
+    return root.find((n) => n.line === line)
   }
 
   const setNodeByLine = (node: Node, line: number) => {
-    const [cloned] = clone([root])
+    let newRoot: Node
     if (line > flatten.length) {
-      node.line = flatten.length + 1
-      node.parent = cloned
-      cloned.children.push(node)
+      newRoot = root.append(node)
+    } else if (node) {
+      newRoot = root.replace(node, (n) => n.line === line)
     } else {
-      replaceNode(cloned, node, (n) => n.line === line)
+      // remove this line
+      newRoot = root.filter((n) => n.line !== line)
     }
-    setRoot(cloned)
+    setRoot(newRoot)
   }
 
   return {

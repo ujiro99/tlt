@@ -1,4 +1,4 @@
-import { nodeToString, findNode, replaceNode, filterNode } from '@/models/node'
+import { nodeToString } from '@/models/node'
 import { Parser } from '@/services/parser'
 
 describe('nodeToString', () => {
@@ -70,33 +70,34 @@ describe('toString', () => {
   })
 })
 
-describe('findNode', () => {
+describe('find', () => {
   test('find a first node.', () => {
-    const root = Parser.parseMd('- [ ] task')
-    const node = findNode(root, (n) => n.line === 1)
+    const root = Parser.parseMd(`- [ ] task
+- [ ] another task`)
+    const node = root.find((n) => n.line === 1)
     expect(node.toString()).toBe('- [ ] task')
   })
 })
 
-describe('replaceNode', () => {
+describe('replace', () => {
   test('replace a Task', () => {
     const root = Parser.parseMd('- [ ] task')
     const node = Parser.parseMd('- [ ] task1').children[0]
-    replaceNode(root, node, (n) => n.line === 1)
+    root.replace(node, (n) => n.line === 1)
     expect(nodeToString(root)).toBe('- [ ] task1')
   })
 
   test('replace a Text', () => {
     const root = Parser.parseMd('text')
     const node = Parser.parseMd('text 1').children[0]
-    replaceNode(root, node, (n) => n.line === 1)
+    root.replace(node, (n) => n.line === 1)
     expect(nodeToString(root)).toBe('text 1')
   })
 
   test('replace a Heading', () => {
     const root = Parser.parseMd('# heading')
     const node = Parser.parseMd('# heading 1').children[0]
-    replaceNode(root, node, (n) => n.line === 1)
+    root.replace(node, (n) => n.line === 1)
     expect(nodeToString(root)).toBe('# heading 1')
   })
 
@@ -104,24 +105,24 @@ describe('replaceNode', () => {
     const root = Parser.parseMd(`# heading
 ## heading`)
     const node = Parser.parseMd('## heading 1').children[0]
-    replaceNode(root, node, (n) => n.line === 2)
+    root.replace(node, (n) => n.line === 2)
     expect(nodeToString(root)).toBe(`# heading
 ## heading 1`)
   })
 })
 
-describe('filterNode', () => {
+describe('filter', () => {
   test('Remove a completed task', () => {
     const root = Parser.parseMd(`- [ ] task
 - [x] completed task`)
-    const filterd = filterNode(root, (n) => !n.isComplete())
+    const filterd = root.filter((n) => !n.isComplete())
     expect(nodeToString(filterd)).toBe('- [ ] task')
   })
 
   test('Don\'t remove a completed task which has a child', () => {
     const root = Parser.parseMd(`- [x] task
   - [ ] completed task`)
-    const filterd = filterNode(root, (n) => !n.isComplete())
+    const filterd = root.filter((n) => !n.isComplete())
     expect(nodeToString(filterd)).toBe(`- [x] task
   - [ ] completed task`)
   })
@@ -129,7 +130,7 @@ describe('filterNode', () => {
   test('Remove a completed task which has a completed child', () => {
     const root = Parser.parseMd(`- [x] task
   - [x] completed task`)
-    const filterd = filterNode(root, (n) => !n.isComplete())
+    const filterd = root.filter((n) => !n.isComplete())
     expect(nodeToString(filterd)).toBe(``)
   })
 })

@@ -36,6 +36,8 @@ export interface INode {
   clone(): INode
 }
 
+type Predicate = (n: Node) => boolean
+
 export class Node implements TreeItem, INode {
   public type: NodeType
   public line: number
@@ -99,6 +101,89 @@ export class Node implements TreeItem, INode {
       return (this.data as Task).isComplete()
     }
     return false
+  }
+
+  public append(node: Node): Node {
+    const [cloned] = clone([this])
+    const flatten = flat(this)
+    node.line = flatten.length + 1
+    node.parent = cloned
+    cloned.children.push(node)
+    return cloned
+  }
+
+  public find(predicate: Predicate): Node | null {
+    const queue: Node[] = [this]
+
+    // breadth first search
+    try {
+      while (queue.length > 0) {
+        const elm = queue.shift()
+        if (predicate(elm)) {
+          return elm
+        }
+        if (elm.children.length > 0) {
+          queue.push(...elm.children)
+        }
+      }
+    } catch (e) {
+      Log.w(e)
+    }
+    return null
+  }
+
+  public filter(predicate: Predicate): Node {
+    const [cloned] = clone([this])
+    const queue: Node[] = [cloned]
+    const flatten: Node[] = []
+
+    // breadth first search
+    try {
+      while (queue.length > 0) {
+        const elm = queue.shift()
+        flatten.push(elm)
+        if (elm.children.length > 0) {
+          queue.push(...elm.children)
+        }
+      }
+
+      const reverse = flatten.reverse()
+
+      // remove nodes
+      // TODO update line
+      reverse.forEach((n) => {
+        const match = predicate(n)
+        if (!match && n.children.length === 0) {
+          // remove a node
+          const parent = n.parent
+          parent.children = parent.children.filter((c) => c.id !== n.id)
+        }
+      })
+    } catch (e) {
+      Log.w(e)
+    }
+
+    return cloned
+  }
+
+  public replace(node: Node, predicate: Predicate): Node {
+    const [cloned] = clone([this])
+    const target = cloned.find(predicate)
+    if (target == null) return cloned
+    const parent = target.parent
+    if (parent == null) return cloned
+
+    // keep some data of the node.
+    node.id = target.id
+    node.line = target.line
+    node.parent = parent
+    node.children = target.children
+
+    parent.children = parent.children.map((n) => {
+      return n.id === node.id ? node : n
+    })
+
+    return cloned
   }
 }
 
@@ -165,86 +250,12 @@ export class HeadingNode extends Node {
   }
 }
 
-export function clone(nodes: Node[], parent?: Node): Node[] {
+function clone(nodes: Node[], parent?: Node): Node[] {
   return nodes.map<Node>((a) => {
     const b = a.clone()
     b.parent = parent
     b.children = clone(b.children, b)
     return b
-  })
-}
-
-type Predicate = (n: Node) => boolean
-
-export function findNode(root: Node, predicate: Predicate): Node | null {
-  const queue: Node[] = [root]
-
-  // breadth first search
-  try {
-    while (queue.length > 0) {
-      const elm = queue.shift()
-      if (predicate(elm)) {
-        return elm
-      }
-      if (elm.children.length > 0) {
-        queue.push(...elm.children)
-      }
-    }
-  } catch (e) {
-    Log.w(e)
-  }
-  return null
-}
-
-export function filterNode(root: Node, predicate: Predicate): Node {
-  const queue: Node[] = [root]
-  const flatten: Node[] = []
-
-  // breadth first search
-  try {
-    while (queue.length > 0) {
-      const elm = queue.shift()
-      flatten.push(elm)
-      if (elm.children.length > 0) {
-        queue.push(...elm.children)
-      }
-    }
-
-    const reverse = flatten.reverse()
-
-    // remove nodes
-    reverse.forEach((n) => {
-      const match = predicate(n)
-      if (!match && n.children.length === 0) {
-        // remove a node
-        const parent = n.parent
-        parent.children = parent.children.filter((c) => c.id !== n.id)
-      }
-    })
-  } catch (e) {
-    Log.w(e)
-  }
-  return root
-}
-
-export function replaceNode(
-  root: Node,
-  node: Node,
-  predicate: Predicate,
-): void {
-  const target = findNode(root, predicate)
-  if (target == null) return
-  const parent = target.parent
-  if (parent == null) return
-
-  // keep some data of the node.
-  node.id = target.id
-  node.line = target.line
-  node.parent = parent
-  node.children = target.children
-
-  parent.children = parent.children.map((n) => {
-    return n.id === node.id ? node : n
   })
 }
 
