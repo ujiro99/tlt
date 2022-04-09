@@ -1,5 +1,11 @@
 import { useEffect } from 'react'
-import { atom, selector, useRecoilState, useRecoilValue} from 'recoil'
+import {
+  atom,
+  selector,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil'
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Parser } from '@/services/parser'
@@ -12,7 +18,7 @@ import {
   filterNode,
 } from '@/models/node'
 import { flat } from '@/models/flattenedNode'
-import { format } from 'date-fns'
+import { dateToKey } from '@/services/util'
 
 enum TaskRecordType {
   Date,
@@ -26,7 +32,10 @@ interface TaskRecord {
 
 type TaskRecordArray = TaskRecord[]
 
-const keyDate = `${format(new Date(), 'yyyyMMdd')}`
+const taskRecordKeyState = atom<string>({
+  key: 'taskRecordKeyState',
+  default: dateToKey(new Date()),
+})
 
 // void Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
 
@@ -37,8 +46,14 @@ const loadRecords = async (): Promise<TaskRecordArray> => {
   return records
 }
 
-const saveRecords = async (records: TaskRecordArray) => {
-   return Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
+const saveRecords = async (records: TaskRecordArray): Promise<boolean> => {
+  try {
+    const res = await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
+    return res === true
+  } catch (e) {
+    Log.w(e)
+    return false
+  }
 }
 
 /**
@@ -52,18 +67,19 @@ const taskRecordsState = atom({
       Log.d(`get taskRecordsState`)
       return await loadRecords()
     },
-  })
+  }),
 })
 
 /**
  * Task text saved in chrome storage.
  */
 export const taskRecordSelector = selector<Node>({
-  key: 'nodeSelector',
+  key: 'taskRecordSelector',
   get: ({ get }) => {
-    Log.d(`get nodeSelector`)
     const records = get(taskRecordsState)
-    const record = records.find((r) => r.key === keyDate)
+    const key = get(taskRecordKeyState)
+    Log.d(`get taskRecordSelector: ${key}`)
+    const record = records.find((r) => r.key === key)
     if (record) {
       return Parser.parseMd(record.data)
     } else {
@@ -93,18 +109,20 @@ const nodeState = atom<Node>({
 })
 
 interface ITaskManager {
+  lineCount: number
+  setKey: (key: string) => void
   getText: () => string
   setText: (value: string) => void
   getTextByLine: (line: number) => string
   setTextByLine: (line: number, text: string) => void
-  lineCount: number
   getRoot: () => Node
+  setRoot: (node: Node) => void
   getNodeByLine: (line: number) => Node
   setNodeByLine: (node: Node, line: number) => void
-  setNode: (node: Node) => void
 }
 export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState(nodeState)
+  const setRecordKey = useSetRecoilState(taskRecordKeyState)
 
   const flatten = flat(root)
 
@@ -125,6 +143,8 @@ export function useTaskManager(): ITaskManager {
   }
 
   return {
+    lineCount: flatten.length,
+    setKey: setRecordKey,
     getText: () => {
       return nodeToString(root)
     },
@@ -132,7 +152,6 @@ export function useTaskManager(): ITaskManager {
       const root = Parser.parseMd(value)
       setRoot(root)
     },
-    lineCount: flatten.length,
     getTextByLine: (line: number) => {
       const node = getNodeByLine(line)
       return node ? node.toString() : ''
@@ -144,25 +163,30 @@ export function useTaskManager(): ITaskManager {
     getRoot: () => {
       return root
     },
+    setRoot: setRoot,
     getNodeByLine,
     setNodeByLine,
-    setNode: setRoot,
   }
 }
 
 export function useTaskStorage(): void {
-  const records = useRecoilValue(taskRecordsState)
-  const root = useRecoilValue(nodeState)
+  const [records, setRecords] = useRecoilState(taskRecordsState)
+  const record = useRecoilValue(taskRecordSelector)
+  const key = useRecoilValue(taskRecordKeyState)
+  const [root, setRoot] = useRecoilState(nodeState)
 
   useEffect(() => {
-    Log.d('root changed')
     saveToStorage()
   }, [root])
+
+  useEffect(() => {
+    setRoot(record)
+  }, [key])
 
   const saveToStorage = () => {
     let found = false
     const newRecords = records.map((r) => {
-      if (r.key === keyDate) {
+      if (r.key === key) {
         found = true
         return {
           ...r,
@@ -174,12 +198,20 @@ export function useTaskStorage(): void {
     })
     if (!found) {
       const record = {
-        key: keyDate,
+        key: key,
         type: TaskRecordType.Date,
         data: '',
       }
-      records.push(record)
+      newRecords.push(record)
     }
+    setRecords(newRecords)
     void saveRecords(newRecords)
   }
+}
+
+type TaskRecordKeys = [keys: string[]]
+export function useTaskRecordKeys(): TaskRecordKeys {
+  const records = useRecoilValue(taskRecordsState)
+  const keys = records.map((r) => r.key)
+  return [keys]
 }

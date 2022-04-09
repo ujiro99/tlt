@@ -2,13 +2,11 @@ import React, { useState } from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import Modal from 'react-modal'
-import { add, sub, differenceInCalendarDays } from 'date-fns';
+
+import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
+import { dateToKey } from '@/services/util'
 
 import '@/components/Calendar.css'
-
-function isSameDay(a, b) {
-  return differenceInCalendarDays(a, b) === 0;
-}
 
 const modalStyles = {
   content: {
@@ -23,15 +21,32 @@ const modalStyles = {
   },
 }
 
-Modal.setAppElement(document.getElementById('popup'))
-
 export function CalendarIcon(): JSX.Element {
   const [visible, setVisible] = useState(false)
-  const [value, onChange] = useState(new Date())
+  const [date, setDate] = useState(new Date())
+  const manager = useTaskManager()
+  const [recordKeys] = useTaskRecordKeys()
 
   function showCalendar() {
     setVisible(!visible)
   }
+
+  function tileDisabled({ date, view }) {
+    // Disable tiles in month view only
+    if (view === 'month') {
+      // Check if a date React-Calendar wants to check is on the list of disabled dates
+      const k = dateToKey(date)
+      return recordKeys.find(key => key === k) === undefined
+    }
+  }
+
+  function onChange(date: Date) {
+    setDate(date)
+    manager.setKey(dateToKey(date))
+    setVisible(false)
+  }
+
+  Modal.setAppElement(document.getElementById('popup'))
 
   return (
     <>
@@ -50,7 +65,8 @@ export function CalendarIcon(): JSX.Element {
         style={modalStyles}
       >
         <div>
-          <Calendar onChange={onChange} value={value}
+          <Calendar onChange={onChange} value={date}
+            tileDisabled={tileDisabled}
           />
         </div>
       </Modal>

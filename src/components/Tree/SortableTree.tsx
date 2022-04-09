@@ -260,7 +260,7 @@ export function SortableTree({
   function setTreeItems(newItems: TreeItems) {
     setItems(treeItemsToNode(newItems))
     // update persistent data
-    manager.setNode(treeItemsToNode(newItems))
+    manager.setRoot(treeItemsToNode(newItems))
   }
 
   function handleDragCancel() {
