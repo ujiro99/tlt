@@ -1,3 +1,16 @@
 .react-calendar {
   @apply rounded-md;
 }
+
+.calendar-date {
+  @apply relative;
+  @apply bg-gray-100;
+
+  display: inline-block;
+  font-family: monospace;
+  user-select: none;
+  padding: 2px 12px;
+  border-radius: 12px;
+  top: -10px;
+  left: 50%;
+}

@@ -56,11 +56,11 @@ function Clear(): JSX.Element {
 
 export function Menu(): JSX.Element {
   return (
-    <div className="px-2.5 flex">
-      <div>
+    <div className="px-2.5 py-1 flex">
+      <div className="flex-1">
         <Calendar />
       </div>
-      <div className="text-right grow">
+      <div className="flex-1 text-right">
         <Clear />
         <Copy />
         <Edit />
