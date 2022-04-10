@@ -11,6 +11,10 @@ const TASK_STATE = {
 }
 type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
 
+type Tag = {
+  name: string
+}
+
 export class Task {
   // for unique Id
   private static taskId = 0
@@ -20,6 +24,10 @@ export class Task {
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
+  private static estimatedTimeRegexp =
+    /~\d+[dhm]?\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
+
+  private static tagRegexp = /#(.*?)(\s|$)/g
 
   // utility for creating unique Id
   static getId(): number {
@@ -35,8 +43,10 @@ export class Task {
     if (Task.isTaskStr(taskStr)) {
       const state = Task.parseState(taskStr)
       const title = Task.parseTitle(taskStr)
-      const time = Task.parseTime(taskStr)
-      return new Task(state, title, time)
+      const atime = Task.parseTime(taskStr)
+      const etime = Task.parseEstimatedTime(taskStr)
+      const tags = Task.parseTags(taskStr)
+      return new Task(state, title, atime, etime, tags)
     }
     Log.v("Can't find task: " + taskStr)
     return null
@@ -75,21 +85,49 @@ export class Task {
     return new Time()
   }
 
+  private static parseEstimatedTime(taskStr: string): Time {
+    if (Task.estimatedTimeRegexp.test(taskStr)) {
+      const m = Task.estimatedTimeRegexp.exec(taskStr)
+      if (m[1]) {
+        return Time.parseStr(m[1])
+      }
+    }
+    Log.v(`can't find estimated time: ${taskStr}`)
+    return new Time()
+  }
+
+  private static parseTags(taskStr: string): Tag[] {
+    const tags: Tag[] = []
+    let match: RegExpExecArray
+    while ((match = Task.tagRegexp.exec(taskStr)) !== null) {
+      tags.push({ name: match[1] })
+    }
+    return tags
+  }
+
   public id: number
   public title: string
   public taskState: TaskState
   public estimatedTimes: Time
   public actualTimes: Time
+  public tags: Tag[]
 
   /**
    * Constructor called only by the parse function.
    */
-  private constructor(state: TaskState, title: string, time: Time) {
+  private constructor(
+    state: TaskState,
+    title: string,
+    actualTimes: Time,
+    estimatedTimes?: Time,
+    tags?: Tag[],
+  ) {
     this.id = Task.getId()
     this.title = title
     this.taskState = state
-    this.estimatedTimes = new Time()
-    this.actualTimes = time
+    this.actualTimes = actualTimes
+    this.estimatedTimes = estimatedTimes || new Time()
+    this.tags = tags || []
   }
 
   /**
@@ -139,6 +177,16 @@ export class Task {
       const time = this.actualTimes.toString()
       str += ` ~${time}`
     }
+    // estimated time
+    if (!this.estimatedTimes.isEmpty()) {
+      const time = this.estimatedTimes.toString()
+      str += `/${time}`
+    }
+    // tags
+    if (this.tags.length > 0) {
+      const tagStr = this.tags.map((t) => `#${t.name}`).join(' ')
+      str += ` ${tagStr}`
+    }
     return str
   }
 
@@ -155,6 +203,7 @@ export class Task {
     newTask.id = this.id
     newTask.estimatedTimes = this.estimatedTimes.clone()
     newTask.actualTimes = this.actualTimes.clone()
+    newTask.tags = this.tags
     return newTask
   }
 }

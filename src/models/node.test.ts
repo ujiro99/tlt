@@ -30,8 +30,8 @@ describe('nodeToString', () => {
 
   test('nested task 2 level', () => {
     const expectStr = `- [ ] parent
-  - [ ] child
-    - [x] grandchild`
+  - [ ] child #dev
+    - [x] grandchild #sp:1`
     const rootNode = Parser.parseMd(expectStr)
     const text = nodeToString(rootNode)
     expect(text).toBe(expectStr)
@@ -55,6 +55,12 @@ describe('toString', () => {
     const rootNode = Parser.parseMd('- [ ] task')
     const node = rootNode.children[0]
     expect(node.toString()).toBe('- [ ] task')
+  })
+
+  test('type Task with a tag', () => {
+    const rootNode = Parser.parseMd('- [ ] task #dev')
+    const node = rootNode.children[0]
+    expect(node.toString()).toBe('- [ ] task #dev')
   })
 
   test('type Heading', () => {

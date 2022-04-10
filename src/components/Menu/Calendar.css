@@ -4,10 +4,11 @@
 
 .calendar-date {
   @apply select-none;
+  @apply font-mono;
 
+  margin-left: -1em;
   text-align: center;
-  font-family: monospace;
-  font-size: 16px;
+  font-size: 14px;
 
   span {
     line-height: 50px;

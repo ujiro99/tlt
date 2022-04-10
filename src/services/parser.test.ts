@@ -1,5 +1,6 @@
 import { Parser } from '@/services/parser'
 import { HeadingNode, NODE_TYPE } from '@/models/node'
+import { Task } from '@/models/task'
 
 describe('parserMd', () => {
   test('parse a task', () => {
@@ -57,6 +58,16 @@ describe('parserMd', () => {
     expect(t.type).toBe(NODE_TYPE.TASK)
     const t1 = t.children[0]
     expect(t1.type).toBe(NODE_TYPE.TASK)
+  })
+
+  test('parse a task with a tag', () => {
+    const text = `- [ ] task #dev`
+    const rootNode = Parser.parseMd(text)
+    const t = rootNode.children[0]
+    expect(t.type).toBe(NODE_TYPE.TASK)
+    const task = t.data as Task
+    expect(task.tags.length).toBe(1)
+    expect(task.tags[0].name).toBe("dev")
   })
 
   test('parse tasks with subtasks', () => {
