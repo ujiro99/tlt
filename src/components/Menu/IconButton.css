@@ -1,0 +1,55 @@
+.icon-button {
+  @apply my-1;
+  @apply ml-2;
+  @apply bg-gray-100;
+  @apply hover:bg-gray-50;
+  @apply border-none;
+  @apply shadow;
+  @apply rounded-md;
+  @apply transition;
+  @apply ease-out;
+  @apply text-center;
+  @apply select-none;
+
+  width: 2.4rem;
+  padding-top: 6px;
+  padding-bottom: 0;
+
+  &__icon {
+    @apply fill-gray-500;
+    @apply text-gray-500;
+    width: 16px;
+    height: 16px;
+    margin: 0 auto;
+  }
+
+  &__label {
+    @apply text-gray-700;
+    position: relative;
+    font-size: 10px;
+    line-height: 0.8;
+    top: -2px;
+  }
+
+  &.mod--date {
+    @apply ml-0;
+  }
+
+  &.mod--edit {
+    .icon-button__icon {
+      width: 22px;
+      height: 22px;
+      margin-top: -4px;
+      margin-bottom: -2px;
+    }
+  }
+
+  &.mod--save {
+    .icon-button__icon {
+      width: 20px;
+      height: 20px;
+      margin-top: -2px;
+      margin-bottom: -2px;
+    }
+  }
+}

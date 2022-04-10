@@ -5,6 +5,7 @@ type TrackingState = {
   isTracking: boolean
   trackingStartTime: number /** [milli second] */
   elapsedTime: Time
+  line: number
 }
 
 type TimeObject = {

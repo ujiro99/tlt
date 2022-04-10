@@ -1,6 +1,6 @@
 .task-item {
   @apply relative;
-  @apply pl-4;
+  @apply pl-3;
   @apply pr-2;
   @apply py-2;
   @apply min-h-[40px];
@@ -21,6 +21,14 @@
   &--running {
     animation: bg-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
+}
+
+.item-color {
+  transition: background-color 0.2s ease-out;
+  &:hover {
+    background-color: rgb(241 245 249);
+  }
+  @apply focus:bg-indigo-50;
 }
 
 @keyframes bg-pulse {

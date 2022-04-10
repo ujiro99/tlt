@@ -1,8 +1,8 @@
-.fade-enter {
+.fade-enter > * {
   animation: 0.2s fade forwards;
 }
 
-.fade-exit {
+.fade-exit > * {
   animation: 0.1s fade forwards;
   animation-direction: reverse;
 }

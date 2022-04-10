@@ -1,3 +1,4 @@
+import { format } from 'date-fns'
 import { Node, HeadingNode, NODE_TYPE } from '@/models/node'
 import type { TreeItems } from '@/components/Tree/types'
 import Log from '@/services/log'
@@ -68,4 +69,13 @@ export function getIndentCount(str: string): number {
     return m[0].length
   }
   return 0
+}
+
+/**
+ * Convert a date to the key of TaskRecord.
+ * @param {Date} date A date to be converted.
+ * @return Key of TaskRecord.
+ */
+export function dateToKey(date: Date): string {
+  return `${format(date, 'yyyyMMdd')}`
 }

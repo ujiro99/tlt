@@ -7,7 +7,7 @@ import { HeadingNode } from '@/models/node'
 import Log from '@/services/log'
 
 const baseClass =
-  'w-full font-bold relative text-gray-700 leading-normal focus:bg-indigo-50 cursor-pointer px-3 group'
+  'w-full font-bold relative text-gray-700 leading-normal cursor-pointer px-3 group item-color'
 const otherClass = {
   h1: 'text-base pt-4 pb-3',
   h2: 'text-base pt-4 pb-3',
