@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import Modal from 'react-modal'
-import { format } from 'date-fns'
 
 import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
@@ -28,7 +27,6 @@ function MyCalendar(): JSX.Element {
   const [date, setDate] = useCalendarDate()
   const manager = useTaskManager()
   const [recordKeys] = useTaskRecordKeys()
-  const dateStr = `${format(date, 'MMM dd, yyyy')}`
 
   function showCalendar() {
     setVisible(!visible)
@@ -62,10 +60,6 @@ function MyCalendar(): JSX.Element {
         </svg>
         <span className="icon-button__label">Date</span>
       </button>
-
-      <p className="calendar-date">
-        <span>{dateStr}</span>
-      </p>
 
       <Modal
         isOpen={visible}

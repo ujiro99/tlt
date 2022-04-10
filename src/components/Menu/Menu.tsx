@@ -5,6 +5,7 @@ import { Tooltip } from '@/components/Tooltip'
 import { Calendar } from '@/components/Menu/Calendar'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
+import { RecordName } from '@/components/Menu/RecordName'
 
 import { sleep } from '@/services/util'
 import { STORAGE_KEY, Storage } from '@/services/storage'
@@ -59,6 +60,9 @@ export function Menu(): JSX.Element {
     <div className="px-2.5 py-1 flex">
       <div className="flex-1">
         <Calendar />
+      </div>
+      <div className="flex-1">
+        <RecordName />
       </div>
       <div className="flex-1 text-right">
         <Clear />
