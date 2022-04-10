@@ -149,8 +149,7 @@ export class Node implements TreeItem, INode {
 
       const reverse = flatten.reverse()
 
-      // remove nodes
-      // TODO update line
+      // Remove nodes
       reverse.forEach((n) => {
         const match = predicate(n)
         if (!match && n.children.length === 0) {
@@ -159,6 +158,13 @@ export class Node implements TreeItem, INode {
           parent.children = parent.children.filter((c) => c.id !== n.id)
         }
       })
+
+      // Update line number
+      const flattenFiltered = flat(cloned)
+      flattenFiltered.forEach((f, index) => {
+        f.node.line = index + 1
+      })
+
     } catch (e) {
       Log.w(e)
     }

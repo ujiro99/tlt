@@ -81,31 +81,31 @@ describe('find', () => {
 
 describe('replace', () => {
   test('replace a Task', () => {
-    const root = Parser.parseMd('- [ ] task')
+    let root = Parser.parseMd('- [ ] task')
     const node = Parser.parseMd('- [ ] task1').children[0]
-    root.replace(node, (n) => n.line === 1)
+    root = root.replace(node, (n) => n.line === 1)
     expect(nodeToString(root)).toBe('- [ ] task1')
   })
 
   test('replace a Text', () => {
-    const root = Parser.parseMd('text')
+    let root = Parser.parseMd('text')
     const node = Parser.parseMd('text 1').children[0]
-    root.replace(node, (n) => n.line === 1)
+    root = root.replace(node, (n) => n.line === 1)
     expect(nodeToString(root)).toBe('text 1')
   })
 
   test('replace a Heading', () => {
-    const root = Parser.parseMd('# heading')
+    let root = Parser.parseMd('# heading')
     const node = Parser.parseMd('# heading 1').children[0]
-    root.replace(node, (n) => n.line === 1)
+    root = root.replace(node, (n) => n.line === 1)
     expect(nodeToString(root)).toBe('# heading 1')
   })
 
   test('replace a Second Heading', () => {
-    const root = Parser.parseMd(`# heading
+    let root = Parser.parseMd(`# heading
 ## heading`)
     const node = Parser.parseMd('## heading 1').children[0]
-    root.replace(node, (n) => n.line === 2)
+    root = root.replace(node, (n) => n.line === 2)
     expect(nodeToString(root)).toBe(`# heading
 ## heading 1`)
   })
@@ -117,6 +117,15 @@ describe('filter', () => {
 - [x] completed task`)
     const filterd = root.filter((n) => !n.isComplete())
     expect(nodeToString(filterd)).toBe('- [ ] task')
+  })
+
+  test('Update line numbers', () => {
+    const root = Parser.parseMd(`- [ ] task a
+- [x] completed task
+- [ ] task b`)
+    const filterd = root.filter((n) => !n.isComplete())
+    expect(filterd.children[0].line).toBe(1)
+    expect(filterd.children[1].line).toBe(2)
   })
 
   test('Don\'t remove a completed task which has a child', () => {
