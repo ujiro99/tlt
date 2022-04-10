@@ -33,6 +33,11 @@ const taskRecordKeyState = atom<string>({
   default: dateToKey(new Date()),
 })
 
+export const savingState = atom<boolean>({
+  key: 'savingState',
+  default: false,
+})
+
 // void Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
 
 const loadRecords = async (): Promise<TaskRecordArray> => {
@@ -168,19 +173,22 @@ export function useTaskManager(): ITaskManager {
 
 export function useTaskStorage(): void {
   const [records, setRecords] = useRecoilState(taskRecordsState)
+  const setSaving = useSetRecoilState(savingState)
+
   const record = useRecoilValue(taskRecordSelector)
   const key = useRecoilValue(taskRecordKeyState)
   const [root, setRoot] = useRecoilState(nodeState)
 
   useEffect(() => {
-    saveToStorage()
+    void saveToStorage()
   }, [root])
 
   useEffect(() => {
     setRoot(record)
   }, [key])
 
-  const saveToStorage = () => {
+  const saveToStorage = async () => {
+    setSaving(true)
     let found = false
     const newRecords = records.map((r) => {
       if (r.key === key) {
@@ -202,7 +210,8 @@ export function useTaskStorage(): void {
       newRecords.push(record)
     }
     setRecords(newRecords)
-    void saveRecords(newRecords)
+    await saveRecords(newRecords)
+    setSaving(false)
   }
 }
 
