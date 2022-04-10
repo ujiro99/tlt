@@ -5,6 +5,7 @@ import Modal from 'react-modal'
 import { format } from 'date-fns'
 
 import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
+import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { dateToKey } from '@/services/util'
 
 import './Calendar.css'
@@ -24,7 +25,7 @@ const modalStyles = {
 
 function MyCalendar(): JSX.Element {
   const [visible, setVisible] = useState(false)
-  const [date, setDate] = useState(new Date())
+  const [date, setDate] = useCalendarDate()
   const manager = useTaskManager()
   const [recordKeys] = useTaskRecordKeys()
   const dateStr = `${format(date, 'MMM dd, yyyy')}`

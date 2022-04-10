@@ -18,26 +18,15 @@
   @apply select-none;
   @apply cursor-default;
 }
+
 .controll-button {
   @apply flex;
   @apply text-indigo-300;
   @apply text-3xl;
   @apply hover:text-indigo-600;
 
-  &:hover svg {
-    @apply drop-shadow-md;
-  }
-}
-
-.controll-dnd {
-  @apply flex;
-  @apply text-gray-300;
-  @apply hover:text-gray-600;
-  @apply cursor-move;
-  @apply ml-[2px];
-
-  & svg {
-    @apply h-[1.6em];
+  &.mod-disable {
+    @apply text-gray-300;
   }
 
   &:hover svg {
