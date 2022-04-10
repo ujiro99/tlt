@@ -6,7 +6,7 @@ import Modal from 'react-modal'
 import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
 import { dateToKey } from '@/services/util'
 
-import '@/components/Calendar.css'
+import './Calendar.css'
 
 const modalStyles = {
   content: {
@@ -21,7 +21,7 @@ const modalStyles = {
   },
 }
 
-export function CalendarIcon(): JSX.Element {
+function MyCalendar(): JSX.Element {
   const [visible, setVisible] = useState(false)
   const [date, setDate] = useState(new Date())
   const manager = useTaskManager()
@@ -51,12 +51,13 @@ export function CalendarIcon(): JSX.Element {
   return (
     <>
       <button
-        className="w-8 py-1 my-2 text-base text-gray-500 bg-gray-100 border-none shadow hover:bg-gray-50 rounded-md transition ease-out"
+        className="icon-button mod--date"
         onClick={showCalendar}
       >
-        <svg className="icon">
+        <svg className="icon-button__icon">
           <use xlinkHref="/icons.svg#icon-calendar" />
         </svg>
+        <span className="icon-button__label">Date</span>
       </button>
 
       <Modal
@@ -73,3 +74,5 @@ export function CalendarIcon(): JSX.Element {
     </>
   )
 }
+
+export { MyCalendar as Calendar }

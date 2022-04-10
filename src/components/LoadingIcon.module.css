@@ -1,12 +1,14 @@
 .LoadingIcon {
   position: absolute;
-  right: 10px;
-  top: 60px;
+  right: 14px;
+  top: 10px;
 }
 
 .LoadingIcon {
   --color: #bbb;
   --border-width: 2px;
+
+  user-select: none;
 
   .icon {
     width: 20px;
