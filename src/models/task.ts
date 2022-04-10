@@ -203,6 +203,7 @@ export class Task {
     newTask.id = this.id
     newTask.estimatedTimes = this.estimatedTimes.clone()
     newTask.actualTimes = this.actualTimes.clone()
+    newTask.tags = this.tags
     return newTask
   }
 }

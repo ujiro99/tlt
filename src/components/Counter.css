@@ -1,9 +1,8 @@
 .counter {
-  font-family: monospace;
-
   @apply ml-2;
   @apply relative;
   @apply text-xs;
+  @apply font-mono;
 
   &__unit {
     margin-left: 1px;

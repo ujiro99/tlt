@@ -39,6 +39,8 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const tracking = trackings.find((n) => n.nodeId === node.id)
   const isTracking = tracking == null ? false : tracking.isTracking
   const id = `check-${task.id}`
+  const hasEstimatedTime = !task.estimatedTimes.isEmpty()
+  const hasTags = task.tags.length > 0
 
   Log.v(`${line} ${id} ${isTracking ? 'tracking' : 'stop'}`)
 
@@ -83,7 +85,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
       isTracking: true,
       trackingStartTime: trackingStartTime,
       elapsedTime: newTask.actualTimes,
-      line
+      line,
     }
     addTracking(newTracking)
 
@@ -141,13 +143,22 @@ export const TaskItem: React.FC<TaskItemProps> = (
         />
         <span className="flex-grow ml-2">{task.title}</span>
       </div>
+      {hasTags ? (
+        task.tags.map((tag) => {
+          return <div className="px-2 pb-1 ml-2 font-mono text-xs pt-0.5 rounded-xl bg-sky-200" key={tag.name}>{tag.name}</div>
+        })
+      ) : null}
       {isTracking ? (
         <Counter startTime={tracking.elapsedTime} />
       ) : !task.actualTimes.isEmpty() ? (
         <CounterStopped startTime={task.actualTimes} />
-      ) : (
-        <div></div>
-      )}
+      ) : null}
+      {hasEstimatedTime ? (
+        <p className="font-mono text-xs">
+          <span className="mr-1">/</span>
+          <span>{task.estimatedTimes.toString()}</span>
+        </p>
+      ) : null}
       <TaskController
         onClickStart={startTracking}
         onClickStop={stopTracking}
