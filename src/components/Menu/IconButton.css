@@ -31,6 +31,17 @@
     top: -2px;
   }
 
+  &.mod--disable {
+    @apply cursor-not-allowed;
+
+    .icon-button__icon {
+      @apply fill-gray-400;
+    }
+    .icon-button__label {
+      @apply text-gray-400;
+    }
+  }
+
   &.mod--date {
     @apply ml-0;
   }
