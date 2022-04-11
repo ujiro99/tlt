@@ -188,6 +188,8 @@ export function useTaskStorage(): void {
   }, [key])
 
   const saveToStorage = async () => {
+    const data = nodeToString(root)
+    if (data.length === 0) return
     setSaving(true)
     let found = false
     const newRecords = records.map((r) => {
@@ -195,7 +197,7 @@ export function useTaskStorage(): void {
         found = true
         return {
           ...r,
-          data: nodeToString(root),
+          data
         }
       } else {
         return r
@@ -205,7 +207,7 @@ export function useTaskStorage(): void {
       const record = {
         key: key,
         type: TaskRecordType.Date,
-        data: '',
+        data
       }
       newRecords.push(record)
     }
