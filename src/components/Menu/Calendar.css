@@ -6,9 +6,8 @@
   @apply select-none;
   @apply font-mono;
 
-  margin-left: -1em;
-  text-align: center;
-  font-size: 14px;
+  margin-left: 0.5em;
+  font-size: 18px;
 
   span {
     line-height: 50px;

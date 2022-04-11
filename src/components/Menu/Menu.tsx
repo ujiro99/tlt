@@ -59,12 +59,10 @@ export function Menu(): JSX.Element {
   return (
     <div className="px-2.5 py-1.5 flex">
       <div className="flex-1">
-        <Calendar />
-      </div>
-      <div className="flex-1">
         <RecordName />
       </div>
       <div className="flex-1 text-right">
+        <Calendar />
         <Clear />
         <Copy />
         <Edit />
