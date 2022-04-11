@@ -12,9 +12,12 @@ import { Parser } from '@/services/parser'
 import {
   Node,
   nodeToString,
+  NODE_TYPE
 } from '@/models/node'
 import { flat } from '@/models/flattenedNode'
 import { dateToKey } from '@/services/util'
+
+const EmptyNode = new Node(NODE_TYPE.OTHER, 0, "")
 
 enum TaskRecordType {
   Date,
@@ -138,8 +141,14 @@ export function useTaskManager(): ITaskManager {
     } else if (node) {
       newRoot = root.replace(node, (n) => n.line === line)
     } else {
-      // remove this line
-      newRoot = root.filter((n) => n.line !== line)
+      const target = root.find((n) => n.line === line)
+      if (target.children.length > 0) {
+        // set empty line
+        newRoot = root.replace(EmptyNode, (n) => n.line === line)
+      } else {
+        // remove this line
+        newRoot = root.filter((n) => n.line !== line)
+      }
     }
     setRoot(newRoot)
   }
@@ -188,6 +197,8 @@ export function useTaskStorage(): void {
   }, [key])
 
   const saveToStorage = async () => {
+    const data = nodeToString(root)
+    if (data.length === 0) return
     setSaving(true)
     let found = false
     const newRecords = records.map((r) => {
@@ -195,7 +206,7 @@ export function useTaskStorage(): void {
         found = true
         return {
           ...r,
-          data: nodeToString(root),
+          data
         }
       } else {
         return r
@@ -205,7 +216,7 @@ export function useTaskStorage(): void {
       const record = {
         key: key,
         type: TaskRecordType.Date,
-        data: '',
+        data
       }
       newRecords.push(record)
     }

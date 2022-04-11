@@ -39,7 +39,7 @@ import { SortableTreeItem } from './components'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTrackingState } from '@/hooks/useTrackingState'
-import { treeItemsToNode } from '@/services/util'
+import { treeItemsToNode, updateLines } from '@/services/util'
 
 const measuring = {
   droppable: {
@@ -258,6 +258,7 @@ export function SortableTree({
   }
 
   function setTreeItems(newItems: TreeItems) {
+    newItems = updateLines(newItems)
     setItems(treeItemsToNode(newItems))
     // update persistent data
     manager.setRoot(treeItemsToNode(newItems))
