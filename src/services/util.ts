@@ -23,6 +23,13 @@ function tryParse(obj: unknown): Node | HeadingNode | null {
   }
 }
 
+export function updateLines(items: TreeItems): TreeItems {
+  return items.map((i, idx) => {
+    (i as unknown as Node).line = idx + 1
+    return i
+  })
+}
+
 /**
  * Convert TreeItems to Node.
  * @param {TreeItems} items Convertion target.
