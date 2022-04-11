@@ -135,19 +135,30 @@ export const TaskItem: React.FC<TaskItemProps> = (
       data-line={line}
       onClick={onClick}
     >
-      <div className="task-item__label">
-        <Checkbox
-          id={id}
-          checked={checkboxProps.checked}
-          onChange={toggleItemCompletion}
-        />
-        <span className="flex-grow ml-2">{task.title}</span>
+      <Checkbox
+        id={id}
+        checked={checkboxProps.checked}
+        onChange={toggleItemCompletion}
+      />
+      <div className="task-item__content">
+        <div className="task-item__label">
+          <span className="ml-2">{task.title}</span>
+        </div>
+        {hasTags ? (
+          <div className="task-item__tags">
+            {task.tags.map((tag) => {
+              return (
+                <div
+                  className="px-2 pt-0.5 pb-1 ml-2 font-mono text-xs rounded-xl bg-gray-200 text-gray-500 leading-3 inline-block"
+                  key={tag.name}
+                >
+                  {tag.name}
+                </div>
+              )
+            })}
+          </div>
+        ) : null}
       </div>
-      {hasTags ? (
-        task.tags.map((tag) => {
-          return <div className="px-2 pb-1 ml-2 font-mono text-xs pt-0.5 rounded-xl bg-sky-200" key={tag.name}>{tag.name}</div>
-        })
-      ) : null}
       {isTracking ? (
         <Counter startTime={tracking.elapsedTime} />
       ) : !task.actualTimes.isEmpty() ? (
