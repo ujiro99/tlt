@@ -11,7 +11,7 @@ const TASK_STATE = {
 }
 type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
 
-type Tag = {
+export type Tag = {
   name: string
 }
 

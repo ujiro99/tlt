@@ -1,5 +1,4 @@
 .counter {
-  @apply ml-2;
   @apply relative;
   @apply text-xs;
   @apply font-mono;

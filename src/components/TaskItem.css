@@ -13,17 +13,18 @@
 
   &__label {
     @apply flex;
-    @apply flex-row;
-    @apply items-center;
-    @apply text-sm;
     flex: 1;
     word-break: break-word;
   }
 
-  &__content {
+  &__tags {
+    @apply ml-1;
     @apply flex;
-    @apply flex-col;
-    flex: 1;
+    @apply items-center;
+  }
+
+  .counter {
+    @apply ml-3;
   }
 
   &--running {
