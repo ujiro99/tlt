@@ -39,6 +39,14 @@ describe(`parse estimatedTimes`, () => {
     const task = Task.parse(str)
     expect(task.estimatedTimes.toString()).toBe('1h')
   })
+
+  test(`returns 1h30m`, () => {
+    const str = '- [ ] task ~1h13m/1h30m #cd'
+    const task = Task.parse(str)
+    expect(task.estimatedTimes.toString()).toBe('1h30m')
+  })
+
+
 })
 
 describe(`parse tags`, () => {

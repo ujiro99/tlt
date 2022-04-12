@@ -6,6 +6,11 @@
 
   &__unit {
     margin-left: 1px;
-    margin-right: 4px;
+  }
+
+  &__unit + &__days,
+  &__unit + &__minutes,
+  &__unit + &__hour {
+    margin-left: 4px;
   }
 }

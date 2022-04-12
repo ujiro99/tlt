@@ -166,7 +166,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
       ) : null}
       {hasEstimatedTime ? (
         <p className="font-mono text-xs">
-          <span className="mr-1">/</span>
+          <span className="mx-1">/</span>
           <span>{task.estimatedTimes.toString()}</span>
         </p>
       ) : null}
