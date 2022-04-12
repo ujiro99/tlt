@@ -5,6 +5,7 @@ import { Tooltip } from '@/components/Tooltip'
 import { Calendar } from '@/components/Menu/Calendar'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
+import { Report } from '@/components/Menu/Report'
 import { RecordName } from '@/components/Menu/RecordName'
 
 import { sleep } from '@/services/util'
@@ -19,6 +20,7 @@ function clearStorage(): void {
 export const MODE = {
   EDIT: 'EDIT',
   SHOW: 'SHOW',
+  REPORT: 'REPORT',
 } as const
 export type MenuMode = typeof MODE[keyof typeof MODE]
 
@@ -66,6 +68,7 @@ export function Menu(): JSX.Element {
         <Clear />
         <Copy />
         <Edit />
+        <Report />
       </div>
     </div>
   )

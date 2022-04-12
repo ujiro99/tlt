@@ -34,6 +34,8 @@ function TaskList() {
       return <TaskTextarea />
     case MODE.SHOW:
       return <MarkdownHtml />
+    case MODE.REPORT:
+      return <MarkdownHtml />
   }
 }
 
