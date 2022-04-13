@@ -8,6 +8,7 @@ import { Task } from '@/models/task'
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
 import { TaskController } from '@/components/TaskController'
+import { TaskTag } from '@/components/TaskTag'
 import { LineEditor } from '@/components/LineEditor'
 import { useEditable } from '@/hooks/useEditable'
 
@@ -140,25 +141,16 @@ export const TaskItem: React.FC<TaskItemProps> = (
         checked={checkboxProps.checked}
         onChange={toggleItemCompletion}
       />
-      <div className="task-item__content">
-        <div className="task-item__label">
-          <span className="ml-2">{task.title}</span>
-        </div>
-        {hasTags ? (
-          <div className="task-item__tags">
-            {task.tags.map((tag) => {
-              return (
-                <div
-                  className="px-2 pt-0.5 pb-1 ml-2 font-mono text-xs rounded-xl bg-gray-200 text-gray-500 leading-3 inline-block"
-                  key={tag.name}
-                >
-                  {tag.name}
-                </div>
-              )
-            })}
-          </div>
-        ) : null}
+      <div className="task-item__label">
+        <span className="ml-2">{task.title}</span>
       </div>
+      {hasTags ? (
+        <div className="task-item__tags">
+          {task.tags.map((tag) => (
+            <TaskTag key={tag.name} tag={tag} />
+          ))}
+        </div>
+      ) : null}
       {isTracking ? (
         <Counter startTime={tracking.elapsedTime} />
       ) : !task.actualTimes.isEmpty() ? (
@@ -166,7 +158,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
       ) : null}
       {hasEstimatedTime ? (
         <p className="font-mono text-xs">
-          <span className="mr-1">/</span>
+          <span className="mx-1">/</span>
           <span>{task.estimatedTimes.toString()}</span>
         </p>
       ) : null}

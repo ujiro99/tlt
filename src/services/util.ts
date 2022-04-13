@@ -1,6 +1,6 @@
 import { format } from 'date-fns'
 import { Node, HeadingNode, NODE_TYPE } from '@/models/node'
-import type { TreeItems } from '@/components/Tree/types'
+import type { TreeItems, FlattenedItem } from '@/components/Tree/types'
 import Log from '@/services/log'
 
 /**
@@ -23,7 +23,7 @@ function tryParse(obj: unknown): Node | HeadingNode | null {
   }
 }
 
-export function updateLines(items: TreeItems): TreeItems {
+export function updateLines(items: FlattenedItem[]): FlattenedItem[] {
   return items.map((i, idx) => {
     (i as unknown as Node).line = idx + 1
     return i

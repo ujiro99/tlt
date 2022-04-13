@@ -249,7 +249,8 @@ export function SortableTree({
 
       clonedItems[activeIndex] = { ...activeTreeItem, depth, parentId }
 
-      const sortedItems = arrayMove(clonedItems, activeIndex, overIndex)
+      let sortedItems = arrayMove(clonedItems, activeIndex, overIndex)
+      sortedItems = updateLines(sortedItems)
       const newItems = buildTree(sortedItems)
       moveTracking(activeIndex + 1, overIndex + 1)
 
@@ -258,7 +259,6 @@ export function SortableTree({
   }
 
   function setTreeItems(newItems: TreeItems) {
-    newItems = updateLines(newItems)
     setItems(treeItemsToNode(newItems))
     // update persistent data
     manager.setRoot(treeItemsToNode(newItems))
