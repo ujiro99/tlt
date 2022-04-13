@@ -31,6 +31,12 @@ describe(`toString`, () => {
     const task = Task.parse(str)
     expect(task.toString()).toBe(str)
   })
+
+  test(`returns same string when the actualTimes doesn't exists.`, () => {
+    const str = '- [ ] task title ~/1m #sp:1'
+    const task = Task.parse(str)
+    expect(task.toString()).toBe(str)
+  })
 })
 
 describe(`parse estimatedTimes`, () => {
@@ -46,6 +52,11 @@ describe(`parse estimatedTimes`, () => {
     expect(task.estimatedTimes.toString()).toBe('1h30m')
   })
 
+  test(`returns 30m`, () => {
+    const str = '- [ ] task ~/30m #cd'
+    const task = Task.parse(str)
+    expect(task.estimatedTimes.toString()).toBe('30m')
+  })
 
 })
 
