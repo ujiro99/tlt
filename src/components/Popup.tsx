@@ -5,6 +5,7 @@ import { TaskTextarea } from '@/components/TaskTextarea'
 import { Menu, MODE, modeState } from '@/components/Menu/Menu'
 import { EmptyLine } from '@/components/EmptyLine'
 import { SortableTree } from '@/components/Tree/SortableTree'
+import { Report } from '@/components/Report'
 import { useTaskStorage } from '@/hooks/useTaskManager'
 
 import '@/components/Popup.css'
@@ -35,7 +36,7 @@ function TaskList() {
     case MODE.SHOW:
       return <MarkdownHtml />
     case MODE.REPORT:
-      return <MarkdownHtml />
+      return <Report />
   }
 }
 
