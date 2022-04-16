@@ -118,6 +118,8 @@ export class Time {
   }
 
   public divide(time: Time): number {
+    if (this.isEmpty()) return undefined
+    if (time.isEmpty()) return undefined
     return this.toSeconds() / time.toSeconds()
   }
 
