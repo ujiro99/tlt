@@ -157,7 +157,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
         <CounterStopped startTime={task.actualTimes} />
       ) : null}
       {hasEstimatedTime ? (
-        <p className="font-mono text-xs">
+        <p className="font-mono text-xs task-item__estimated-time">
           {task.actualTimes.isEmpty() ? (
             <span >-</span>
           ) : null}

@@ -43,8 +43,8 @@ body {
   @apply relative;
   @apply h-full;
   @apply overflow-scroll;
-  @apply pb-14;
   padding-top: 10px;
-  padding-left: 10px;
+  padding-left: 8px;
   padding-right: 10px;
+  padding-bottom: 4.5rem;
 }
