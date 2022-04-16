@@ -25,7 +25,7 @@ function tryParse(obj: unknown): Node | HeadingNode | null {
 
 export function updateLines(items: FlattenedItem[]): FlattenedItem[] {
   return items.map((i, idx) => {
-    (i as unknown as Node).line = idx + 1
+    ;(i as unknown as Node).line = idx + 1
     return i
   })
 }
@@ -90,8 +90,12 @@ export function dateToKey(date: Date): string {
 /**
  * Returns a bar made of ASCII art.
  */
-export function asciiBar(percentage: number, length = 20): string {
+export function asciiBar(percentage: number, length = 20, box = true): string {
   const fillNum = Math.floor(percentage / (100 / length))
   if (fillNum >= length) return ''.padEnd(length, '█')
-  return ''.padEnd(fillNum, '█').padEnd(length, '▁')
+  if (box) {
+    return ''.padEnd(fillNum, '█').padEnd(length, '▁')
+  } else {
+    return ''.padEnd(fillNum, '█')
+  }
 }

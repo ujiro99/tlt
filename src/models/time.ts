@@ -145,6 +145,10 @@ export class Time {
     return this.toSeconds() / MINUTE_S
   }
 
+  public toHours(): number {
+    return this.toSeconds() / MINUTE_S / HOUR
+  }
+
   public isEmpty(): boolean {
     return this._days === 0 && this._hours === 0 && this._minutes === 0
   }

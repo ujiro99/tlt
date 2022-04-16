@@ -190,12 +190,12 @@ const divideTable = [
 
 describe.each(divideTable)(
   `divide`,
-  (atime: string, btime: string, percentage: number) => {
-    test(`${atime} / ${btime} -> ${percentage}`, () => {
+  (atime: string, btime: string, rate: number) => {
+    test(`${atime} / ${btime} -> ${rate}`, () => {
       const time = Time.parseStr(atime)
       const timeB = Time.parseStr(btime)
       const res = time.divide(timeB)
-      expect(res).toBe(percentage)
+      expect(res).toBe(rate)
     })
   },
 )

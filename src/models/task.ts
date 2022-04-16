@@ -1,4 +1,5 @@
 import Log from '@/services/log'
+import { Tag } from '@/models/tag'
 import { Time } from '@/models/time'
 
 /**
@@ -11,10 +12,6 @@ const TASK_STATE = {
 }
 type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
 
-export type Tag = {
-  name: string
-}
-
 export class Task {
   // for unique Id
   private static taskId = 0
@@ -24,9 +21,10 @@ export class Task {
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
-  private static estimatedTimeRegexp = /~(\d+[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
+  private static estimatedTimeRegexp =
+    /~(\d+[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
 
-  private static tagRegexp = /#(.*?)(\s|$)/g
+  private static tagRegexp = /#(.*?)(:(\d))?(\s|$)/g
 
   // utility for creating unique Id
   static getId(): number {
@@ -99,7 +97,8 @@ export class Task {
     const tags: Tag[] = []
     let match: RegExpExecArray
     while ((match = Task.tagRegexp.exec(taskStr)) !== null) {
-      tags.push({ name: match[1] })
+      const quantity = match[3] ? parseInt(match[3]) : 0
+      tags.push({ name: match[1], quantity })
     }
     return tags
   }
@@ -188,7 +187,9 @@ export class Task {
     }
     // tags
     if (this.tags.length > 0) {
-      const tagStr = this.tags.map((t) => `#${t.name}`).join(' ')
+      const tagStr = this.tags
+        .map((t) => (t.quantity ? `#${t.name}:${t.quantity}` : `#${t.name}`))
+        .join(' ')
       str += ` ${tagStr}`
     }
     return str
