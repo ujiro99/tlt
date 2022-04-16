@@ -24,8 +24,7 @@ export class Task {
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
-  private static estimatedTimeRegexp =
-    /~.+\d+[dhm]?\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
+  private static estimatedTimeRegexp = /~(\d+[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
 
   private static tagRegexp = /#(.*?)(\s|$)/g
 
@@ -88,8 +87,8 @@ export class Task {
   private static parseEstimatedTime(taskStr: string): Time {
     if (Task.estimatedTimeRegexp.test(taskStr)) {
       const m = Task.estimatedTimeRegexp.exec(taskStr)
-      if (m[1]) {
-        return Time.parseStr(m[1])
+      if (m[2]) {
+        return Time.parseStr(m[2])
       }
     }
     Log.v(`can't find estimated time: ${taskStr}`)
@@ -173,14 +172,19 @@ export class Task {
       str = str.replace('[ ]', '[x]')
     }
     // actual time
-    if (!this.actualTimes.isEmpty()) {
+    const isActualTimesEmpty = this.actualTimes.isEmpty()
+    if (!isActualTimesEmpty) {
       const time = this.actualTimes.toString()
       str += ` ~${time}`
     }
     // estimated time
     if (!this.estimatedTimes.isEmpty()) {
       const time = this.estimatedTimes.toString()
-      str += `/${time}`
+      if (isActualTimesEmpty) {
+        str += ` ~/${time}`
+      } else {
+        str += `/${time}`
+      }
     }
     // tags
     if (this.tags.length > 0) {

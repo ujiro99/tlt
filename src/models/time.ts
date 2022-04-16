@@ -117,6 +117,10 @@ export class Time {
     return this
   }
 
+  public divide(time: Time): number {
+    return this.toSeconds() / time.toSeconds()
+  }
+
   public toString(): string {
     let str = ''
     if (this._days > 0) {

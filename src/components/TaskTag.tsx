@@ -8,7 +8,7 @@ type Props = {
 export const TaskTag = (props: Props): JSX.Element => {
   const tag = props.tag
   return (
-    <div className="px-2 pt-0.5 pb-1 ml-1 font-mono text-xs rounded-xl bg-gray-200 text-gray-500 leading-3 inline-block">
+    <div className="px-2 pt-[3px] pb-1 ml-1 font-mono text-xs rounded-xl bg-gray-200 text-gray-500 leading-3 inline-block">
       {tag.name}
     </div>
   )

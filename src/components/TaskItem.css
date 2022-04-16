@@ -23,8 +23,13 @@
     @apply items-center;
   }
 
-  .counter {
+  .counter,
+  &__estimated-time {
     @apply ml-3;
+  }
+
+  .counter + &__estimated-time {
+    margin-left: 0;
   }
 
   &--running {

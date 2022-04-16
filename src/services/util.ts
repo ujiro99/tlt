@@ -86,3 +86,12 @@ export function getIndentCount(str: string): number {
 export function dateToKey(date: Date): string {
   return `${format(date, 'yyyyMMdd')}`
 }
+
+/**
+ * Returns a bar made of ASCII art.
+ */
+export function asciiBar(percentage: number, length = 20): string {
+  const fillNum = Math.floor(percentage / (100 / length))
+  if (fillNum >= length) return ''.padEnd(length, '█')
+  return ''.padEnd(fillNum, '█').padEnd(length, '▁')
+}

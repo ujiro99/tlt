@@ -1,25 +1,25 @@
 import { Task } from '@/models/task'
 
 const testParseTable = [
-  ['- [ ] task title', 'task title', '', false],
-  ['- [x] task title', 'task title', '', true],
-  ['- [ ] tasktitle ~2h', 'tasktitle', '2h', false],
-  ['- [ ] tasktitle ~1m', 'tasktitle', '1m', false],
-  ['- [ ] tasktitle ~2.1h', 'tasktitle', '2h6m', false],
-  ['- [ ] tasktitle ~2.1h4m', 'tasktitle', '2h10m', false],
-  ['- [ ] tasktitle ~0.1d1h1m', 'tasktitle', '3h25m', false],
-  ['- [ ] tasktitle ~1.1d1h1m', 'tasktitle', '1d3h25m', false],
-  ['- [ ] task title ~30m #sp:1', 'task title', '30m', false],
-  ['- [ ] task title ~30m/2.3h #sp:1', 'task title', '30m', false],
+  ['- [ ] task title',                 'task title', '',        false],
+  ['- [x] task title',                 'task title', '',        true],
+  ['- [ ] task title ~2h',             'task title', '2h',      false],
+  ['- [ ] task title ~1m',             'task title', '1m',      false],
+  ['- [ ] task title ~2.1h',           'task title', '2h6m',    false],
+  ['- [ ] task title ~2.1h4m',         'task title', '2h10m',   false],
+  ['- [ ] task title ~0.1d1h1m',       'task title', '3h25m',   false],
+  ['- [ ] task title ~1.1d1h1m',       'task title', '1d3h25m', false],
+  ['- [ ] task title ~30m #sp:1',      'task title', '30m',     false],
+  ['- [ ] task title ~30m/2.3h #sp:1', 'task title', '30m',     false],
 ]
 
 describe.each(testParseTable)(
   `parse %s`,
-  (str: string, title: string, time: string, state: boolean) => {
-    test(`returns ${title} ${time}`, () => {
+  (str: string, title: string, atime: string, state: boolean) => {
+    test(`returns ${title} ${atime}`, () => {
       const task = Task.parse(str)
       expect(task.title).toBe(title)
-      expect(task.actualTimes.toString()).toBe(time)
+      expect(task.actualTimes.toString()).toBe(atime)
       expect(task.isComplete()).toBe(state)
     })
   },
@@ -31,7 +31,47 @@ describe(`toString`, () => {
     const task = Task.parse(str)
     expect(task.toString()).toBe(str)
   })
+
+  test(`returns same string when the actualTimes doesn't exists.`, () => {
+    const str = '- [ ] task title ~/1m #sp:1'
+    const task = Task.parse(str)
+    expect(task.toString()).toBe(str)
+  })
 })
+
+const parseTimeTable = [
+  ['- [ ] task ~30m/1h',          '30m',    '1h'],
+  ['- [ ] task ~1h13m/1h30m #cd', '1h13m',  '1h30m'],
+  ['- [ ] task ~/30m #cd',        '',       '30m'],
+  ['- [ ] task ~/1h',             '',       '1h'],
+  ['- [ ] task ~/1d',             '',       '1d'],
+  ['- [ ] task ~/10d',            '',       '10d'],
+  ['- [ ] task ~1d',              '1d',     ''],
+  ['- [ ] task ~1d1h',            '1d1h',   ''],
+  ['- [ ] task ~1d1h1m',          '1d1h1m', ''],
+  ['- [ ] task ~1d1m',            '1d1m',   ''],
+  ['- [ ] task ~1h',              '1h',     ''],
+  ['- [ ] task ~1h1m',            '1h1m',   ''],
+  ['- [ ] task ~1m',              '1m',     ''],
+  ['- [ ] task ~1d/1d',           '1d',     '1d'],
+  ['- [ ] task ~1d1h/1d1h',       '1d1h',   '1d1h'],
+  ['- [ ] task ~1d1h1m/1d1h1m',   '1d1h1m', '1d1h1m'],
+  ['- [ ] task ~1d1m/1d1m',       '1d1m',   '1d1m'],
+  ['- [ ] task ~1h/1h',           '1h',     '1h'],
+  ['- [ ] task ~1h1m/1h10m',      '1h1m',   '1h10m'],
+  ['- [ ] task ~1m/1m',           '1m',     '1m'],
+]
+
+describe.each(parseTimeTable)(
+  `parse %s`,
+  (str: string, atime: string, etime: string) => {
+    test(`returns ${atime}/${etime}`, () => {
+      const task = Task.parse(str)
+      expect(task.actualTimes.toString()).toBe(atime)
+      expect(task.estimatedTimes.toString()).toBe(etime)
+    })
+  },
+)
 
 describe(`parse estimatedTimes`, () => {
   test(`returns 1h`, () => {
@@ -39,13 +79,6 @@ describe(`parse estimatedTimes`, () => {
     const task = Task.parse(str)
     expect(task.estimatedTimes.toString()).toBe('1h')
   })
-
-  test(`returns 1h30m`, () => {
-    const str = '- [ ] task ~1h13m/1h30m #cd'
-    const task = Task.parse(str)
-    expect(task.estimatedTimes.toString()).toBe('1h30m')
-  })
-
 
 })
 
