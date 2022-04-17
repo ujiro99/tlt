@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
-import { atom } from 'recoil'
+import { atom, useRecoilState } from 'recoil'
 
 import { Tooltip } from '@/components/Tooltip'
 import { Calendar } from '@/components/Menu/Calendar'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
-import { Report } from '@/components/Menu/Report'
 import { RecordName } from '@/components/Menu/RecordName'
+import { ButtonGroup } from '@/components/ButtonGroup'
 
 import { sleep } from '@/services/util'
 import { STORAGE_KEY, Storage } from '@/services/storage'
@@ -58,17 +58,36 @@ function Clear(): JSX.Element {
 }
 
 export function Menu(): JSX.Element {
+  const [mode, setMode] = useRecoilState(modeState)
+
+  const onChange = ({name}) => {
+    setMode(name)
+  }
+
+  const buttonProps = [
+    {
+      name: MODE.SHOW,
+      label: "Task",
+      iconName: "icon-check"
+    },
+    {
+      name: MODE.REPORT,
+      label: "Data",
+      iconName: "icon-assessment"
+    }
+  ]
+
   return (
-    <div className="px-2.5 py-1.5 flex">
+    <div className="px-2.5 py-1.5 flex items-center">
       <div className="flex-1">
         <RecordName />
       </div>
+      <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
       <div className="flex-1 text-right">
         <Calendar />
         <Clear />
         <Copy />
         <Edit />
-        <Report />
       </div>
     </div>
   )
