@@ -59,21 +59,21 @@ function Clear(): JSX.Element {
 export function Menu(): JSX.Element {
   const [mode, setMode] = useRecoilState(modeState)
 
-  const onChange = ({name}) => {
+  const onChange = ({ name }) => {
     setMode(name)
   }
 
   const buttonProps = [
     {
       name: MODE.SHOW,
-      label: "Task",
-      iconName: "icon-check"
+      label: 'Task',
+      iconName: 'icon-check',
     },
     {
       name: MODE.REPORT,
-      label: "Report",
-      iconName: "icon-assessment"
-    }
+      label: 'Report',
+      iconName: 'icon-assessment',
+    },
   ]
 
   return (
@@ -84,8 +84,8 @@ export function Menu(): JSX.Element {
       <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
       <div className="flex-1 text-right">
         <Clear />
-        <Copy />
         <Edit />
+        <Copy />
       </div>
     </div>
   )

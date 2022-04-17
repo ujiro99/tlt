@@ -1,4 +1,6 @@
 import React from 'react'
+import { atom, useRecoilState } from 'recoil'
+
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { flat } from '@/models/flattenedNode'
 import { INode, NODE_TYPE } from '@/models/node'
@@ -11,6 +13,14 @@ import { asciiBar } from '@/services/util'
 import table from 'text-table'
 
 const BarLength = 40
+
+/**
+ * Report text.
+ */
+export const reportState = atom<string>({
+  key: 'reportState',
+  default: "",
+})
 
 function zero() {
   return new Time()
@@ -75,10 +85,11 @@ function nodeToTasks(root: INode, completed: boolean): Task[] {
 }
 
 export function Report(): JSX.Element {
+  const [report, setReport] = useRecoilState(reportState)
   const manager = useTaskManager()
   const root = manager.getRoot()
   const onlyCompleted = true
-  let report = ''
+  let builder = ''
 
   // --- All
   const tasks = nodeToTasks(root, onlyCompleted)
@@ -92,9 +103,9 @@ export function Report(): JSX.Element {
     ],
   ]
 
-  report += '## Total\n\n'
-  report += table(totalTable)
-  report += `\n${asciiBar(all.percentage, BarLength)}\n`
+  builder += '## Total\n\n'
+  builder += table(totalTable)
+  builder += `\n${asciiBar(all.percentage, BarLength)}\n`
 
   // --- Total by tags
 
@@ -151,10 +162,10 @@ export function Report(): JSX.Element {
     ])
   })
 
-  report += '\n\n## Total by tags\n\n'
-  report += table(tsTable)
-  report += `\n\n`
-  report += table(tagTable)
+  builder += '\n\n## Total by tags\n\n'
+  builder += table(tsTable)
+  builder += `\n\n`
+  builder += table(tagTable)
 
   // Total by heading
 
@@ -202,12 +213,12 @@ export function Report(): JSX.Element {
     return [row.name, row.actual, asciiBar(row.barLen, 30, false)]
   })
 
-  report += '\n\n\n## Total by groups\n\n'
-  report += table(gsTable)
-  report += `\n\n`
-  report += table(gdTable)
+  builder += '\n\n\n## Total by groups\n\n'
+  builder += table(gsTable)
+  builder += `\n\n`
+  builder += table(gdTable)
 
-  console.log(report)
+  setReport(builder)
 
   return (
     <section className="h-full p-6 pt-2 pb-[80px] overflow-scroll tracking-wide text-gray-700 report-data">
