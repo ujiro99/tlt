@@ -5,7 +5,6 @@ import { Tooltip } from '@/components/Tooltip'
 import { Calendar } from '@/components/Menu/Calendar'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
-import { RecordName } from '@/components/Menu/RecordName'
 import { ButtonGroup } from '@/components/ButtonGroup'
 
 import { sleep } from '@/services/util'
@@ -72,7 +71,7 @@ export function Menu(): JSX.Element {
     },
     {
       name: MODE.REPORT,
-      label: "Data",
+      label: "Report",
       iconName: "icon-assessment"
     }
   ]
@@ -80,11 +79,10 @@ export function Menu(): JSX.Element {
   return (
     <div className="px-2.5 py-1.5 flex items-center">
       <div className="flex-1">
-        <RecordName />
+        <Calendar />
       </div>
       <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
       <div className="flex-1 text-right">
-        <Calendar />
         <Clear />
         <Copy />
         <Edit />

@@ -38,7 +38,7 @@ export function ButtonGroup(props: ButtonGroupProps): JSX.Element {
   return (
     <div className={styles.ButtonGroup}>
       <span
-        className={`bg-gradient-to-r from-indigo-400 to-purple-400 ${styles.selectedBg}`}
+        className={`bg-zinc-600 ${styles.selectedBg}`}
         style={{ left: bgLeft }}
       />
       {props.buttons.map((button) => {

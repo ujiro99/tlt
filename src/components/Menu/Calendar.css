@@ -2,14 +2,17 @@
   @apply rounded-md;
 }
 
+.calendar {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
 .calendar-date {
   @apply select-none;
   @apply font-mono;
+  @apply text-gray-700;
 
-  margin-left: 0.5em;
-  font-size: 18px;
-
-  span {
-    line-height: 50px;
-  }
+  margin: 0.5em;
+  font-size: 12px;
 }

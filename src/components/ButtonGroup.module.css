@@ -8,7 +8,7 @@
   border-radius: var(--radius);
   overflow: hidden;
 
-  --width: 4.6rem;
+  --width: 5rem;
   --height: 2.2rem;
   --radius: 10px;
 
@@ -21,13 +21,9 @@
     justify-content: center;
   }
 
-  .button + .button {
-    border-left: none;
-  }
-
   .icon {
-    width: 1.4em;
-    height: 1.4em;
+    width: 1.2em;
+    height: 1.2em;
     display: inline-block;
     @apply fill-gray-600;
   }
@@ -39,14 +35,6 @@
     font-size: 12px;
   }
 
-  .selectedBg {
-    width: var(--width);
-    height: var(--height);
-    position: absolute;
-    user-select: none;
-    transition: left 0.1s ease-out;
-  }
-
   .selected {
     .icon {
       @apply fill-white;
@@ -54,5 +42,17 @@
     .label {
       @apply text-white;
     }
+  }
+
+  .selectedBg {
+    width: var(--width);
+    height: var(--height);
+    position: absolute;
+    user-select: none;
+
+    @apply transition;
+    @apply transition-[left];
+    @apply duration-150;
+    @apply ease-out;
   }
 }
