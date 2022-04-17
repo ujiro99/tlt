@@ -95,6 +95,14 @@ export class Time {
     return time
   }
 
+  static subs(a: Time, b: Time): number {
+    const s = a._seconds - b._seconds
+    const m = a._minutes - b._minutes
+    const h = a._hours - b._hours
+    const d = a._days - b._days
+    return d * DAY_S + h * HOUR_S + m * MINUTE_S + s
+  }
+
   private _seconds = 0
   private _minutes = 0
   private _hours = 0
