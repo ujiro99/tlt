@@ -1,5 +1,5 @@
 import React from 'react'
-import { Tag } from '@/models/task'
+import { Tag } from '@/models/tag'
 
 type Props = {
   tag: Tag
@@ -7,9 +7,12 @@ type Props = {
 
 export const TaskTag = (props: Props): JSX.Element => {
   const tag = props.tag
+  const toString = (tag: Tag) => {
+    return tag.quantity ? `${tag.name}:${tag.quantity}` : tag.name
+  }
   return (
-    <div className="px-2 pt-[3px] pb-1 ml-1 font-mono text-xs rounded-xl bg-gray-200 text-gray-500 leading-3 inline-block">
-      {tag.name}
+    <div className="inline-block px-2 ml-1 font-mono text-xs text-gray-500 bg-gray-200 rounded-xl leading-5">
+      {toString(tag)}
     </div>
   )
 }

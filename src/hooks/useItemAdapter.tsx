@@ -1,19 +1,13 @@
 import React from 'react'
 
-import {
-  Node,
-  HeadingNode,
-  NODE_TYPE,
-} from '@/models/node'
+import { Node, NODE_TYPE } from '@/models/node'
 import { MdHeading } from '@/components/MdHeading'
 import { MdTaskItem } from '@/components/MdTaskItem'
 import { MdText } from '@/components/MdText'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import Log from '@/services/log'
 
-type useItemAdapterReturn = [
-  getItem: (id: string) => JSX.Element,
-]
+type useItemAdapterReturn = [getItem: (id: string) => JSX.Element]
 
 export function useItemAdapter(): useItemAdapterReturn {
   const manager = useTaskManager()
@@ -31,7 +25,7 @@ export function useItemAdapter(): useItemAdapterReturn {
     if (node.type === NODE_TYPE.TASK) {
       return <MdTaskItem key={node.id} node={node} />
     } else if (node.type === NODE_TYPE.HEADING) {
-      return <MdHeading key={node.id} node={node as HeadingNode} />
+      return <MdHeading key={node.id} node={node} />
     } else {
       return <MdText key={node.id} node={node} />
     }

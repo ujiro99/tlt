@@ -6,6 +6,7 @@ import Modal from 'react-modal'
 import classnames from 'classnames'
 
 import { modeState, MODE } from '@/components/Menu/Menu'
+import { RecordName } from '@/components/Menu/RecordName'
 import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { dateToKey } from '@/services/util'
@@ -57,18 +58,18 @@ function MyCalendar(): JSX.Element {
   Modal.setAppElement(document.getElementById('popup'))
 
   return (
-    <>
+    <div className="calendar" onClick={toggleCalendar}>
       <button
         className={classnames('icon-button', 'mod--date', {
           'mod--disable': !isAvailable,
         })}
-        onClick={toggleCalendar}
       >
         <svg className="icon-button__icon">
           <use xlinkHref="/icons.svg#icon-calendar" />
         </svg>
-        <span className="icon-button__label">Date</span>
       </button>
+
+      <RecordName />
 
       <Modal
         isOpen={visible}
@@ -83,7 +84,7 @@ function MyCalendar(): JSX.Element {
           />
         </div>
       </Modal>
-    </>
+    </div>
   )
 }
 

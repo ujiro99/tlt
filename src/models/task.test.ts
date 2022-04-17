@@ -84,15 +84,17 @@ describe(`parse estimatedTimes`, () => {
 
 describe(`parse tags`, () => {
   test(`returns sp:1`, () => {
-    const str = '- [ ] task title ~30m/1h #sp:1'
+    const str = '- [ ] task title ~30m/1h #sp'
     const task = Task.parse(str)
-    expect(task.tags[0].name).toBe('sp:1')
+    expect(task.tags[0].name).toBe('sp')
+    expect(task.tags[0].quantity).toBe(0)
   })
 
   test(`returns sp:1 and review`, () => {
-    const str = '- [ ] task title ~30m/1h #sp:1 #review'
+    const str = '- [ ] task title ~30m/1h #sp:4 #review'
     const task = Task.parse(str)
-    expect(task.tags[0].name).toBe('sp:1')
+    expect(task.tags[0].name).toBe('sp')
+    expect(task.tags[0].quantity).toBe(4)
     expect(task.tags[1].name).toBe('review')
   })
 

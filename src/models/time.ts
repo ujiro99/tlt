@@ -95,6 +95,14 @@ export class Time {
     return time
   }
 
+  static subs(a: Time, b: Time): number {
+    const s = a._seconds - b._seconds
+    const m = a._minutes - b._minutes
+    const h = a._hours - b._hours
+    const d = a._days - b._days
+    return d * DAY_S + h * HOUR_S + m * MINUTE_S + s
+  }
+
   private _seconds = 0
   private _minutes = 0
   private _hours = 0
@@ -118,6 +126,8 @@ export class Time {
   }
 
   public divide(time: Time): number {
+    if (this.isEmpty()) return undefined
+    if (time.isEmpty()) return undefined
     return this.toSeconds() / time.toSeconds()
   }
 
@@ -141,6 +151,10 @@ export class Time {
 
   public toMinutes(): number {
     return this.toSeconds() / MINUTE_S
+  }
+
+  public toHours(): number {
+    return this.toSeconds() / MINUTE_S / HOUR
   }
 
   public isEmpty(): boolean {

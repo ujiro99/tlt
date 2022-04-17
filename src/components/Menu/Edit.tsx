@@ -13,6 +13,7 @@ export function Edit(): JSX.Element {
   const isEdit = mode === MODE.EDIT
   const label = isEdit ? 'Save' : 'Edit'
   const icon = isEdit ? 'icon-save' : 'icon-edit'
+  const isVisible = mode === MODE.SHOW || mode === MODE.EDIT
 
   const toggleMode = () => {
     const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
@@ -25,7 +26,9 @@ export function Edit(): JSX.Element {
 
   return (
     <button
-      className={classnames('icon-button', isEdit ? 'mod--save' : 'mod--edit')}
+      className={classnames('icon-button', isEdit ? 'mod--save' : 'mod--edit', {
+        hidden: !isVisible,
+      })}
       onClick={toggleMode}
     >
       <svg className="icon-button__icon">

@@ -1,9 +1,9 @@
-import { Node, HeadingNode, NODE_TYPE } from '@/models/node'
+import { Node, NODE_TYPE } from '@/models/node'
 import { Task } from '@/models/task'
+import { Group } from '@/models/group'
 import Log from '@/services/log'
 import { getIndentCount } from '@/services/util'
 
-const HEADING_REGEXP = /(#+) (.+)$/
 const OTHER_REGEXP = /^ *(.+)$/
 
 export const Parser = {
@@ -43,17 +43,10 @@ export const Parser = {
           // task
           const task = Task.parse(val)
           newNode = new Node(NODE_TYPE.TASK, line, task, parent)
-        } else if (HEADING_REGEXP.test(val)) {
+        } else if (Group.test(val)) {
           // heading
-          const m = HEADING_REGEXP.exec(val)
-          const hLevel = m[1].length
-          newNode = new HeadingNode(
-            NODE_TYPE.HEADING,
-            line,
-            m[2],
-            hLevel,
-            parent,
-          )
+          const group = Group.parse(val)
+          newNode = new Node(NODE_TYPE.HEADING, line, group, parent)
         } else {
           // other text
           const m = OTHER_REGEXP.exec(val)

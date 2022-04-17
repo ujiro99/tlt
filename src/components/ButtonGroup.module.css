@@ -1,0 +1,58 @@
+.ButtonGroup {
+  @apply shadow-md;
+  display: inline-flex;
+  height: var(--height);
+  user-select: none;
+  position: relative;
+  background-color: rgb(243, 244, 246);
+  border-radius: var(--radius);
+  overflow: hidden;
+
+  --width: 5rem;
+  --height: 2.2rem;
+  --radius: 10px;
+
+  .button {
+    position: relative;
+    width: var(--width);
+    height: var(--height);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon {
+    width: 1.2em;
+    height: 1.2em;
+    display: inline-block;
+    @apply fill-gray-600;
+  }
+
+  .label {
+    @apply text-gray-600;
+    @apply font-medium;
+    margin-left: 4px;
+    font-size: 12px;
+  }
+
+  .selected {
+    .icon {
+      @apply fill-white;
+    }
+    .label {
+      @apply text-white;
+    }
+  }
+
+  .selectedBg {
+    width: var(--width);
+    height: var(--height);
+    position: absolute;
+    user-select: none;
+
+    @apply transition;
+    @apply transition-[left];
+    @apply duration-150;
+    @apply ease-out;
+  }
+}
