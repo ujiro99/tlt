@@ -1,7 +1,7 @@
 {
   "name": "tlt",
   "version": "0.0.1",
-  "description": "This is a chrome extension, enables to manage tasks and time.",
+  "description": "This is a chrome extension, enables to manage todo and time.",
   "scripts": {
     "build": "NODE_ENV=production webpack --config webpack.prod.js",
     "dev": "webpack --config webpack.dev.js",

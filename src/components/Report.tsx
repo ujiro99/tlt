@@ -19,7 +19,7 @@ const BarLength = 40
  */
 export const reportState = atom<string>({
   key: 'reportState',
-  default: "",
+  default: '',
 })
 
 function zero() {
