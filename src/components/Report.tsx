@@ -4,6 +4,7 @@ import { flat } from '@/models/flattenedNode'
 import { INode, NODE_TYPE } from '@/models/node'
 import { Tag } from '@/models/tag'
 import { Task } from '@/models/task'
+import { Group } from '@/models/group'
 import { Time } from '@/models/time'
 import { asciiBar } from '@/services/util'
 
@@ -161,19 +162,39 @@ export function Report(): JSX.Element {
   const groups = flat(root)
     .filter((n) => n.node.type === NODE_TYPE.HEADING)
     .map((n) => n.node)
-  const groupTable = [
-    ['group', 'actual', 'estimate', 'a/e'],
-    ...groups.map((group) => {
+  const gdTable = [
+    ['group', 'actual', 'estimate', 'a/e', 'amount', 'avg.'],
+    ...groups.reduce<string[][]>((acc, group) => {
       const tasks = nodeToTasks(group, onlyCompleted)
       const gt = aggregate(tasks)
-      groupTimes[group.data.toString()] = gt.actual
-      return [
-        group.data,
+      const g = group.data as Group
+      groupTimes[g.title] = gt.actual
+      const row = [
+        g.title,
         gt.actual.toString(),
         gt.estimate.toString(),
         `${gt.percentage}%`,
       ]
-    }),
+      acc.push(row)
+
+      if (g.tags.length > 0) {
+        g.tags.forEach((tag) => {
+          if (tag.quantity > 0) {
+            const avg = Time.parseSecond(gt.actual.toSeconds() / tag.quantity)
+            const row = [
+              ` - ${tag.name}`,
+              '',
+              '',
+              '',
+              `${tag.quantity}`,
+              avg.toString(),
+            ]
+            acc.push(row)
+          }
+        })
+      }
+      return acc
+    }, []),
   ]
 
   const groupSummary = summary(groupTimes, all.actual)
@@ -184,13 +205,17 @@ export function Report(): JSX.Element {
   report += '\n\n\n## Total by groups\n\n'
   report += table(gsTable)
   report += `\n\n`
-  report += table(groupTable)
+  report += table(gdTable)
+
+  console.log(report)
 
   return (
     <section className="h-full p-6 pt-2 pb-[80px] overflow-scroll tracking-wide text-gray-700 report-data">
-      <h2 className="pt-2 pb-6 text-lg font-bold report-data__title">Today's report</h2>
+      <h2 className="pt-2 pb-6 text-lg font-bold report-data__title">
+        Today's report
+      </h2>
       <div className="pt-2 report-data__content">
-        <pre className="font-mono text-sm">{report}</pre>
+        <pre className="font-mono text-sm text-gray-600">{report}</pre>
       </div>
     </section>
   )

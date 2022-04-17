@@ -4,7 +4,7 @@ import { Tag } from '@/models/tag'
 export class Group {
   // Regular expressions for parsing
   private static groupRegexp = /^\s*(#+) (.+?)( #|$)/
-  private static tagRegexp = /#(.*?)(:(\d))?(\s|$)/g
+  private static tagRegexp = /#(.*?)(:(\d+))?(\s|$)/g
 
   public static test(str: string): boolean {
     return Group.groupRegexp.test(str)
