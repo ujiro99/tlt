@@ -1,5 +1,6 @@
 import { TreeItem } from '@/components/Tree/types'
 import { Task } from '@/models/task'
+import { Group } from '@/models/group'
 import Log from '@/services/log'
 import { flat } from './flattenedNode'
 
@@ -27,7 +28,7 @@ function hasProperties<K extends string>(
 export interface INode {
   type: NodeType
   line: number
-  data: Task | string
+  data: Task | Group | string
   parent: Node
   children: Node[]
   id: string
@@ -41,7 +42,7 @@ type Predicate = (n: Node) => boolean
 export class Node implements TreeItem, INode {
   public type: NodeType
   public line: number
-  public data: Task | string
+  public data: Task | Group | string
   public parent: Node
   public children: Node[]
   public collapsed: boolean
@@ -69,7 +70,7 @@ export class Node implements TreeItem, INode {
   public constructor(
     type: NodeType,
     line: number,
-    data: Task | string,
+    data: Task | Group | string,
     parent?: Node,
   ) {
     this.id = `${Math.random()}`
@@ -190,69 +191,6 @@ export class Node implements TreeItem, INode {
     })
 
     return cloned
-  }
-}
-
-export class HeadingNode extends Node {
-  public level: number
-  public data: string
-
-  public static tryParse(obj: unknown): HeadingNode | null {
-    if (
-      hasProperties(
-        obj,
-        'type',
-        'line',
-        'data',
-        'parent',
-        'children',
-        'id',
-        'level',
-      )
-    ) {
-      const type = obj.type as NodeType
-      const line = obj.line as number
-      const data = obj.data as string
-      const parent = obj.parent as Node
-      const level = obj.level as number
-
-      const node = new HeadingNode(type, line, data, level, parent)
-      const children = obj.children as Array<Node>
-      node.children.push(...children)
-      node.id = obj.id as string
-      return node
-    } else {
-      return null
-    }
-  }
-
-  public constructor(
-    type: NodeType,
-    line: number,
-    data: string,
-    level: number,
-    parent?: Node,
-  ) {
-    super(type, line, data, parent)
-    this.level = level
-  }
-
-  public clone(): HeadingNode {
-    const c = new HeadingNode(
-      this.type,
-      this.line,
-      this.data,
-      this.level,
-      this.parent,
-    )
-    c.id = this.id
-    c.children = [...this.children]
-    c.collapsed = this.collapsed
-    return c
-  }
-
-  public toString(): string {
-    return ''.padStart(this.level, '#') + ' ' + this.data
   }
 }
 

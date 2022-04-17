@@ -1,7 +1,8 @@
 import { treeItemsToNode } from './util'
 import { Parser } from '@/services/parser'
 import { Task } from '@/models/task'
-import { HeadingNode, NODE_TYPE } from '@/models/node'
+import { Group } from '@/models/group'
+import { NODE_TYPE } from '@/models/node'
 
 describe('treeItemsToNode', () => {
   test('to Node', () => {
@@ -16,7 +17,6 @@ describe('treeItemsToNode', () => {
     const newRoot = treeItemsToNode([root])
     const h1 = newRoot.children[0]
     expect(h1.type).toBe(NODE_TYPE.HEADING)
-    expect(h1).toBeInstanceOf(HeadingNode)
     expect(h1.toString()).toBe("# heading")
   })
 
@@ -25,7 +25,7 @@ describe('treeItemsToNode', () => {
 - [ ] text`)
     const newRoot = treeItemsToNode([root])
     expect(newRoot.children[0].type).toBe(NODE_TYPE.HEADING)
-    expect(newRoot.children[0].data).toBe("heading")
+    expect((newRoot.children[0].data as Group).title).toBe("heading")
     expect(newRoot.children[1].type).toBe(NODE_TYPE.TASK)
     expect((newRoot.children[1].data as Task).title).toBe("text")
   })

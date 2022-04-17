@@ -1,6 +1,7 @@
 import { Parser } from '@/services/parser'
-import { HeadingNode, NODE_TYPE } from '@/models/node'
+import { NODE_TYPE } from '@/models/node'
 import { Task } from '@/models/task'
+import { Group } from '@/models/group'
 
 describe('parserMd', () => {
   test('parse a task', () => {
@@ -11,16 +12,16 @@ describe('parserMd', () => {
 
   test('parse a h1', () => {
     const rootNode = Parser.parseMd('# heading')
-    const node = rootNode.children[0] as HeadingNode
+    const node = rootNode.children[0]
     expect(node.type).toBe(NODE_TYPE.HEADING)
-    expect(node.level).toBe(1)
+    expect((node.data as Group).level).toBe(1)
   })
 
   test('parse a h6', () => {
     const rootNode = Parser.parseMd('###### heading')
-    const node = rootNode.children[0] as HeadingNode
+    const node = rootNode.children[0]
     expect(node.type).toBe(NODE_TYPE.HEADING)
-    expect(node.level).toBe(6)
+    expect((node.data as Group).level).toBe(6)
   })
 
   test('parse a other', () => {
@@ -32,9 +33,9 @@ describe('parserMd', () => {
     const text = `## heading
 - [ ] text`
     const rootNode = Parser.parseMd(text)
-    const h2 = rootNode.children[0] as HeadingNode
+    const h2 = rootNode.children[0]
     expect(h2.type).toBe(NODE_TYPE.HEADING)
-    expect(h2.level).toBe(2)
+    expect((h2.data as Group).level).toBe(2)
     const t = rootNode.children[1]
     expect(t.type).toBe(NODE_TYPE.TASK)
   })
@@ -43,9 +44,9 @@ describe('parserMd', () => {
     const text = `## heading
   - [ ] text`
     const rootNode = Parser.parseMd(text)
-    const h2 = rootNode.children[0] as HeadingNode
+    const h2 = rootNode.children[0]
     expect(h2.type).toBe(NODE_TYPE.HEADING)
-    expect(h2.level).toBe(2)
+    expect((h2.data as Group).level).toBe(2)
     const t = h2.children[0]
     expect(t.type).toBe(NODE_TYPE.TASK)
   })

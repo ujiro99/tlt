@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { Node, HeadingNode, NODE_TYPE } from '@/models/node'
+import { Node, NODE_TYPE } from '@/models/node'
 import type { TreeItems, FlattenedItem } from '@/components/Tree/types'
 import Log from '@/services/log'
 
@@ -11,13 +11,8 @@ export function sleep(msec: number): Promise<unknown> {
   return new Promise((resolve) => setTimeout(resolve, msec))
 }
 
-function tryParse(obj: unknown): Node | HeadingNode | null {
-  let node: Node
-  node = HeadingNode.tryParse(obj)
-  if (node) {
-    return node
-  }
-  node = Node.tryParse(obj)
+function tryParse(obj: unknown): Node | null {
+  const node = Node.tryParse(obj)
   if (node) {
     return node
   }
