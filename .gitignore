@@ -3,3 +3,4 @@ coverage/
 .tern-port
 dist
 *.zip
+*.xd
