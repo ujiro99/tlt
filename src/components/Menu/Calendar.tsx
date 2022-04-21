@@ -60,11 +60,11 @@ function MyCalendar(): JSX.Element {
   return (
     <div className="calendar" onClick={toggleCalendar}>
       <button
-        className={classnames('icon-button', 'mod--date', {
+        className={classnames('calendar__button', {
           'mod--disable': !isAvailable,
         })}
       >
-        <svg className="icon-button__icon">
+        <svg className="calendar__icon">
           <use xlinkHref="/icons.svg#icon-calendar" />
         </svg>
       </button>

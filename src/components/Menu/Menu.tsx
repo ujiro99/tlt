@@ -66,7 +66,7 @@ export function Menu(): JSX.Element {
   const buttonProps = [
     {
       name: MODE.SHOW,
-      label: 'Task',
+      label: 'ToDo',
       iconName: 'icon-check',
     },
     {
@@ -77,13 +77,10 @@ export function Menu(): JSX.Element {
   ]
 
   return (
-    <div className="px-2.5 py-1.5 flex items-center">
-      <div className="flex-1">
-        <Calendar />
-      </div>
+    <div className="relative flex flex-col items-center pt-5 pb-4">
+      <Calendar />
       <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
-      <div className="flex-1 text-right">
-        <Clear />
+      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-bl-xl p-2 pt-0">
         <Edit />
         <Copy />
       </div>
