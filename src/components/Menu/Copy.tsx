@@ -14,6 +14,8 @@ export function Copy(): JSX.Element {
   const report = useRecoilValue(reportState)
   const mode = useRecoilValue(modeState)
   const [tooltipVisible, setTooltipVisible] = useState(false)
+  const [labelVisible, setLabelVisible] = useState(false)
+  const [timeoutId, setTimeoutId] = useState(0)
 
   const copy = async () => {
     let txt: string
@@ -23,19 +25,51 @@ export function Copy(): JSX.Element {
       txt = report
     }
     await navigator.clipboard.writeText(txt)
+    setLabelVisible(false)
     await sleep(100)
     setTooltipVisible(true)
     await sleep(800)
     setTooltipVisible(false)
   }
 
+  const hover = (e: React.SyntheticEvent<HTMLButtonElement>) => {
+    clearTimeout(timeoutId)
+    if (e.type === 'mouseover') {
+      const id = window.setTimeout(() => {
+        setLabelVisible(true)
+      }, 100)
+      setTimeoutId(id)
+    } else {
+      const id = window.setTimeout(() => {
+        setLabelVisible(false)
+      }, 50)
+      setTimeoutId(id)
+    }
+  }
+
   return (
-    <button className="icon-button" onClick={copy}>
+    <button
+      className="icon-button"
+      onClick={copy}
+      onMouseOver={hover}
+      onMouseLeave={hover}
+    >
       <svg className="icon-button__icon">
         <use xlinkHref="/icons.svg#icon-copy" />
       </svg>
-      <Tooltip show={tooltipVisible} location={'bottom'}>
+      <Tooltip
+        show={tooltipVisible}
+        location={'bottom'}
+        style={{ left: '4px' }}
+      >
         <span>Copied!</span>
+      </Tooltip>
+      <Tooltip
+        show={labelVisible}
+        location={'top'}
+        style={{ width: '6em', left: '-2px', bottom: '24px' }}
+      >
+        <span>Copy text</span>
       </Tooltip>
     </button>
   )
