@@ -11,7 +11,6 @@ export function Edit(): JSX.Element {
   const { stopAllTracking } = useTrackingState()
   const [mode, setMode] = useRecoilState(modeState)
   const isEdit = mode === MODE.EDIT
-  const label = isEdit ? 'Save' : 'Edit'
   const icon = isEdit ? 'icon-save' : 'icon-edit'
   const isVisible = mode === MODE.SHOW || mode === MODE.EDIT
 
@@ -34,7 +33,6 @@ export function Edit(): JSX.Element {
       <svg className="icon-button__icon">
         <use xlinkHref={`/icons.svg#${icon}`} />
       </svg>
-      <span className="icon-button__label">{label}</span>
     </button>
   )
 }

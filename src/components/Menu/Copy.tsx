@@ -34,7 +34,6 @@ export function Copy(): JSX.Element {
       <svg className="icon-button__icon">
         <use xlinkHref="/icons.svg#icon-copy" />
       </svg>
-      <span className="icon-button__label">Copy</span>
       <Tooltip show={tooltipVisible} location={'bottom'}>
         <span>Copied!</span>
       </Tooltip>

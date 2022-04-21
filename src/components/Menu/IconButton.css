@@ -1,19 +1,16 @@
 .icon-button {
-  @apply my-1;
-  @apply ml-2;
-  @apply bg-gray-100;
-  @apply hover:bg-gray-50;
+  @apply hover:bg-gray-100;
   @apply border-none;
-  @apply shadow;
   @apply rounded-md;
   @apply transition;
   @apply ease-out;
   @apply text-center;
   @apply select-none;
 
-  width: 2.4rem;
-  padding-top: 6px;
-  padding-bottom: 0;
+  --size: 2rem;
+
+  width: var(--size);
+  height: var(--size);
 
   &__icon {
     @apply fill-gray-500;
@@ -42,37 +39,15 @@
     }
   }
 
-  &.mod--left {
-    @apply ml-0;
-  }
-
-  &.mod--date {
-    @apply shadow-md;
-    width: 1.8rem;
-    height: 1.8rem;
-    padding: 0;
-    margin: 0 0 0 2px;
-  }
-
   &.mod--edit {
     .icon-button__icon {
       width: 22px;
       height: 22px;
-      margin-top: -4px;
       margin-bottom: -2px;
     }
   }
 
   &.mod--save {
-    .icon-button__icon {
-      width: 20px;
-      height: 20px;
-      margin-top: -2px;
-      margin-bottom: -2px;
-    }
-  }
-
-  &.mode--report {
     .icon-button__icon {
       width: 20px;
       height: 20px;

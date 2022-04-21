@@ -37,27 +37,29 @@ export function ButtonGroup(props: ButtonGroupProps): JSX.Element {
 
   return (
     <div className={styles.ButtonGroup}>
-      <span
-        className={`bg-gray-600 ${styles.selectedBg}`}
-        style={{ left: bgLeft }}
-      />
-      {props.buttons.map((button) => {
-        const _selected = selected === button.name
-        return (
-          <button
-            className={`${styles.button} ${_selected ? styles.selected : null}`}
-            name={button.name}
-            key={button.name}
-            onClick={onClick}
-            ref={_selected ? ref : null}
-          >
-            <svg className={styles.icon}>
-              <use xlinkHref={`/icons.svg#${button.iconName}`} />
-            </svg>
-            <span className={styles.label}>{button.label}</span>
-          </button>
-        )
-      })}
+      <div className={styles.wrapper}>
+        <span
+          className={`${styles.selectedBg}`}
+          style={{ left: bgLeft }}
+        />
+        {props.buttons.map((button) => {
+          const _selected = selected === button.name
+          return (
+            <button
+              className={`${styles.button} ${_selected ? styles.selected : null}`}
+              name={button.name}
+              key={button.name}
+              onClick={onClick}
+              ref={_selected ? ref : null}
+            >
+              <svg className={styles.icon}>
+                <use xlinkHref={`/icons.svg#${button.iconName}`} />
+              </svg>
+              <span className={styles.label}>{button.label}</span>
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
