@@ -11,6 +11,28 @@ import { asciiBar, aggregate } from '@/services/util'
 
 import table from 'text-table'
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from 'chart.js'
+import ChartDataLabels from 'chartjs-plugin-datalabels'
+import { Bar } from 'react-chartjs-2'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  ChartDataLabels,
+)
+
 const BarLength = 40
 
 /**
@@ -21,7 +43,7 @@ export const reportState = atom<string>({
   default: '',
 })
 
-function ifNull(num: number, alt = '-'): number | string {
+function ifNull(num: number, alt = ' - '): number | string {
   if (num) return num
   return alt
 }
@@ -33,6 +55,15 @@ type TimeSummary = {
   actual: string
   barLen: number
 }
+
+type TimeDetail = [
+  name: string,
+  actual: Time,
+  estimate: Time,
+  aer: number,
+  quantity?: number,
+  average?: Time,
+]
 
 function summary(collection: TimeCollection, base: Time): TimeSummary[] {
   const sorted = Object.entries(collection).sort((a, b) => {
@@ -77,13 +108,15 @@ export function Report(): JSX.Element {
 
   // --- Total by tags
 
-  const tagNames = tasks.reduce((a, c) => {
-    c.tags.forEach((t) => a.add(t.name))
-    return a
-  }, new Set<string>())
+  const tagNames = Array.from(
+    tasks.reduce((a, c) => {
+      c.tags.forEach((t) => a.add(t.name))
+      return a
+    }, new Set<string>()),
+  )
 
   const tagTimes = {} as TimeCollection
-  let tagDetails = []
+  let tagDetails = [] as TimeDetail[]
 
   tagNames.forEach((tagName) => {
     const tasksHasTag = tasks.filter((t) =>
@@ -124,8 +157,8 @@ export function Report(): JSX.Element {
       row[0],
       row[1].toString(),
       row[2].toString(),
-      `${row[3]}%`,
-      row[4],
+      `${ifNull(row[3])}%`,
+      `${row[4]}`,
       row[5].toString(),
     ])
   })
@@ -138,6 +171,8 @@ export function Report(): JSX.Element {
   // Total by heading
 
   const groupTimes = {} as TimeCollection
+  const groupDetails = [] as TimeDetail[]
+
   const groups = flat(root)
     .filter((n) => n.node.type === NODE_TYPE.HEADING)
     .map((n) => n.node)
@@ -156,12 +191,14 @@ export function Report(): JSX.Element {
       ]
       acc.push(row)
 
+      groupDetails.push([g.title, gt.actual, gt.estimate, gt.percentage])
+
       if (g.tags.length > 0) {
         g.tags.forEach((tag) => {
           if (tag.quantity > 0) {
             const avg = Time.parseSecond(gt.actual.toSeconds() / tag.quantity)
             const row = [
-              ` - ${tag.name}`,
+              `  ${tag.name}`,
               '',
               '',
               '',
@@ -188,13 +225,148 @@ export function Report(): JSX.Element {
 
   setReport(builder)
 
+  const labels = ['actual', 'estimate']
+  const colors = {
+    gray200: 'rgb(229, 231, 235)',
+    gray400: 'rgb(156, 163, 175)',
+    gray500: 'rgb(107, 114, 128)',
+  }
+
+  const options = {
+    indexAxis: 'y' as const,
+    responsive: true,
+    elements: {
+      bar: {
+        borderWidth: 1,
+        borderColor: colors.gray500,
+      },
+    },
+    scales: {
+      x: {
+        ticks: {
+          callback: function (value: number) {
+            return Time.parseHour(value).toString()
+          },
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: false,
+      },
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const value = context.raw
+            return Time.parseHour(value).toString()
+          },
+        },
+      },
+      datalabels: {
+        formatter: function (value: number) {
+          return Time.parseHour(value).toString()
+        },
+      },
+    },
+  }
+
+  const allData = {
+    labels,
+    datasets: [
+      {
+        data: labels.map((l) => {
+          let time: Time
+          if (l === 'actual') time = all.actual
+          if (l === 'estimate') time = all.estimate
+          return time.toHours()
+        }),
+        backgroundColor: [colors.gray200, colors.gray400],
+      },
+    ],
+  }
+
+  const tagData = {
+    labels: tagDetails.map((t) => t[0]),
+    datasets: [
+      {
+        label: 'actual',
+        data: tagDetails.map((t) => t[1].toHours()),
+        backgroundColor: colors.gray200,
+      },
+      {
+        label: 'estimate',
+        data: tagDetails.map((t) => t[2].toHours()),
+        backgroundColor: colors.gray400,
+      },
+    ],
+  }
+
+  const groupData = {
+    labels: groupDetails.map((g) => g[0]),
+    datasets: [
+      {
+        label: 'actual',
+        data: groupDetails.map((g) => g[1].toHours()),
+        backgroundColor: colors.gray200,
+      },
+      {
+        label: 'estimate',
+        data: groupDetails.map((g) => g[2].toHours()),
+        backgroundColor: colors.gray400,
+      },
+    ],
+  }
+
   return (
-    <section className="h-full pt-[26px] p-6 pb-[80px] overflow-scroll tracking-wide text-gray-700 report-data">
-      <h2 className="pb-6 text-base font-bold report-data__title">
-        Report
-      </h2>
-      <div className="pt-2 report-data__content">
-        <pre className="font-mono text-sm text-gray-600">{report}</pre>
+    <section className="h-full pt-[26px] pb-[160px] py-5 overflow-scroll tracking-wide text-gray-700 report-data">
+      <div className="report-data__content">
+        <h2 className="pb-6 text-base font-bold">Today's completed ToDos</h2>
+        <Bar options={options} data={allData} />
+
+        <h2 className="py-6 mt-4 text-base font-bold">Total by tags</h2>
+        <Bar options={options} data={tagData} />
+
+        <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
+          <tbody>
+            {tagTable.map((row) => {
+              return (
+                <tr key={row[0]}>
+                  <td className="p-2 border border-slate-300">{row[0]}</td>
+                  <td className="p-2 border border-slate-300">{row[1]}</td>
+                  <td className="p-2 border border-slate-300">{row[2]}</td>
+                  <td className="p-2 border border-slate-300">{row[3]}</td>
+                  <td className="p-2 border border-slate-300">{row[4]}</td>
+                  <td className="p-2 border border-slate-300">{row[5]}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+
+        <h2 className="py-6 mt-4 text-base font-bold">Total by groups</h2>
+        <Bar options={options} data={groupData} />
+
+        <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
+          <tbody>
+            {gdTable.map((row) => {
+              return (
+                <tr key={row[0]}>
+                  <td className="p-2 whitespace-pre border border-slate-300">
+                    {row[0]}
+                  </td>
+                  <td className="p-2 border border-slate-300">{row[1]}</td>
+                  <td className="p-2 border border-slate-300">{row[2]}</td>
+                  <td className="p-2 border border-slate-300">{row[3]}</td>
+                  <td className="p-2 border border-slate-300">{row[4]}</td>
+                  <td className="p-2 border border-slate-300">{row[5]}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
     </section>
   )
