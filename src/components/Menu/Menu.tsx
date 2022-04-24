@@ -5,6 +5,9 @@ import { Calendar } from '@/components/Menu/Calendar'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
 import { ButtonGroup } from '@/components/ButtonGroup'
+import { aggregate } from '@/services/util'
+import { nodeToTasks } from '@/models/node'
+import { useTaskManager } from '@/hooks/useTaskManager'
 
 export const MODE = {
   EDIT: 'EDIT',
@@ -23,6 +26,12 @@ export const modeState = atom<MenuMode>({
 
 export function Menu(): JSX.Element {
   const [mode, setMode] = useRecoilState(modeState)
+  const manager = useTaskManager()
+  const root = manager.getRoot()
+
+  // --- Summary
+  const tasks = nodeToTasks(root, false)
+  const all = aggregate(tasks)
 
   const onChange = ({ name }) => {
     setMode(name)
@@ -44,8 +53,18 @@ export function Menu(): JSX.Element {
   return (
     <div className="relative pt-5 pl-4 bg-gray-100">
       <Calendar />
+      <div className="text-xs select-none font-mono text-gray-500 ml-[10px] mt-[0.8em]">
+        <span>actual</span>
+        <span className="pl-[0.8em] text-gray-600 text-sm">{all.actual.toString()}</span>
+        <span className="pl-[0.5em]">/</span>
+        <span className="pl-[0.5em]">estimate</span>
+        <span className="pl-[0.8em] text-gray-600 text-sm">{all.estimate.toString()}</span>
+        <span className="pl-[0.5em]">:</span>
+        <span className="pl-[0.5em] text-gray-600 text-sm">{all.percentage}</span>
+        <span className="pl-[0.5em]">%</span>
+      </div>
       <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
-      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-xl px-2 py-1">
+      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-xl rounded-tr-none p-2 pr-1 py-1">
         <Edit />
         <Copy />
       </div>

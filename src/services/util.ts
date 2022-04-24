@@ -1,6 +1,8 @@
 import { format } from 'date-fns'
 import { Node, NODE_TYPE } from '@/models/node'
 import type { TreeItems, FlattenedItem } from '@/components/Tree/types'
+import { Task } from '@/models/task'
+import { Time } from '@/models/time'
 import Log from '@/services/log'
 
 /**
@@ -92,5 +94,29 @@ export function asciiBar(percentage: number, length = 20, box = true): string {
     return ''.padEnd(fillNum, '█').padEnd(length, '▁')
   } else {
     return ''.padEnd(fillNum, '█')
+  }
+}
+
+type TimeTotal = {
+  actual: Time
+  estimate: Time
+  percentage: number
+}
+
+function zero() {
+  return new Time()
+}
+
+/**
+ * Calculate the total time.
+ */
+export function aggregate(tasks: Task[]): TimeTotal {
+  const actual = tasks.reduce((a, c) => a.add(c.actualTimes), zero())
+  const estimate = tasks.reduce((a, c) => a.add(c.estimatedTimes), zero())
+  const percentage = Math.floor(actual.divide(estimate) * 100)
+  return {
+    actual,
+    estimate,
+    percentage,
   }
 }
