@@ -6,6 +6,7 @@
   display: flex;
   align-items: center;
   cursor: pointer;
+  margin-left: 10px;
 
   &__icon {
     @apply fill-gray-700;

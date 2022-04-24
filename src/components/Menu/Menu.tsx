@@ -42,10 +42,10 @@ export function Menu(): JSX.Element {
   ]
 
   return (
-    <div className="relative flex flex-col items-center pt-5 pb-4">
+    <div className="relative pt-5 pl-4 bg-gray-100">
       <Calendar />
       <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
-      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-bl-xl p-2 pt-0">
+      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-xl px-2 py-1">
         <Edit />
         <Copy />
       </div>

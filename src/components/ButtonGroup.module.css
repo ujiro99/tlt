@@ -1,32 +1,28 @@
 .ButtonGroup {
-  --width: 8rem;
+  --width: 7rem;
   --height: 2.4rem;
-  --radius: 30px;
   --border: 2px;
+  --radius: 8px;
 
+  display: inline-block;
   height: var(--height);
   user-select: none;
-  background-color: rgb(243, 244, 246);
-  border-radius: var(--radius);
-  box-shadow: inset 0 2px 6px 0 rgba(0, 0, 0, 0.1);
   margin-top: 1rem;
 
   .wrapper {
     display: inline-flex;
     position: relative;
     border: solid var(--border) transparent;
+    border-bottom: none;
     height: var(--height);
-    border-radius: 20px;
-    overflow: hidden;
   }
 
   .button {
     position: relative;
     width: var(--width);
-    height: calc(var(--height) - var(--border) * 2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: calc(var(--height) - var(--border));
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
   }
 
   .icon {
@@ -43,14 +39,28 @@
     font-size: 14px;
   }
 
+  .bgWrapper {
+    position: absolute;
+  }
+
+  .bg {
+    display: inline-block;
+    width: var(--width);
+    height: calc(var(--height) - var(--border));
+    background-color: rgb(229 231 235);
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
+  }
+
   .selectedBg {
     width: var(--width);
-    height: calc(var(--height) - var(--border) * 2);
+    height: calc(var(--height) - var(--border));
     position: absolute;
     user-select: none;
     background-color: #fff;
+    border-top-left-radius: var(--radius);
+    border-top-right-radius: var(--radius);
 
-    @apply shadow-md;
     @apply transition;
     @apply transition-[left];
     @apply duration-150;

@@ -221,9 +221,9 @@ export function Report(): JSX.Element {
   setReport(builder)
 
   return (
-    <section className="h-full p-6 pt-2 pb-[80px] overflow-scroll tracking-wide text-gray-700 report-data">
-      <h2 className="pt-2 pb-6 text-lg font-bold report-data__title">
-        Today's report
+    <section className="h-full pt-[26px] p-6 pb-[80px] overflow-scroll tracking-wide text-gray-700 report-data">
+      <h2 className="pb-6 text-base font-bold report-data__title">
+        Report
       </h2>
       <div className="pt-2 report-data__content">
         <pre className="font-mono text-sm text-gray-600">{report}</pre>
