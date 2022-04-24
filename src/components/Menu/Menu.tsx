@@ -64,7 +64,7 @@ export function Menu(): JSX.Element {
         <span className="pl-[0.5em]">%</span>
       </div>
       <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
-      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-xl rounded-tr-none p-2 pr-1 py-1">
+      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-tl-xl rounded-bl-xl p-2 pr-1 py-1">
         <Edit />
         <Copy />
       </div>

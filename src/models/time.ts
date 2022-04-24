@@ -47,6 +47,16 @@ export class Time {
     return time
   }
 
+  static parseHour(hours: number): Time {
+    const time = new Time()
+    time._days = Math.floor(hours / 24)
+    hours = hours % 24
+    time._hours = Math.floor(hours)
+    hours = hours % 1
+    time._minutes = Math.floor(hours * 60)
+    return time
+  }
+
   static parseStr(timeStr: string): Time {
     const timeRegexps = [
       { type: TIME_TYPE.MINUTE, regexp: /(\d+)m/ },
@@ -77,7 +87,7 @@ export class Time {
             const daysInt = Math.floor(days)
             const daysDecimal = days - Math.floor(days)
             time._days += daysInt
-            const hour = (daysDecimal) * DAY
+            const hour = daysDecimal * DAY
             const hourInt = Math.floor(hour)
             const hourDecimal = hour - hourInt
             time._hours += hourInt
@@ -146,7 +156,12 @@ export class Time {
   }
 
   public toSeconds(): number {
-    return this._days * DAY_S + this._hours * HOUR_S + this._minutes * MINUTE_S + this._seconds
+    return (
+      this._days * DAY_S +
+      this._hours * HOUR_S +
+      this._minutes * MINUTE_S +
+      this._seconds
+    )
   }
 
   public toMinutes(): number {
@@ -162,19 +177,19 @@ export class Time {
   }
 
   public get seconds(): number {
-    return this._seconds;
+    return this._seconds
   }
 
   public get minutes(): number {
-    return this._minutes;
+    return this._minutes
   }
 
   public get hours(): number {
-    return this._hours;
+    return this._hours
   }
 
   public get days(): number {
-    return this._days;
+    return this._days
   }
 
   public clone(): Time {
