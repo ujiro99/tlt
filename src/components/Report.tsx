@@ -321,7 +321,7 @@ export function Report(): JSX.Element {
   }
 
   return (
-    <section className="h-full pt-[26px] pb-[160px] py-5 overflow-scroll tracking-wide text-gray-700 report-data">
+    <section className="h-full pt-[26px] pb-[160px] px-5 overflow-scroll tracking-wide text-gray-700 report-data">
       <div className="report-data__content">
         <h2 className="pb-6 text-base font-bold">Today's completed ToDos</h2>
         <Bar options={options} data={allData} />
