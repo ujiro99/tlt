@@ -3,12 +3,11 @@ import { atom, useRecoilState } from 'recoil'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { flat } from '@/models/flattenedNode'
-import { INode, NODE_TYPE } from '@/models/node'
+import { nodeToTasks, NODE_TYPE } from '@/models/node'
 import { Tag } from '@/models/tag'
-import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import { Time } from '@/models/time'
-import { asciiBar } from '@/services/util'
+import { asciiBar, aggregate } from '@/services/util'
 
 import table from 'text-table'
 
@@ -22,33 +21,12 @@ export const reportState = atom<string>({
   default: '',
 })
 
-function zero() {
-  return new Time()
-}
-
 function ifNull(num: number, alt = '-'): number | string {
   if (num) return num
   return alt
 }
 
-type TimeTotal = {
-  actual: Time
-  estimate: Time
-  percentage: number
-}
-
 type TimeCollection = { [key: string]: Time }
-
-function aggregate(tasks: Task[]): TimeTotal {
-  const actual = tasks.reduce((a, c) => a.add(c.actualTimes), zero())
-  const estimate = tasks.reduce((a, c) => a.add(c.estimatedTimes), zero())
-  const percentage = Math.floor(actual.divide(estimate) * 100)
-  return {
-    actual,
-    estimate,
-    percentage,
-  }
-}
 
 type TimeSummary = {
   name: string
@@ -72,16 +50,6 @@ function summary(collection: TimeCollection, base: Time): TimeSummary[] {
     })
   }
   return arr
-}
-
-function nodeToTasks(root: INode, completed: boolean): Task[] {
-  let tasks: Task[] = flat(root)
-    .filter((n) => n.node.type === NODE_TYPE.TASK)
-    .map((n) => n.node.data) as Task[]
-  if (completed) {
-    tasks = tasks.filter((t) => t.isComplete())
-  }
-  return tasks
 }
 
 export function Report(): JSX.Element {
@@ -221,9 +189,9 @@ export function Report(): JSX.Element {
   setReport(builder)
 
   return (
-    <section className="h-full p-6 pt-2 pb-[80px] overflow-scroll tracking-wide text-gray-700 report-data">
-      <h2 className="pt-2 pb-6 text-lg font-bold report-data__title">
-        Today's report
+    <section className="h-full pt-[26px] p-6 pb-[80px] overflow-scroll tracking-wide text-gray-700 report-data">
+      <h2 className="pb-6 text-base font-bold report-data__title">
+        Report
       </h2>
       <div className="pt-2 report-data__content">
         <pre className="font-mono text-sm text-gray-600">{report}</pre>

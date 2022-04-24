@@ -1,20 +1,13 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { atom, useRecoilState } from 'recoil'
 
-import { Tooltip } from '@/components/Tooltip'
 import { Calendar } from '@/components/Menu/Calendar'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
 import { ButtonGroup } from '@/components/ButtonGroup'
-
-import { sleep } from '@/services/util'
-import { STORAGE_KEY, Storage } from '@/services/storage'
-
-function clearStorage(): void {
-  for (const key in STORAGE_KEY) {
-    void Storage.set(STORAGE_KEY[key], null)
-  }
-}
+import { aggregate } from '@/services/util'
+import { nodeToTasks } from '@/models/node'
+import { useTaskManager } from '@/hooks/useTaskManager'
 
 export const MODE = {
   EDIT: 'EDIT',
@@ -31,33 +24,14 @@ export const modeState = atom<MenuMode>({
   default: MODE.SHOW,
 })
 
-function Clear(): JSX.Element {
-  const [tooltipVisible, setTooltipVisible] = useState(false)
-
-  const copyMarkdown = async () => {
-    chrome.runtime.sendMessage({ command: 'stopTracking' })
-    clearStorage()
-    await sleep(100)
-    setTooltipVisible(true)
-    await sleep(800)
-    setTooltipVisible(false)
-  }
-
-  return (
-    <button
-      className="hidden py-1.5 px-2 my-2 mx-2 text-xs bg-gray-100 hover:bg-gray-50 border-none shadow rounded-md transition ease-out"
-      onClick={copyMarkdown}
-    >
-      Clear
-      <Tooltip show={tooltipVisible} location={'bottom'}>
-        <span>Cleared!</span>
-      </Tooltip>
-    </button>
-  )
-}
-
 export function Menu(): JSX.Element {
   const [mode, setMode] = useRecoilState(modeState)
+  const manager = useTaskManager()
+  const root = manager.getRoot()
+
+  // --- Summary
+  const tasks = nodeToTasks(root, false)
+  const all = aggregate(tasks)
 
   const onChange = ({ name }) => {
     setMode(name)
@@ -77,10 +51,20 @@ export function Menu(): JSX.Element {
   ]
 
   return (
-    <div className="relative flex flex-col items-center pt-5 pb-4">
+    <div className="relative pt-5 pl-4 bg-gray-100">
       <Calendar />
+      <div className="text-xs select-none font-mono text-gray-500 ml-[10px] mt-[0.8em]">
+        <span>actual</span>
+        <span className="pl-[0.8em] text-gray-600 text-sm">{all.actual.toString()}</span>
+        <span className="pl-[0.5em]">/</span>
+        <span className="pl-[0.5em]">estimate</span>
+        <span className="pl-[0.8em] text-gray-600 text-sm">{all.estimate.toString()}</span>
+        <span className="pl-[0.5em]">:</span>
+        <span className="pl-[0.5em] text-gray-600 text-sm">{all.percentage}</span>
+        <span className="pl-[0.5em]">%</span>
+      </div>
       <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
-      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-bl-xl p-2 pt-0">
+      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-xl rounded-tr-none p-2 pr-1 py-1">
         <Edit />
         <Copy />
       </div>

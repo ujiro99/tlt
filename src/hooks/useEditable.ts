@@ -4,17 +4,15 @@ import Log from '@/services/log'
 
 const focusLineState = atom({
   key: 'focusLineState',
-  default: 0
+  default: 0,
 })
 
 const editingLineState = atom({
   key: 'editingLineState',
-  default: 0
+  default: 0,
 })
 
-type useEditableReturn = [
-  boolean, () => void
-]
+type useEditableReturn = [boolean, () => void, () => void]
 
 export function useEditable(line: number): useEditableReturn {
   const [focusLine, setFocusLine] = useRecoilState(focusLineState)
@@ -35,7 +33,13 @@ export function useEditable(line: number): useEditableReturn {
     }
   }, [line, focusLine])
 
-  return [isEditing(), focusOrEdit]
+  const edit = useCallback(() => {
+    Log.v(`edit line: ${line}`)
+    setFocusLine(line)
+    setEditingLine(line)
+  }, [line, focusLine])
+
+  return [isEditing(), focusOrEdit, edit]
 }
 
 export function useEditFinish(): () => void {

@@ -222,3 +222,14 @@ export function nodeToString(root: Node): string {
 
   return lines.join('\n')
 }
+
+export function nodeToTasks(root: INode, completed: boolean): Task[] {
+  let tasks: Task[] = flat(root)
+    .filter((n) => n.node.type === NODE_TYPE.TASK)
+    .map((n) => n.node.data) as Task[]
+  if (completed) {
+    tasks = tasks.filter((t) => t.isComplete())
+  }
+  return tasks
+}
+

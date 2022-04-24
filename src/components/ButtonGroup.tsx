@@ -38,15 +38,19 @@ export function ButtonGroup(props: ButtonGroupProps): JSX.Element {
   return (
     <div className={styles.ButtonGroup}>
       <div className={styles.wrapper}>
-        <span
-          className={`${styles.selectedBg}`}
-          style={{ left: bgLeft }}
-        />
+        <div className={styles.bgWrapper}>
+          {props.buttons.map((b) => (
+            <div className={styles.bg} key={b.name} />
+          ))}
+        </div>
+        <span className={`${styles.selectedBg}`} style={{ left: bgLeft }} />
         {props.buttons.map((button) => {
           const _selected = selected === button.name
           return (
             <button
-              className={`${styles.button} ${_selected ? styles.selected : null}`}
+              className={`${styles.button} ${
+                _selected ? styles.selected : null
+              }`}
               name={button.name}
               key={button.name}
               onClick={onClick}
