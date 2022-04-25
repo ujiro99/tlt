@@ -3,6 +3,7 @@ import { atom, selector, useRecoilState } from 'recoil'
 
 import { nodeState, useTaskManager } from '@/hooks/useTaskManager'
 import { STORAGE_KEY, Storage } from '@/services/storage'
+import { Ipc } from '@/services/ipc'
 import Log from '@/services/log'
 import { TrackingState, TimeObject } from '@/@types/state'
 import { Task } from '@/models/task'
@@ -61,9 +62,9 @@ const trackingStateSelector = selector<TrackingState[]>({
       if (node) {
         return {
           ...t,
-          nodeId: node.id
+          nodeId: node.id,
         }
-      } 
+      }
       return t
     })
   },
@@ -88,7 +89,7 @@ export function useTrackingState(): useTrackingStateReturn {
   const stopAllTracking = useCallback(() => {
     Log.d('stopAllTracking')
     stopTrackings()
-    chrome.runtime.sendMessage({ command: 'stopTracking' })
+    Ipc.send({ command: 'stopTracking' })
   }, [trackings])
 
   const stopOtherTracking = useCallback(
@@ -125,7 +126,7 @@ export function useTrackingState(): useTrackingStateReturn {
     (tracking: TrackingState) => {
       const newVal = [...trackings, tracking]
       setTrackings(newVal)
-      chrome.runtime.sendMessage({
+      Ipc.send({
         command: 'startTracking',
         param: tracking.elapsedTime.toMinutes(),
       })
@@ -139,7 +140,7 @@ export function useTrackingState(): useTrackingStateReturn {
         return n.nodeId !== nodeId
       })
       setTrackings(newVal)
-      chrome.runtime.sendMessage({ command: 'stopTracking' })
+      Ipc.send({ command: 'stopTracking' })
     },
     [trackings],
   )
@@ -147,10 +148,24 @@ export function useTrackingState(): useTrackingStateReturn {
   const moveTracking = useCallback(
     (from: number, to: number) => {
       const newVal = trackings.map((n) => {
-        if(n.line === from) {
+        if (n.line === from) {
           return {
             ...n,
-            line: to
+            line: to,
+          }
+        }
+        if (from > n.line && n.line >= to) {
+          // Move down
+          return {
+            ...n,
+            line: n.line + 1,
+          }
+        }
+        if (from < n.line && n.line <= to) {
+          // Move up
+          return {
+            ...n,
+            line: n.line - 1,
           }
         }
         return n
