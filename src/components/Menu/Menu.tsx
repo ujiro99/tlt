@@ -51,7 +51,7 @@ export function Menu(): JSX.Element {
   ]
 
   return (
-    <div className="relative pt-5 pl-4 bg-gray-100">
+    <div className="sticky top-0 z-10 w-full pt-5 pl-4 bg-gray-100">
       <Calendar />
       <div className="text-xs select-none font-mono text-gray-500 ml-[10px] mt-[0.8em]">
         <span>actual</span>

@@ -23,8 +23,7 @@ body {
 }
 
 .task-textarea {
-  height: calc(100% - 46px);
-  padding-bottom: 10px;
+  height: 100%;
   position: relative;
 
   textarea {
@@ -35,18 +34,11 @@ body {
     @apply text-gray-900;
     @apply outline-none;
     @apply resize-none;
-    @apply rounded-md;
     @apply bg-gray-100;
     @apply font-mono;
   }
 }
 
 .task-container {
-  @apply relative;
-  @apply h-full;
-  @apply overflow-scroll;
-  padding-top: 10px;
-  padding-left: 8px;
-  padding-right: 10px;
-  padding-bottom: 10rem;
+  padding: 10px 10px 30px 8px;
 }
