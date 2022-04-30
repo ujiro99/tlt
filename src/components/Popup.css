@@ -23,19 +23,19 @@ body {
 }
 
 .task-textarea {
-  height: 100%;
   position: relative;
+  @apply p-2;
 
   textarea {
     line-height: 2;
     @apply w-full;
-    @apply h-full;
     @apply p-4;
     @apply text-gray-900;
     @apply outline-none;
     @apply resize-none;
     @apply bg-gray-100;
     @apply font-mono;
+    @apply rounded-md;
   }
 }
 
