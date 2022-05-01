@@ -51,20 +51,20 @@ export function Menu(): JSX.Element {
   ]
 
   return (
-    <div className="sticky top-0 z-10 w-full pt-5 pl-4 bg-gray-100">
+    <div className="sticky top-0 z-10 w-full pt-6 pl-4 bg-gray-100">
       <Calendar />
       <div className="text-xs select-none font-mono text-gray-500 ml-[10px] mt-[0.8em]">
         <span>actual</span>
-        <span className="pl-[0.8em] text-gray-600 text-sm">{all.actual.toString()}</span>
+        <span className="pl-[0.8em] text-gray-600 tracking-wider">{all.actual.toString()}</span>
         <span className="pl-[0.5em]">/</span>
         <span className="pl-[0.5em]">estimate</span>
-        <span className="pl-[0.8em] text-gray-600 text-sm">{all.estimate.toString()}</span>
+        <span className="pl-[0.8em] text-gray-600 tracking-wider">{all.estimate.toString()}</span>
         <span className="pl-[0.5em]">:</span>
-        <span className="pl-[0.5em] text-gray-600 text-sm">{all.percentage}</span>
-        <span className="pl-[0.5em]">%</span>
+        <span className="pl-[0.5em] text-gray-600 tracking-wider">{all.percentage}</span>
+        <span className="pl-[0.25em]">%</span>
       </div>
       <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
-      <div className="absolute right-0 bottom-[-1rem] z-10 bg-white rounded-tl-xl rounded-bl-xl p-1.5 pr-1 py-1">
+      <div className="absolute z-10 right-1 bottom-1">
         <Edit />
         <Copy />
       </div>

@@ -9,7 +9,7 @@ import { Group } from '@/models/group'
 import Log from '@/services/log'
 
 const baseClass =
-  'w-full font-bold relative text-gray-700 leading-normal cursor-pointer px-3 group item-color flex items-center'
+  'w-full font-bold relative text-gray-700 leading-normal tracking-wide cursor-pointer px-3 group item-color flex items-center'
 const otherClass = {
   h1: 'text-base pt-4 pb-3',
   h2: 'text-base pt-4 pb-3',
@@ -52,7 +52,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
       <TagName>{group.title}</TagName>
 
       {hasTags ? (
-        <div className="ml-2 font-medium">
+        <div className="flex items-center ml-2 font-medium">
           {group.tags.map((tag) => (
             <TaskTag key={tag.name} tag={tag} />
           ))}

@@ -1,10 +1,10 @@
 body {
   margin: 0;
+  height: 600px;
 }
 
 #popup {
   width: 450px;
-  height: 600px;
   position: relative;
   z-index: 0;
 
@@ -24,7 +24,7 @@ body {
 
 .task-textarea {
   position: relative;
-  @apply p-2;
+  padding: 20px 16px 30px 16px;
 
   textarea {
     line-height: 2;
@@ -40,5 +40,5 @@ body {
 }
 
 .task-container {
-  padding: 10px 10px 30px 8px;
+  padding: 20px 16px 30px 16px;
 }

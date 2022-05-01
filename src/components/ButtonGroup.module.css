@@ -36,6 +36,7 @@
     @apply text-gray-600;
     @apply font-medium;
     margin-left: 6px;
+    margin-right: 6px;
     font-size: 14px;
   }
 

@@ -37,7 +37,7 @@ export function Copy(): JSX.Element {
     if (e.type === 'mouseover') {
       const id = window.setTimeout(() => {
         setLabelVisible(true)
-      }, 100)
+      }, 200)
       setTimeoutId(id)
     } else {
       const id = window.setTimeout(() => {
@@ -49,7 +49,7 @@ export function Copy(): JSX.Element {
 
   return (
     <button
-      className="icon-button"
+      className="icon-button group"
       onClick={copy}
       onMouseOver={hover}
       onMouseLeave={hover}

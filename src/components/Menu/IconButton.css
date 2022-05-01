@@ -1,5 +1,5 @@
 .icon-button {
-  @apply hover:bg-gray-100;
+  @apply hover:bg-gray-200;
   @apply border-none;
   @apply rounded-md;
   @apply transition;
@@ -13,8 +13,10 @@
   height: var(--size);
 
   &__icon {
-    @apply fill-gray-500;
-    @apply text-gray-500;
+    @apply fill-gray-400;
+    @apply text-gray-400;
+    @apply group-hover:fill-gray-600;
+    @apply group-hover:text-gray-600;
     width: 16px;
     height: 16px;
     margin: 0 auto;
@@ -28,22 +30,11 @@
     top: -2px;
   }
 
-  &.mod--disable {
-    @apply cursor-not-allowed;
-
-    .icon-button__icon {
-      @apply fill-gray-400;
-    }
-    .icon-button__label {
-      @apply text-gray-400;
-    }
-  }
-
   &.mod--edit {
     .icon-button__icon {
-      width: 22px;
-      height: 22px;
-      margin-top: -2px;
+      width: 24px;
+      height: 24px;
+      margin-top: -4px;
       margin-bottom: -4px;
     }
   }

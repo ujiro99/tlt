@@ -32,7 +32,7 @@ export function Edit(): JSX.Element {
     if (e.type === 'mouseover') {
       const id = window.setTimeout(() => {
         setLabelVisible(true)
-      }, 100)
+      }, 200)
       setTimeoutId(id)
     } else {
       const id = window.setTimeout(() => {
@@ -44,7 +44,7 @@ export function Edit(): JSX.Element {
 
   return (
     <button
-      className={classnames('icon-button', isEdit ? 'mod--save' : 'mod--edit', {
+      className={classnames('icon-button group', isEdit ? 'mod--save' : 'mod--edit', {
         hidden: !isVisible,
       })}
       onClick={toggleMode}
@@ -57,7 +57,7 @@ export function Edit(): JSX.Element {
       <Tooltip
         show={labelVisible}
         location={'top'}
-        style={{ width: '4em', left: '0.6em', bottom: '24px' }}
+        style={{ width: '4em', left: '0.8em', bottom: '24px' }}
       >
         <span>{label}</span>
       </Tooltip>
