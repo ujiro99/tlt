@@ -19,12 +19,11 @@ export class Task {
   // Regular expressions for markdown parsing
   private static taskRegexp = /- (\[\s\]|\[x\])\s.+$/
   private static stateRegexp = /(\[ \]|\[x\])/
-  private static titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
+  private static titleRegexp = /\[.\]\s(.+?)(?:$|\s~|\s#(\d*))/
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
-  private static estimatedTimeRegexp =
-    /~(\d+[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
-
+  private static estimatedTimeRegexp = /~(\d+(?:\.\d+)?[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
   private static tagRegexp = /#(.*?)(:(\d))?(\s|$)/g
+  private static allNumberRegexp = /^\d+$/
 
   // utility for creating unique Id
   static getId(): number {
@@ -65,6 +64,7 @@ export class Task {
   private static parseTitle(taskStr: string): string {
     if (Task.titleRegexp.test(taskStr)) {
       const m = Task.titleRegexp.exec(taskStr)
+      if (m[2]) return `${m[1]} #${m[2]}`
       return m[1]
     }
     Log.w("Can't find title")
@@ -97,6 +97,10 @@ export class Task {
     const tags: Tag[] = []
     let match: RegExpExecArray
     while ((match = Task.tagRegexp.exec(taskStr)) !== null) {
+      if (Task.allNumberRegexp.test(match[1])) {
+        // The number with "#" is not treated as a tag.
+        continue
+      }
       const quantity = match[3] ? parseInt(match[3]) : 0
       tags.push({ name: match[1], quantity })
     }
