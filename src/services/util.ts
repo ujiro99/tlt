@@ -124,37 +124,42 @@ export function aggregate(tasks: Task[]): TimeTotal {
 /**
  * Generate lightened or darkened colors.
  *
- * @param {string} color RGB color code.
- * @param {number} amount Amount to be varied. -255 ~ 255.
- * @return {string} Generated RGB color code.
+ * @param rgb RGB color code.
+ * @param amount Amount to be varied. -1 ~ 1.
+ * @param limit Limits of Change. 0 ~ 255.
+ *
+ * @return Generated RGB color code.
  *
  * Usage:
  *   // Lighten
- *   var NewColor = LightenDarkenColor("#F06D06", 20);
+ *   var NewColor = LightenDarkenColor("#F06D06", 0.8);
  *   // Darken
- *   var NewColor = LightenDarkenColor("#F06D06", -20);
+ *   var NewColor = LightenDarkenColor("#F06D06", -0.8);
  *
  */
-export function lightenDarkenColor(color: string, amount: number): string {
+export function lightenDarkenColor(rgb: string, amount: number, limit=0): string {
   let usePound = false
-  if (color[0] === '#') {
-    color = color.slice(1)
+  if (rgb[0] === '#') {
+    rgb = rgb.slice(1)
     usePound = true
   }
 
-  const num = parseInt(color, 16)
+  const num = parseInt(rgb, 16)
+  const upperLimit = 255 - limit
+  const lowerLimit = limit
+  amount = 255 * amount
 
   let r = (num >> 16) + amount
-  if (r > 255) r = 255
-  else if (r < 0) r = 0
+  if (r > upperLimit) r = upperLimit
+  else if (r < lowerLimit) r = lowerLimit
 
   let b = ((num >> 8) & 0x00ff) + amount
-  if (b > 255) b = 255
-  else if (b < 0) b = 0
+  if (b > upperLimit) b = upperLimit
+  else if (b < lowerLimit) b = lowerLimit
 
   let g = (num & 0x0000ff) + amount
-  if (g > 255) g = 255
-  else if (g < 0) g = 0
+  if (g > upperLimit) g = upperLimit
+  else if (g < lowerLimit) g = lowerLimit
 
-  return (usePound ? '#' : '') + (g | (b << 8) | (r << 16)).toString(16)
+  return (usePound ? '#' : '') + (b | (g << 8) | (r << 16)).toString(16).padStart(6, "0")
 }

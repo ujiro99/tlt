@@ -28,6 +28,7 @@ const PickerStyle = {
 
 const PresetColors = [
   '#eb144c',
+  '#f78da7',
   '#f47373',
   '#ff8a65',
   '#dce775',
@@ -43,6 +44,59 @@ const PresetColors = [
   '#555555',
 ]
 
+type Hsv = {
+  h: number
+  s: number
+  v: number
+}
+
+function rgb2hsv(rgb: string): Hsv {
+  if (rgb[0] === '#') {
+    rgb = rgb.slice(1)
+  }
+  const num = parseInt(rgb, 16)
+  const r = (num >> 16) / 255
+  const b = ((num >> 8) & 0x00ff) / 255
+  const g = (num & 0x0000ff) / 255
+
+  const max = Math.max(r, g, b)
+  const min = Math.min(r, g, b)
+  const diff = max - min
+
+  let h = 0
+
+  switch (min) {
+    case max:
+      h = 0
+      break
+
+    case r:
+      h = 60 * ((b - g) / diff) + 180
+      break
+
+    case g:
+      h = 60 * ((r - b) / diff) + 300
+      break
+
+    case b:
+      h = 60 * ((g - r) / diff) + 60
+      break
+  }
+
+  const s = max === 0 ? 0 : diff / max
+  const v = max
+
+  return { h, s, v }
+}
+
+function lighten(color: string): string {
+  return lightenDarkenColor(color, 0.7, 0)
+}
+
+function darken(color: string): string {
+  return lightenDarkenColor(color, -0.6, 10)
+}
+
 export const TaskTag = (props: Props): JSX.Element => {
   const [bgColor, setBgColor] = useState(Gray200)
   const [labelColor, setLabelColor] = useState(Gray700)
@@ -55,10 +109,9 @@ export const TaskTag = (props: Props): JSX.Element => {
 
   const handleChange = (color: ColorResult) => {
     setBgColor(color.hex)
+    const hsv = rgb2hsv(color.hex)
     const lc =
-      color.hsl.l > 0.5
-        ? lightenDarkenColor(color.hex, -140)
-        : lightenDarkenColor(color.hex, 180)
+      hsv.s < 0.4 && hsv.v > 0.6 ? darken(color.hex) : lighten(color.hex)
     setLabelColor(lc)
   }
 
@@ -96,7 +149,7 @@ export const TaskTag = (props: Props): JSX.Element => {
 
   return (
     <div
-      className="inline-block px-2 ml-1 font-mono text-xs rounded-xl leading-5"
+      className="inline-block px-2 ml-1 font-mono text-xs select-none rounded-xl leading-5"
       style={{ backgroundColor: bgColor }}
       onClick={showPicker}
     >
