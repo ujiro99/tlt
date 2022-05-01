@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import TextareaAutosize from 'react-textarea-autosize';
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useStorageWatcher } from '@/hooks/useStorageWatcher'
@@ -49,12 +50,12 @@ export function TaskTextarea(): JSX.Element {
           <span>Saving...</span>
         </LoadingIcon>
       ) : null}
-      <textarea
+      <TextareaAutosize
         className=""
         onChange={onChange}
         onBlur={onBlur}
         value={text}
-      ></textarea>
+      ></TextareaAutosize>
     </div>
   )
 }

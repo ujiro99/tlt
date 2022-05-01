@@ -321,12 +321,12 @@ export function Report(): JSX.Element {
   }
 
   return (
-    <section className="h-full pt-[26px] pb-[160px] px-5 overflow-scroll tracking-wide text-gray-700 report-data">
+    <section className="pt-[34px] p-[28px] tracking-wide text-gray-700 report-data">
       <div className="report-data__content">
-        <h2 className="pb-6 text-base font-bold">Today's completed ToDos</h2>
+        <h2 className="pb-6 mt-0.5 text-base font-bold">Today's completed ToDos</h2>
         <Bar options={options} data={allData} />
 
-        <h2 className="py-6 mt-4 text-base font-bold">Total by tags</h2>
+        <h2 className="py-6 mt-5 text-base font-bold">Total by tags</h2>
         <Bar options={options} data={tagData} />
 
         <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
@@ -346,7 +346,7 @@ export function Report(): JSX.Element {
           </tbody>
         </table>
 
-        <h2 className="py-6 mt-4 text-base font-bold">Total by groups</h2>
+        <h2 className="py-6 mt-5 text-base font-bold">Total by groups</h2>
         <Bar options={options} data={groupData} />
 
         <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
