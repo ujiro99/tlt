@@ -11,6 +11,7 @@ const testParseTable = [
   ['- [ ] task title ~1.1d1h1m',       'task title', '1d3h25m', false],
   ['- [ ] task title ~30m #sp:1',      'task title', '30m',     false],
   ['- [ ] task title ~30m/2.3h #sp:1', 'task title', '30m',     false],
+  ['- [ ] task title #100',            'task title #100', '',   false],
 ]
 
 describe.each(testParseTable)(
@@ -105,6 +106,12 @@ describe(`parse tags`, () => {
 
   test(`returns no tags`, () => {
     const str = '- [ ] task title'
+    const task = Task.parse(str)
+    expect(task.tags.length).toBe(0)
+  })
+
+  test(`The number with "#" is not treated as a tag.`, () => {
+    const str = '- [ ] task title #100'
     const task = Task.parse(str)
     expect(task.tags.length).toBe(0)
   })
