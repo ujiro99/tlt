@@ -12,19 +12,7 @@ import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { dateToKey } from '@/services/util'
 
 import './Calendar.css'
-
-const modalStyles = {
-  content: {
-    top: '80px',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    padding: '0',
-    transform: 'translate(-50%, 0)',
-    border: 'none',
-  },
-}
+import styles from '../Modal.module.css'
 
 function MyCalendar(): JSX.Element {
   const [visible, setVisible] = useState(false)
@@ -74,15 +62,13 @@ function MyCalendar(): JSX.Element {
       <Modal
         isOpen={visible}
         onRequestClose={toggleCalendar}
-        style={modalStyles}
+        className={styles.ModalContent}
       >
-        <div>
-          <Calendar
-            onChange={onChange}
-            value={date}
-            tileDisabled={tileDisabled}
-          />
-        </div>
+        <Calendar
+          onChange={onChange}
+          value={date}
+          tileDisabled={tileDisabled}
+        />
       </Modal>
     </div>
   )
