@@ -93,11 +93,25 @@ describe('parse string to time', () => {
     expect(time.days).toBe(0)
   })
 
+  test('"0.5h" -> 30 minutes', () => {
+    const time = Time.parseStr('0.5h')
+    expect(time.minutes).toBe(30)
+    expect(time.hours).toBe(0)
+    expect(time.days).toBe(0)
+  })
+
   test('"1d" -> 1 days', () => {
     const time = Time.parseStr('1d')
     expect(time.minutes).toBe(0)
     expect(time.hours).toBe(0)
     expect(time.days).toBe(1)
+  })
+
+  test('"0.5d" -> 12 hours', () => {
+    const time = Time.parseStr('0.5d')
+    expect(time.minutes).toBe(0)
+    expect(time.hours).toBe(12)
+    expect(time.days).toBe(0)
   })
 
   test('"2d" -> 2 days', () => {

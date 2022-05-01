@@ -21,9 +21,7 @@ export class Task {
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)($|\s~|\s#)/
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
-  private static estimatedTimeRegexp =
-    /~(\d+[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
-
+  private static estimatedTimeRegexp = /~(\d+(?:\.\d+)?[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
   private static tagRegexp = /#(.*?)(:(\d))?(\s|$)/g
 
   // utility for creating unique Id

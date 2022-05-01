@@ -57,9 +57,14 @@ const parseTimeTable = [
   ['- [ ] task ~1d1h/1d1h',       '1d1h',   '1d1h'],
   ['- [ ] task ~1d1h1m/1d1h1m',   '1d1h1m', '1d1h1m'],
   ['- [ ] task ~1d1m/1d1m',       '1d1m',   '1d1m'],
+  ['- [ ] task ~0.5d/0.5d',       '12h',    '12h'],
   ['- [ ] task ~1h/1h',           '1h',     '1h'],
   ['- [ ] task ~1h1m/1h10m',      '1h1m',   '1h10m'],
   ['- [ ] task ~1m/1m',           '1m',     '1m'],
+  ['- [ ] task ~0.1h/1h',         '6m',     '1h'],
+  ['- [ ] task ~0.25h/1h',        '15m',    '1h'],
+  ['- [ ] task ~0.125h/1h',       '7m',     '1h'],
+  ['- [ ] task ~0.1h/0.1h',       '6m',     '6m'],
 ]
 
 describe.each(parseTimeTable)(
