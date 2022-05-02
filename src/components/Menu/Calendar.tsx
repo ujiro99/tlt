@@ -7,6 +7,7 @@ import classnames from 'classnames'
 
 import { modeState, MODE } from '@/components/Menu/Menu'
 import { RecordName } from '@/components/Menu/RecordName'
+import { Icon } from '@/components/Icon'
 import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { dateToKey } from '@/services/util'
@@ -52,9 +53,7 @@ function MyCalendar(): JSX.Element {
           'mod--disable': !isAvailable,
         })}
       >
-        <svg className="calendar__icon">
-          <use xlinkHref="/icons.svg#icon-calendar" />
-        </svg>
+        <Icon className="calendar__icon" name="calendar" />
       </button>
 
       <RecordName />
