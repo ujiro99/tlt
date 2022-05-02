@@ -1,0 +1,23 @@
+.TaskTag {
+  --shadow-color: 0, 0, 0;
+
+  @apply inline-block;
+  @apply px-2;
+  @apply ml-1;
+  @apply font-mono;
+  @apply text-xs;
+  @apply tracking-tight;
+  @apply select-none;
+  @apply rounded-xl;
+  @apply leading-5;
+  @apply transition;
+  @apply duration-300;
+  @apply ease-out;
+  @apply shadow-none;
+
+  &:hover {
+    opacity: 0.7;
+    box-shadow: 0 4px 8px -1px rgba(var(--shadow-color), 0.4),
+      0 2px 4px -2px rgba(var(--shadow-color), 0.4);
+  }
+}
