@@ -1,7 +1,6 @@
 import React, { useState, useEffect, CSSProperties } from 'react'
 import { ColorResult } from 'react-color'
 import { Tag } from '@/models/tag'
-import { lightenDarkenColor } from '@/services/util'
 import { ColorPicker, Position } from '@/components/ColorPicker'
 import { useTagColor } from '@/hooks/useTagColor'
 
@@ -11,6 +10,7 @@ type Props = {
   tag: Tag
 }
 
+const Gray50 = '#f9fafb'
 const Gray200 = '#e2e8f0'
 const Gray700 = '#334155'
 
@@ -69,14 +69,6 @@ function hex2rgb(hex: string): string {
     .join(',')
 }
 
-function lighten(color: string): string {
-  return lightenDarkenColor(color, 0.8)
-}
-
-function darken(color: string): string {
-  return lightenDarkenColor(color, -0.6, 10)
-}
-
 export const TaskTag = (props: Props): JSX.Element => {
   const tag = props.tag
   const [labelColor, setLabelColor] = useState(Gray700)
@@ -108,7 +100,7 @@ export const TaskTag = (props: Props): JSX.Element => {
 
   const updateLabelColor = (rgb: string) => {
     const hsv = hex2hsv(rgb)
-    const lc = hsv.s < 0.4 && hsv.v > 0.6 ? darken(rgb) : lighten(rgb)
+    const lc = hsv.s < 0.4 && hsv.v > 0.6 ? Gray700 : Gray50
     setLabelColor(lc)
   }
 
