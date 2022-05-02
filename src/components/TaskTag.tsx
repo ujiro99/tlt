@@ -70,7 +70,7 @@ function hex2rgb(hex: string): string {
 }
 
 function lighten(color: string): string {
-  return lightenDarkenColor(color, 0.7, 0)
+  return lightenDarkenColor(color, 0.8)
 }
 
 function darken(color: string): string {
@@ -93,6 +93,8 @@ export const TaskTag = (props: Props): JSX.Element => {
       updateLabelColor(tagRecord.colorHex)
     }
   }, [tags])
+
+  const presetColors = tags.map((t) => t.colorHex).reverse()
 
   const toString = (tag: Tag) => {
     return tag.quantity ? `${tag.name}:${tag.quantity}` : tag.name
@@ -135,8 +137,9 @@ export const TaskTag = (props: Props): JSX.Element => {
           onClick={togglePicker}
           onChange={handleChange}
           onChangeComplete={handleChange}
-          color={bgColor}
+          initialColor={bgColor}
           position={pickerPosition}
+          presetColors={presetColors}
         />
       ) : null}
     </>

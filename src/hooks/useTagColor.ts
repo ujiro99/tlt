@@ -4,7 +4,7 @@ import { atom, selector, useRecoilState } from 'recoil'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { TagRecord } from '@/models/tag'
 
-const MAX_COUNT = 100
+const MaxCount = 100
 
 const tagRecordState = atom<TagRecord[]>({
   key: 'tagRecordState',
@@ -36,20 +36,11 @@ export function useTagColor(): useTagColorReturn {
 
   const setTag = useCallback(
     (record: TagRecord) => {
-      let found = false
-      const newTags = tags.map((t) => {
-        if (t.name === record.name) {
-          found = true
-          return record
-        }
-        return t
-      })
-      if (!found) {
-        newTags.push(record)
-      }
+      const newTags = tags.filter((t) => t.name !== record.name)
+      newTags.push(record)
 
       // Limit the number of tags to save.
-      if (newTags.length > MAX_COUNT) {
+      if (newTags.length > MaxCount) {
         newTags.shift()
       }
 

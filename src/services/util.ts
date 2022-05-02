@@ -137,7 +137,11 @@ export function aggregate(tasks: Task[]): TimeTotal {
  *   var NewColor = LightenDarkenColor("#F06D06", -0.8);
  *
  */
-export function lightenDarkenColor(rgb: string, amount: number, limit=0): string {
+export function lightenDarkenColor(
+  rgb: string,
+  amount: number,
+  limit = 0,
+): string {
   let usePound = false
   if (rgb[0] === '#') {
     rgb = rgb.slice(1)
@@ -161,5 +165,15 @@ export function lightenDarkenColor(rgb: string, amount: number, limit=0): string
   if (g > upperLimit) g = upperLimit
   else if (g < lowerLimit) g = lowerLimit
 
-  return (usePound ? '#' : '') + (b | (g << 8) | (r << 16)).toString(16).padStart(6, "0")
+  return (
+    (usePound ? '#' : '') +
+    (b | (g << 8) | (r << 16)).toString(16).padStart(6, '0')
+  )
+}
+
+export function unique<T>(array: T[], equal?: (a: T, b: T) => boolean): T[] {
+  if (!equal) equal = (a, b) => a === b
+  return array.filter(
+    (val, idx, self) => self.findIndex((v) => equal(val, v)) === idx,
+  )
 }

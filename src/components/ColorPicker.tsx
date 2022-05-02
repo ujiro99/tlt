@@ -1,5 +1,6 @@
 import React, { CSSProperties } from 'react'
 import { SketchPicker, ColorResult } from 'react-color'
+import { unique } from '@/services/util'
 
 import './ColorPicker.css'
 
@@ -13,23 +14,22 @@ const Offset = {
   y: 20,
 }
 
+const PresetMax = 16
+
 const PickerStyle = {
   position: 'absolute',
 } as CSSProperties
 
 const PresetColors = [
-  '#eb144c',
+  '#e91e63',
   '#f78da7',
   '#f47373',
-  '#ff8a65',
   '#dce775',
   '#37d67a',
   '#009688',
   '#2ccce4',
-  '#0693e3',
-  '#3f51b5',
+  '#4a90e2',
   '#ba68c8',
-  '#f9fafb',
   '#d9e3f0',
   '#697689',
   '#555555',
@@ -44,8 +44,9 @@ type Props = {
   onClick: (e: React.MouseEvent) => void
   onChange: (color: ColorResult) => void
   onChangeComplete: (color: ColorResult) => void
-  color: string
+  initialColor: string
   position: Position
+  presetColors?: string[]
 }
 
 export const ColorPicker = (props: Props): JSX.Element => {
@@ -78,6 +79,14 @@ export const ColorPicker = (props: Props): JSX.Element => {
     left,
   } as CSSProperties
 
+  let presets = unique(props.presetColors) || []
+  if (presets.length < PresetMax) {
+    presets = unique(presets.concat(PresetColors))
+    if (presets.length > PresetMax) {
+      presets = presets.slice(0, PresetMax)
+    }
+  }
+
   return (
     <div
       className="color-picker__overlay"
@@ -88,10 +97,10 @@ export const ColorPicker = (props: Props): JSX.Element => {
       <div style={style} onClick={eventCancel}>
         <SketchPicker
           disableAlpha={true}
-          color={props.color}
+          color={props.initialColor}
           onChange={props.onChange}
           onChangeComplete={props.onChangeComplete}
-          presetColors={PresetColors}
+          presetColors={presets}
         />
       </div>
     </div>
