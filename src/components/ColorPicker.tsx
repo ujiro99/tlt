@@ -25,11 +25,6 @@ const PresetColors = [
   '#555555',
 ]
 
-export type Position = {
-  x: number
-  y: number
-}
-
 type Props = {
   onChange: (color: ColorResult) => void
   onChangeComplete: (color: ColorResult) => void

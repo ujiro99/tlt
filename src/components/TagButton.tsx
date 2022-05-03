@@ -63,6 +63,11 @@ function hex2rgb(hex: string): string {
     .join(',')
 }
 
+const calcLabelColor = (rgb: string): string => {
+  const hsv = hex2hsv(rgb)
+  return hsv.s < 0.4 && hsv.v > 0.6 ? Gray700 : Gray50
+}
+
 type TagButtonProps = {
   onClick: (e: React.MouseEvent, tagName: string) => void
   tag: Tag
@@ -70,26 +75,22 @@ type TagButtonProps = {
 
 export const TagButton = (props: TagButtonProps): JSX.Element => {
   const tag = props.tag
-  const [bgColor, setBgColor] = useState(Gray200)
-  const [labelColor, setLabelColor] = useState(Gray700)
   const { tags } = useTagHistory()
+  const tagRecord = tags.find((t) => t.name === tag.name)
+  const initialBg = tagRecord?.colorHex || Gray200
+  const [bgColor, setBgColor] = useState(initialBg)
+  const [labelColor, setLabelColor] = useState(calcLabelColor(initialBg))
 
   useEffect(() => {
     const tagRecord = tags.find((t) => t.name === tag.name)
     if (tagRecord) {
       setBgColor(tagRecord.colorHex)
-      updateLabelColor(tagRecord.colorHex)
+      setLabelColor(calcLabelColor(tagRecord.colorHex))
     }
   }, [tags])
 
   const toString = (tag: Tag) => {
     return tag.quantity ? `${tag.name}:${tag.quantity}` : tag.name
-  }
-
-  const updateLabelColor = (rgb: string) => {
-    const hsv = hex2hsv(rgb)
-    const lc = hsv.s < 0.4 && hsv.v > 0.6 ? Gray700 : Gray50
-    setLabelColor(lc)
   }
 
   const style = {

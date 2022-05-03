@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Tag } from '@/models/tag'
+import { useHover } from '@/hooks/useHover'
 import { TaskTag } from '@/components/TaskTag'
 import { TagPicker } from '@/components/TagPicker'
 import { Icon } from '@/components/Icon'
@@ -11,24 +12,36 @@ import './TaskTags.css'
 const TagCountMax = 2
 
 type TagMenuProps = {
-  onClick: (e: React.MouseEvent) => void
+  open: (e: MouseEvent) => void
 }
 
 function TagMenu(props: TagMenuProps): JSX.Element {
+  const [hoverRef, isHovered, event] = useHover()
+
   const click = (e: React.MouseEvent) => {
-    props.onClick(e)
+    props.open(e.nativeEvent)
     eventStop(e)
   }
 
+  useEffect(() => {
+    if (isHovered && event) {
+      props.open(event)
+    }
+  }, [isHovered])
+
   return (
-    <div className="TagMenu" onClick={click}>
+    <div
+      className="TagMenu"
+      onClick={click}
+      ref={hoverRef as React.Ref<HTMLDivElement>}
+    >
       <Icon name="more-horiz" />
     </div>
   )
 }
 
 type Props = {
-  tags: Tag[],
+  tags: Tag[]
   onChange: (tags: Tag[]) => void
 }
 
@@ -37,7 +50,7 @@ export function TaskTags(props: Props): JSX.Element {
   const [pickerVisible, setPickerVisible] = useState(false)
   const [pickerPosition, setPickerPosition] = useState<Position>()
 
-  const showPicker = (e: React.PointerEvent) => {
+  const showPicker = (e: MouseEvent) => {
     setPickerPosition({ x: e.clientX, y: e.clientY })
     setPickerVisible(true)
   }
@@ -48,7 +61,7 @@ export function TaskTags(props: Props): JSX.Element {
         {tags.slice(0, TagCountMax).map((tag) => (
           <TaskTag key={tag.name} tag={tag} />
         ))}
-        <TagMenu onClick={showPicker} />
+        <TagMenu open={showPicker} />
         {pickerVisible ? (
           <TagPicker
             position={pickerPosition}

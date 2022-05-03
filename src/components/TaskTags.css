@@ -4,10 +4,10 @@
   width: 22px;
   height: 20px;
   border-radius: 10px;
+  background-color: #d9e3f0;
+  fill: #6b7280;
 
   @apply ml-1;
-  @apply bg-gray-200;
-  @apply fill-gray-700;
   @apply transition;
   @apply duration-300;
 

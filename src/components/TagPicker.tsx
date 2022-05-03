@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { TagButton } from '@/components/TagButton'
-import { BasePicker, BasePickerProps } from '@/components/BasePicker'
+import { BasePicker, BasePickerProps, EVENT_TYPE } from '@/components/BasePicker'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { difference } from '@/services/util'
@@ -45,6 +45,7 @@ export const TagPicker = (props: Props): JSX.Element => {
       onRequestClose={props.onRequestClose}
       position={props.position}
       size={PickerSize}
+      eventType={EVENT_TYPE.HOVER}
     >
       <div className="TagPicker">
         <div className="TagPicker__current">

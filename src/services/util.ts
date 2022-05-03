@@ -185,6 +185,6 @@ export function difference<T>(a: T[], b: T[], equal: Equal<T>): T[] {
   return a.filter((va) => b.findIndex((vb) => equal(va, vb)) < 0 )
 }
 
-export function eventStop(e: React.MouseEvent): void {
+export function eventStop(e: React.MouseEvent | MouseEvent): void {
   e.stopPropagation()
 }
