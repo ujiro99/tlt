@@ -4,23 +4,46 @@ import { eventStop } from '@/services/util'
 type useHoverReturn = [
   hoverRef: React.Ref<HTMLElement>,
   isHovered: boolean,
-  event: MouseEvent
+  event: MouseEvent,
 ]
 
-export function useHover(): useHoverReturn {
+export function useHover(wait=0 /* ms */): useHoverReturn {
   const [hovered, setHovered] = useState(false)
+  const [result, setResult] = useState(false)
+  const [timeoutID, setTimeoutID] = useState<number>()
   const [event, setEvent] = useState<MouseEvent>()
   const ref = useRef<HTMLElement>(null)
 
   const handleMouseOver = (e: MouseEvent) => {
+    if (timeoutID) clearTimeout(timeoutID)
+
     setEvent(e)
     setHovered(true)
+
+    if (wait > 0) {
+      const newTimeoutId = window.setTimeout(() => {
+        setResult(true)
+        setTimeoutID(null)
+      }, wait)
+      setTimeoutID(newTimeoutId)
+    } else {
+      setResult(true)
+    }
   }
 
   const handleMouseOut = (e: MouseEvent) => {
+    clearTimeout(timeoutID)
     setEvent(e)
     setHovered(false)
+    setResult(false)
   }
+
+  useEffect(() => {
+    if(!hovered && timeoutID > 0) {
+      clearTimeout(timeoutID)
+      setTimeoutID(null)
+    }
+  }, [hovered, timeoutID])
 
   useEffect(
     () => {
@@ -36,12 +59,10 @@ export function useHover(): useHoverReturn {
     },
     [ref.current], // Recall only if ref changes
   )
-  return [ref, hovered, event]
+  return [ref, result, event]
 }
 
-type useHoverCancelReturn = [
-  hoverRef: React.Ref<HTMLElement>,
-]
+type useHoverCancelReturn = [hoverRef: React.Ref<HTMLElement>]
 
 export function useHoverCancel(): useHoverCancelReturn {
   const ref = useRef<HTMLElement>(null)

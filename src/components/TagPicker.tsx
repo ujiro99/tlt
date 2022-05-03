@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react'
+import { CSSTransition } from 'react-transition-group'
 import { TagButton } from '@/components/TagButton'
-import { BasePicker, BasePickerProps, EVENT_TYPE } from '@/components/BasePicker'
+import {
+  BasePicker,
+  BasePickerProps,
+  EVENT_TYPE,
+} from '@/components/BasePicker'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { difference } from '@/services/util'
+
+import '@/css/fadeIn.css'
 
 import './TagPicker.css'
 
@@ -13,6 +20,7 @@ const PickerSize = {
 }
 
 type Props = {
+  visible: boolean
   onChange: (tags: Tag[]) => void
   initialTags: Tag[]
 } & BasePickerProps
@@ -41,24 +49,33 @@ export const TagPicker = (props: Props): JSX.Element => {
   }
 
   return (
-    <BasePicker
-      onRequestClose={props.onRequestClose}
-      position={props.position}
-      size={PickerSize}
-      eventType={EVENT_TYPE.HOVER}
+    <CSSTransition
+      in={props.visible}
+      timeout={200}
+      classNames="fade"
+      unmountOnExit
     >
-      <div className="TagPicker">
-        <div className="TagPicker__current">
-          {currentTags.map((t) => {
-            return <TagButton tag={t} key={t.name} onClick={removeTag} />
-          })}
+      <BasePicker
+        onRequestClose={props.onRequestClose}
+        position={props.position}
+        size={PickerSize}
+        eventType={EVENT_TYPE.HOVER}
+      >
+        <div className="TagPicker">
+          <div className="TagPicker__current">
+            <span className="TagPicker__label">Current tags</span>
+            {currentTags.map((t) => {
+              return <TagButton tag={t} key={t.name} onClick={removeTag} />
+            })}
+          </div>
+          <div className="TagPicker__history">
+            <span className="TagPicker__label">Add tags</span>
+            {additionalTags.map((t) => {
+              return <TagButton tag={t} key={t.name} onClick={addTag} />
+            })}
+          </div>
         </div>
-        <div className="TagPicker__history">
-          {additionalTags.map((t) => {
-            return <TagButton tag={t} key={t.name} onClick={addTag} />
-          })}
-        </div>
-      </div>
-    </BasePicker>
+      </BasePicker>
+    </CSSTransition>
   )
 }

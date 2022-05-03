@@ -16,7 +16,7 @@ type TagMenuProps = {
 }
 
 function TagMenu(props: TagMenuProps): JSX.Element {
-  const [hoverRef, isHovered, event] = useHover()
+  const [hoverRef, isHovered, event] = useHover(200)
 
   const click = (e: React.MouseEvent) => {
     props.open(e.nativeEvent)
@@ -55,6 +55,10 @@ export function TaskTags(props: Props): JSX.Element {
     setPickerVisible(true)
   }
 
+  const closePicker = () => {
+    setPickerVisible(false)
+  }
+
   if (tags.length > TagCountMax) {
     return (
       <>
@@ -62,14 +66,13 @@ export function TaskTags(props: Props): JSX.Element {
           <TaskTag key={tag.name} tag={tag} />
         ))}
         <TagMenu open={showPicker} />
-        {pickerVisible ? (
-          <TagPicker
-            position={pickerPosition}
-            onRequestClose={() => setPickerVisible(false)}
-            onChange={props.onChange}
-            initialTags={tags}
-          />
-        ) : null}
+        <TagPicker
+          visible={pickerVisible}
+          position={pickerPosition}
+          onRequestClose={closePicker}
+          onChange={props.onChange}
+          initialTags={tags}
+        />
       </>
     )
   }

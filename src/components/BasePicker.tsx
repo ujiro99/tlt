@@ -4,11 +4,6 @@ import { eventStop } from '@/services/util'
 
 import './BasePicker.css'
 
-const Offset = {
-  x: 0,
-  y: 30,
-}
-
 const PickerStyle = {
   position: 'absolute',
 } as CSSProperties
@@ -28,6 +23,16 @@ export const EVENT_TYPE = {
   HOVER: 'HOVER',
 } as const
 export type EventType = typeof EVENT_TYPE[keyof typeof EVENT_TYPE]
+
+const TopAdjust = {
+  [EVENT_TYPE.CLICK]: 20,
+  [EVENT_TYPE.HOVER]: -16,
+}
+
+const PaddingAdjust = {
+  [EVENT_TYPE.CLICK]: 0,
+  [EVENT_TYPE.HOVER]: 40,
+}
 
 export type BasePickerProps = {
   onRequestClose: () => void
@@ -57,19 +62,26 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
     }
   }, [isHovered])
 
-  let top = Math.min(position.y, window.innerHeight - size.h - 10)
+  let paddingTop = PaddingAdjust[eventType]
+  let paddingBottom = 0
+  let top =
+    Math.min(position.y, window.innerHeight - size.h - 10) +
+    TopAdjust[eventType]
 
-  if (window.innerHeight - (position.y + size.h) < 0) {
-    top = position.y - size.h
+  if (window.innerHeight < position.y + size.h) {
+    top = position.y - size.h - TopAdjust[eventType]
+    paddingTop = 0
+    paddingBottom = PaddingAdjust[eventType]
   }
 
-  const left = Math.min(position.x + Offset.x, window.innerWidth - size.w - 20)
+  const left = Math.min(position.x, window.innerWidth - size.w - 20)
 
   const style = {
     ...PickerStyle,
     top,
     left,
-    paddingTop: `${Offset.y}px`,
+    paddingTop,
+    paddingBottom,
   } as CSSProperties
 
   return (
