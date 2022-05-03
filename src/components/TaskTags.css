@@ -1,6 +1,7 @@
 .TagMenu {
   --shadow-color: 0, 0, 0;
 
+  display: inline-block;
   width: 22px;
   height: 20px;
   border-radius: 10px;
@@ -20,5 +21,18 @@
   & > .Icon {
     width: 100%;
     height: 100%;
+  }
+}
+
+.TaskTags {
+  display: flex;
+  align-items: center;
+
+  &--hover-only {
+    visibility: hidden;
+    opacity: 0;
+    width: 0;
+    height: 20px;
+    transition: opacity ease-out 0.2s;
   }
 }

@@ -60,3 +60,9 @@
   align-items: center;
   justify-content: flex-end;
 }
+
+.task-item:hover .TaskTags--hover-only {
+  visibility: visible;
+  opacity: 1;
+  width: auto;
+}

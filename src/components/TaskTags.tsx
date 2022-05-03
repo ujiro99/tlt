@@ -46,7 +46,6 @@ type Props = {
 }
 
 export function TaskTags(props: Props): JSX.Element {
-  const tags = props.tags
   const [pickerVisible, setPickerVisible] = useState(false)
   const [pickerPosition, setPickerPosition] = useState<Position>()
 
@@ -59,29 +58,27 @@ export function TaskTags(props: Props): JSX.Element {
     setPickerVisible(false)
   }
 
-  if (tags.length > TagCountMax) {
-    return (
-      <>
-        {tags.slice(0, TagCountMax).map((tag) => (
-          <TaskTag key={tag.name} tag={tag} />
-        ))}
-        <TagMenu open={showPicker} />
-        <TagPicker
-          visible={pickerVisible}
-          position={pickerPosition}
-          onRequestClose={closePicker}
-          onChange={props.onChange}
-          initialTags={tags}
-        />
-      </>
-    )
-  }
+  const tags = props.tags.slice(0, TagCountMax)
+  const isOmit = props.tags.length > TagCountMax
 
   return (
-    <>
+    <div className="TaskTags">
+      {!isOmit && (
+        <div className="TaskTags--hover-only">
+          <TagMenu open={showPicker} />
+        </div>
+      )}
       {tags.map((tag) => (
         <TaskTag key={tag.name} tag={tag} />
       ))}
-    </>
+      {isOmit && <TagMenu open={showPicker} />}
+      <TagPicker
+        visible={pickerVisible}
+        position={pickerPosition}
+        onRequestClose={closePicker}
+        onChange={props.onChange}
+        initialTags={tags}
+      />
+    </div>
   )
 }
