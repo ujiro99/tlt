@@ -1,0 +1,21 @@
+.TagPicker {
+  width: 200px;
+  max-height: 250px;
+  padding: 12px;
+  cursor: auto;
+
+  @apply z-10;
+  @apply bg-gray-700;
+  @apply rounded-lg;
+  @apply shadow;
+
+  &__history {
+    border-top: solid 1px #9ca3af;
+    margin-top: 12px;
+    padding-top: 4px;
+
+    .TagButton {
+      margin-top: 6px;
+    }
+  }
+}

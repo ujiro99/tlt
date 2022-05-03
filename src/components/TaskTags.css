@@ -1,0 +1,24 @@
+.TagMenu {
+  --shadow-color: 0, 0, 0;
+
+  width: 22px;
+  height: 20px;
+  border-radius: 10px;
+
+  @apply ml-1;
+  @apply bg-gray-200;
+  @apply fill-gray-700;
+  @apply transition;
+  @apply duration-300;
+
+  &:hover {
+    opacity: 0.8;
+    box-shadow: 0 4px 8px -1px rgba(var(--shadow-color), 0.1),
+      0 2px 4px -2px rgba(var(--shadow-color), 0.1);
+  }
+
+  & > .Icon {
+    width: 100%;
+    height: 100%;
+  }
+}

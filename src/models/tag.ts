@@ -1,10 +1,9 @@
-export type Tag = {
+export type TagRecord = {
   name: string
-  quantity: number
   colorHex?: string
 }
 
-export type TagRecord = {
-  name: string
-  colorHex: string
-}
+export type Tag = {
+  quantity?: number
+} & TagRecord
+

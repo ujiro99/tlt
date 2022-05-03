@@ -26,12 +26,12 @@ const tagRecordState = atom<TagRecord[]>({
   ],
 })
 
-interface useTagColorReturn {
+interface useTagHistoryReturn {
   tags: TagRecord[]
   setTag: (record: TagRecord) => void
 }
 
-export function useTagColor(): useTagColorReturn {
+export function useTagHistory(): useTagHistoryReturn {
   const [tags, setTags] = useRecoilState(tagRecordState)
 
   const setTag = useCallback(

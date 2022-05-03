@@ -1,3 +1,4 @@
+import React from 'react'
 import { format } from 'date-fns'
 import { Node, NODE_TYPE } from '@/models/node'
 import type { TreeItems, FlattenedItem } from '@/components/Tree/types'
@@ -171,9 +172,19 @@ export function lightenDarkenColor(
   )
 }
 
-export function unique<T>(array: T[], equal?: (a: T, b: T) => boolean): T[] {
+type Equal<T> = (a: T, b: T) => boolean
+
+export function unique<T>(array: T[], equal?: Equal<T>): T[] {
   if (!equal) equal = (a, b) => a === b
   return array.filter(
     (val, idx, self) => self.findIndex((v) => equal(val, v)) === idx,
   )
+}
+
+export function difference<T>(a: T[], b: T[], equal: Equal<T>): T[] {
+  return a.filter((va) => b.findIndex((vb) => equal(va, vb)) < 0 )
+}
+
+export function eventStop(e: React.MouseEvent): void {
+  e.stopPropagation()
 }

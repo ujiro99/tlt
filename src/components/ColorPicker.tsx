@@ -1,24 +1,14 @@
-import React, { CSSProperties } from 'react'
+import React from 'react'
 import { SketchPicker, ColorResult } from 'react-color'
 import { unique } from '@/services/util'
-
-import './ColorPicker.css'
+import { BasePicker, BasePickerProps } from '@/components/BasePicker'
 
 const PickerSize = {
   w: 220,
   h: 300,
 }
 
-const Offset = {
-  x: 0,
-  y: 20,
-}
-
 const PresetMax = 16
-
-const PickerStyle = {
-  position: 'absolute',
-} as CSSProperties
 
 const PresetColors = [
   '#e91e63',
@@ -41,44 +31,13 @@ export type Position = {
 }
 
 type Props = {
-  onClick: (e: React.MouseEvent) => void
   onChange: (color: ColorResult) => void
   onChangeComplete: (color: ColorResult) => void
   initialColor: string
-  position: Position
   presetColors?: string[]
-}
+} & BasePickerProps
 
 export const ColorPicker = (props: Props): JSX.Element => {
-  const eventCancel = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
-
-  const handleOnClick = (e: React.MouseEvent) => {
-    props.onClick(e)
-    eventCancel(e)
-  }
-
-  let top = Math.min(
-    props.position.y + Offset.y,
-    window.innerHeight - PickerSize.h - 10,
-  )
-
-  if (window.innerHeight - (props.position.y + Offset.y + PickerSize.h) < 0) {
-    top = props.position.y - Offset.y - PickerSize.h
-  }
-
-  const left = Math.min(
-    props.position.x + Offset.x,
-    window.innerWidth - PickerSize.w - 20,
-  )
-
-  const style = {
-    ...PickerStyle,
-    top,
-    left,
-  } as CSSProperties
-
   let presets = unique(props.presetColors) || []
   if (presets.length < PresetMax) {
     presets = unique(presets.concat(PresetColors))
@@ -88,21 +47,18 @@ export const ColorPicker = (props: Props): JSX.Element => {
   }
 
   return (
-    <div
-      className="color-picker__overlay"
-      onClick={handleOnClick}
-      onDragStart={eventCancel}
-      onPointerDown={eventCancel}
+    <BasePicker
+      onRequestClose={props.onRequestClose}
+      position={props.position}
+      size={PickerSize}
     >
-      <div style={style} onClick={eventCancel}>
-        <SketchPicker
-          disableAlpha={true}
-          color={props.initialColor}
-          onChange={props.onChange}
-          onChangeComplete={props.onChangeComplete}
-          presetColors={presets}
-        />
-      </div>
-    </div>
+      <SketchPicker
+        disableAlpha={true}
+        color={props.initialColor}
+        onChange={props.onChange}
+        onChangeComplete={props.onChangeComplete}
+        presetColors={presets}
+      />
+    </BasePicker>
   )
 }
