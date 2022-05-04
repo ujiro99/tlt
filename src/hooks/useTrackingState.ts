@@ -5,7 +5,7 @@ import { nodeState, useTaskManager } from '@/hooks/useTaskManager'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
 import Log from '@/services/log'
-import { TrackingState, TimeObject } from '@/@types/state'
+import { TrackingState, TimeObject } from '@/@types/global'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 

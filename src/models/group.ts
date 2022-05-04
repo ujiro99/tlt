@@ -1,7 +1,8 @@
 import Log from '@/services/log'
 import { Tag } from '@/models/tag'
+import { IClonable } from '@/@types/global'
 
-export class Group {
+export class Group implements IClonable<Group> {
   // Regular expressions for parsing
   private static groupRegexp = /^\s*(#+) (.+?)( #|$)/
   private static tagRegexp = /#(.*?)(:(\d+))?(\s|$)/g
@@ -23,7 +24,7 @@ export class Group {
   }
 
   private static parseTags(str: string): Tag[] {
-    str = str.replace(/^\s*#+/, "")
+    str = str.replace(/^\s*#+/, '')
     const tags: Tag[] = []
     let match: RegExpExecArray
     while ((match = Group.tagRegexp.exec(str)) !== null) {
@@ -57,5 +58,11 @@ export class Group {
       str += ` ${tagStr}`
     }
     return str
+  }
+
+  public clone(): Group {
+    const n = new Group(this.title, this.level)
+    n.tags = this.tags.map((t) => ({ ...t }))
+    return n
   }
 }

@@ -1,6 +1,5 @@
 .TagPicker {
   width: 200px;
-  max-height: 250px;
   padding: 8px 12px 12px 12px;
   cursor: auto;
   @apply z-10;

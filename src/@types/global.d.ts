@@ -14,3 +14,7 @@ type TimeObject = {
   _hours: number
   _days: number
 }
+
+interface IClonable<T> {
+  clone(): T
+}
