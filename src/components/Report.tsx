@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { atom, useRecoilState } from 'recoil'
 
+import { Checkbox } from '@/components/Checkbox'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { flat } from '@/models/flattenedNode'
 import { nodeToTasks, NODE_TYPE } from '@/models/node'
@@ -10,6 +11,7 @@ import { Time } from '@/models/time'
 import { asciiBar, aggregate } from '@/services/util'
 
 import table from 'text-table'
+import './Report.css'
 
 import {
   Chart as ChartJS,
@@ -85,10 +87,14 @@ function summary(collection: TimeCollection, base: Time): TimeSummary[] {
 
 export function Report(): JSX.Element {
   const [report, setReport] = useRecoilState(reportState)
+  const [onlyCompleted, setOnlyCompleted] = useState(true)
   const manager = useTaskManager()
   const root = manager.getRoot()
-  const onlyCompleted = true
   let builder = ''
+
+  function toggleOnlyCompleted(e: React.ChangeEvent<HTMLInputElement>) {
+    setOnlyCompleted(e.target.checked)
+  }
 
   // --- All
   const tasks = nodeToTasks(root, onlyCompleted)
@@ -322,8 +328,18 @@ export function Report(): JSX.Element {
 
   return (
     <section className="pt-[34px] p-[28px] tracking-wide text-gray-700 report-data">
+      <div className="report-data__setting">
+        <label htmlFor="onlyCompleted" className="setting-item">
+          <Checkbox
+            id="onlyCompleted"
+            checked={onlyCompleted}
+            onChange={toggleOnlyCompleted}
+          />
+          <span>Completed only</span>
+        </label>
+      </div>
       <div className="report-data__content">
-        <h2 className="pb-6 mt-0.5 text-base font-bold">Today's completed ToDos</h2>
+        <h2 className="pb-6 mt-0.5 text-base font-bold">Summary</h2>
         <Bar options={options} data={allData} />
 
         <h2 className="py-6 mt-5 text-base font-bold">Total by tags</h2>
