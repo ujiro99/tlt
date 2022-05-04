@@ -51,6 +51,7 @@
     "@types/react-color": "^3.0.6",
     "@types/react-dom": "^17.0.9",
     "@types/react-modal": "^3.13.1",
+    "@types/react-transition-group": "^4.4.4",
     "@types/text-table": "^0.2.2",
     "@typescript-eslint/eslint-plugin": "^4.32.0",
     "@typescript-eslint/parser": "^4.33.0",
