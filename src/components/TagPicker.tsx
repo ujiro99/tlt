@@ -8,16 +8,11 @@ import {
 } from '@/components/BasePicker'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
-import { difference } from '@/services/util'
+import { difference, eventStop } from '@/services/util'
 
 import '@/css/fadeIn.css'
 
 import './TagPicker.css'
-
-const PickerSize = {
-  w: 200,
-  h: 250,
-}
 
 type Props = {
   visible: boolean
@@ -39,13 +34,15 @@ export const TagPicker = (props: Props): JSX.Element => {
     (a, b) => a.name === b.name,
   )
 
-  const addTag = (_: React.MouseEvent, tagName: string) => {
+  const addTag = (e: React.MouseEvent, tagName: string) => {
     const tag = tags.find((t) => t.name === tagName)
     if (tag) setCurrentTags([...currentTags, tag])
+    eventStop(e)
   }
 
-  const removeTag = (_: React.MouseEvent, tagName: string) => {
+  const removeTag = (e: React.MouseEvent, tagName: string) => {
     setCurrentTags(currentTags.filter((t) => t.name !== tagName))
+    eventStop(e)
   }
 
   return (
@@ -58,7 +55,6 @@ export const TagPicker = (props: Props): JSX.Element => {
       <BasePicker
         onRequestClose={props.onRequestClose}
         position={props.position}
-        size={PickerSize}
         eventType={EVENT_TYPE.HOVER}
       >
         <div className="TagPicker">

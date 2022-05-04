@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { eventStop } from '@/services/util'
 
 type useHoverReturn = [
-  hoverRef: React.Ref<HTMLElement>,
+  hoverRef: React.RefObject<HTMLElement>,
   isHovered: boolean,
   event: MouseEvent,
 ]
@@ -62,7 +62,7 @@ export function useHover(wait=0 /* ms */): useHoverReturn {
   return [ref, result, event]
 }
 
-type useHoverCancelReturn = [hoverRef: React.Ref<HTMLElement>]
+type useHoverCancelReturn = [hoverRef: React.RefObject<HTMLElement>]
 
 export function useHoverCancel(): useHoverCancelReturn {
   const ref = useRef<HTMLElement>(null)

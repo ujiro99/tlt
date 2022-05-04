@@ -43,11 +43,17 @@ export type BasePickerProps = {
 }
 
 export const BasePicker = (props: BasePickerProps): JSX.Element => {
-  const size = props.size || { w: 0, h: 0 }
   const position = props.position || { x: 0, y: 0 }
   const eventType = props.eventType || EVENT_TYPE.CLICK
   const [hoverRef, isHovered] = useHover()
   const [hoverCancelRef] = useHoverCancel()
+
+  let size = props.size || { w: 0, h: 0}
+  const node = hoverCancelRef.current
+  if (node) {
+    // overwrite with actual size
+    size = { w: node.offsetWidth, h: node.offsetHeight }
+  }
 
   const onClickOverlay = (e: React.MouseEvent) => {
     if (eventType === EVENT_TYPE.CLICK) {
@@ -90,13 +96,13 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
       onClick={onClickOverlay}
       onDragStart={eventStop}
       onPointerDown={eventStop}
-      ref={hoverRef as React.Ref<HTMLDivElement>}
+      ref={hoverRef as React.RefObject<HTMLDivElement>}
     >
       <div
         className="BasePicker__content"
         style={style}
         onClick={eventStop}
-        ref={hoverCancelRef as React.Ref<HTMLDivElement>}
+        ref={hoverCancelRef as React.RefObject<HTMLDivElement>}
       >
         {props.children}
       </div>
