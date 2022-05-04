@@ -12,11 +12,6 @@ import './TagMenu.css'
 export type TagMenuProps = {
   tags: Tag[]
   onChangeTags: (tags: Tag[]) => void
-  onChangePicker?: (visible: boolean) => void
-}
-
-const noop = () => {
-  /* nothing to do */
 }
 
 export function TagMenu(props: TagMenuProps): JSX.Element {
@@ -24,18 +19,16 @@ export function TagMenu(props: TagMenuProps): JSX.Element {
   const [pickerPosition, setPickerPosition] = useState<Position>()
   const [hoverRef, isHovered, event] = useHover(200)
 
-  const onChangePicker = props.onChangePicker || noop
-
   const showPicker = (e: React.MouseEvent | MouseEvent) => {
+    console.log('showPicker')
     eventStop(e)
     setPickerPosition({ x: e.clientX, y: e.clientY })
     setPickerVisible(true)
-    onChangePicker(true)
   }
 
   const closePicker = () => {
+    console.log('closePicker')
     setPickerVisible(false)
-    onChangePicker(false)
   }
 
   useEffect(() => {
