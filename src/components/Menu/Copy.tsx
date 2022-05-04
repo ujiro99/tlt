@@ -3,6 +3,7 @@ import { useRecoilValue } from 'recoil'
 
 import { Tooltip } from '@/components/Tooltip'
 import { modeState, MODE } from '@/components/Menu/Menu'
+import { Icon } from '@/components/Icon'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { sleep } from '@/services/util'
 import { reportState } from '@/components/Report'
@@ -54,9 +55,7 @@ export function Copy(): JSX.Element {
       onMouseOver={hover}
       onMouseLeave={hover}
     >
-      <svg className="icon-button__icon">
-        <use xlinkHref="/icons.svg#icon-copy" />
-      </svg>
+      <Icon className="icon-button__icon" name="copy" />
       <Tooltip
         show={tooltipVisible}
         location={'bottom'}

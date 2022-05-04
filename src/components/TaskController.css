@@ -1,5 +1,7 @@
 .task-controll {
   display: none;
+  width: 5.8rem;
+  right: -8px;
   background: rgb(249, 250, 251);
   background: linear-gradient(
     90deg,
@@ -9,14 +11,15 @@
   );
 
   @apply absolute;
-  @apply w-20;
   @apply h-full;
   @apply top-0;
-  @apply right-0;
   @apply text-right;
-  @apply pr-[12px];
   @apply select-none;
   @apply cursor-default;
+
+  .TagMenu {
+    margin-left: 4px;
+  }
 }
 
 .controll-button {

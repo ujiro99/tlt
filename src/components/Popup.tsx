@@ -34,13 +34,13 @@ function TaskList() {
     case MODE.EDIT:
       return <TaskTextarea />
     case MODE.SHOW:
-      return <MarkdownHtml />
+      return <ToDo />
     case MODE.REPORT:
       return <Report />
   }
 }
 
-function MarkdownHtml() {
+function ToDo() {
   return (
     <div className="task-container">
       <SortableTree />

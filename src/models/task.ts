@@ -1,6 +1,7 @@
 import Log from '@/services/log'
 import { Tag } from '@/models/tag'
 import { Time } from '@/models/time'
+import { IClonable } from '@/@types/global'
 
 /**
  * Represent the status of the Task.
@@ -12,7 +13,7 @@ const TASK_STATE = {
 }
 type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
 
-export class Task {
+export class Task implements IClonable<Task> {
   // for unique Id
   private static taskId = 0
 

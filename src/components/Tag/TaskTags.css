@@ -1,0 +1,19 @@
+.TaskTags {
+  display: flex;
+  align-items: center;
+
+  .Icon {
+    display: inline-block;
+    width: 20px;
+    height: 18px;
+    padding: 1px;
+    border-radius: 10px;
+    background-color: #d9e3f0;
+    fill: #6b7280;
+    margin-left: 4px;
+  }
+
+  &__more {
+    display: contents;
+  }
+}

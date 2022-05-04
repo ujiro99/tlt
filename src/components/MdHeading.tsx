@@ -2,14 +2,17 @@ import React from 'react'
 import classnames from 'classnames'
 
 import { useEditable } from '@/hooks/useEditable'
+import { useTaskManager } from '@/hooks/useTaskManager'
 import { LineEditor } from '@/components/LineEditor'
-import { TaskTag } from '@/components/TaskTag'
+import { TaskTag } from '@/components/Tag/TaskTag'
+import { TagMenu } from '@/components/Tag/TagMenu'
 import { Node } from '@/models/node'
 import { Group } from '@/models/group'
+import { Tag } from '@/models/tag'
 import Log from '@/services/log'
 
-const baseClass =
-  'w-full font-bold relative text-gray-700 leading-normal tracking-wide cursor-pointer px-3 group item-color flex items-center'
+import './Heading.css'
+
 const otherClass = {
   h1: 'text-base pt-4 pb-3',
   h2: 'text-base pt-4 pb-3',
@@ -27,6 +30,7 @@ type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 
 export const MdHeading = (props: NodeProps): JSX.Element => {
   Log.v(props.node.data)
+  const manager = useTaskManager()
   const line = props.node.line
   const group = props.node.data as Group
   const level = group.level
@@ -34,11 +38,18 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
 
   const TagName = (level <= 6 ? `h${level}` : `h6`) as HeadingTag
 
+  const onChangeTags = (tags: Tag[]) => {
+    const newNode = props.node.clone()
+    const group = newNode.data as Group
+    group.tags = tags
+    manager.setNodeByLine(newNode, line)
+  }
+
   const [isEditing, focusOrEdit] = useEditable(line)
   if (isEditing) {
     return (
       <LineEditor
-        className={classnames(baseClass, otherClass[TagName])}
+        className={classnames('Heading', otherClass[TagName])}
         line={line}
       />
     )
@@ -46,7 +57,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   return (
     <div
       tabIndex={0}
-      className={classnames(baseClass, otherClass[TagName])}
+      className={classnames('Heading', otherClass[TagName])}
       onClick={focusOrEdit}
     >
       <TagName>{group.title}</TagName>
@@ -58,6 +69,10 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
           ))}
         </div>
       ) : null}
+
+      <div className="Heading__tagmenu">
+        <TagMenu tags={group.tags} onChangeTags={onChangeTags} />
+      </div>
     </div>
   )
 }

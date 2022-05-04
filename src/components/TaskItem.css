@@ -23,6 +23,10 @@
     @apply items-center;
   }
 
+  &__times {
+    display: flex;
+  }
+
   .counter,
   &__estimated-time {
     @apply ml-3;
@@ -55,8 +59,10 @@
   }
 }
 
-.task-item:hover .task-controll {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+.task-item:hover {
+  .task-controll {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
 }

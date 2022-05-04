@@ -1,0 +1,31 @@
+.TagPicker {
+  width: 200px;
+  padding: 8px 12px 12px 12px;
+  cursor: auto;
+  text-align: left;
+
+  @apply z-10;
+  @apply bg-gray-700;
+  @apply rounded-lg;
+  @apply shadow-md;
+
+  &__history {
+    border-top: solid 1px #9ca3af;
+    margin-top: 12px;
+    padding-top: 6px;
+    max-height: 176px;
+    overflow-y: scroll;
+  }
+
+  .TagButton {
+    margin-top: 6px;
+  }
+
+  &__label {
+    @apply font-mono;
+    color: #e2e8f0;
+    font-size: 10px;
+    display: block;
+    margin: 0 0 2px 4px;
+  }
+}

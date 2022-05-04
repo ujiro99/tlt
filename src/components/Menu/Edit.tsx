@@ -5,6 +5,7 @@ import classnames from 'classnames'
 import { useTrackingState } from '@/hooks/useTrackingState'
 import { modeState, MODE } from './Menu'
 import { Tooltip } from '@/components/Tooltip'
+import { Icon } from '@/components/Icon'
 
 import './IconButton.css'
 
@@ -15,7 +16,7 @@ export function Edit(): JSX.Element {
   const [mode, setMode] = useRecoilState(modeState)
   const isEdit = mode === MODE.EDIT
   const label = isEdit ? 'Save' : 'Edit'
-  const icon = isEdit ? 'icon-save' : 'icon-edit'
+  const icon = isEdit ? 'save' : 'edit'
   const isVisible = mode === MODE.SHOW || mode === MODE.EDIT
 
   const toggleMode = () => {
@@ -51,9 +52,7 @@ export function Edit(): JSX.Element {
       onMouseOver={hover}
       onMouseLeave={hover}
     >
-      <svg className="icon-button__icon">
-        <use xlinkHref={`/icons.svg#${icon}`} />
-      </svg>
+      <Icon className="icon-button__icon" name={icon} />
       <Tooltip
         show={labelVisible}
         location={'top'}

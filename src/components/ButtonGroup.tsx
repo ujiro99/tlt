@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 
+import { Icon } from '@/components/Icon'
 import styles from './ButtonGroup.module.css'
 
 type ButtonData = {
@@ -56,9 +57,7 @@ export function ButtonGroup(props: ButtonGroupProps): JSX.Element {
               onClick={onClick}
               ref={_selected ? ref : null}
             >
-              <svg className={styles.icon}>
-                <use xlinkHref={`/icons.svg#${button.iconName}`} />
-              </svg>
+              <Icon className={styles.icon} name={button.iconName} />
               <span className={styles.label}>{button.label}</span>
             </button>
           )

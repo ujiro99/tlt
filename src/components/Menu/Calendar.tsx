@@ -7,24 +7,13 @@ import classnames from 'classnames'
 
 import { modeState, MODE } from '@/components/Menu/Menu'
 import { RecordName } from '@/components/Menu/RecordName'
+import { Icon } from '@/components/Icon'
 import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { dateToKey } from '@/services/util'
 
 import './Calendar.css'
-
-const modalStyles = {
-  content: {
-    top: '80px',
-    left: '50%',
-    right: 'auto',
-    bottom: 'auto',
-    marginRight: '-50%',
-    padding: '0',
-    transform: 'translate(-50%, 0)',
-    border: 'none',
-  },
-}
+import styles from '../Modal.module.css'
 
 function MyCalendar(): JSX.Element {
   const [visible, setVisible] = useState(false)
@@ -64,9 +53,7 @@ function MyCalendar(): JSX.Element {
           'mod--disable': !isAvailable,
         })}
       >
-        <svg className="calendar__icon">
-          <use xlinkHref="/icons.svg#icon-calendar" />
-        </svg>
+        <Icon className="calendar__icon" name="calendar" />
       </button>
 
       <RecordName />
@@ -74,15 +61,13 @@ function MyCalendar(): JSX.Element {
       <Modal
         isOpen={visible}
         onRequestClose={toggleCalendar}
-        style={modalStyles}
+        className={styles.ModalContent}
       >
-        <div>
-          <Calendar
-            onChange={onChange}
-            value={date}
-            tileDisabled={tileDisabled}
-          />
-        </div>
+        <Calendar
+          onChange={onChange}
+          value={date}
+          tileDisabled={tileDisabled}
+        />
       </Modal>
     </div>
   )

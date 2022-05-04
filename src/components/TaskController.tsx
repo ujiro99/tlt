@@ -2,14 +2,16 @@ import React, { useState } from 'react'
 import classnames from 'classnames'
 import { isToday } from 'date-fns'
 
-import '@/components/TaskController.css'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { Tooltip } from '@/components/Tooltip'
+import { TagMenu, TagMenuProps } from '@/components/Tag/TagMenu'
 import { sleep } from '@/services/util'
+
+import '@/components/TaskController.css'
 
 type TaskControllerProps = {
   isComplete: boolean
-} & PlayStopProps
+} & PlayStopProps & TagMenuProps
 
 type PlayStopProps = {
   onClickStart: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -87,6 +89,7 @@ export function TaskController(props: TaskControllerProps): JSX.Element {
   return (
     !props.isComplete && (
       <div className="task-controll" onMouseDown={stopPropagation}>
+        <TagMenu {...props} />
         <PlayStopButton {...props} />
       </div>
     )

@@ -4,13 +4,14 @@ import classnames from 'classnames'
 import Log from '@/services/log'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTrackingState } from '@/hooks/useTrackingState'
-import { Task } from '@/models/task'
+import { useEditable } from '@/hooks/useEditable'
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
 import { TaskController } from '@/components/TaskController'
-import { TaskTag } from '@/components/TaskTag'
+import { TaskTags } from '@/components/Tag/TaskTags'
 import { LineEditor } from '@/components/LineEditor'
-import { useEditable } from '@/hooks/useEditable'
+import { Task } from '@/models/task'
+import { Tag } from '@/models/tag'
 
 import '@/components/TaskItem.css'
 
@@ -41,7 +42,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const isTracking = tracking == null ? false : tracking.isTracking
   const id = `check-${task.id}`
   const hasEstimatedTime = !task.estimatedTimes.isEmpty()
-  const hasTags = task.tags.length > 0
 
   Log.v(`${line} ${id} ${isTracking ? 'tracking' : 'stop'}`)
 
@@ -113,6 +113,13 @@ export const TaskItem: React.FC<TaskItemProps> = (
     focusOrEdit()
   }
 
+  const onChangeTags = (tags: Tag[]) => {
+    const newNode = node.clone()
+    const newTask = newNode.data as Task
+    newTask.tags = tags
+    manager.setNodeByLine(newNode, line)
+  }
+
   const taskItemClass = classnames(
     {
       'task-item--running': isTracking,
@@ -144,32 +151,30 @@ export const TaskItem: React.FC<TaskItemProps> = (
       <div className="task-item__label">
         <span className="ml-2">{task.title}</span>
       </div>
-      {hasTags ? (
-        <div className="task-item__tags">
-          {task.tags.map((tag) => (
-            <TaskTag key={tag.name} tag={tag} />
-          ))}
-        </div>
-      ) : null}
-      {isTracking ? (
-        <Counter startTime={tracking.elapsedTime} />
-      ) : !task.actualTimes.isEmpty() ? (
-        <CounterStopped startTime={task.actualTimes} />
-      ) : null}
-      {hasEstimatedTime ? (
-        <p className="font-mono text-xs task-item__estimated-time">
-          {(!isTracking) && task.actualTimes.isEmpty() ? (
-            <span >-</span>
-          ) : null}
-          <span className="mx-1">/</span>
-          <span>{task.estimatedTimes.toString()}</span>
-        </p>
-      ) : null}
+      <div className="task-item__tags">
+        <TaskTags tags={task.tags} />
+      </div>
+      <div className="task-item__times">
+        {isTracking ? (
+          <Counter startTime={tracking.elapsedTime} />
+        ) : !task.actualTimes.isEmpty() ? (
+          <CounterStopped startTime={task.actualTimes} />
+        ) : null}
+        {hasEstimatedTime ? (
+          <p className="font-mono text-xs task-item__estimated-time">
+            {!isTracking && task.actualTimes.isEmpty() ? <span>-</span> : null}
+            <span className="mx-1">/</span>
+            <span>{task.estimatedTimes.toString()}</span>
+          </p>
+        ) : null}
+      </div>
       <TaskController
         onClickStart={startTracking}
         onClickStop={stopTracking}
         isTracking={isTracking}
         isComplete={task.isComplete()}
+        tags={task.tags}
+        onChangeTags={onChangeTags}
       />
     </div>
   )

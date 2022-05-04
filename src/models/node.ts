@@ -3,6 +3,7 @@ import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import Log from '@/services/log'
 import { flat } from './flattenedNode'
+import { IClonable } from '@/@types/global'
 
 /**
  * Represent types of the Node.
@@ -25,6 +26,12 @@ function hasProperties<K extends string>(
   return x instanceof Object && name.every((prop) => prop in x)
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isClonable<T>(arg: any): arg is IClonable<T> {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+  return arg && arg.clone !== undefined;
+}
+
 export interface INode {
   type: NodeType
   line: number
@@ -39,7 +46,7 @@ export interface INode {
 
 type Predicate = (n: Node) => boolean
 
-export class Node implements TreeItem, INode {
+export class Node implements TreeItem, INode, IClonable<INode> {
   public type: NodeType
   public line: number
   public data: Task | Group | string
@@ -91,7 +98,7 @@ export class Node implements TreeItem, INode {
     c.id = this.id
     c.children = [...this.children]
     c.collapsed = this.collapsed
-    if (this.data instanceof Task) {
+    if (isClonable(this.data)) {
       c.data = this.data.clone()
     }
     return c

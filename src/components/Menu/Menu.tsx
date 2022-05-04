@@ -41,12 +41,12 @@ export function Menu(): JSX.Element {
     {
       name: MODE.SHOW,
       label: 'ToDo',
-      iconName: 'icon-check',
+      iconName: 'check',
     },
     {
       name: MODE.REPORT,
       label: 'Report',
-      iconName: 'icon-assessment',
+      iconName: 'assessment',
     },
   ]
 
