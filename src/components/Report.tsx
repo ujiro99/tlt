@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { atom, useRecoilState } from 'recoil'
+import { color } from 'd3-color'
 
 import { Checkbox } from '@/components/Checkbox'
 import { useTaskManager } from '@/hooks/useTaskManager'
+import { useTagHistory } from '@/hooks/useTagHistory'
 import { flat } from '@/models/flattenedNode'
 import { nodeToTasks, NODE_TYPE } from '@/models/node'
 import { Tag } from '@/models/tag'
@@ -21,6 +23,8 @@ import {
   Title,
   Tooltip,
   Legend,
+  TooltipItem,
+  ChartType,
 } from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { Bar } from 'react-chartjs-2'
@@ -36,6 +40,16 @@ ChartJS.register(
 )
 
 const BarLength = 40
+
+const labels = ['actual', 'estimate']
+
+const colors = {
+  gray200: 'rgb(229, 231, 235)',
+  gray400: 'rgb(156, 163, 175)',
+  gray500: 'rgb(107, 114, 128)',
+  blue: 'rgb(3, 169, 244)',
+  orange: 'rgb(255, 138, 101)',
+}
 
 /**
  * Report text.
@@ -85,15 +99,27 @@ function summary(collection: TimeCollection, base: Time): TimeSummary[] {
   return arr
 }
 
+function addOpacity(colorStr: string, opacity: number): string {
+  const clr = color(colorStr)
+  clr.opacity = opacity
+  return clr.toString()
+}
+
 export function Report(): JSX.Element {
   const [report, setReport] = useRecoilState(reportState)
   const [onlyCompleted, setOnlyCompleted] = useState(true)
+  const { tags } = useTagHistory()
   const manager = useTaskManager()
   const root = manager.getRoot()
   let builder = ''
 
   function toggleOnlyCompleted(e: React.ChangeEvent<HTMLInputElement>) {
     setOnlyCompleted(e.target.checked)
+  }
+
+  function findColor(tagName: string): string {
+    const t = tags.find((t) => t.name === tagName)
+    return t?.colorHex || colors.gray400
   }
 
   // --- All
@@ -231,28 +257,18 @@ export function Report(): JSX.Element {
 
   setReport(builder)
 
-  const labels = ['actual', 'estimate']
-  const colors = {
-    gray200: 'rgb(229, 231, 235)',
-    gray400: 'rgb(156, 163, 175)',
-    gray500: 'rgb(107, 114, 128)',
-  }
-
   const options = {
     indexAxis: 'y' as const,
     responsive: true,
-    elements: {
-      bar: {
-        borderWidth: 1,
-        borderColor: colors.gray500,
-      },
-    },
+    maintainAspectRatio: false,
+    barThickness: 30,
     scales: {
       x: {
         ticks: {
           callback: function (value: number) {
-            return Time.parseHour(value).toString()
+            return `${Time.parseHour(value).toHours()}h`
           },
+          stepSize: 0.5, // 30min
         },
       },
     },
@@ -265,9 +281,10 @@ export function Report(): JSX.Element {
       },
       tooltip: {
         callbacks: {
-          label: function (context) {
-            const value = context.raw
-            return Time.parseHour(value).toString()
+          label: function (context: TooltipItem<ChartType>) {
+            const value = context.raw as number
+            const label = context.dataset.label || context.label
+            return `${label}: ${Time.parseHour(value).toString()}`
           },
         },
       },
@@ -289,7 +306,7 @@ export function Report(): JSX.Element {
           if (l === 'estimate') time = all.estimate
           return time.toHours()
         }),
-        backgroundColor: [colors.gray200, colors.gray400],
+        backgroundColor: [addOpacity(colors.blue, 0.5), addOpacity(colors.orange, 0.5)],
       },
     ],
   }
@@ -300,12 +317,12 @@ export function Report(): JSX.Element {
       {
         label: 'actual',
         data: tagDetails.map((t) => t[1].toHours()),
-        backgroundColor: colors.gray200,
+        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.4)),
       },
       {
         label: 'estimate',
         data: tagDetails.map((t) => t[2].toHours()),
-        backgroundColor: colors.gray400,
+        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.8)),
       },
     ],
   }
@@ -316,12 +333,12 @@ export function Report(): JSX.Element {
       {
         label: 'actual',
         data: groupDetails.map((g) => g[1].toHours()),
-        backgroundColor: colors.gray200,
+        backgroundColor: addOpacity(colors.blue, 0.5),
       },
       {
         label: 'estimate',
         data: groupDetails.map((g) => g[2].toHours()),
-        backgroundColor: colors.gray400,
+        backgroundColor: addOpacity(colors.orange, 0.5),
       },
     ],
   }
@@ -340,10 +357,25 @@ export function Report(): JSX.Element {
       </div>
       <div className="report-data__content">
         <h2 className="pb-6 mt-0.5 text-base font-bold">Summary</h2>
-        <Bar options={options} data={allData} />
+
+        <div
+          className="chart-container"
+          style={{ position: 'relative', height: '25vh', width: '85vw' }}
+        >
+          <Bar options={options} data={allData} />
+        </div>
 
         <h2 className="py-6 mt-5 text-base font-bold">Total by tags</h2>
-        <Bar options={options} data={tagData} />
+        <div
+          className="chart-container"
+          style={{
+            position: 'relative',
+            height: `${tagDetails.length * 14 + 6}vh`,
+            width: '85vw',
+          }}
+        >
+          <Bar options={options} data={tagData} />
+        </div>
 
         <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
           <tbody>
@@ -363,7 +395,16 @@ export function Report(): JSX.Element {
         </table>
 
         <h2 className="py-6 mt-5 text-base font-bold">Total by groups</h2>
-        <Bar options={options} data={groupData} />
+        <div
+          className="chart-container"
+          style={{
+            position: 'relative',
+            height: `${groupDetails.length * 14 + 6}vh`,
+            width: '85vw',
+          }}
+        >
+          <Bar options={options} data={groupData} />
+        </div>
 
         <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
           <tbody>
