@@ -123,6 +123,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const taskItemClass = classnames(
     {
       'task-item--running': isTracking,
+      'task-item--complete': task.isComplete(),
     },
     ['task-item', 'item-color'],
   )

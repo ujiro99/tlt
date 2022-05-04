@@ -57,7 +57,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   return (
     <div
       tabIndex={0}
-      className={classnames('Heading', otherClass[TagName])}
+      className={classnames('Heading', 'item-color', otherClass[TagName])}
       onClick={focusOrEdit}
     >
       <TagName>{group.title}</TagName>
