@@ -1,0 +1,25 @@
+.Heading {
+  @apply w-full;
+  @apply font-bold;
+  @apply relative;
+  @apply text-gray-700;
+  @apply leading-normal;
+  @apply tracking-wide;
+  @apply cursor-pointer;
+  @apply px-3;
+  @apply flex;
+  @apply items-center;
+
+  &__tagmenu {
+    margin-left: 4px;
+    height: 22px;
+    opacity: 0;
+
+    @apply duration-200;
+    @apply transition-opacity;
+  }
+
+  &:hover > &__tagmenu {
+    opacity: 1;
+  }
+}

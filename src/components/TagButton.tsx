@@ -1,6 +1,7 @@
 import React, { useState, useEffect, CSSProperties } from 'react'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
+import { tag2str } from '@/services/util'
 
 import './TagButton.css'
 
@@ -89,10 +90,6 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
     }
   }, [tags])
 
-  const toString = (tag: Tag) => {
-    return tag.quantity ? `${tag.name}:${tag.quantity}` : tag.name
-  }
-
   const style = {
     backgroundColor: bgColor,
     '--shadow-color': hex2rgb(bgColor),
@@ -105,7 +102,7 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
       style={style}
       onClick={(e) => props.onClick(e, tag.name)}
     >
-      <span style={{ color: labelColor }}>{toString(tag)}</span>
+      <span style={{ color: labelColor }}>{tag2str(tag)}</span>
     </button>
   )
 }

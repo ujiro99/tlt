@@ -4,6 +4,7 @@ import { Node, NODE_TYPE } from '@/models/node'
 import type { TreeItems, FlattenedItem } from '@/components/Tree/types'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
+import { Tag } from '@/models/tag'
 import Log from '@/services/log'
 
 /**
@@ -182,9 +183,13 @@ export function unique<T>(array: T[], equal?: Equal<T>): T[] {
 }
 
 export function difference<T>(a: T[], b: T[], equal: Equal<T>): T[] {
-  return a.filter((va) => b.findIndex((vb) => equal(va, vb)) < 0 )
+  return a.filter((va) => b.findIndex((vb) => equal(va, vb)) < 0)
 }
 
 export function eventStop(e: React.MouseEvent | MouseEvent): void {
   e.stopPropagation()
+}
+
+export function tag2str(tag: Tag): string {
+  return tag.quantity ? `${tag.name}:${tag.quantity}` : tag.name
 }

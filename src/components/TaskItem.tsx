@@ -152,7 +152,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
         <span className="ml-2">{task.title}</span>
       </div>
       <div className="task-item__tags">
-        <TaskTags tags={task.tags} onChange={onChangeTags} />
+        <TaskTags tags={task.tags} />
       </div>
       <div className="task-item__times">
         {isTracking ? (
@@ -173,6 +173,8 @@ export const TaskItem: React.FC<TaskItemProps> = (
         onClickStop={stopTracking}
         isTracking={isTracking}
         isComplete={task.isComplete()}
+        tags={task.tags}
+        onChangeTags={onChangeTags}
       />
     </div>
   )

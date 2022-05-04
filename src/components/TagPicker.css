@@ -2,6 +2,8 @@
   width: 200px;
   padding: 8px 12px 12px 12px;
   cursor: auto;
+  text-align: left;
+
   @apply z-10;
   @apply bg-gray-700;
   @apply rounded-lg;

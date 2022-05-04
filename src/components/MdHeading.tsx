@@ -5,14 +5,14 @@ import { useEditable } from '@/hooks/useEditable'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { LineEditor } from '@/components/LineEditor'
 import { TaskTag } from '@/components/TaskTag'
-import { TagMenu } from '@/components/TaskTags'
+import { TagMenu } from '@/components/TagMenu'
 import { Node } from '@/models/node'
 import { Group } from '@/models/group'
 import { Tag } from '@/models/tag'
 import Log from '@/services/log'
 
-const baseClass =
-  'w-full font-bold relative text-gray-700 leading-normal tracking-wide cursor-pointer px-3 group item-color flex items-center'
+import './Heading.css'
+
 const otherClass = {
   h1: 'text-base pt-4 pb-3',
   h2: 'text-base pt-4 pb-3',
@@ -49,7 +49,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   if (isEditing) {
     return (
       <LineEditor
-        className={classnames(baseClass, otherClass[TagName])}
+        className={classnames('Heading', otherClass[TagName])}
         line={line}
       />
     )
@@ -57,7 +57,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   return (
     <div
       tabIndex={0}
-      className={classnames(baseClass, otherClass[TagName])}
+      className={classnames('Heading', otherClass[TagName])}
       onClick={focusOrEdit}
     >
       <TagName>{group.title}</TagName>
@@ -70,7 +70,9 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
         </div>
       ) : null}
 
-      <TagMenu tags={group.tags} onChange={onChangeTags} />
+      <div className="Heading__tagmenu">
+        <TagMenu tags={group.tags} onChangeTags={onChangeTags} />
+      </div>
     </div>
   )
 }
