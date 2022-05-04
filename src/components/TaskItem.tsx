@@ -154,18 +154,20 @@ export const TaskItem: React.FC<TaskItemProps> = (
       <div className="task-item__tags">
         <TaskTags tags={task.tags} onChange={onChangeTags} />
       </div>
-      {isTracking ? (
-        <Counter startTime={tracking.elapsedTime} />
-      ) : !task.actualTimes.isEmpty() ? (
-        <CounterStopped startTime={task.actualTimes} />
-      ) : null}
-      {hasEstimatedTime ? (
-        <p className="font-mono text-xs task-item__estimated-time">
-          {!isTracking && task.actualTimes.isEmpty() ? <span>-</span> : null}
-          <span className="mx-1">/</span>
-          <span>{task.estimatedTimes.toString()}</span>
-        </p>
-      ) : null}
+      <div className="task-item__times">
+        {isTracking ? (
+          <Counter startTime={tracking.elapsedTime} />
+        ) : !task.actualTimes.isEmpty() ? (
+          <CounterStopped startTime={task.actualTimes} />
+        ) : null}
+        {hasEstimatedTime ? (
+          <p className="font-mono text-xs task-item__estimated-time">
+            {!isTracking && task.actualTimes.isEmpty() ? <span>-</span> : null}
+            <span className="mx-1">/</span>
+            <span>{task.estimatedTimes.toString()}</span>
+          </p>
+        ) : null}
+      </div>
       <TaskController
         onClickStart={startTracking}
         onClickStop={stopTracking}

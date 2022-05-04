@@ -1,5 +1,7 @@
 .task-controll {
   display: none;
+  width: 3.4rem;
+  padding-right: 4px;
   background: rgb(249, 250, 251);
   background: linear-gradient(
     90deg,
@@ -9,12 +11,10 @@
   );
 
   @apply absolute;
-  @apply w-16;
   @apply h-full;
   @apply top-0;
   @apply right-0;
   @apply text-right;
-  @apply pr-[8px];
   @apply select-none;
   @apply cursor-default;
 }

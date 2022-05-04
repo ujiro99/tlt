@@ -23,6 +23,10 @@
     @apply items-center;
   }
 
+  &__times {
+    display: flex;
+  }
+
   .counter,
   &__estimated-time {
     @apply ml-3;
@@ -55,14 +59,20 @@
   }
 }
 
-.task-item:hover .task-controll {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
+.task-item:hover {
+  .task-item__times {
+    min-width: 2.4rem;
+  }
 
-.task-item:hover .TaskTags--hover-only {
-  visibility: visible;
-  opacity: 1;
-  width: auto;
+  .task-controll {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .TaskTags--hover-only {
+    visibility: visible;
+    opacity: 1;
+    width: auto;
+  }
 }

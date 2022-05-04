@@ -77,7 +77,7 @@ export function TaskTags(props: Props): JSX.Element {
         position={pickerPosition}
         onRequestClose={closePicker}
         onChange={props.onChange}
-        initialTags={tags}
+        initialTags={props.tags} // Not omitted here.
       />
     </div>
   )
