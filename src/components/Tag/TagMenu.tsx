@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import classnames from 'classnames'
 import { useHover } from '@/hooks/useHover'
-import { TagPicker } from '@/components/TagPicker'
+import { TagPicker } from '@/components/Tag/TagPicker'
 import { Icon } from '@/components/Icon'
 import { Position } from '@/components/BasePicker'
 import { eventStop } from '@/services/util'

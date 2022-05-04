@@ -4,7 +4,7 @@ import { isToday } from 'date-fns'
 
 import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { Tooltip } from '@/components/Tooltip'
-import { TagMenu, TagMenuProps } from '@/components/TagMenu'
+import { TagMenu, TagMenuProps } from '@/components/Tag/TagMenu'
 import { sleep } from '@/services/util'
 
 import '@/components/TaskController.css'

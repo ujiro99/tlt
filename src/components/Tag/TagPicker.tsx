@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { CSSTransition } from 'react-transition-group'
-import { TagButton } from '@/components/TagButton'
+import { TagButton } from '@/components/Tag/TagButton'
 import {
   BasePicker,
   BasePickerProps,

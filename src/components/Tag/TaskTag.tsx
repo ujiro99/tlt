@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ColorResult } from 'react-color'
 import { Tag } from '@/models/tag'
-import { TagButton } from '@/components/TagButton'
+import { TagButton } from '@/components/Tag/TagButton'
 import { Position } from '@/components/BasePicker'
 import { ColorPicker } from '@/components/ColorPicker'
 import { useTagHistory } from '@/hooks/useTagHistory'

@@ -1,6 +1,6 @@
 import React from 'react'
 import { Tag } from '@/models/tag'
-import { TaskTag } from '@/components/TaskTag'
+import { TaskTag } from '@/components/Tag/TaskTag'
 import { Icon } from '@/components/Icon'
 import { Tooltip } from '@/components/Tooltip'
 import { useHover } from '@/hooks/useHover'
