@@ -31,7 +31,7 @@ export function TaskTags(props: Props): JSX.Element {
           <Tooltip
             show={isHovered}
             location={'top'}
-            style={{ width: '8em', left: '0.8em', bottom: '24px' }}
+            style={{ width: '8em', left: '-3.4em', bottom: '20px' }}
           >
             <span>{tooltip}</span>
           </Tooltip>

@@ -28,6 +28,7 @@ body {
 
   textarea {
     line-height: 2;
+    overflow: hidden;
     @apply w-full;
     @apply p-4;
     @apply text-gray-900;
