@@ -8,4 +8,8 @@
     z-index: 11;
     cursor: auto;
   }
+
+  &__content {
+    padding: 10px;
+  }
 }

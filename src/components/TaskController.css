@@ -1,7 +1,8 @@
 .task-controll {
   display: none;
   width: 5.8rem;
-  right: -8px;
+  right: 0px;
+  pointer-events: none;
   background: rgb(249, 250, 251);
   background: linear-gradient(
     90deg,
@@ -16,6 +17,10 @@
   @apply text-right;
   @apply select-none;
   @apply cursor-default;
+
+  > * {
+    pointer-events: auto;
+  }
 
   .TagMenu {
     margin-left: 4px;

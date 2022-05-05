@@ -1,5 +1,6 @@
 .react-calendar {
   @apply rounded-md;
+  overflow: hidden;
 }
 
 .calendar {

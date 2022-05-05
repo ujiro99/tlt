@@ -1,0 +1,18 @@
+.report-data {
+  &__setting {
+    position: absolute;
+    right: 10px;
+    margin-top: 4px;
+  }
+}
+
+.setting-item {
+  display: flex;
+  align-items: center;
+  user-select: none;
+  cursor: pointer;
+
+  span {
+    margin-left: 6px;
+  }
+}

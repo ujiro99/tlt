@@ -2,15 +2,19 @@
   display: flex;
   align-items: center;
 
-  .Icon {
+  &__icon {
     display: inline-block;
-    width: 20px;
     height: 18px;
-    padding: 1px;
+    line-height: 18px;
+    padding: 0 4px 0 3px;
     border-radius: 10px;
     background-color: #d9e3f0;
+    text-align: center;
     fill: #6b7280;
+    color: #6b7280;
+    font-size: 12px;
     margin-left: 4px;
+    @apply font-mono;
   }
 
   &__more {

@@ -22,7 +22,6 @@
   }
 
   &__label {
-    @apply font-mono;
     color: #e2e8f0;
     font-size: 10px;
     display: block;

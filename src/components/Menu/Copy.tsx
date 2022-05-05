@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { Tooltip } from '@/components/Tooltip'
-import { modeState, MODE } from '@/components/Menu/Menu'
+import { useMode, MODE } from '@/hooks/useMode'
 import { Icon } from '@/components/Icon'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { sleep } from '@/services/util'
@@ -13,7 +13,7 @@ import './IconButton.css'
 export function Copy(): JSX.Element {
   const manager = useTaskManager()
   const report = useRecoilValue(reportState)
-  const mode = useRecoilValue(modeState)
+  const [mode] = useMode()
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [labelVisible, setLabelVisible] = useState(false)
   const [timeoutId, setTimeoutId] = useState(0)

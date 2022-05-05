@@ -6,14 +6,13 @@ import { getIndentCount } from '@/services/util'
 
 const OTHER_REGEXP = /^ *(.+)$/
 
-export const Parser = {
-  parseMd(markdown: string): Node {
+function parse(text: string): Node {
     Log.v('start parse')
     const root = new Node(NODE_TYPE.ROOT, 0, null)
     let parent = root
     let prevDepth = 0
 
-    const lines = markdown.split(/\n/)
+    const lines = text.split(/\n/)
     if (lines.length === 1 && lines[0].length === 0) {
       return root
     }
@@ -60,5 +59,16 @@ export const Parser = {
     })
 
     return root
+}
+
+export const Parser = {
+  parseMd(markdown: string): Node {
+    return parse(markdown)
   },
+
+  parseArray(textArray: string[]): Node {
+    const root = new Node(NODE_TYPE.ROOT, 0, null)
+    root.children = textArray.map((txt) => parse(txt))
+    return root
+  }
 }

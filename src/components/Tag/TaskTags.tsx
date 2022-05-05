@@ -1,7 +1,6 @@
 import React from 'react'
 import { Tag } from '@/models/tag'
 import { TaskTag } from '@/components/Tag/TaskTag'
-import { Icon } from '@/components/Icon'
 import { Tooltip } from '@/components/Tooltip'
 import { useHover } from '@/hooks/useHover'
 import { tag2str } from '@/services/util'
@@ -17,6 +16,7 @@ export function TaskTags(props: Props): JSX.Element {
   const [hoverRef, isHovered] = useHover(200)
   const tags = props.tags.slice(0, TagCountMax)
   const isOmit = props.tags.length > TagCountMax
+  const omitCount = props.tags.length - TagCountMax
 
   const tooltip = props.tags.map((t) => tag2str(t)).join(', ')
 
@@ -26,8 +26,13 @@ export function TaskTags(props: Props): JSX.Element {
         <TaskTag key={tag.name} tag={tag} />
       ))}
       {isOmit && (
-        <div className="TaskTags__more" ref={hoverRef as React.RefObject<HTMLDivElement>}>
-          <Icon name="more-horiz" />
+        <>
+          <div
+            className="TaskTags__more"
+            ref={hoverRef as React.RefObject<HTMLDivElement>}
+          >
+            <p className="TaskTags__icon">+{omitCount}</p>
+          </div>
           <Tooltip
             show={isHovered}
             location={'top'}
@@ -35,7 +40,7 @@ export function TaskTags(props: Props): JSX.Element {
           >
             <span>{tooltip}</span>
           </Tooltip>
-        </div>
+        </>
       )}
     </div>
   )

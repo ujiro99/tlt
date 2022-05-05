@@ -12,6 +12,7 @@ import { TaskTags } from '@/components/Tag/TaskTags'
 import { LineEditor } from '@/components/LineEditor'
 import { Task } from '@/models/task'
 import { Tag } from '@/models/tag'
+import { Node } from '@/models/node'
 
 import '@/components/TaskItem.css'
 
@@ -22,7 +23,7 @@ export type TaskCheckBox = {
 
 type TaskItemProps = {
   checkboxProps: TaskCheckBox
-  line: number
+  node: Node
   style?: CSSProperties
 }
 
@@ -30,13 +31,13 @@ export const TaskItem: React.FC<TaskItemProps> = (
   props: TaskItemProps,
 ): JSX.Element => {
   const checkboxProps = props.checkboxProps
-  const line = props.line
+  const node = props.node
+  const line = props.node.line
   const [started, setStarted] = useState(false)
   const manager = useTaskManager()
   const { trackings, addTracking, removeTracking, stopOtherTracking } =
     useTrackingState()
   const [isEditing, focusOrEdit] = useEditable(line)
-  const node = manager.getNodeByLine(line)
   const task = node.data as Task
   const tracking = trackings.find((n) => n.nodeId === node.id)
   const isTracking = tracking == null ? false : tracking.isTracking
@@ -123,6 +124,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const taskItemClass = classnames(
     {
       'task-item--running': isTracking,
+      'task-item--complete': task.isComplete(),
     },
     ['task-item', 'item-color'],
   )

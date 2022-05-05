@@ -29,9 +29,14 @@ const TopAdjust = {
   [EVENT_TYPE.HOVER]: -16,
 }
 
+const LeftAdjust = {
+  [EVENT_TYPE.CLICK]: -10,
+  [EVENT_TYPE.HOVER]: -10,
+}
+
 const PaddingAdjust = {
   [EVENT_TYPE.CLICK]: 0,
-  [EVENT_TYPE.HOVER]: 40,
+  [EVENT_TYPE.HOVER]: 30,
 }
 
 export type BasePickerProps = {
@@ -48,7 +53,7 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
   const [hoverRef, isHovered] = useHover()
   const [hoverCancelRef] = useHoverCancel()
 
-  let size = props.size || { w: 0, h: 0}
+  let size = props.size || { w: 0, h: 0 }
   const node = hoverCancelRef.current
   if (node) {
     // overwrite with actual size
@@ -70,17 +75,17 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
 
   let paddingTop = PaddingAdjust[eventType]
   let paddingBottom = 0
-  let top =
-    Math.min(position.y, window.innerHeight - size.h - 10) +
-    TopAdjust[eventType]
-
-  if (window.innerHeight < position.y + size.h) {
+  let top = position.y + TopAdjust[eventType]
+  if (window.innerHeight < position.y + size.h + TopAdjust[eventType]) {
     top = position.y - size.h - TopAdjust[eventType]
     paddingTop = 0
     paddingBottom = PaddingAdjust[eventType]
   }
 
-  const left = Math.min(position.x, window.innerWidth - size.w - 20)
+  const left = Math.min(
+    position.x + LeftAdjust[eventType],
+    window.innerWidth - size.w - 20,
+  )
 
   const style = {
     ...PickerStyle,

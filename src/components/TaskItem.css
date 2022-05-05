@@ -39,6 +39,25 @@
   &--running {
     animation: bg-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
+
+  &--complete {
+    @apply text-gray-500;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    top: 50%;
+    left: 36px;
+    transition: width cubic-bezier(0.4, 0, 0.2, 1) 0.35s;
+  }
+
+  &--complete::after {
+    width: 90%;
+    border-bottom: solid 1px rgb(156 163 175);
+    @apply shadow-lg;
+  }
 }
 
 .item-color {

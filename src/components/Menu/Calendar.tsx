@@ -1,31 +1,29 @@
 import React, { useState } from 'react'
-import { useRecoilValue } from 'recoil'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import Modal from 'react-modal'
-import classnames from 'classnames'
 
-import { modeState, MODE } from '@/components/Menu/Menu'
-import { RecordName } from '@/components/Menu/RecordName'
-import { Icon } from '@/components/Icon'
+import { TaskRecordKey } from '@/models/taskRecordKey'
+import { useMode, MODE } from '@/hooks/useMode'
 import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
-import { dateToKey } from '@/services/util'
+import { RecordName } from '@/components/Menu/RecordName'
+import { Icon } from '@/components/Icon'
+import { eventStop } from '@/services/util'
 
 import './Calendar.css'
 import styles from '../Modal.module.css'
 
 function MyCalendar(): JSX.Element {
   const [visible, setVisible] = useState(false)
-  const [date, setDate] = useCalendarDate()
+  const { date, range, setDate, setDateRange } = useCalendarDate()
   const manager = useTaskManager()
   const [recordKeys] = useTaskRecordKeys()
 
-  const mode = useRecoilValue(modeState)
-  const isAvailable = mode === MODE.SHOW
+  const [mode] = useMode()
+  const selectRange = mode === MODE.REPORT
 
   function toggleCalendar() {
-    if (!isAvailable) return
     setVisible(!visible)
   }
 
@@ -33,26 +31,29 @@ function MyCalendar(): JSX.Element {
     // Disable tiles in month view only
     if (view === 'month') {
       // Check if a date React-Calendar wants to check is on the list of disabled dates
-      const k = dateToKey(date)
+      const k = TaskRecordKey.dateToKey(date)
       return recordKeys.find((key) => key === k) === undefined
     }
   }
 
-  function onChange(date: Date) {
-    setDate(date)
-    manager.setKey(dateToKey(date))
+  function onChange(date: Date | Date[]) {
+    if (selectRange) {
+      const range = date as Date[]
+      setDateRange({ from: range[0], to: range[1] })
+    } else {
+      setDate(date as Date)
+    }
+    manager.setKey(TaskRecordKey.fromDate(date))
     setVisible(false)
   }
 
   Modal.setAppElement(document.getElementById('popup'))
 
+  const value = selectRange ? [range.from, range.to] : date
+
   return (
     <div className="calendar" onClick={toggleCalendar}>
-      <button
-        className={classnames('calendar__button', {
-          'mod--disable': !isAvailable,
-        })}
-      >
+      <button className="calendar__button">
         <Icon className="calendar__icon" name="calendar" />
       </button>
 
@@ -63,11 +64,14 @@ function MyCalendar(): JSX.Element {
         onRequestClose={toggleCalendar}
         className={styles.ModalContent}
       >
-        <Calendar
-          onChange={onChange}
-          value={date}
-          tileDisabled={tileDisabled}
-        />
+        <div onClick={eventStop}>
+          <Calendar
+            onChange={onChange}
+            value={value}
+            tileDisabled={tileDisabled}
+            selectRange={selectRange}
+          />
+        </div>
       </Modal>
     </div>
   )

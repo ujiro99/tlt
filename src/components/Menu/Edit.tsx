@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { useRecoilState } from 'recoil'
 import classnames from 'classnames'
 
 import { useTrackingState } from '@/hooks/useTrackingState'
-import { modeState, MODE } from './Menu'
+import { useMode, MODE } from '@/hooks/useMode'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
 
@@ -13,7 +12,7 @@ export function Edit(): JSX.Element {
   const { stopAllTracking } = useTrackingState()
   const [labelVisible, setLabelVisible] = useState(false)
   const [timeoutId, setTimeoutId] = useState(0)
-  const [mode, setMode] = useRecoilState(modeState)
+  const [mode, setMode] = useMode()
   const isEdit = mode === MODE.EDIT
   const label = isEdit ? 'Save' : 'Edit'
   const icon = isEdit ? 'save' : 'edit'

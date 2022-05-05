@@ -5,8 +5,31 @@ const dateState = atom<Date>({
   default: new Date(),
 })
 
-type CalendarDate = [date: Date, setDate: (date: Date) => void]
+export type DateRange = {
+  from: Date
+  to: Date
+}
+
+const dateRangeState = atom<DateRange>({
+  key: 'dateRangeState',
+  default: { from: null, to: null },
+})
+
+type CalendarDate = {
+  date: Date
+  range: DateRange
+  setDate: (date: Date) => void
+  setDateRange: (range: DateRange) => void
+}
+
 export function useCalendarDate(): CalendarDate {
   const [date, setDate] = useRecoilState(dateState)
-  return [date, setDate]
+  const [range, setDateRange] = useRecoilState(dateRangeState)
+
+  return {
+    date,
+    range,
+    setDate,
+    setDateRange,
+  }
 }

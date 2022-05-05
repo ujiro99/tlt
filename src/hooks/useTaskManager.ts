@@ -15,7 +15,7 @@ import {
   NODE_TYPE
 } from '@/models/node'
 import { flat } from '@/models/flattenedNode'
-import { dateToKey } from '@/services/util'
+import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
 
 const EmptyNode = new Node(NODE_TYPE.OTHER, 0, "")
 
@@ -31,9 +31,14 @@ interface TaskRecord {
 
 type TaskRecordArray = TaskRecord[]
 
-const taskRecordKeyState = atom<string>({
+const taskRecordKeyState = atom<TaskRecordKey>({
   key: 'taskRecordKeyState',
-  default: dateToKey(new Date()),
+  default: TaskRecordKey.fromDate(new Date()),
+})
+
+export const isPossibleToSaveState = atom<boolean>({
+  key: 'isPossibleToSaveState',
+  default: true,
 })
 
 export const savingState = atom<boolean>({
@@ -82,21 +87,27 @@ const taskRecordSelector = selector<Node>({
   get: ({ get }) => {
     const records = get(taskRecordsState)
     const key = get(taskRecordKeyState)
-    Log.d(`get taskRecordSelector: ${key}`)
-    const record = records.find((r) => r.key === key)
-    if (record) {
-      return Parser.parseMd(record.data)
-    } else {
-      // If today's task data does not exist,
-      // copy the uncompleted data from the most recent past data.
-      const lastRecord = records[records.length - 1]
-      if (lastRecord) {
-        const lastRoot = Parser.parseMd(lastRecord.data)
-        return lastRoot.filter((n) => !n.isComplete())
+    Log.d(`get taskRecordSelector: ${key.toKey()}`)
+
+    if (key.keyType === KEY_TYPE.SINGLE) {
+      const record = records.find((r) => r.key === key.toKey())
+      if (record) {
+        return Parser.parseMd(record.data)
       } else {
-        // Nothing to load.
-        return Parser.parseMd('')
+        // If today's task data does not exist,
+        // copy the uncompleted data from the most recent past data.
+        const lastRecord = records[records.length - 1]
+        if (lastRecord) {
+          const lastRoot = Parser.parseMd(lastRecord.data)
+          return lastRoot.filter((n) => !n.isComplete())
+        } else {
+          // Nothing to load.
+          return Parser.parseMd('')
+        }
       }
+    } else {
+      const range = records.filter((r) => key.keys.includes(r.key))
+      return Parser.parseArray(range.map((r) => r.data))
     }
   },
 })
@@ -114,7 +125,7 @@ export const nodeState = atom<Node>({
 
 interface ITaskManager {
   lineCount: number
-  setKey: (key: string) => void
+  setKey: (key: TaskRecordKey) => void
   getText: () => string
   setText: (value: string) => void
   getTextByLine: (line: number) => string
@@ -127,6 +138,7 @@ interface ITaskManager {
 export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState(nodeState)
   const setRecordKey = useSetRecoilState(taskRecordKeyState)
+  const setIsPossibleToSave = useSetRecoilState(isPossibleToSaveState)
 
   const flatten = flat(root)
 
@@ -155,7 +167,14 @@ export function useTaskManager(): ITaskManager {
 
   return {
     lineCount: flatten.length,
-    setKey: setRecordKey,
+    setKey: (key: TaskRecordKey) => {
+      if (key.keyType === KEY_TYPE.RANGE) {
+        setIsPossibleToSave(false)
+      } else {
+        setIsPossibleToSave(true)
+      }
+      setRecordKey(key)
+    },
     getText: () => {
       return nodeToString(root)
     },
@@ -183,13 +202,16 @@ export function useTaskManager(): ITaskManager {
 export function useTaskStorage(): void {
   const [records, setRecords] = useRecoilState(taskRecordsState)
   const setSaving = useSetRecoilState(savingState)
+  const isPossibleToSave = useRecoilValue(isPossibleToSaveState)
 
   const record = useRecoilValue(taskRecordSelector)
   const key = useRecoilValue(taskRecordKeyState)
   const [root, setRoot] = useRecoilState(nodeState)
 
   useEffect(() => {
-    void saveToStorage()
+    if (isPossibleToSave) {
+      void saveToStorage()
+    }
   }, [root])
 
   useEffect(() => {
@@ -202,7 +224,7 @@ export function useTaskStorage(): void {
     setSaving(true)
     let found = false
     const newRecords = records.map((r) => {
-      if (r.key === key) {
+      if (r.key === key.toKey()) {
         found = true
         return {
           ...r,
@@ -214,7 +236,7 @@ export function useTaskStorage(): void {
     })
     if (!found) {
       const record = {
-        key: key,
+        key: key.toKey(),
         type: TaskRecordType.Date,
         data
       }
