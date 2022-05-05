@@ -1,5 +1,4 @@
 import React from 'react'
-import { atom, useRecoilState } from 'recoil'
 
 import { Calendar } from '@/components/Menu/Calendar'
 import { Copy } from '@/components/Menu/Copy'
@@ -8,24 +7,10 @@ import { ButtonGroup } from '@/components/ButtonGroup'
 import { aggregate } from '@/services/util'
 import { nodeToTasks } from '@/models/node'
 import { useTaskManager } from '@/hooks/useTaskManager'
-
-export const MODE = {
-  EDIT: 'EDIT',
-  SHOW: 'SHOW',
-  REPORT: 'REPORT',
-} as const
-export type MenuMode = typeof MODE[keyof typeof MODE]
-
-/**
- * Ui mode.
- */
-export const modeState = atom<MenuMode>({
-  key: 'modeState',
-  default: MODE.SHOW,
-})
+import { useMode, MODE } from '@/hooks/useMode'
 
 export function Menu(): JSX.Element {
-  const [mode, setMode] = useRecoilState(modeState)
+  const [mode, setMode] = useMode()
   const manager = useTaskManager()
   const root = manager.getRoot()
 

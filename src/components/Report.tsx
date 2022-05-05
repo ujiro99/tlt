@@ -6,11 +6,12 @@ import { Checkbox } from '@/components/Checkbox'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { flat } from '@/models/flattenedNode'
-import { nodeToTasks, NODE_TYPE } from '@/models/node'
+import { nodeToTasks, NODE_TYPE, INode } from '@/models/node'
 import { Tag } from '@/models/tag'
 import { Group } from '@/models/group'
 import { Time } from '@/models/time'
 import { asciiBar, aggregate } from '@/services/util'
+import Log from '@/services/log'
 
 import table from 'text-table'
 import './Report.css'
@@ -208,12 +209,33 @@ export function Report(): JSX.Element {
   const groups = flat(root)
     .filter((n) => n.node.type === NODE_TYPE.HEADING)
     .map((n) => n.node)
+    .reduce((acc, cur) => {
+      const found = acc.find((a) => {
+        return (a.data as Group).title === (cur.data as Group).title
+      })
+      if (found) {
+        const clone = found.clone()
+        clone.children = found.children.concat(cur.children)
+        acc = acc.filter(a => a.id !== clone.id)
+        acc.push(clone)
+      } else {
+        acc.push(cur)
+      }
+      return acc
+    }, [] as INode[])
+
   const gdTable = [
     ['group', 'actual', 'estimate', 'a/e', 'amount', 'avg.'],
     ...groups.reduce<string[][]>((acc, group) => {
       const tasks = nodeToTasks(group, onlyCompleted)
       const gt = aggregate(tasks)
       const g = group.data as Group
+
+      if (gt.actual.isEmpty() && gt.estimate.isEmpty()) {
+        // Don't append any data.
+        return acc
+      }
+
       groupTimes[g.title] = gt.actual
       const row = [
         g.title,
@@ -254,6 +276,7 @@ export function Report(): JSX.Element {
   builder += table(gsTable)
   builder += `\n\n`
   builder += table(gdTable)
+  Log.d(gdTable)
 
   setReport(builder)
 
@@ -408,9 +431,9 @@ export function Report(): JSX.Element {
 
         <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
           <tbody>
-            {gdTable.map((row) => {
+            {gdTable.map((row, i) => {
               return (
-                <tr key={row[0]}>
+                <tr key={`${i}-${row[0]}`}>
                   <td className="p-2 whitespace-pre border border-slate-300">
                     {row[0]}
                   </td>

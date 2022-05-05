@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
-import { RecoilRoot, useRecoilValue } from 'recoil'
+import { RecoilRoot } from 'recoil'
 import { ErrorFallback } from '@/components/ErrorFallback'
 import { TaskTextarea } from '@/components/TaskTextarea'
-import { Menu, MODE, modeState } from '@/components/Menu/Menu'
+import { useMode, MODE } from '@/hooks/useMode'
+import { Menu } from '@/components/Menu/Menu'
 import { EmptyLine } from '@/components/EmptyLine'
 import { SortableTree } from '@/components/Tree/SortableTree'
 import { Report } from '@/components/Report'
@@ -29,7 +30,7 @@ export default function Popup(): JSX.Element {
 
 function TaskList() {
   useTaskStorage()
-  const mode = useRecoilValue(modeState)
+  const [mode] = useMode()
   switch (mode) {
     case MODE.EDIT:
       return <TaskTextarea />

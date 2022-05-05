@@ -19,8 +19,16 @@ export class TaskRecordKey {
   public rawKey: string
   public keys: string[]
 
-  public static fromDate(date: Date): TaskRecordKey {
-    return new TaskRecordKey(format(date, KeyFormat))
+  public static fromDate(date: Date | Date[]): TaskRecordKey {
+    if (date instanceof Date) {
+      return new TaskRecordKey(format(date, KeyFormat))
+    } else {
+      const keyStr = `${format(date[0], KeyFormat)}${RangeSeparator}${format(
+        date[1],
+        KeyFormat,
+      )}`
+      return new TaskRecordKey(keyStr)
+    }
   }
 
   public static dateToKey(date: Date): string {
@@ -41,7 +49,7 @@ export class TaskRecordKey {
       let to = parse(keyStr.split(RangeSeparator)[1], KeyFormat, new Date())
       let diff = differenceInCalendarDays(to, from)
       if (diff < 0) {
-        [from, to] = swap(from, to)
+        ;[from, to] = swap(from, to)
         diff = -diff
       }
 
@@ -60,10 +68,12 @@ export class TaskRecordKey {
    * Returns a normalized key.
    */
   public toKey(): string {
-    if(this.keyType === KEY_TYPE.SINGLE) {
+    if (this.keyType === KEY_TYPE.SINGLE) {
       return this.rawKey
     } else {
-      return `${this.keys[0]}${RangeSeparator}${this.keys[this.keys.length - 1]}`
+      return `${this.keys[0]}${RangeSeparator}${
+        this.keys[this.keys.length - 1]
+      }`
     }
   }
 }

@@ -11,7 +11,8 @@ import '@/components/TaskController.css'
 
 type TaskControllerProps = {
   isComplete: boolean
-} & PlayStopProps & TagMenuProps
+} & PlayStopProps &
+  TagMenuProps
 
 type PlayStopProps = {
   onClickStart: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -20,7 +21,7 @@ type PlayStopProps = {
 }
 
 function PlayStopButton(props: PlayStopProps) {
-  const [date] = useCalendarDate()
+  const { date } = useCalendarDate()
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [timeoutID, setTimeoutID] = useState<number>()
   const available = isToday(date)

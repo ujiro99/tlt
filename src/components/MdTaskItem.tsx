@@ -10,7 +10,6 @@ type Props = {
 
 export const MdTaskItem: React.FC<Props> = (props: Props): JSX.Element => {
   const node = props.node
-  const line = node.line
   const task = node.data as Task
   const checkboxProps: TaskCheckBox = {
     checked: task.isComplete(),
@@ -19,7 +18,7 @@ export const MdTaskItem: React.FC<Props> = (props: Props): JSX.Element => {
 
   return (
     <div className='w-full' >
-      <TaskItem checkboxProps={checkboxProps} line={line} />
+      <TaskItem checkboxProps={checkboxProps} node={node} />
     </div>
   )
 }
