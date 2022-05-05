@@ -114,7 +114,7 @@ export function SortableTree({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 10
+        distance: 4
       }
     }),
     useSensor(KeyboardSensor, {
