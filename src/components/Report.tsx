@@ -317,12 +317,12 @@ export function Report(): JSX.Element {
       {
         label: 'actual',
         data: tagDetails.map((t) => t[1].toHours()),
-        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.4)),
+        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.8)),
       },
       {
         label: 'estimate',
         data: tagDetails.map((t) => t[2].toHours()),
-        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.8)),
+        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.4)),
       },
     ],
   }
