@@ -143,6 +143,7 @@ export function Report(): JSX.Element {
       return a
     }, new Set<string>()),
   )
+  const isTagExists = tagNames.length > 0
 
   const tagTimes = {} as TimeCollection
   let tagDetails = [] as TimeDetail[]
@@ -221,6 +222,7 @@ export function Report(): JSX.Element {
       }
       return acc
     }, [] as INode[])
+  const isGroupExists = groups.length > 0
 
   const gdTable = [
     ['group', 'actual', 'estimate', 'a/e', 'amount', 'avg.'],
@@ -399,38 +401,45 @@ export function Report(): JSX.Element {
 
         <section>
           <h2 className="py-6 mt-5 text-base font-bold">Total by tags</h2>
-          <div className="pl-4">
-            <div
-              className="chart-container"
-              style={{
-                position: 'relative',
-                height: `${barGraphHeight(tagDetails.length)}vh`,
-                width: '85vw',
-              }}
-            >
-              <Bar options={options} data={tagData} />
+          {isTagExists ? (
+            <div className="pl-4">
+              <div
+                className="chart-container"
+                style={{
+                  position: 'relative',
+                  height: `${barGraphHeight(tagDetails.length)}vh`,
+                  width: '85vw',
+                }}
+              >
+                <Bar options={options} data={tagData} />
+              </div>
+              <ReportTable table={tagTable} />
             </div>
-            <ReportTable table={tagTable} />
-          </div>
+          ) : (
+            <span>No tags yet.</span>
+          )}
         </section>
 
         <section>
           <h2 className="py-6 mt-5 text-base font-bold">Total by groups</h2>
-          <div className="pl-4">
-            <div
-              className="chart-container"
-              style={{
-                position: 'relative',
-                height: `${barGraphHeight(groupDetails.length)}vh`,
-                width: '85vw',
-              }}
-            >
-              <Bar options={options} data={groupData} />
+          {isGroupExists ? (
+            <div className="pl-4">
+              <div
+                className="chart-container"
+                style={{
+                  position: 'relative',
+                  height: `${barGraphHeight(groupDetails.length)}vh`,
+                  width: '85vw',
+                }}
+              >
+                <Bar options={options} data={groupData} />
+              </div>
+              <ReportTable table={gdTable} />
             </div>
-            <ReportTable table={gdTable} />
-          </div>
+          ) : (
+            <span>No groups yet.</span>
+          )}
         </section>
-
       </div>
     </section>
   )

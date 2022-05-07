@@ -66,6 +66,7 @@ export const TagPicker = (props: Props): JSX.Element => {
           </div>
           <div className="TagPicker__history">
             <span className="TagPicker__label">Add tags</span>
+            {additionalTags.length === 0 && <span>No tags yet.</span>}
             {additionalTags.map((t) => {
               return <TagButton tag={t} key={t.name} onClick={addTag} />
             })}
