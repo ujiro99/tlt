@@ -193,3 +193,8 @@ export function eventStop(e: React.MouseEvent | MouseEvent): void {
 export function tag2str(tag: Tag): string {
   return tag.quantity ? `${tag.name}:${tag.quantity}` : tag.name
 }
+
+export function ifNull(num: number | string, alt = ' - '): number | string {
+  if (num) return num
+  return alt
+}

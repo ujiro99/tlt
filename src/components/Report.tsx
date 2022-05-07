@@ -10,7 +10,7 @@ import { nodeToTasks, NODE_TYPE, INode } from '@/models/node'
 import { Tag } from '@/models/tag'
 import { Group } from '@/models/group'
 import { Time } from '@/models/time'
-import { asciiBar, aggregate } from '@/services/util'
+import { asciiBar, aggregate, ifNull } from '@/services/util'
 import Log from '@/services/log'
 
 import table from 'text-table'
@@ -59,11 +59,6 @@ export const reportState = atom<string>({
   key: 'reportState',
   default: '',
 })
-
-function ifNull(num: number, alt = ' - '): number | string {
-  if (num) return num
-  return alt
-}
 
 type TimeCollection = { [key: string]: Time }
 
