@@ -76,6 +76,28 @@ describe('toString', () => {
   })
 })
 
+describe('appendEmptyTask', () => {
+  test('append a empty task.', () => {
+    const root = Parser.parseMd(`# heading
+- [ ] task`)
+    const newRoot = root.appendEmptyTask((n) => n.line === 1)
+    const empty = newRoot.children[0].children[0]
+    expect(empty.toString()).toBe('- [ ] please input')
+    expect(empty.line).toBe(2)
+    expect(newRoot.children[1].line).toBe(3)
+  })
+
+  test('append a empty task as a sibling.', () => {
+    const root = Parser.parseMd(`# heading
+  - [ ] task`)
+    const newRoot = root.appendEmptyTask((n) => n.line === 1)
+    const empty = newRoot.children[0].children[1]
+    expect(empty.toString()).toBe('- [ ] please input')
+    expect(empty.line).toBe(3)
+    expect(newRoot.children[0].children[0].line).toBe(2)
+  })
+})
+
 describe('find', () => {
   test('find a first node.', () => {
     const root = Parser.parseMd(`- [ ] task

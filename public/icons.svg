@@ -6,10 +6,6 @@
 <path d="M384 224v184a40 40 0 01-40 40H104a40 40 0 01-40-40V168a40 40 0 0140-40h167.48M336 64h112v112M224 288L440 72" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
 </symbol>
 
-<symbol id="icon-open-outline" viewBox="0 0 512 512">
-<path d="M384 224v184a40 40 0 01-40 40H104a40 40 0 01-40-40V168a40 40 0 0140-40h167.48M336 64h112v112M224 288L440 72" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="32"/>
-</symbol>
-
 <!-- play -->
 <symbol id="icon-play" viewBox="0 0 24 24">
 <path d="M0 0h24v24H0z" fill="none"/><path d="M8 5v14l11-7z"/>
@@ -73,6 +69,11 @@
 <!-- tag -->
 <symbol id="icon-tag" viewBox="0 0 24 24">
 <g><path d="M0,0h24v24H0V0z" fill="none"/></g><g><path d="M21.41,11.41l-8.83-8.83C12.21,2.21,11.7,2,11.17,2H4C2.9,2,2,2.9,2,4v7.17c0,0.53,0.21,1.04,0.59,1.41l8.83,8.83 c0.78,0.78,2.05,0.78,2.83,0l7.17-7.17C22.2,13.46,22.2,12.2,21.41,11.41z M6.5,8C5.67,8,5,7.33,5,6.5S5.67,5,6.5,5S8,5.67,8,6.5 S7.33,8,6.5,8z"/></g>
+</symbol>
+
+<!-- plus -->
+<symbol id="icon-plus" viewBox="0 0 24 24">
+<path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
 </symbol>
 
 </defs>

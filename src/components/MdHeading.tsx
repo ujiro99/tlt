@@ -6,9 +6,11 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import { LineEditor } from '@/components/LineEditor'
 import { TaskTag } from '@/components/Tag/TaskTag'
 import { TagMenu } from '@/components/Tag/TagMenu'
+import { Icon } from '@/components/Icon'
 import { Node } from '@/models/node'
 import { Group } from '@/models/group'
 import { Tag } from '@/models/tag'
+import { eventStop } from '@/services/util'
 import Log from '@/services/log'
 
 import './Heading.css'
@@ -45,6 +47,11 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
     manager.setNodeByLine(newNode, line)
   }
 
+  const addChild = (e: React.MouseEvent) => {
+    manager.addEmptyChild(line)
+    eventStop(e)
+  }
+
   const [isEditing, focusOrEdit] = useEditable(line)
   if (isEditing) {
     return (
@@ -54,6 +61,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
       />
     )
   }
+
   return (
     <div
       tabIndex={0}
@@ -72,6 +80,11 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
 
       <div className="Heading__tagmenu">
         <TagMenu tags={group.tags} onChangeTags={onChangeTags} />
+      </div>
+      <div className="Heading__add-todo">
+        <button className="Heading__add-button" onClick={addChild}>
+          <Icon name="plus" />
+        </button>
       </div>
     </div>
   )

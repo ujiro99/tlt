@@ -3,6 +3,7 @@ import { atom, useRecoilState } from 'recoil'
 import { color } from 'd3-color'
 
 import { Checkbox } from '@/components/Checkbox'
+import { ReportTable, Row } from '@/components/ReportTable'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { flat } from '@/models/flattenedNode'
@@ -10,7 +11,7 @@ import { nodeToTasks, NODE_TYPE, INode } from '@/models/node'
 import { Tag } from '@/models/tag'
 import { Group } from '@/models/group'
 import { Time } from '@/models/time'
-import { asciiBar, aggregate } from '@/services/util'
+import { asciiBar, aggregate, ifNull } from '@/services/util'
 import Log from '@/services/log'
 
 import table from 'text-table'
@@ -59,11 +60,6 @@ export const reportState = atom<string>({
   key: 'reportState',
   default: '',
 })
-
-function ifNull(num: number, alt = ' - '): number | string {
-  if (num) return num
-  return alt
-}
 
 type TimeCollection = { [key: string]: Time }
 
@@ -147,6 +143,7 @@ export function Report(): JSX.Element {
       return a
     }, new Set<string>()),
   )
+  const isTagExists = tagNames.length > 0
 
   const tagTimes = {} as TimeCollection
   let tagDetails = [] as TimeDetail[]
@@ -184,7 +181,9 @@ export function Report(): JSX.Element {
   tagDetails = tagDetails.sort((a, b) => {
     return Time.subs(b[1], a[1])
   })
-  const tagTable = [['tag', 'actual', 'estimate', 'a/e', 'amount', 'avg.']]
+  const tagTable = [
+    ['tag', 'actual', 'estimate', 'a/e', 'amount', 'avg.'],
+  ] as Row<string>[]
   tagDetails.forEach((row) => {
     tagTable.push([
       row[0],
@@ -216,13 +215,14 @@ export function Report(): JSX.Element {
       if (found) {
         const clone = found.clone()
         clone.children = found.children.concat(cur.children)
-        acc = acc.filter(a => a.id !== clone.id)
+        acc = acc.filter((a) => a.id !== clone.id)
         acc.push(clone)
       } else {
         acc.push(cur)
       }
       return acc
     }, [] as INode[])
+  const isGroupExists = groups.length > 0
 
   const gdTable = [
     ['group', 'actual', 'estimate', 'a/e', 'amount', 'avg.'],
@@ -265,7 +265,7 @@ export function Report(): JSX.Element {
       }
       return acc
     }, []),
-  ]
+  ] as Row<string>[]
 
   const groupSummary = summary(groupTimes, all.actual)
   const gsTable = groupSummary.map((row) => {
@@ -284,7 +284,7 @@ export function Report(): JSX.Element {
     indexAxis: 'y' as const,
     responsive: true,
     maintainAspectRatio: false,
-    barThickness: 30,
+    barThickness: 24,
     scales: {
       x: {
         ticks: {
@@ -329,7 +329,10 @@ export function Report(): JSX.Element {
           if (l === 'estimate') time = all.estimate
           return time.toHours()
         }),
-        backgroundColor: [addOpacity(colors.blue, 0.5), addOpacity(colors.orange, 0.5)],
+        backgroundColor: [
+          addOpacity(colors.blue, 0.5),
+          addOpacity(colors.orange, 0.5),
+        ],
       },
     ],
   }
@@ -340,12 +343,16 @@ export function Report(): JSX.Element {
       {
         label: 'actual',
         data: tagDetails.map((t) => t[1].toHours()),
-        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.8)),
+        backgroundColor: tagDetails
+          .map((t) => findColor(t[0]))
+          .map((c) => addOpacity(c, 0.8)),
       },
       {
         label: 'estimate',
         data: tagDetails.map((t) => t[2].toHours()),
-        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.4)),
+        backgroundColor: tagDetails
+          .map((t) => findColor(t[0]))
+          .map((c) => addOpacity(c, 0.4)),
       },
     ],
   }
@@ -366,6 +373,10 @@ export function Report(): JSX.Element {
     ],
   }
 
+  const barGraphHeight = (barNum: number): number => {
+    return Math.max(barNum * 10 + 10, 20)
+  }
+
   return (
     <section className="pt-[34px] p-[28px] tracking-wide text-gray-700 report-data">
       <div className="report-data__setting">
@@ -383,70 +394,52 @@ export function Report(): JSX.Element {
 
         <div
           className="chart-container"
-          style={{ position: 'relative', height: '25vh', width: '85vw' }}
+          style={{ position: 'relative', height: '24vh', width: '85vw' }}
         >
           <Bar options={options} data={allData} />
         </div>
 
-        <h2 className="py-6 mt-5 text-base font-bold">Total by tags</h2>
-        <div
-          className="chart-container"
-          style={{
-            position: 'relative',
-            height: `${tagDetails.length * 14 + 6}vh`,
-            width: '85vw',
-          }}
-        >
-          <Bar options={options} data={tagData} />
-        </div>
+        <section>
+          <h2 className="py-6 mt-5 text-base font-bold">Total by tags</h2>
+          {isTagExists ? (
+            <div className="pl-4">
+              <div
+                className="chart-container"
+                style={{
+                  position: 'relative',
+                  height: `${barGraphHeight(tagDetails.length)}vh`,
+                  width: '85vw',
+                }}
+              >
+                <Bar options={options} data={tagData} />
+              </div>
+              <ReportTable table={tagTable} />
+            </div>
+          ) : (
+            <span>No tags yet.</span>
+          )}
+        </section>
 
-        <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
-          <tbody>
-            {tagTable.map((row) => {
-              return (
-                <tr key={row[0]}>
-                  <td className="p-2 border border-slate-300">{row[0]}</td>
-                  <td className="p-2 border border-slate-300">{row[1]}</td>
-                  <td className="p-2 border border-slate-300">{row[2]}</td>
-                  <td className="p-2 border border-slate-300">{row[3]}</td>
-                  <td className="p-2 border border-slate-300">{row[4]}</td>
-                  <td className="p-2 border border-slate-300">{row[5]}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-
-        <h2 className="py-6 mt-5 text-base font-bold">Total by groups</h2>
-        <div
-          className="chart-container"
-          style={{
-            position: 'relative',
-            height: `${groupDetails.length * 14 + 6}vh`,
-            width: '85vw',
-          }}
-        >
-          <Bar options={options} data={groupData} />
-        </div>
-
-        <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
-          <tbody>
-            {gdTable.map((row, i) => {
-              return (
-                <tr key={`${i}-${row[0]}`}>
-                  <td className="p-2 whitespace-pre border border-slate-300">
-                    {row[0]}
-                  </td>
-                  <td className="p-2 border border-slate-300">{row[1]}</td>
-                  <td className="p-2 border border-slate-300">{row[2]}</td>
-                  <td className="p-2 border border-slate-300">{row[3]}</td>
-                  <td className="p-2 border border-slate-300">{row[4]}</td>
-                  <td className="p-2 border border-slate-300">{row[5]}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <section>
+          <h2 className="py-6 mt-5 text-base font-bold">Total by groups</h2>
+          {isGroupExists ? (
+            <div className="pl-4">
+              <div
+                className="chart-container"
+                style={{
+                  position: 'relative',
+                  height: `${barGraphHeight(groupDetails.length)}vh`,
+                  width: '85vw',
+                }}
+              >
+                <Bar options={options} data={groupData} />
+              </div>
+              <ReportTable table={gdTable} />
+            </div>
+          ) : (
+            <span>No groups yet.</span>
+          )}
+        </section>
       </div>
     </section>
   )

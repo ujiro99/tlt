@@ -1,0 +1,27 @@
+.ReportTable {
+  @apply w-full;
+  @apply mt-4;
+  @apply overflow-hidden;
+  @apply font-mono;
+  @apply text-xs;
+  @apply text-gray-700;
+  @apply border-0;
+  @apply rounded;
+
+  box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.5);
+  white-space: pre;
+
+  &__th {
+    padding: 8px 6px 6px 8px;
+    text-align: left;
+    @apply text-gray-500;
+  }
+
+  &__td {
+    padding: 8px 6px 6px 8px;
+  }
+
+  tbody > tr:last-child > td {
+    padding-bottom: 8px;
+  }
+}

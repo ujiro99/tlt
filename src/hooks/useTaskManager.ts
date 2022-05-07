@@ -46,7 +46,7 @@ export const savingState = atom<boolean>({
   default: false,
 })
 
-// void Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
+// void Storage.clear()
 
 const loadRecords = async (): Promise<TaskRecordArray> => {
   const records =
@@ -134,6 +134,7 @@ interface ITaskManager {
   setRoot: (node: Node) => void
   getNodeByLine: (line: number) => Node
   setNodeByLine: (node: Node, line: number) => void
+  addEmptyChild: (line: number) => void
 }
 export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState(nodeState)
@@ -162,6 +163,11 @@ export function useTaskManager(): ITaskManager {
         newRoot = root.filter((n) => n.line !== line)
       }
     }
+    setRoot(newRoot)
+  }
+
+  const addEmptyChild = (line: number) => {
+    const newRoot = root.appendEmptyTask((node) => node.line === line)
     setRoot(newRoot)
   }
 
@@ -196,6 +202,7 @@ export function useTaskManager(): ITaskManager {
     setRoot: setRoot,
     getNodeByLine,
     setNodeByLine,
+    addEmptyChild
   }
 }
 

@@ -3,13 +3,13 @@ import TextareaAutosize from 'react-textarea-autosize'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditFinish } from '@/hooks/useEditable'
+import { DEFAULT } from '@/const'
 
 type Props = {
   line: number
   className?: string
 }
 
-const DEFAULT = "- [ ] ";
 const KEYCODE_ENTER = 13
 
 export function LineEditor(props: Props): JSX.Element {
@@ -43,7 +43,7 @@ export function LineEditor(props: Props): JSX.Element {
 
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.keyCode === KEYCODE_ENTER) {
-      finish()
+        finish()
     }
     // Prevent key events to reach the SortableTree.
     e.stopPropagation()
