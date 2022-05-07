@@ -4,6 +4,7 @@ import { Group } from '@/models/group'
 import Log from '@/services/log'
 import { flat } from './flattenedNode'
 import { IClonable } from '@/@types/global'
+import { INDENT_SIZE } from '@/const'
 
 /**
  * Represent types of the Node.
@@ -210,8 +211,8 @@ function clone(nodes: Node[], parent?: Node): Node[] {
   })
 }
 
-function depthToIndent(depth: number): string {
-  return ''.padStart(depth * 2, ' ')
+export function depthToIndent(depth: number): string {
+  return ''.padStart(depth * INDENT_SIZE, ' ')
 }
 
 export function nodeToString(root: Node): string {

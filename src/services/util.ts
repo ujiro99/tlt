@@ -123,56 +123,6 @@ export function aggregate(tasks: Task[]): TimeTotal {
   }
 }
 
-/**
- * Generate lightened or darkened colors.
- *
- * @param rgb RGB color code.
- * @param amount Amount to be varied. -1 ~ 1.
- * @param limit Limits of Change. 0 ~ 255.
- *
- * @return Generated RGB color code.
- *
- * Usage:
- *   // Lighten
- *   var NewColor = LightenDarkenColor("#F06D06", 0.8);
- *   // Darken
- *   var NewColor = LightenDarkenColor("#F06D06", -0.8);
- *
- */
-export function lightenDarkenColor(
-  rgb: string,
-  amount: number,
-  limit = 0,
-): string {
-  let usePound = false
-  if (rgb[0] === '#') {
-    rgb = rgb.slice(1)
-    usePound = true
-  }
-
-  const num = parseInt(rgb, 16)
-  const upperLimit = 255 - limit
-  const lowerLimit = limit
-  amount = 255 * amount
-
-  let r = (num >> 16) + amount
-  if (r > upperLimit) r = upperLimit
-  else if (r < lowerLimit) r = lowerLimit
-
-  let b = ((num >> 8) & 0x00ff) + amount
-  if (b > upperLimit) b = upperLimit
-  else if (b < lowerLimit) b = lowerLimit
-
-  let g = (num & 0x0000ff) + amount
-  if (g > upperLimit) g = upperLimit
-  else if (g < lowerLimit) g = lowerLimit
-
-  return (
-    (usePound ? '#' : '') +
-    (b | (g << 8) | (r << 16)).toString(16).padStart(6, '0')
-  )
-}
-
 type Equal<T> = (a: T, b: T) => boolean
 
 export function unique<T>(array: T[], equal?: Equal<T>): T[] {
