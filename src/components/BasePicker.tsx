@@ -67,6 +67,11 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
     }
   }
 
+  const onClickPadding = (e: React.MouseEvent) => {
+    props.onRequestClose()
+    eventStop(e)
+  }
+
   useEffect(() => {
     if (isHovered && eventType === EVENT_TYPE.HOVER) {
       props.onRequestClose()
@@ -106,10 +111,10 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
       <div
         className="BasePicker__content"
         style={style}
-        onClick={eventStop}
+        onClick={onClickPadding}
         ref={hoverCancelRef as React.RefObject<HTMLDivElement>}
       >
-        {props.children}
+        <div onClick={eventStop}>{props.children}</div>
       </div>
     </div>
   )
