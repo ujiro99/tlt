@@ -4,7 +4,6 @@ import {
   Announcements,
   DndContext,
   closestCenter,
-  KeyboardSensor,
   PointerSensor,
   useSensor,
   useSensors,
@@ -34,7 +33,6 @@ import {
   setProperty,
 } from './utilities'
 import type { FlattenedItem, SensorContext, TreeItems } from './types'
-import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates'
 import { SortableTreeItem } from './components'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
@@ -108,17 +106,11 @@ export function SortableTree({
     items: flattenedItems,
     offset: offsetLeft,
   })
-  const [coordinateGetter] = useState(() =>
-    sortableTreeKeyboardCoordinates(sensorContext, indentationWidth),
-  )
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 4
-      }
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter,
+        distance: 4,
+      },
     }),
   )
 
