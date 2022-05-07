@@ -4,11 +4,18 @@ import TextareaAutosize from 'react-textarea-autosize'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useStorageWatcher } from '@/hooks/useStorageWatcher'
 import { depthToIndent } from '@/models/node'
+import { Task } from '@/models/task'
+import { Group } from '@/models/group'
 import { LoadingIcon } from '@/components/LoadingIcon'
-import { sleep } from '@/services/util'
+import { sleep, getIndent } from '@/services/util'
 import { INDENT_SIZE, KEY, DEFAULT } from '@/const'
 
 const INDENT = depthToIndent(1)
+
+type Selection = {
+  start: number
+  end: number
+}
 
 export function TaskTextarea(): JSX.Element {
   const manager = useTaskManager()
@@ -16,6 +23,7 @@ export function TaskTextarea(): JSX.Element {
   const [text, setText] = useState(manager.getText())
   const [timeoutID, setTimeoutID] = useState<number>()
   const [iconVisible, setIconVisible] = useState(false)
+  const [selection, setSelection] = useState<Selection>()
   const inputArea = useRef<HTMLTextAreaElement>()
 
   useEffect(() => {
@@ -26,6 +34,12 @@ export function TaskTextarea(): JSX.Element {
     }, 1 * 500 /* ms */)
     setTimeoutID(newTimeoutId)
   }, [text])
+
+  useEffect(() => {
+    if (selection && selection.start && selection.end) {
+      inputArea.current.setSelectionRange(selection.start, selection.end)
+    }
+  }, [selection])
 
   useEffect(() => {
     async function updateVisible() {
@@ -67,6 +81,33 @@ export function TaskTextarea(): JSX.Element {
 
   function onKeyDown(e: React.KeyboardEvent) {
     switch (e.code) {
+      case KEY.ENTER: {
+        const start = inputArea.current.selectionStart
+        const end = inputArea.current.selectionEnd
+        if (start !== end) break
+        if (e.shiftKey) break
+
+        const lines = text.split(/\n/)
+        const prevPos = text.slice(0, start).split(/\n/).length - 1
+        const prevLine = lines[prevPos]
+        let rowAdd: string
+        if (Task.isTaskStr(prevLine)) {
+          // Add a new task as sibling level.
+          rowAdd = getIndent(prevLine) + DEFAULT
+        } else if (Group.test(prevLine)) {
+          // Add a new task as child level.
+          rowAdd = getIndent(prevLine) + INDENT + DEFAULT
+        }
+
+        lines.splice(prevPos + 1, 0, rowAdd)
+        const newText = lines.join('\n')
+        setText(newText)
+        const newPos = lines.slice(0, prevPos + 2).join('\n').length
+        setSelection({ start: newPos, end: newPos })
+
+        e.preventDefault()
+        break
+      }
       case KEY.TAB: {
         const start = inputArea.current.selectionStart
         const from = text.slice(0, start).split(/\n/).length - 1
@@ -76,20 +117,20 @@ export function TaskTextarea(): JSX.Element {
         let newText: string
         if (e.shiftKey) {
           newText = indent(-1, from, to)
-          setTimeout(() => {
-            inputArea.current.setSelectionRange(
-              start - INDENT_SIZE,
-              end - INDENT_SIZE * (to - from + 1),
-            )
-          }, 10)
+
+          // Ensure that the rows in the selection area do not change.
+          const newLines = newText.split(/\n/)
+          const fromMin = newLines.slice(0, from).join('\n').length + 1
+          const newFrom = Math.max(fromMin, start - INDENT_SIZE)
+          const toMin = newLines.slice(0, to).join('\n').length + 1
+          const newEnd = Math.max(toMin, end - INDENT_SIZE * (to - from + 1))
+          setSelection({ start: newFrom, end: newEnd })
         } else {
           newText = indent(1, from, to)
-          setTimeout(() => {
-            inputArea.current.setSelectionRange(
-              start + INDENT_SIZE,
-              end + INDENT_SIZE * (to - from + 1),
-            )
-          }, 10)
+          setSelection({
+            start: start + INDENT_SIZE,
+            end: end + INDENT_SIZE * (to - from + 1),
+          })
         }
 
         setText(newText)
@@ -97,8 +138,6 @@ export function TaskTextarea(): JSX.Element {
         break
       }
     }
-    // Prevent key events to reach the SortableTree.
-    e.stopPropagation()
   }
 
   return (

@@ -78,6 +78,20 @@ export function getIndentCount(str: string): number {
 }
 
 /**
+ * Count indents.
+ * @param {string} str String to be counted.
+ * @return Indent spaces.
+ */
+export function getIndent(str: string): string {
+  const indentRegexp = /^ +/
+  if (indentRegexp.test(str)) {
+    const m = indentRegexp.exec(str)
+    return m[0]
+  }
+  return ""
+}
+
+/**
  * Convert a date to the key of TaskRecord.
  * @param {Date} date A date to be converted.
  * @return Key of TaskRecord.
