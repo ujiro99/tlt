@@ -279,7 +279,7 @@ export function Report(): JSX.Element {
     indexAxis: 'y' as const,
     responsive: true,
     maintainAspectRatio: false,
-    barThickness: 30,
+    barThickness: 24,
     scales: {
       x: {
         ticks: {
@@ -361,6 +361,10 @@ export function Report(): JSX.Element {
     ],
   }
 
+  const barGraphHeight = (barNum: number) : number => {
+    return Math.max(barNum * 10 + 10, 20)
+  }
+
   return (
     <section className="pt-[34px] p-[28px] tracking-wide text-gray-700 report-data">
       <div className="report-data__setting">
@@ -378,7 +382,7 @@ export function Report(): JSX.Element {
 
         <div
           className="chart-container"
-          style={{ position: 'relative', height: '25vh', width: '85vw' }}
+          style={{ position: 'relative', height: '24vh', width: '85vw' }}
         >
           <Bar options={options} data={allData} />
         </div>
@@ -388,7 +392,7 @@ export function Report(): JSX.Element {
           className="chart-container"
           style={{
             position: 'relative',
-            height: `${tagDetails.length * 14 + 6}vh`,
+            height: `${barGraphHeight(tagDetails.length)}vh`,
             width: '85vw',
           }}
         >
@@ -417,7 +421,7 @@ export function Report(): JSX.Element {
           className="chart-container"
           style={{
             position: 'relative',
-            height: `${groupDetails.length * 14 + 6}vh`,
+            height: `${barGraphHeight(groupDetails.length)}vh`,
             width: '85vw',
           }}
         >
