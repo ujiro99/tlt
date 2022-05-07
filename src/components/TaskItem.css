@@ -37,7 +37,19 @@
   }
 
   &--running {
-    animation: bg-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: bg-progress 2s linear infinite;
+    background-image: linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.125) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.125) 50%,
+      rgba(255, 255, 255, 0.125) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 60px 60px;
+    background-color: rgb(199 210 254);
   }
 
   &--complete {
@@ -75,6 +87,15 @@
   }
   50% {
     background-color: rgba(229, 231, 235, 0.2);
+  }
+}
+
+@keyframes bg-progress {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 60px 60px;
   }
 }
 
