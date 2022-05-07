@@ -4,7 +4,7 @@ import { Group } from '@/models/group'
 import Log from '@/services/log'
 import { flat } from './flattenedNode'
 import { IClonable } from '@/@types/global'
-import { INDENT_SIZE } from '@/const'
+import { DEFAULT, INDENT_SIZE } from '@/const'
 
 /**
  * Represent types of the Node.
@@ -30,7 +30,7 @@ function hasProperties<K extends string>(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isClonable<T>(arg: any): arg is IClonable<T> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-  return arg && arg.clone !== undefined;
+  return arg && arg.clone !== undefined
 }
 
 export interface INode {
@@ -121,6 +121,19 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     return cloned
   }
 
+  public appendEmptyTask(predicate: Predicate): Node {
+    let cloned: Node
+    const parent = this.find(predicate)
+    if (parent) {
+      const task = Task.parse(DEFAULT + "please input")
+      const empty = new Node(NODE_TYPE.TASK, 0, task)
+      const newParent = parent.append(empty)
+      cloned = this.replace(newParent, (n) => n.id === parent.id, false)
+    }
+    updateLineNumber(cloned)
+    return cloned
+  }
+
   public find(predicate: Predicate): Node | null {
     const queue: Node[] = [this]
 
@@ -169,10 +182,7 @@ export class Node implements TreeItem, INode, IClonable<INode> {
       })
 
       // Update line number
-      const flattenFiltered = flat(cloned)
-      flattenFiltered.forEach((f, index) => {
-        f.node.line = index + 1
-      })
+      updateLineNumber(cloned)
 
     } catch (e) {
       Log.w(e)
@@ -181,7 +191,7 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     return cloned
   }
 
-  public replace(node: Node, predicate: Predicate): Node {
+  public replace(node: Node, predicate: Predicate, keepChildren=true): Node {
     const [cloned] = clone([this])
     const target = cloned.find(predicate)
     if (target == null) return cloned
@@ -192,7 +202,9 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     node.id = target.id
     node.line = target.line
     node.parent = parent
-    node.children = target.children
+    if (keepChildren) {
+      node.children = target.children
+    }
 
     parent.children = parent.children.map((n) => {
       return n.id === node.id ? node : n
@@ -208,6 +220,16 @@ function clone(nodes: Node[], parent?: Node): Node[] {
     b.parent = parent
     b.children = clone(b.children, b)
     return b
+  })
+}
+
+/**
+ * Update line number
+ */
+function updateLineNumber(root: Node): void {
+  const flatten = flat(root)
+  flatten.forEach((f, index) => {
+    f.node.line = index + 1
   })
 }
 
@@ -240,4 +262,3 @@ export function nodeToTasks(root: INode, completed: boolean): Task[] {
   }
   return tasks
 }
-

@@ -10,16 +10,44 @@
   @apply flex;
   @apply items-center;
 
-  &__tagmenu {
-    margin-left: 4px;
+  &__tagmenu,
+  &__add-todo {
     height: 22px;
     opacity: 0;
+    margin-left: 4px;
 
     @apply duration-200;
     @apply transition-opacity;
   }
 
-  &:hover > &__tagmenu {
+  &:hover > &__tagmenu,
+  &:hover > &__add-todo {
     opacity: 1;
+  }
+
+  &__add-button {
+    --shadow-color: 0, 0, 0;
+
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+
+    & > .Icon {
+      width: 100%;
+      height: 100%;
+      border-radius: 20px;
+      @apply fill-gray-400;
+      @apply bg-gray-300;
+      @apply transition;
+      @apply duration-300;
+    }
+
+    &:hover {
+      > .Icon {
+        opacity: 0.8;
+        @apply fill-gray-600;
+        @apply drop-shadow-md;
+      }
+    }
   }
 }
