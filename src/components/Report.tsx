@@ -3,6 +3,7 @@ import { atom, useRecoilState } from 'recoil'
 import { color } from 'd3-color'
 
 import { Checkbox } from '@/components/Checkbox'
+import { ReportTable, Row } from '@/components/ReportTable'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { flat } from '@/models/flattenedNode'
@@ -179,7 +180,9 @@ export function Report(): JSX.Element {
   tagDetails = tagDetails.sort((a, b) => {
     return Time.subs(b[1], a[1])
   })
-  const tagTable = [['tag', 'actual', 'estimate', 'a/e', 'amount', 'avg.']]
+  const tagTable = [
+    ['tag', 'actual', 'estimate', 'a/e', 'amount', 'avg.'],
+  ] as Row<string>[]
   tagDetails.forEach((row) => {
     tagTable.push([
       row[0],
@@ -211,7 +214,7 @@ export function Report(): JSX.Element {
       if (found) {
         const clone = found.clone()
         clone.children = found.children.concat(cur.children)
-        acc = acc.filter(a => a.id !== clone.id)
+        acc = acc.filter((a) => a.id !== clone.id)
         acc.push(clone)
       } else {
         acc.push(cur)
@@ -260,7 +263,7 @@ export function Report(): JSX.Element {
       }
       return acc
     }, []),
-  ]
+  ] as Row<string>[]
 
   const groupSummary = summary(groupTimes, all.actual)
   const gsTable = groupSummary.map((row) => {
@@ -324,7 +327,10 @@ export function Report(): JSX.Element {
           if (l === 'estimate') time = all.estimate
           return time.toHours()
         }),
-        backgroundColor: [addOpacity(colors.blue, 0.5), addOpacity(colors.orange, 0.5)],
+        backgroundColor: [
+          addOpacity(colors.blue, 0.5),
+          addOpacity(colors.orange, 0.5),
+        ],
       },
     ],
   }
@@ -335,12 +341,16 @@ export function Report(): JSX.Element {
       {
         label: 'actual',
         data: tagDetails.map((t) => t[1].toHours()),
-        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.8)),
+        backgroundColor: tagDetails
+          .map((t) => findColor(t[0]))
+          .map((c) => addOpacity(c, 0.8)),
       },
       {
         label: 'estimate',
         data: tagDetails.map((t) => t[2].toHours()),
-        backgroundColor: tagDetails.map((t) => findColor(t[0])).map((c) => addOpacity(c, 0.4)),
+        backgroundColor: tagDetails
+          .map((t) => findColor(t[0]))
+          .map((c) => addOpacity(c, 0.4)),
       },
     ],
   }
@@ -361,7 +371,7 @@ export function Report(): JSX.Element {
     ],
   }
 
-  const barGraphHeight = (barNum: number) : number => {
+  const barGraphHeight = (barNum: number): number => {
     return Math.max(barNum * 10 + 10, 20)
   }
 
@@ -387,65 +397,40 @@ export function Report(): JSX.Element {
           <Bar options={options} data={allData} />
         </div>
 
-        <h2 className="py-6 mt-5 text-base font-bold">Total by tags</h2>
-        <div
-          className="chart-container"
-          style={{
-            position: 'relative',
-            height: `${barGraphHeight(tagDetails.length)}vh`,
-            width: '85vw',
-          }}
-        >
-          <Bar options={options} data={tagData} />
-        </div>
+        <section>
+          <h2 className="py-6 mt-5 text-base font-bold">Total by tags</h2>
+          <div className="pl-4">
+            <div
+              className="chart-container"
+              style={{
+                position: 'relative',
+                height: `${barGraphHeight(tagDetails.length)}vh`,
+                width: '85vw',
+              }}
+            >
+              <Bar options={options} data={tagData} />
+            </div>
+            <ReportTable table={tagTable} />
+          </div>
+        </section>
 
-        <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
-          <tbody>
-            {tagTable.map((row) => {
-              return (
-                <tr key={row[0]}>
-                  <td className="p-2 border border-slate-300">{row[0]}</td>
-                  <td className="p-2 border border-slate-300">{row[1]}</td>
-                  <td className="p-2 border border-slate-300">{row[2]}</td>
-                  <td className="p-2 border border-slate-300">{row[3]}</td>
-                  <td className="p-2 border border-slate-300">{row[4]}</td>
-                  <td className="p-2 border border-slate-300">{row[5]}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+        <section>
+          <h2 className="py-6 mt-5 text-base font-bold">Total by groups</h2>
+          <div className="pl-4">
+            <div
+              className="chart-container"
+              style={{
+                position: 'relative',
+                height: `${barGraphHeight(groupDetails.length)}vh`,
+                width: '85vw',
+              }}
+            >
+              <Bar options={options} data={groupData} />
+            </div>
+            <ReportTable table={gdTable} />
+          </div>
+        </section>
 
-        <h2 className="py-6 mt-5 text-base font-bold">Total by groups</h2>
-        <div
-          className="chart-container"
-          style={{
-            position: 'relative',
-            height: `${barGraphHeight(groupDetails.length)}vh`,
-            width: '85vw',
-          }}
-        >
-          <Bar options={options} data={groupData} />
-        </div>
-
-        <table className="w-full mt-4 font-mono text-xs text-gray-700 border border-slate-400">
-          <tbody>
-            {gdTable.map((row, i) => {
-              return (
-                <tr key={`${i}-${row[0]}`}>
-                  <td className="p-2 whitespace-pre border border-slate-300">
-                    {row[0]}
-                  </td>
-                  <td className="p-2 border border-slate-300">{row[1]}</td>
-                  <td className="p-2 border border-slate-300">{row[2]}</td>
-                  <td className="p-2 border border-slate-300">{row[3]}</td>
-                  <td className="p-2 border border-slate-300">{row[4]}</td>
-                  <td className="p-2 border border-slate-300">{row[5]}</td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
       </div>
     </section>
   )
