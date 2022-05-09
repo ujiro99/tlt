@@ -38,6 +38,8 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   const level = group.level
   const hasTags = group.tags.length > 0
 
+  const [isEditing, focusOrEdit, edit] = useEditable(line)
+
   const TagName = (level <= 6 ? `h${level}` : `h6`) as HeadingTag
 
   const onChangeTags = (tags: Tag[]) => {
@@ -48,11 +50,11 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   }
 
   const addChild = (e: React.MouseEvent) => {
-    manager.addEmptyChild(line)
+    const appendLine = manager.addEmptyChild(line)
+    edit(appendLine)
     eventStop(e)
   }
 
-  const [isEditing, focusOrEdit] = useEditable(line)
   if (isEditing) {
     return (
       <LineEditor

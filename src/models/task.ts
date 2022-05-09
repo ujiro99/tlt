@@ -18,7 +18,7 @@ export class Task implements IClonable<Task> {
   private static taskId = 0
 
   // Regular expressions for markdown parsing
-  private static taskRegexp = /- (\[\s\]|\[x\])\s.+$/
+  private static taskRegexp = /- (\[\s\]|\[x\])\s.*$/
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)(?:$|\s~|\s#(\d*))/
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/

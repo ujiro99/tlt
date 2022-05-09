@@ -8,7 +8,7 @@ import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import { LoadingIcon } from '@/components/LoadingIcon'
 import { sleep, getIndent } from '@/services/util'
-import { INDENT_SIZE, KEY, DEFAULT } from '@/const'
+import { INDENT_SIZE, KEY, KEYCODE_ENTER, DEFAULT } from '@/const'
 
 const INDENT = depthToIndent(1)
 
@@ -80,34 +80,36 @@ export function TaskTextarea(): JSX.Element {
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
-    switch (e.code) {
-      case KEY.ENTER: {
-        const start = inputArea.current.selectionStart
-        const end = inputArea.current.selectionEnd
-        if (start !== end) break
-        if (e.shiftKey) break
+    if (e.keyCode === KEYCODE_ENTER) {
+      // KeyCode is used to distinguish it from the Enter key input during IME
+      const start = inputArea.current.selectionStart
+      const end = inputArea.current.selectionEnd
+      if (start !== end) return
+      if (e.shiftKey) return
 
-        const lines = text.split(/\n/)
-        const prevPos = text.slice(0, start).split(/\n/).length - 1
-        const prevLine = lines[prevPos]
-        let rowAdd: string
-        if (Task.isTaskStr(prevLine)) {
-          // Add a new task as sibling level.
-          rowAdd = getIndent(prevLine) + DEFAULT
-        } else if (Group.test(prevLine)) {
-          // Add a new task as child level.
-          rowAdd = getIndent(prevLine) + INDENT + DEFAULT
-        }
-
-        lines.splice(prevPos + 1, 0, rowAdd)
-        const newText = lines.join('\n')
-        setText(newText)
-        const newPos = lines.slice(0, prevPos + 2).join('\n').length
-        setSelection({ start: newPos, end: newPos })
-
-        e.preventDefault()
-        break
+      const lines = text.split(/\n/)
+      const prevPos = text.slice(0, start).split(/\n/).length - 1
+      const prevLine = lines[prevPos]
+      let rowAdd: string
+      if (Task.isTaskStr(prevLine)) {
+        // Add a new task as sibling level.
+        rowAdd = getIndent(prevLine) + DEFAULT
+      } else if (Group.test(prevLine)) {
+        // Add a new task as child level.
+        rowAdd = getIndent(prevLine) + INDENT + DEFAULT
       }
+
+      lines.splice(prevPos + 1, 0, rowAdd)
+      const newText = lines.join('\n')
+      setText(newText)
+      const newPos = lines.slice(0, prevPos + 2).join('\n').length
+      setSelection({ start: newPos, end: newPos })
+
+      e.preventDefault()
+      return
+    }
+
+    switch (e.code) {
       case KEY.TAB: {
         const start = inputArea.current.selectionStart
         const from = text.slice(0, start).split(/\n/).length - 1

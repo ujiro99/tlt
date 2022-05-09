@@ -9,7 +9,14 @@
     cursor: auto;
   }
 
+  &__start-position {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+  }
+
   &__content {
+    position: absolute;
     padding: 10px;
   }
 }

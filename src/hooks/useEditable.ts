@@ -12,7 +12,7 @@ const editingLineState = atom({
   default: 0,
 })
 
-type useEditableReturn = [boolean, () => void, () => void]
+type useEditableReturn = [boolean, () => void, (editLine?: number) => void]
 
 export function useEditable(line: number): useEditableReturn {
   const [focusLine, setFocusLine] = useRecoilState(focusLineState)
@@ -33,11 +33,15 @@ export function useEditable(line: number): useEditableReturn {
     }
   }, [line, focusLine])
 
-  const edit = useCallback(() => {
-    Log.v(`edit line: ${line}`)
-    setFocusLine(line)
-    setEditingLine(line)
-  }, [line, focusLine])
+  const edit = useCallback(
+    (editLine?: number) => {
+      if (!editLine) editLine = line
+      Log.v(`edit line: ${editLine}`)
+      setFocusLine(editLine)
+      setEditingLine(editLine)
+    },
+    [line, focusLine],
+  )
 
   return [isEditing(), focusOrEdit, edit]
 }

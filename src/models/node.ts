@@ -125,8 +125,7 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     let cloned: Node
     const parent = this.find(predicate)
     if (parent) {
-      const task = Task.parse(DEFAULT + "please input")
-      const empty = new Node(NODE_TYPE.TASK, 0, task)
+      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(DEFAULT))
       const newParent = parent.append(empty)
       cloned = this.replace(newParent, (n) => n.id === parent.id, false)
     }
