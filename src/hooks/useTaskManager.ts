@@ -134,7 +134,7 @@ interface ITaskManager {
   setRoot: (node: Node) => void
   getNodeByLine: (line: number) => Node
   setNodeByLine: (node: Node, line: number) => void
-  addEmptyChild: (line: number) => void
+  addEmptyChild: (line: number) => number
 }
 export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState(nodeState)
@@ -166,9 +166,11 @@ export function useTaskManager(): ITaskManager {
     setRoot(newRoot)
   }
 
-  const addEmptyChild = (line: number) => {
+  const addEmptyChild = (line: number): number => {
     const newRoot = root.appendEmptyTask((node) => node.line === line)
     setRoot(newRoot)
+    const parent = newRoot.find((node) => node.line === line)
+    return parent.children[parent.children.length - 1].line
   }
 
   return {
