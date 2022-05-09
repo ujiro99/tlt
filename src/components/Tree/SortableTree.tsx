@@ -73,8 +73,7 @@ export function SortableTree({
   const [moved, setMoved] = useState(false)
 
   const manager = useTaskManager()
-  const defaultNode = manager.getRoot()
-  const [root, setItems] = useState(defaultNode)
+  const root = manager.getRoot()
   const items = root.children
 
   const { moveTracking } = useTrackingState()
@@ -128,10 +127,6 @@ export function SortableTree({
       offset: offsetLeft,
     }
   }, [flattenedItems, offsetLeft])
-
-  useEffect(() => {
-    setItems(defaultNode)
-  }, [defaultNode])
 
   const announcements: Announcements = {
     onDragStart(id) {
@@ -251,7 +246,6 @@ export function SortableTree({
   }
 
   function setTreeItems(newItems: TreeItems) {
-    setItems(treeItemsToNode(newItems))
     // update persistent data
     manager.setRoot(treeItemsToNode(newItems))
   }
