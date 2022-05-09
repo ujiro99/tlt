@@ -3,6 +3,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditFinish } from '@/hooks/useEditable'
+import { eventStop } from '@/services/util'
 import { DEFAULT, KEYCODE_ENTER } from '@/const'
 
 type Props = {
@@ -55,6 +56,8 @@ export function LineEditor(props: Props): JSX.Element {
       onChange={onChange}
       onKeyDown={onKeyDown}
       onFocus={onFocus}
+      onDragStart={eventStop}
+      onPointerDown={eventStop}
       autoFocus
     />
   )
