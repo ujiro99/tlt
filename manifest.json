@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "TLT : ToDo List & Time Tracking",
   "description": "ToDo and budget control with a minimal UI.",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "action": {
     "default_icon": "icon16.png",
     "default_popup": "popup.html"
