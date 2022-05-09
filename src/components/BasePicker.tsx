@@ -4,10 +4,6 @@ import { eventStop } from '@/services/util'
 
 import './BasePicker.css'
 
-const PickerStyle = {
-  position: 'absolute',
-} as CSSProperties
-
 type Size = {
   w: number
   h: number
@@ -26,7 +22,7 @@ export type EventType = typeof EVENT_TYPE[keyof typeof EVENT_TYPE]
 
 const TopAdjust = {
   [EVENT_TYPE.CLICK]: 20,
-  [EVENT_TYPE.HOVER]: -16,
+  [EVENT_TYPE.HOVER]: 5,
 }
 
 const LeftAdjust = {
@@ -36,7 +32,7 @@ const LeftAdjust = {
 
 const PaddingAdjust = {
   [EVENT_TYPE.CLICK]: 0,
-  [EVENT_TYPE.HOVER]: 30,
+  [EVENT_TYPE.HOVER]: 5,
 }
 
 export type BasePickerProps = {
@@ -51,10 +47,11 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
   const position = props.position || { x: 0, y: 0 }
   const eventType = props.eventType || EVENT_TYPE.CLICK
   const [hoverRef, isHovered] = useHover()
-  const [hoverCancelRef] = useHoverCancel()
+  const [startRef] = useHoverCancel()
+  const [contentRef] = useHoverCancel()
 
   let size = props.size || { w: 0, h: 0 }
-  const node = hoverCancelRef.current
+  const node = contentRef.current
   if (node) {
     // overwrite with actual size
     size = { w: node.offsetWidth, h: node.offsetHeight }
@@ -93,7 +90,6 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
   )
 
   const style = {
-    ...PickerStyle,
     top,
     left,
     paddingTop,
@@ -109,10 +105,16 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
       ref={hoverRef as React.RefObject<HTMLDivElement>}
     >
       <div
+        className="BasePicker__start-position"
+        style={{top: position.y - 10, left: position.x - 10}}
+        onClick={onClickPadding}
+        ref={startRef as React.RefObject<HTMLDivElement>}
+        />
+      <div
         className="BasePicker__content"
         style={style}
         onClick={onClickPadding}
-        ref={hoverCancelRef as React.RefObject<HTMLDivElement>}
+        ref={contentRef as React.RefObject<HTMLDivElement>}
       >
         <div onClick={eventStop}>{props.children}</div>
       </div>
