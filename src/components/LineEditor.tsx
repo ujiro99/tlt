@@ -3,14 +3,12 @@ import TextareaAutosize from 'react-textarea-autosize'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditFinish } from '@/hooks/useEditable'
-import { DEFAULT } from '@/const'
+import { DEFAULT, KEYCODE_ENTER } from '@/const'
 
 type Props = {
   line: number
   className?: string
 }
-
-const KEYCODE_ENTER = 13
 
 export function LineEditor(props: Props): JSX.Element {
   const line = props.line
