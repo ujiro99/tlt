@@ -6,6 +6,7 @@ import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { Tooltip } from '@/components/Tooltip'
 import { TagMenu, TagMenuProps } from '@/components/Tag/TagMenu'
 import { sleep } from '@/services/util'
+import * as i18n from '@/services/i18n'
 
 import '@/components/TaskController.css'
 
@@ -69,7 +70,7 @@ function PlayStopButton(props: PlayStopProps) {
           transform: 'translate(-20px, -50%)',
         }}
       >
-        <span>You can start today only.</span>
+        <span>{i18n.t('start_only_today')}</span>
       </Tooltip>
     </button>
   ) : (

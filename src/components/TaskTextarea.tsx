@@ -8,6 +8,7 @@ import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import { LoadingIcon } from '@/components/LoadingIcon'
 import { sleep, getIndent } from '@/services/util'
+import * as i18n from '@/services/i18n'
 import { INDENT_SIZE, KEY, KEYCODE_ENTER, DEFAULT } from '@/const'
 
 const INDENT = depthToIndent(1)
@@ -146,7 +147,7 @@ export function TaskTextarea(): JSX.Element {
     <div className="task-textarea">
       {iconVisible ? (
         <LoadingIcon>
-          <span>Saving...</span>
+          <span>{i18n.t('saving')}</span>
         </LoadingIcon>
       ) : null}
       <TextareaAutosize

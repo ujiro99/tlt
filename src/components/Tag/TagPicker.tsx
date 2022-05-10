@@ -9,6 +9,7 @@ import {
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { difference, eventStop } from '@/services/util'
+import * as i18n from '@/services/i18n'
 
 import '@/css/fadeIn.css'
 
@@ -59,14 +60,14 @@ export const TagPicker = (props: Props): JSX.Element => {
       >
         <div className="TagPicker">
           <div className="TagPicker__current">
-            <span className="TagPicker__label">Current tags</span>
+            <span className="TagPicker__label">{i18n.t('current_tags')}</span>
             {currentTags.map((t) => {
               return <TagButton tag={t} key={t.name} onClick={removeTag} />
             })}
           </div>
           <div className="TagPicker__history">
-            <span className="TagPicker__label">Add tags</span>
-            {additionalTags.length === 0 && <span>No tags yet.</span>}
+            <span className="TagPicker__label">{i18n.t('add_tags')}</span>
+            {additionalTags.length === 0 && <span>{i18n.t('no_tags')}</span>}
             {additionalTags.map((t) => {
               return <TagButton tag={t} key={t.name} onClick={addTag} />
             })}

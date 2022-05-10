@@ -7,6 +7,7 @@ import { Icon } from '@/components/Icon'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { sleep } from '@/services/util'
 import { reportState } from '@/components/Report'
+import * as i18n from '@/services/i18n'
 
 import './IconButton.css'
 
@@ -61,14 +62,14 @@ export function Copy(): JSX.Element {
         location={'bottom'}
         style={{ left: '4px' }}
       >
-        <span>Copied!</span>
+        <span>{i18n.t('copied')}</span>
       </Tooltip>
       <Tooltip
         show={labelVisible}
         location={'top'}
         style={{ width: '6em', left: '-2px', bottom: '24px' }}
       >
-        <span>Copy text</span>
+        <span>{i18n.t('label_copy')}</span>
       </Tooltip>
     </button>
   )

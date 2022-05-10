@@ -1,0 +1,81 @@
+{
+  "extName": { "message": "TLT : ToDo List & Time Tracking"},
+  "extDescription": {
+    "message": "ToDo and budget control with a minimal UI."
+  },
+  "new_todo":  {
+    "message": "+ new ToDo."
+  },
+  "start_only_today": {
+    "message": "You can start today only."
+  },
+  "copied": {
+    "message": "Copied!"
+  },
+  "label_copy": {
+    "message": "Copy text"
+  },
+  "label_save": {
+    "message": "Save"
+  },
+  "label_edit": {
+    "message": "Edit"
+  },
+  "label_todo": {
+    "message": "ToDo"
+  },
+  "label_report": {
+    "message": "Report"
+  },
+  "actual": {
+    "message": "actual",
+    "description": "Actual results in budget control."
+  },
+  "estimate": {
+    "message": "estimate",
+    "description": "Estimation in budget control."
+  },
+  "tag": {
+    "message": "tag"
+  },
+  "group": {
+    "message": "group"
+  },
+  "amount": {
+    "message": "amount"
+  },
+  "avg": {
+    "message": "avg."
+  },
+  "aer": {
+    "message": "a/e",
+    "description": "Estimated to actual ratio."
+  },
+  "current_tags": {
+    "message": "Current tags"
+  },
+  "add_tags": {
+    "message": "Add tags"
+  },
+  "no_tags": {
+    "message": "No tags yet."
+  },
+  "no_groups": {
+      "message": "No groups yet."
+  },
+  "saving": {
+    "message": "Saving..."
+  },
+  "completed_only": {
+    "message": "Completed only"
+  },
+  "summary": {
+    "message": "Summary"
+  },
+  "total_by_tags": {
+    "message": "Total by tags"
+  },
+  "total_by_groups": {
+    "message": "Total by groups"
+  }
+}
