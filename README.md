@@ -1,9 +1,9 @@
-
 [![codecov](https://codecov.io/gh/ujiro99/tlt/branch/main/graph/badge.svg?token=fzeIIssgyo)](https://codecov.io/gh/ujiro99/tlt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/977b93b655ce7724625a/maintainability)](https://codeclimate.com/github/ujiro99/tlt/maintainability)
----
 
 <img width="700" src="https://github.com/ujiro99/tlt/blob/main/docs/img/logo.png" />
+
+## TLT
 
 This is a Chrome Extension for ToDo and budget control with a minimal UI.
 
@@ -16,7 +16,9 @@ Using a text-based notation inspired by todo.md, you can easily manage tasks.
 
 
 ## Install
-in preparation
+<a href="https://chrome.google.com/webstore/detail/tlt-todo-list-time-tracki/imgncinkhihejaijlfkojnhnamhodkha" title="open chrome webstore">
+<img src="https://github.com/ujiro99/optimize-ab-selector/blob/master/docs/assets/chrome-webstore-small.png?raw=true" alt="chrome webstore" width="200">
+</a>
 
 
 ## Support
