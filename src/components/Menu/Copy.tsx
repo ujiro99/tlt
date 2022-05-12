@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { Tooltip } from '@/components/Tooltip'
 import { useMode, MODE } from '@/hooks/useMode'
-import { Icon } from '@/components/Icon'
+import { useHover } from '@/hooks/useHover'
 import { useTaskManager } from '@/hooks/useTaskManager'
-import { sleep } from '@/services/util'
 import { reportState } from '@/components/Report'
+import { Tooltip } from '@/components/Tooltip'
+import { Icon } from '@/components/Icon'
+import { sleep } from '@/services/util'
 import * as i18n from '@/services/i18n'
 
 import './IconButton.css'
@@ -15,6 +16,7 @@ export function Copy(): JSX.Element {
   const manager = useTaskManager()
   const report = useRecoilValue(reportState)
   const [mode] = useMode()
+  const [hoverRef, isHovered] = useHover(200)
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [labelVisible, setLabelVisible] = useState(false)
   const [timeoutId, setTimeoutId] = useState(0)
@@ -34,27 +36,23 @@ export function Copy(): JSX.Element {
     setTooltipVisible(false)
   }
 
-  const hover = (e: React.SyntheticEvent<HTMLButtonElement>) => {
+  useEffect(() => {
     clearTimeout(timeoutId)
-    if (e.type === 'mouseover') {
-      const id = window.setTimeout(() => {
-        setLabelVisible(true)
-      }, 200)
-      setTimeoutId(id)
+    if (isHovered) {
+      setLabelVisible(true)
     } else {
       const id = window.setTimeout(() => {
         setLabelVisible(false)
       }, 50)
       setTimeoutId(id)
     }
-  }
+  }, [isHovered])
 
   return (
     <button
       className="icon-button group"
       onClick={copy}
-      onMouseOver={hover}
-      onMouseLeave={hover}
+      ref={hoverRef as React.RefObject<HTMLButtonElement>}
     >
       <Icon className="icon-button__icon" name="copy" />
       <Tooltip
