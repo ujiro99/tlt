@@ -5,6 +5,7 @@ import { useTrackingState } from '@/hooks/useTrackingState'
 import { useMode, MODE } from '@/hooks/useMode'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
+import * as i18n from '@/services/i18n'
 
 import './IconButton.css'
 
@@ -14,7 +15,7 @@ export function Edit(): JSX.Element {
   const [timeoutId, setTimeoutId] = useState(0)
   const [mode, setMode] = useMode()
   const isEdit = mode === MODE.EDIT
-  const label = isEdit ? 'Save' : 'Edit'
+  const label = isEdit ? i18n.t('label_save') : i18n.t('label_edit')
   const icon = isEdit ? 'save' : 'edit'
   const isVisible = mode === MODE.SHOW || mode === MODE.EDIT
 

@@ -1,0 +1,81 @@
+{
+  "extName": { "message": "TLT : ToDo List & Time Tracking"},
+  "extDescription": {
+    "message": "ToDo and budget control with a minimal UI."
+  },
+  "new_todo":  {
+    "message": "+ new ToDo."
+  },
+  "start_only_today": {
+    "message": "今日のToDoのみ開始できます"
+  },
+  "copied": {
+    "message": "コピー完了!"
+  },
+  "label_copy": {
+    "message": "コピー"
+  },
+  "label_save": {
+    "message": "保存"
+  },
+  "label_edit": {
+    "message": "編集"
+  },
+  "label_todo": {
+    "message": "ToDo"
+  },
+  "label_report": {
+    "message": "Report"
+  },
+  "actual": {
+    "message": "予定",
+    "description": "Actual results in budget control."
+  },
+  "estimate": {
+    "message": "実績",
+    "description": "Estimation in budget control."
+  },
+  "tag": {
+    "message": "タグ"
+  },
+  "group": {
+    "message": "グループ"
+  },
+  "amount": {
+    "message": "数量"
+  },
+  "avg": {
+    "message": "平均"
+  },
+  "aer": {
+    "message": "予/実",
+    "description": "Estimated to actual ratio."
+  },
+  "current_tags": {
+    "message": "現在のタグ"
+  },
+  "add_tags": {
+    "message": "タグを追加"
+  },
+  "no_tags": {
+    "message": "タグはまだありません"
+  },
+  "no_groups": {
+      "message": "グループはまだありません"
+  },
+  "saving": {
+    "message": "保存中..."
+  },
+  "completed_only": {
+    "message": "完了のみ"
+  },
+  "summary": {
+    "message": "サマリー"
+  },
+  "total_by_tags": {
+    "message": "タグ別集計"
+  },
+  "total_by_groups": {
+    "message": "グループ別集計"
+  }
+}

@@ -13,6 +13,7 @@ import { Group } from '@/models/group'
 import { Time } from '@/models/time'
 import { asciiBar, aggregate, ifNull } from '@/services/util'
 import Log from '@/services/log'
+import * as i18n from '@/services/i18n'
 
 import table from 'text-table'
 import './Report.css'
@@ -182,7 +183,7 @@ export function Report(): JSX.Element {
     return Time.subs(b[1], a[1])
   })
   const tagTable = [
-    ['tag', 'actual', 'estimate', 'a/e', 'amount', 'avg.'],
+    [i18n.t('tag'), i18n.t('actual'), i18n.t('estimate'), i18n.t('aer'), i18n.t('amount'), i18n.t('avg')],
   ] as Row<string>[]
   tagDetails.forEach((row) => {
     tagTable.push([
@@ -225,7 +226,7 @@ export function Report(): JSX.Element {
   const isGroupExists = groups.length > 0
 
   const gdTable = [
-    ['group', 'actual', 'estimate', 'a/e', 'amount', 'avg.'],
+    [i18n.t('group'), i18n.t('actual'), i18n.t('estimate'), i18n.t('aer'), i18n.t('amount'), i18n.t('avg')],
     ...groups.reduce<string[][]>((acc, group) => {
       const tasks = nodeToTasks(group, onlyCompleted)
       const gt = aggregate(tasks)
@@ -386,11 +387,11 @@ export function Report(): JSX.Element {
             checked={onlyCompleted}
             onChange={toggleOnlyCompleted}
           />
-          <span>Completed only</span>
+          <span>{i18n.t('completed_only')}</span>
         </label>
       </div>
       <div className="report-data__content">
-        <h2 className="pb-6 mt-0.5 text-base font-bold">Summary</h2>
+        <h2 className="pb-6 mt-0.5 text-base font-bold">{i18n.t('summary')}</h2>
 
         <div
           className="chart-container"
@@ -400,7 +401,9 @@ export function Report(): JSX.Element {
         </div>
 
         <section>
-          <h2 className="py-6 mt-5 text-base font-bold">Total by tags</h2>
+          <h2 className="py-6 mt-5 text-base font-bold">
+            {i18n.t('total_by_tags')}
+          </h2>
           {isTagExists ? (
             <div className="pl-4">
               <div
@@ -416,12 +419,14 @@ export function Report(): JSX.Element {
               <ReportTable table={tagTable} />
             </div>
           ) : (
-            <span>No tags yet.</span>
+            <span>{i18n.t('no_tags')}</span>
           )}
         </section>
 
         <section>
-          <h2 className="py-6 mt-5 text-base font-bold">Total by groups</h2>
+          <h2 className="py-6 mt-5 text-base font-bold">
+            {i18n.t('total_by_groups')}
+          </h2>
           {isGroupExists ? (
             <div className="pl-4">
               <div
@@ -437,7 +442,7 @@ export function Report(): JSX.Element {
               <ReportTable table={gdTable} />
             </div>
           ) : (
-            <span>No groups yet.</span>
+            <span>{i18n.t('no_groups')}</span>
           )}
         </section>
       </div>

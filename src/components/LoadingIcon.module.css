@@ -43,6 +43,7 @@
     font-size: 10px;
     color: #555;
     line-height: 1.6em;
+    white-space: nowrap;
   }
 }
 
