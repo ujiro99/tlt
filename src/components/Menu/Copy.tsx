@@ -60,14 +60,14 @@ export function Copy(): JSX.Element {
       <Tooltip
         show={tooltipVisible}
         location={'bottom'}
-        style={{ left: '4px' }}
+        style={{ whiteSpace: 'nowrap', left: '4px' }}
       >
         <span>{i18n.t('copied')}</span>
       </Tooltip>
       <Tooltip
         show={labelVisible}
         location={'top'}
-        style={{ width: '6em', left: '-2px', bottom: '24px' }}
+        style={{ whiteSpace: 'nowrap', left: '-2px', bottom: '24px' }}
       >
         <span>{i18n.t('label_copy')}</span>
       </Tooltip>
