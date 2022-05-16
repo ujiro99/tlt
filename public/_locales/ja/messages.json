@@ -28,11 +28,11 @@
     "message": "Report"
   },
   "actual": {
-    "message": "予定",
+    "message": "実績",
     "description": "Actual results in budget control."
   },
   "estimate": {
-    "message": "実績",
+    "message": "予定",
     "description": "Estimation in budget control."
   },
   "tag": {
