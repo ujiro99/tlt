@@ -1,7 +1,7 @@
 {
   "extName": { "message": "TLT : ToDo List & Time Tracking"},
   "extDescription": {
-    "message": "ToDo and budget control with a minimal UI."
+    "message": "ミニマムなUIでToDoと予実を管理できます."
   },
   "new_todo":  {
     "message": "+ new ToDo."
