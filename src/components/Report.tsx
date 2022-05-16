@@ -44,7 +44,7 @@ ChartJS.register(
 
 const BarLength = 40
 
-const labels = ['actual', 'estimate']
+const labels = [i18n.t('actual'), i18n.t('estimate')]
 
 const colors = {
   gray200: 'rgb(229, 231, 235)',
@@ -326,8 +326,8 @@ export function Report(): JSX.Element {
       {
         data: labels.map((l) => {
           let time: Time
-          if (l === 'actual') time = all.actual
-          if (l === 'estimate') time = all.estimate
+          if (l === labels[0]) time = all.actual
+          if (l === labels[1]) time = all.estimate
           return time.toHours()
         }),
         backgroundColor: [
@@ -342,14 +342,14 @@ export function Report(): JSX.Element {
     labels: tagDetails.map((t) => t[0]),
     datasets: [
       {
-        label: 'actual',
+        label: i18n.t('actual'),
         data: tagDetails.map((t) => t[1].toHours()),
         backgroundColor: tagDetails
           .map((t) => findColor(t[0]))
           .map((c) => addOpacity(c, 0.8)),
       },
       {
-        label: 'estimate',
+        label: i18n.t('estimate'),
         data: tagDetails.map((t) => t[2].toHours()),
         backgroundColor: tagDetails
           .map((t) => findColor(t[0]))
@@ -362,12 +362,12 @@ export function Report(): JSX.Element {
     labels: groupDetails.map((g) => g[0]),
     datasets: [
       {
-        label: 'actual',
+        label: i18n.t('actual'),
         data: groupDetails.map((g) => g[1].toHours()),
         backgroundColor: addOpacity(colors.blue, 0.5),
       },
       {
-        label: 'estimate',
+        label: i18n.t('estimate'),
         data: groupDetails.map((g) => g[2].toHours()),
         backgroundColor: addOpacity(colors.orange, 0.5),
       },
