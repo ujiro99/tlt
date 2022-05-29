@@ -1,59 +1,48 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 import { Calendar } from '@/components/Menu/Calendar'
+import { ReportSummary } from '@/components/Menu/ReportSummary'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
-import { ButtonGroup } from '@/components/ButtonGroup'
-import { aggregate, ifNull } from '@/services/util'
-import { nodeToTasks } from '@/models/node'
-import { useTaskManager } from '@/hooks/useTaskManager'
-import { useMode, MODE } from '@/hooks/useMode'
-import * as i18n from '@/services/i18n'
+import {  sleep } from '@/services/util'
+
+import './Menu.css'
 
 export function Menu(): JSX.Element {
-  const [mode, setMode] = useMode()
-  const manager = useTaskManager()
-  const root = manager.getRoot()
+  const [isFixed, setFixed] = useState(false)
 
-  // --- Summary
-  const tasks = nodeToTasks(root, false)
-  const all = aggregate(tasks)
-
-  const onChange = ({ name }) => {
-    setMode(name)
-  }
-
-  const buttonProps = [
-    {
-      name: MODE.SHOW,
-      label: i18n.t('label_todo'),
-      iconName: 'check',
-    },
-    {
-      name: MODE.REPORT,
-      label: i18n.t('label_report'),
-      iconName: 'assessment',
-    },
-  ]
+  useEffect(() => {
+    let intersectionObserver: IntersectionObserver
+    void (async () => {
+      intersectionObserver = new IntersectionObserver(
+        function (entries) {
+          setFixed(!entries[0].isIntersecting)
+        },
+        {
+          root: document.querySelector('#popup'),
+          rootMargin: '-25px 0px -20px 0px',
+        },
+      )
+      await sleep(200)
+      intersectionObserver.observe(document.querySelector('.calendar'))
+    })()
+    return () => {
+      intersectionObserver.disconnect()
+    }
+  }, [])
 
   return (
-    <div className="sticky top-0 z-10 w-full pt-6 pl-4 bg-gray-100">
-      <Calendar />
-      <div className="text-xs select-none font-mono text-gray-500 ml-[10px] mt-[0.8em]">
-        <span>{i18n.t('actual')}</span>
-        <span className="pl-[0.8em] text-gray-600 tracking-wider">{ifNull(all.actual.toString())}</span>
-        <span className="pl-[0.5em]">/</span>
-        <span className="pl-[0.5em]">{i18n.t('estimate')}</span>
-        <span className="pl-[0.8em] text-gray-600 tracking-wider">{ifNull(all.estimate.toString())}</span>
-        <span className="pl-[0.5em]">:</span>
-        <span className="pl-[0.5em] text-gray-600 tracking-wider">{ifNull(all.percentage)}</span>
-        <span className="pl-[0.25em]">%</span>
+    <>
+      <header className="menu__sticky">
+        <div className="menu__button">
+          <Edit />
+          <Copy />
+        </div>
+      </header>
+      <div className="menu">
+        <Calendar fixed={isFixed} />
+        <ReportSummary fixed={isFixed} />
       </div>
-      <ButtonGroup buttons={buttonProps} onChange={onChange} initial={mode} />
-      <div className="absolute z-10 right-1 bottom-1">
-        <Edit />
-        <Copy />
-      </div>
-    </div>
+    </>
   )
 }

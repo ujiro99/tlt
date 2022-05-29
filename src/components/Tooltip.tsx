@@ -44,7 +44,10 @@ export function Tooltip(props: TooltipProp): JSX.Element {
     pos = { x: bound.left, y: bound.top }
   }
 
-  const left = Math.min(pos.x, window.innerWidth - size.w - 5) - pos.x
+  let left = Math.min(pos.x, window.innerWidth - size.w - 5) - pos.x as number | string
+  if (props.style.left) {
+    left = props.style.left
+  }
 
   const style = {
     ...props.style,

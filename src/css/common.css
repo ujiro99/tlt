@@ -1,0 +1,11 @@
+:root {
+  --text-300: rgb(212 212 216);
+  --text-400: rgb(161 161 170);
+  --text-500: rgb(113 113 122);
+  --text-600: rgb(82 82 91);
+  --text-700: rgb(63 63 70);
+  --text-800: rgb(39 39 42);
+
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+}

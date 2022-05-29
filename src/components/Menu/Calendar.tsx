@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import classnames from 'classnames'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import Modal from 'react-modal'
@@ -14,7 +15,11 @@ import { eventStop } from '@/services/util'
 import './Calendar.css'
 import styles from '../Modal.module.css'
 
-function MyCalendar(): JSX.Element {
+type Props = {
+  fixed: boolean
+}
+
+function MyCalendar(props: Props): JSX.Element {
   const [visible, setVisible] = useState(false)
   const { date, range, setDate, setDateRange } = useCalendarDate()
   const manager = useTaskManager()
@@ -22,6 +27,9 @@ function MyCalendar(): JSX.Element {
 
   const [mode] = useMode()
   const selectRange = mode === MODE.REPORT
+
+  const label = 'Today'
+  const isFixed = props.fixed
 
   function toggleCalendar() {
     setVisible(!visible)
@@ -53,11 +61,19 @@ function MyCalendar(): JSX.Element {
 
   return (
     <div className="calendar" onClick={toggleCalendar}>
-      <button className="calendar__button">
-        <Icon className="calendar__icon" name="calendar" />
-      </button>
-
-      <RecordName />
+      <div className="calendar__date">
+        <RecordName />
+      </div>
+      <div
+        className={classnames('calendar__label', {
+          'calendar__label--fixed': isFixed,
+        })}
+      >
+        <span>{label}</span>
+        <button className="calendar__button">
+          <Icon className="calendar__icon" name="calendar" />
+        </button>
+      </div>
 
       <Modal
         isOpen={visible}
