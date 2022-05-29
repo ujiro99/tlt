@@ -76,5 +76,10 @@
 <path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
 </symbol>
 
+<!-- arrow-back -->
+<symbol id="icon-arrow-back" viewBox="0 0 48 48">
+<path d="M32.75 44 12.75 24 32.75 4 35.55 6.85 18.4 24 35.55 41.15Z"/>
+</symbol>
+
 </defs>
 </svg>
