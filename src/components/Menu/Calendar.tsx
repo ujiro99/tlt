@@ -10,7 +10,8 @@ import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { RecordName } from '@/components/Menu/RecordName'
 import { Icon } from '@/components/Icon'
-import { eventStop } from '@/services/util'
+import { eventStop, formatDaysAgo } from '@/services/util'
+import * as i18n from '@/services/i18n'
 
 import './Calendar.css'
 import styles from '../Modal.module.css'
@@ -28,7 +29,7 @@ function MyCalendar(props: Props): JSX.Element {
   const [mode] = useMode()
   const selectRange = mode === MODE.REPORT
 
-  const label = 'Today'
+  const label = formatDaysAgo(date, i18n.getUILanguage())
 
   function toggleCalendar() {
     setVisible(!visible)
