@@ -1,7 +1,7 @@
 .report-summary {
-  margin-top: 4px;
   margin-left: -2px;
-  height: 22px;
+  margin-top: -5px;
+  height: 30px;
   font-size: 12px;
   font-family: var(--font-mono);
   color: var(--text-600);
@@ -16,12 +16,13 @@
     left: 0;
     top: 0;
     transition: all ease-out 0.2s;
-  }
+    padding: 5px 10px;
+    border-radius: var(--radius-md);
 
-  &__container--fixed {
-    position: fixed;
-    top: 10px;
-    left: 128px;
+    &:hover {
+      background-color: var(--bg-gray-100);
+      color: var(--text-700);
+    }
   }
 
   &__icon {
@@ -29,6 +30,18 @@
     width: 22px;
     height: 22px;
     fill: var(--text-500);
+  }
+
+  &__container:hover {
+    .report-summary__icon {
+      fill: var(--text-600);
+    }
+  }
+
+  &__container--fixed {
+    position: fixed;
+    top: 5px;
+    left: 120px;
   }
 
   &__icon + span {

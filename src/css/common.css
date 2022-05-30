@@ -1,4 +1,7 @@
 :root {
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+
   --text-300: rgb(212 212 216);
   --text-400: rgb(161 161 170);
   --text-500: rgb(113 113 122);
@@ -6,6 +9,13 @@
   --text-700: rgb(63 63 70);
   --text-800: rgb(39 39 42);
 
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace;
+  --bg-gray-100: rgb(243 244 246);
+  --bg-gray-200: rgb(229 231 235);
+  --bg-gray-300: rgb(209 213 219);
+  --bg-gray-400: rgb(156 163 175);
+  --bg-gray-500: rgb(107 114 128);
+  --bg-gray-600: rgb(75 85 99);
+  --bg-gray-700: rgb(55 65 81);
+
+  --radius-md: 6px;
 }
