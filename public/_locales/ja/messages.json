@@ -27,6 +27,9 @@
   "label_report": {
     "message": "Report"
   },
+  "label_custom": {
+    "message": "カスタム"
+  },
   "actual": {
     "message": "実績",
     "description": "Actual results in budget control."

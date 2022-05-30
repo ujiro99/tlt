@@ -57,8 +57,8 @@
 </symbol>
 
 <!-- assessment -->
-<symbol id="icon-assessment" viewBox="0 0 24 24">
-<path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/>
+<symbol id="icon-assessment" viewBox="0 0 48 48">
+<path d="M10 40V18H15V40ZM21.5 40V10H26.5V40ZM33 40V26H38V40Z"/>
 </symbol>
 
 <!-- check -->
@@ -74,6 +74,11 @@
 <!-- plus -->
 <symbol id="icon-plus" viewBox="0 0 24 24">
 <path d="M0 0h24v24H0V0z" fill="none"/><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+</symbol>
+
+<!-- arrow-back -->
+<symbol id="icon-arrow-back" viewBox="0 0 48 48">
+<path d="M32.75 44 12.75 24 32.75 4 35.55 6.85 18.4 24 35.55 41.15Z"/>
 </symbol>
 
 </defs>

@@ -75,7 +75,7 @@
 .item-color {
   transition: background-color 0.2s ease-out;
   &:hover {
-    background-color: rgb(241 245 249);
+    background-color: var(--bg-gray-100);
   }
   @apply focus:bg-indigo-50;
 }

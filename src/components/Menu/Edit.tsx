@@ -55,8 +55,8 @@ export function Edit(): JSX.Element {
       <Icon className="icon-button__icon" name={icon} />
       <Tooltip
         show={labelVisible}
-        location={'top'}
-        style={{ width: '4em', left: '0.8em', bottom: '24px' }}
+        location={'bottom'}
+        style={{ width: '4em', left: '0.8em', top: '14px' }}
       >
         <span>{label}</span>
       </Tooltip>

@@ -1,11 +1,14 @@
 .icon-button {
-  @apply hover:bg-gray-200;
   @apply border-none;
   @apply rounded-md;
   @apply transition;
   @apply ease-out;
   @apply text-center;
   @apply select-none;
+
+  &:hover {
+    background-color: var(--bg-gray-100);
+  }
 
   --size: 2rem;
 

@@ -113,6 +113,13 @@ export function asciiBar(percentage: number, length = 20, box = true): string {
   }
 }
 
+export function formatDaysAgo(value: number | string | Date, locale: string): string {
+  const date = new Date(value);
+  const deltaDays = (date.getTime() - Date.now()) / (1000 * 3600 * 24);
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
+  return rtf.format(Math.ceil(deltaDays), 'days').replace(' ', '');
+}
+
 type TimeTotal = {
   actual: Time
   estimate: Time

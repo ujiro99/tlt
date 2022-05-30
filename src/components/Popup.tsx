@@ -9,6 +9,7 @@ import { SortableTree } from '@/components/Tree/SortableTree'
 import { Report } from '@/components/Report'
 import { useTaskStorage } from '@/hooks/useTaskManager'
 
+import '@/css/common.css'
 import '@/components/Popup.css'
 
 export default function Popup(): JSX.Element {

@@ -4,24 +4,67 @@
 }
 
 .calendar {
-  display: flex;
-  align-items: center;
   cursor: pointer;
-  margin-left: 10px;
+  height: 68px;
+  width: fit-content;
+  padding: 5px 10px;
+  border-radius: var(--radius-md);
+
+  &:hover {
+    background-color: var(--bg-gray-100);
+  }
+
+  &__label {
+    font-family: var(--font-mono);
+    font-weight: bold;
+    font-size: 28px;
+    margin-top: 10px;
+    color: var(--text-600);
+    user-select: none;
+    transition: all ease-out 0.2s;
+
+    &--fixed {
+      position: fixed;
+      top: 7px;
+      font-size: 16px;
+      font-weight: normal;
+      margin-top: 0;
+      margin-left: -5px;
+      padding: 5px 10px;
+      border-radius: var(--radius-md);
+
+      &:hover {
+        background-color: var(--bg-gray-100);
+      }
+    }
+  }
+
+  &__button {
+    position: relative;
+    top: 2px;
+    margin-left: 6px;
+  }
 
   &__icon {
-    @apply fill-gray-700;
     width: 20px;
     height: 20px;
+    fill: var(--text-600);
+  }
+
+  &__label--fixed &__button {
+    top: 3px;
+  }
+
+  &__label--fixed &__icon {
+    width: 16px;
+    height: 16px;
   }
 }
 
 .calendar-date {
-  @apply select-none;
-  @apply font-mono;
-  @apply text-gray-700;
-
-  margin-left: 0.4em;
-  font-size: 16px;
+  font-family: var(--font-mono);
+  color: var(--text-600);
+  font-weight: normal;
+  font-size: 14px;
   letter-spacing: -0.05em;
 }
