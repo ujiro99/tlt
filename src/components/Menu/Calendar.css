@@ -14,7 +14,7 @@
     font-weight: bold;
     font-size: 28px;
     margin-top: 10px;
-    color: var(--text-500);
+    color: var(--text-600);
     user-select: none;
     transition: all ease-out 0.2s;
 
@@ -36,7 +36,7 @@
   &__icon {
     width: 20px;
     height: 20px;
-    fill: var(--text-500);
+    fill: var(--text-600);
   }
 
   &__label--fixed &__button {
@@ -51,7 +51,7 @@
 
 .calendar-date {
   font-family: var(--font-mono);
-  color: var(--text-500);
+  color: var(--text-600);
   font-weight: normal;
   font-size: 14px;
   letter-spacing: -0.05em;

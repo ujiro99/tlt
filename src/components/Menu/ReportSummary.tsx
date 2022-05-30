@@ -42,7 +42,7 @@ function PieChart(props: Props): JSX.Element {
     datasets: [
       {
         data: [props.percentage, 100 - props.percentage],
-        backgroundColor: ['rgba(200, 200, 200, 1)', 'rgba(240, 240, 240, 1)'],
+        backgroundColor: ['rgba(161, 161, 170, 1)', 'rgba(240, 240, 240, 1)'],
         borderWidth: [0, 0],
         datalabels: {
           display: false,
