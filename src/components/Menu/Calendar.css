@@ -5,7 +5,7 @@
 
 .calendar {
   cursor: pointer;
-  height: 56px;
+  height: 58px;
   width: fit-content;
   padding-right: 10px;
 
@@ -13,14 +13,14 @@
     font-family: var(--font-mono);
     font-weight: bold;
     font-size: 28px;
-    margin-top: 8px;
+    margin-top: 10px;
     color: var(--text-500);
     user-select: none;
     transition: all ease-out 0.2s;
 
     &--fixed {
       position: fixed;
-      top: 11px;
+      top: 12px;
       font-size: 16px;
       font-weight: normal;
       margin-top: 0;

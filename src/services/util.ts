@@ -117,7 +117,7 @@ export function formatDaysAgo(value: number | string | Date, locale: string): st
   const date = new Date(value);
   const deltaDays = (date.getTime() - Date.now()) / (1000 * 3600 * 24);
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-  return rtf.format(Math.round(deltaDays), 'days').replace(' ', '');
+  return rtf.format(Math.ceil(deltaDays), 'days').replace(' ', '');
 }
 
 type TimeTotal = {

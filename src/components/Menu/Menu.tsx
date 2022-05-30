@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import classnames from 'classnames'
 
 import { useMode, MODE } from '@/hooks/useMode'
 import { Calendar } from '@/components/Menu/Calendar'
@@ -24,7 +25,7 @@ export function Menu(): JSX.Element {
         },
         {
           root: document.querySelector('#popup'),
-          rootMargin: '-30px 0px 0px 0px',
+          rootMargin: '-40px 0px 0px 0px',
         },
       )
       await sleep(200)
@@ -48,7 +49,9 @@ export function Menu(): JSX.Element {
         </div>
       </header>
       {isReport && (
-        <button className="menu__back" onClick={backTodo}>
+        <button className={classnames("menu__back", {
+          "menu__back--fixed": isFixed
+        })} onClick={backTodo}>
           <Icon name="arrow-back" />
         </button>
       )}

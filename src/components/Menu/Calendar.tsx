@@ -3,6 +3,7 @@ import classnames from 'classnames'
 import Calendar from 'react-calendar'
 import 'react-calendar/dist/Calendar.css'
 import Modal from 'react-modal'
+import { differenceInCalendarDays } from 'date-fns'
 
 import { TaskRecordKey } from '@/models/taskRecordKey'
 import { useMode, MODE } from '@/hooks/useMode'
@@ -29,7 +30,20 @@ function MyCalendar(props: Props): JSX.Element {
   const [mode] = useMode()
   const selectRange = mode === MODE.REPORT
 
-  const label = formatDaysAgo(date, i18n.getUILanguage())
+  let label: string
+  let dates = [date]
+  if (selectRange && range.from) {
+    const diff = differenceInCalendarDays(range.from, range.to)
+    if (diff === 0) {
+      label = formatDaysAgo(range.from, i18n.getUILanguage())
+      dates[0] = range.from
+    } else {
+      label = i18n.t('label_custom')
+      dates = [range.from, range.to]
+    }
+  } else {
+    label = formatDaysAgo(date, i18n.getUILanguage())
+  }
 
   function toggleCalendar() {
     setVisible(!visible)
@@ -62,7 +76,7 @@ function MyCalendar(props: Props): JSX.Element {
   return (
     <div className="calendar" onClick={toggleCalendar}>
       <div className="calendar__date">
-        <RecordName />
+        <RecordName date1={dates[0]} date2={dates[1]} />
       </div>
       <div
         className={classnames('calendar__label', {

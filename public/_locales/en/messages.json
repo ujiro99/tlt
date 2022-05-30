@@ -27,6 +27,9 @@
   "label_report": {
     "message": "Report"
   },
+  "label_custom": {
+    "message": "Custom"
+  },
   "actual": {
     "message": "actual",
     "description": "Actual results in budget control."

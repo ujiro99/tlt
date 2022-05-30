@@ -1,24 +1,22 @@
 import React from 'react'
-import { useCalendarDate } from '@/hooks/useCalendarDate'
-import { useMode, MODE } from '@/hooks/useMode'
 import { format } from 'date-fns'
 
-export function RecordName(): JSX.Element {
-  const [mode] = useMode()
-  const { date, range } = useCalendarDate()
+type Props = {
+  date1: Date
+  date2?: Date
+}
 
+const DATE_FMT = 'MMM dd, yyyy'
+
+export function RecordName(props: Props): JSX.Element {
   let dateStr: string
-  if (mode === MODE.SHOW || mode === MODE.EDIT) {
-    dateStr = `${format(date, 'MMM dd, yyyy')}`
+  if (props.date1 && props.date2) {
+    dateStr = `${format(props.date1, DATE_FMT)} - ${format(
+      props.date2,
+      DATE_FMT,
+    )}`
   } else {
-    if (range && range.from && range.to) {
-      dateStr = `${format(range.from, 'MMM dd, yyyy')} - ${format(
-        range.to,
-        'MMM dd, yyyy',
-      )}`
-    } else {
-      dateStr = `${format(date, 'MMM dd, yyyy')}`
-    }
+    dateStr = `${format(props.date1, DATE_FMT)}`
   }
 
   return (
