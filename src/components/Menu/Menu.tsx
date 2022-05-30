@@ -24,7 +24,7 @@ export function Menu(): JSX.Element {
         },
         {
           root: document.querySelector('#popup'),
-          rootMargin: '-25px 0px -20px 0px',
+          rootMargin: '-30px 0px 0px 0px',
         },
       )
       await sleep(200)

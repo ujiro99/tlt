@@ -62,7 +62,6 @@ export function ReportSummary(props: ReportSummaryProps): JSX.Element {
   const [mode, setMode] = useMode()
   const manager = useTaskManager()
   const root = manager.getRoot()
-  const isFixed = props.fixed
 
   // --- Summary
   const tasks = nodeToTasks(root, false)
@@ -76,7 +75,7 @@ export function ReportSummary(props: ReportSummaryProps): JSX.Element {
     <div className="report-summary">
       <div
         className={classnames('report-summary__container', {
-          'report-summary__container--fixed': isFixed,
+          'report-summary__container--fixed': props.fixed,
         })}
         onClick={onClick}
       >

@@ -29,7 +29,6 @@ function MyCalendar(props: Props): JSX.Element {
   const selectRange = mode === MODE.REPORT
 
   const label = 'Today'
-  const isFixed = props.fixed
 
   function toggleCalendar() {
     setVisible(!visible)
@@ -66,7 +65,7 @@ function MyCalendar(props: Props): JSX.Element {
       </div>
       <div
         className={classnames('calendar__label', {
-          'calendar__label--fixed': isFixed,
+          'calendar__label--fixed': props.fixed,
         })}
       >
         <span>{label}</span>
