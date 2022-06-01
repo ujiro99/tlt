@@ -15,6 +15,13 @@ import './ReportSummary.css'
 
 ChartJS.register(ArcElement)
 
+const COLOR = {
+  BG: 'rgba(240, 240, 240, 1)',
+  BG_LIGHT: 'rgba(216, 216, 216, 1)',
+  ACTUAL: 'rgba(190, 190, 190, 1)',
+  OVER: 'rgba(202, 111, 111, 1)',
+}
+
 type Props = {
   percentage: number
 }
@@ -37,12 +44,20 @@ function PieChart(props: Props): JSX.Element {
     },
   }
 
+  let pie = props.percentage
+  const overed = props.percentage > 100
+  if (overed) {
+    pie = props.percentage - 100
+  }
+
   const data = {
     labels: [i18n.t('actual'), '---'],
     datasets: [
       {
-        data: [props.percentage, 100 - props.percentage],
-        backgroundColor: ['rgba(161, 161, 170, 1)', 'rgba(240, 240, 240, 1)'],
+        data: [pie, 100 - pie],
+        backgroundColor: overed
+          ? [COLOR.OVER, COLOR.BG_LIGHT]
+          : [COLOR.ACTUAL, COLOR.BG],
         borderWidth: [0, 0],
         datalabels: {
           display: false,
@@ -72,14 +87,20 @@ export function ReportSummary(props: ReportSummaryProps): JSX.Element {
   }
 
   return (
-    <div className={classnames("report-summary", {'report-summary--fixed': props.fixed })}>
-      <div className='report-summary__container' onClick={onClick}>
+    <div
+      className={classnames('report-summary', {
+        'report-summary--fixed': props.fixed,
+      })}
+    >
+      <div className="report-summary__container" onClick={onClick}>
         <Icon className="report-summary__icon" name="assessment" />
         <span className="report-summary__label">{i18n.t('actual')}</span>
         <span className="pl-5">{ifNull(all.actual.toHours().toFixed(1))}h</span>
         <span className="pl-5">/</span>
         <span className="pl-5 report-summary__label">{i18n.t('estimate')}</span>
-        <span className="pl-5">{ifNull(all.estimate.toHours().toFixed(1))}h</span>
+        <span className="pl-5">
+          {ifNull(all.estimate.toHours().toFixed(1))}h
+        </span>
         <span className="pl-5">:</span>
         <span className="pl-5">{ifNull(all.percentage)}</span>
         <span className="pl-2">%</span>
