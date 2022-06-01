@@ -19,13 +19,14 @@ type PlayStopProps = {
   onClickStart: (e: React.MouseEvent<HTMLButtonElement>) => void
   onClickStop: (e: React.MouseEvent<HTMLButtonElement>) => void
   isTracking: boolean
+  available?: boolean
 }
 
 function PlayStopButton(props: PlayStopProps) {
   const { date } = useCalendarDate()
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [timeoutID, setTimeoutID] = useState<number>()
-  const available = isToday(date)
+  const available = props.available && isToday(date)
   const className = classnames('controll-button', {
     'mod-disable': !available,
   })
@@ -39,7 +40,7 @@ function PlayStopButton(props: PlayStopProps) {
   }
 
   const onMouseEnter = () => {
-    if (available) return
+    if (isToday(date)) return
     const id = window.setTimeout(() => {
       void tickTooltip()
     }, 400)
@@ -88,12 +89,15 @@ export function TaskController(props: TaskControllerProps): JSX.Element {
     e.stopPropagation()
   }
 
+  const buttonProps = {
+    ...props,
+    available: !props.isComplete,
+  }
+
   return (
-    !props.isComplete && (
-      <div className="task-controll" onMouseDown={stopPropagation}>
-        <TagMenu {...props} />
-        <PlayStopButton {...props} />
-      </div>
-    )
+    <div className="task-controll" onMouseDown={stopPropagation}>
+      <TagMenu {...props} />
+      <PlayStopButton {...buttonProps} />
+    </div>
   )
 }
