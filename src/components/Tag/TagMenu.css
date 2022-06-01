@@ -5,6 +5,7 @@
   width: 22px;
   height: 22px;
   padding: 2px;
+  cursor: pointer;
   @apply fill-gray-400;
 
   & > .Icon {

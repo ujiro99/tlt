@@ -56,7 +56,6 @@ export const TagPicker = (props: Props): JSX.Element => {
       <BasePicker
         onRequestClose={props.onRequestClose}
         position={props.position}
-        eventType={EVENT_TYPE.HOVER}
       >
         <div className="TagPicker">
           <div className="TagPicker__current">
