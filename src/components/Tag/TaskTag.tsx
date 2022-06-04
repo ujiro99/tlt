@@ -5,12 +5,11 @@ import { TagButton } from '@/components/Tag/TagButton'
 import { Position } from '@/components/BasePicker'
 import { ColorPicker } from '@/components/ColorPicker'
 import { useTagHistory } from '@/hooks/useTagHistory'
+import { COLOR } from '@/const'
 
 type Props = {
   tag: Tag
 }
-
-const Gray200 = '#e2e8f0'
 
 export const TaskTag = (props: Props): JSX.Element => {
   const tag = props.tag
@@ -18,7 +17,7 @@ export const TaskTag = (props: Props): JSX.Element => {
   const [pickerPosition, setPickerPosition] = useState<Position>()
   const { tags, setTag } = useTagHistory()
   const tagRecord = tags.find((t) => t.name === tag.name)
-  const bgColor = tagRecord?.colorHex || Gray200
+  const bgColor = tagRecord?.colorHex || COLOR.Gray200
 
   const presetColors = tags.map((t) => t.colorHex).reverse()
 

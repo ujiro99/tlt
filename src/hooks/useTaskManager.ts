@@ -9,15 +9,15 @@ import {
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Parser } from '@/services/parser'
-import {
-  Node,
-  nodeToString,
-  NODE_TYPE
-} from '@/models/node'
+import { Node, nodeToString, NODE_TYPE } from '@/models/node'
+import { Tag, hasTags } from '@/models/tag'
 import { flat } from '@/models/flattenedNode'
 import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
+import { useTagHistory } from '@/hooks/useTagHistory'
+import { unique, difference } from '@/services/util'
+import { COLOR } from '@/const'
 
-const EmptyNode = new Node(NODE_TYPE.OTHER, 0, "")
+const EmptyNode = new Node(NODE_TYPE.OTHER, 0, '')
 
 enum TaskRecordType {
   Date,
@@ -137,9 +137,10 @@ interface ITaskManager {
   addEmptyChild: (line: number) => number
 }
 export function useTaskManager(): ITaskManager {
-  const [root, setRoot] = useRecoilState(nodeState)
+  const [root, setRoot] = useRecoilState<Node>(nodeState)
   const setRecordKey = useSetRecoilState(taskRecordKeyState)
   const setIsPossibleToSave = useSetRecoilState(isPossibleToSaveState)
+  const { tags, setTag } = useTagHistory()
 
   const flatten = flat(root)
 
@@ -173,6 +174,25 @@ export function useTaskManager(): ITaskManager {
     return parent.children[parent.children.length - 1].line
   }
 
+  const tagEq = (a: Tag, b: Tag) => a.name === b.name
+
+  const updateTagHistory = (): void => {
+    const tagsA = flatten.reduce((pre, cur) => {
+      const data = cur.node.data
+      if (hasTags(data)) {
+        pre.push(...data.tags)
+      }
+      return pre
+    }, [] as Tag[])
+    const newTags = unique(difference(tagsA, tags, tagEq), tagEq)
+    newTags.forEach((tag) => {
+      console.log(tag)
+      setTag({ name: tag.name, colorHex: COLOR.Gray200 })
+    })
+  }
+
+  updateTagHistory()
+
   return {
     lineCount: flatten.length,
     setKey: (key: TaskRecordKey) => {
@@ -204,7 +224,7 @@ export function useTaskManager(): ITaskManager {
     setRoot: setRoot,
     getNodeByLine,
     setNodeByLine,
-    addEmptyChild
+    addEmptyChild,
   }
 }
 
@@ -237,7 +257,7 @@ export function useTaskStorage(): void {
         found = true
         return {
           ...r,
-          data
+          data,
         }
       } else {
         return r
@@ -247,7 +267,7 @@ export function useTaskStorage(): void {
       const record = {
         key: key.toKey(),
         type: TaskRecordType.Date,
-        data
+        data,
       }
       newRecords.push(record)
     }

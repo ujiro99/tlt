@@ -5,3 +5,7 @@ export const KEY = {
   ENTER: 'Enter',
 }
 export const KEYCODE_ENTER = 13
+
+export const COLOR = {
+  Gray200: '#e2e8f0'
+}
