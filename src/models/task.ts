@@ -68,7 +68,6 @@ export class Task implements IClonable<Task> {
       if (m[2]) return `${m[1]} #${m[2]}`
       return m[1]
     }
-    Log.w("Can't find title")
     return ''
   }
 
