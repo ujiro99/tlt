@@ -32,7 +32,7 @@ interface TaskRecord {
 
 type TaskRecordArray = TaskRecord[]
 
-const taskRecordKeyState = atom<TaskRecordKey>({
+export const taskRecordKeyState = atom<TaskRecordKey>({
   key: 'taskRecordKeyState',
   default: TaskRecordKey.fromDate(new Date()),
 })
@@ -292,6 +292,10 @@ export function useTaskStorage(): void {
     await saveRecords(newRecords)
     setSaving(false)
   }
+}
+
+export function useTaskRecordKey(): TaskRecordKey {
+  return useRecoilValue(taskRecordKeyState)
 }
 
 type TaskRecordKeys = [keys: string[]]

@@ -1,6 +1,7 @@
 import { Time } from '@/models/time'
 
 type TrackingState = {
+  key: string
   nodeId: string
   isTracking: boolean
   trackingStartTime: number /** [milli second] */
