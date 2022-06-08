@@ -14,6 +14,7 @@ import { Tag, hasTags } from '@/models/tag'
 import { flat } from '@/models/flattenedNode'
 import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
 import { useTagHistory } from '@/hooks/useTagHistory'
+import { useTrackingState } from '@/hooks/useTrackingState'
 import { unique, difference } from '@/services/util'
 import { COLOR } from '@/const'
 
@@ -136,10 +137,12 @@ interface ITaskManager {
   setNodeByLine: (node: Node, line: number) => void
   addEmptyChild: (line: number) => number
 }
+
 export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState<Node>(nodeState)
   const setRecordKey = useSetRecoilState(taskRecordKeyState)
   const setIsPossibleToSave = useSetRecoilState(isPossibleToSaveState)
+  const { trackings, moveTracking } = useTrackingState()
   const { tags, setTag } = useTagHistory()
 
   const flatten = flat(root)
@@ -162,6 +165,13 @@ export function useTaskManager(): ITaskManager {
       } else {
         // remove this line
         newRoot = root.filter((n) => n.line !== line)
+        Log.d(`removed ${line}`)
+        trackings.forEach((n) => {
+          if (line < n.line) {
+            // Move up
+            moveTracking(n.line, n.line - 1)
+          }
+        })
       }
     }
     setRoot(newRoot)
@@ -171,7 +181,15 @@ export function useTaskManager(): ITaskManager {
     const newRoot = root.appendEmptyTask((node) => node.line === line)
     setRoot(newRoot)
     const parent = newRoot.find((node) => node.line === line)
-    return parent.children[parent.children.length - 1].line
+    const appendLine = parent.children[parent.children.length - 1].line
+    Log.d(`add empty ${appendLine}`)
+    trackings.forEach((n) => {
+      if (appendLine < n.line) {
+        // Move down
+        moveTracking(n.line, n.line + 1)
+      }
+    })
+    return appendLine
   }
 
   const tagEq = (a: Tag, b: Tag) => a.name === b.name
@@ -186,7 +204,6 @@ export function useTaskManager(): ITaskManager {
     }, [] as Tag[])
     const newTags = unique(difference(tagsA, tags, tagEq), tagEq)
     newTags.forEach((tag) => {
-      console.log(tag)
       setTag({ name: tag.name, colorHex: COLOR.Gray200 })
     })
   }

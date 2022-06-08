@@ -73,16 +73,12 @@ const trackingStateSelector = selector<TrackingState[]>({
   },
 })
 
-interface useTrackingStateReturn {
-  trackings: TrackingState[]
-  addTracking: (tracking: TrackingState) => void
-  removeTracking: (nodeId: string) => void
-  moveTracking: (from: number, to: number) => void
+interface useTrackingStopReturn {
   stopAllTracking: () => void
   stopOtherTracking: (nodeId: string) => void
 }
 
-export function useTrackingState(): useTrackingStateReturn {
+export function useTrackingStop(): useTrackingStopReturn {
   const manager = useTaskManager()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
 
@@ -121,6 +117,22 @@ export function useTrackingState(): useTrackingStateReturn {
       }),
     )
   }
+
+  return {
+    stopAllTracking,
+    stopOtherTracking
+  }
+}
+
+interface useTrackingStateReturn {
+  trackings: TrackingState[]
+  addTracking: (tracking: TrackingState) => void
+  removeTracking: (nodeId: string) => void
+  moveTracking: (from: number, to: number) => void
+}
+
+export function useTrackingState(): useTrackingStateReturn {
+  const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
 
   const addTracking = useCallback(
     (tracking: TrackingState) => {
@@ -180,7 +192,5 @@ export function useTrackingState(): useTrackingStateReturn {
     addTracking,
     removeTracking,
     moveTracking,
-    stopAllTracking,
-    stopOtherTracking,
   }
 }

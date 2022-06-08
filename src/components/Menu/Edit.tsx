@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import classnames from 'classnames'
 
-import { useTrackingState } from '@/hooks/useTrackingState'
+import { useTrackingStop } from '@/hooks/useTrackingState'
 import { useMode, MODE } from '@/hooks/useMode'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
@@ -10,7 +10,7 @@ import * as i18n from '@/services/i18n'
 import './IconButton.css'
 
 export function Edit(): JSX.Element {
-  const { stopAllTracking } = useTrackingState()
+  const { stopAllTracking } = useTrackingStop()
   const [labelVisible, setLabelVisible] = useState(false)
   const [timeoutId, setTimeoutId] = useState(0)
   const [mode, setMode] = useMode()

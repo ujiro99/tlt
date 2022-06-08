@@ -3,7 +3,7 @@ import classnames from 'classnames'
 
 import Log from '@/services/log'
 import { useTaskManager } from '@/hooks/useTaskManager'
-import { useTrackingState } from '@/hooks/useTrackingState'
+import { useTrackingState, useTrackingStop } from '@/hooks/useTrackingState'
 import { useEditable } from '@/hooks/useEditable'
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
@@ -35,8 +35,8 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const line = props.node.line
   const [started, setStarted] = useState(false)
   const manager = useTaskManager()
-  const { trackings, addTracking, removeTracking, stopOtherTracking } =
-    useTrackingState()
+  const { trackings, addTracking, removeTracking } = useTrackingState()
+  const { stopOtherTracking } = useTrackingStop()
   const [isEditing, focusOrEdit] = useEditable(line)
   const task = node.data as Task
   const tracking = trackings.find((n) => n.nodeId === node.id)

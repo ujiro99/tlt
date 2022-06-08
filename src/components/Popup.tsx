@@ -21,6 +21,7 @@ export default function Popup(): JSX.Element {
     <ErrorFallback>
       <RecoilRoot>
         <React.Suspense fallback={<div></div>}>
+          <Init />
           <Menu />
           <TaskList />
         </React.Suspense>
@@ -29,8 +30,12 @@ export default function Popup(): JSX.Element {
   )
 }
 
-function TaskList() {
+function Init() {
   useTaskStorage()
+  return <></>
+}
+
+function TaskList() {
   const [mode] = useMode()
   switch (mode) {
     case MODE.EDIT:
