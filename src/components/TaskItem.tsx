@@ -2,8 +2,8 @@ import React, { useState, useEffect, CSSProperties } from 'react'
 import classnames from 'classnames'
 
 import Log from '@/services/log'
-import { useTaskManager } from '@/hooks/useTaskManager'
-import { useTrackingState } from '@/hooks/useTrackingState'
+import { useTaskManager, useTaskRecordKey } from '@/hooks/useTaskManager'
+import { useTrackingState, useTrackingStop } from '@/hooks/useTrackingState'
 import { useEditable } from '@/hooks/useEditable'
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
@@ -35,14 +35,15 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const line = props.node.line
   const [started, setStarted] = useState(false)
   const manager = useTaskManager()
-  const { trackings, addTracking, removeTracking, stopOtherTracking } =
-    useTrackingState()
+  const { trackings, addTracking, removeTracking } = useTrackingState()
+  const { stopOtherTracking } = useTrackingStop()
   const [isEditing, focusOrEdit] = useEditable(line)
   const task = node.data as Task
   const tracking = trackings.find((n) => n.nodeId === node.id)
   const isTracking = tracking == null ? false : tracking.isTracking
   const id = `check-${task.id}`
   const hasEstimatedTime = !task.estimatedTimes.isEmpty()
+  const trackingKey = useTaskRecordKey()
 
   Log.v(`${line} ${id} ${isTracking ? 'tracking' : 'stop'}`)
 
@@ -83,6 +84,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     // start new task.
     const trackingStartTime = newTask.trackingStart()
     const newTracking = {
+      key: trackingKey.toKey(),
       nodeId: node.id,
       isTracking: true,
       trackingStartTime: trackingStartTime,

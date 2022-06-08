@@ -9,15 +9,16 @@ import {
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Parser } from '@/services/parser'
-import {
-  Node,
-  nodeToString,
-  NODE_TYPE
-} from '@/models/node'
+import { Node, nodeToString, NODE_TYPE } from '@/models/node'
+import { Tag, hasTags } from '@/models/tag'
 import { flat } from '@/models/flattenedNode'
 import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
+import { useTagHistory } from '@/hooks/useTagHistory'
+import { useTrackingState } from '@/hooks/useTrackingState'
+import { unique, difference } from '@/services/util'
+import { COLOR } from '@/const'
 
-const EmptyNode = new Node(NODE_TYPE.OTHER, 0, "")
+const EmptyNode = new Node(NODE_TYPE.OTHER, 0, '')
 
 enum TaskRecordType {
   Date,
@@ -31,7 +32,7 @@ interface TaskRecord {
 
 type TaskRecordArray = TaskRecord[]
 
-const taskRecordKeyState = atom<TaskRecordKey>({
+export const taskRecordKeyState = atom<TaskRecordKey>({
   key: 'taskRecordKeyState',
   default: TaskRecordKey.fromDate(new Date()),
 })
@@ -136,10 +137,13 @@ interface ITaskManager {
   setNodeByLine: (node: Node, line: number) => void
   addEmptyChild: (line: number) => number
 }
+
 export function useTaskManager(): ITaskManager {
-  const [root, setRoot] = useRecoilState(nodeState)
+  const [root, setRoot] = useRecoilState<Node>(nodeState)
   const setRecordKey = useSetRecoilState(taskRecordKeyState)
   const setIsPossibleToSave = useSetRecoilState(isPossibleToSaveState)
+  const { trackings, moveTracking } = useTrackingState()
+  const { tags, setTag } = useTagHistory()
 
   const flatten = flat(root)
 
@@ -161,6 +165,13 @@ export function useTaskManager(): ITaskManager {
       } else {
         // remove this line
         newRoot = root.filter((n) => n.line !== line)
+        Log.d(`removed ${line}`)
+        trackings.forEach((n) => {
+          if (line < n.line) {
+            // Move up
+            moveTracking(n.line, n.line - 1)
+          }
+        })
       }
     }
     setRoot(newRoot)
@@ -170,8 +181,34 @@ export function useTaskManager(): ITaskManager {
     const newRoot = root.appendEmptyTask((node) => node.line === line)
     setRoot(newRoot)
     const parent = newRoot.find((node) => node.line === line)
-    return parent.children[parent.children.length - 1].line
+    const appendLine = parent.children[parent.children.length - 1].line
+    Log.d(`add empty ${appendLine}`)
+    trackings.forEach((n) => {
+      if (appendLine < n.line) {
+        // Move down
+        moveTracking(n.line, n.line + 1)
+      }
+    })
+    return appendLine
   }
+
+  const tagEq = (a: Tag, b: Tag) => a.name === b.name
+
+  const updateTagHistory = (): void => {
+    const tagsA = flatten.reduce((pre, cur) => {
+      const data = cur.node.data
+      if (hasTags(data)) {
+        pre.push(...data.tags)
+      }
+      return pre
+    }, [] as Tag[])
+    const newTags = unique(difference(tagsA, tags, tagEq), tagEq)
+    newTags.forEach((tag) => {
+      setTag({ name: tag.name, colorHex: COLOR.Gray200 })
+    })
+  }
+
+  updateTagHistory()
 
   return {
     lineCount: flatten.length,
@@ -204,7 +241,7 @@ export function useTaskManager(): ITaskManager {
     setRoot: setRoot,
     getNodeByLine,
     setNodeByLine,
-    addEmptyChild
+    addEmptyChild,
   }
 }
 
@@ -237,7 +274,7 @@ export function useTaskStorage(): void {
         found = true
         return {
           ...r,
-          data
+          data,
         }
       } else {
         return r
@@ -247,7 +284,7 @@ export function useTaskStorage(): void {
       const record = {
         key: key.toKey(),
         type: TaskRecordType.Date,
-        data
+        data,
       }
       newRecords.push(record)
     }
@@ -255,6 +292,10 @@ export function useTaskStorage(): void {
     await saveRecords(newRecords)
     setSaving(false)
   }
+}
+
+export function useTaskRecordKey(): TaskRecordKey {
+  return useRecoilValue(taskRecordKeyState)
 }
 
 type TaskRecordKeys = [keys: string[]]

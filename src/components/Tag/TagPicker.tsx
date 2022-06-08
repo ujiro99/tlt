@@ -1,11 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { CSSTransition } from 'react-transition-group'
 import { TagButton } from '@/components/Tag/TagButton'
-import {
-  BasePicker,
-  BasePickerProps,
-  EVENT_TYPE,
-} from '@/components/BasePicker'
+import { BasePicker, BasePickerProps } from '@/components/BasePicker'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { difference, eventStop } from '@/services/util'
@@ -34,7 +30,6 @@ export const TagPicker = (props: Props): JSX.Element => {
     currentTags,
     (a, b) => a.name === b.name,
   )
-
   const addTag = (e: React.MouseEvent, tagName: string) => {
     const tag = tags.find((t) => t.name === tagName)
     if (tag) setCurrentTags([...currentTags, tag])

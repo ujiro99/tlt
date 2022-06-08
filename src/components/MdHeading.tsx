@@ -16,8 +16,8 @@ import Log from '@/services/log'
 import './Heading.css'
 
 const otherClass = {
-  h1: 'text-base pt-4 pb-3',
-  h2: 'text-base pt-4 pb-3',
+  h1: 'text-base pt-5 pb-3',
+  h2: 'text-base pt-5 pb-3',
   h3: 'text-sm pt-3 pb-2',
   h4: 'text-sm pt-3 pb-2',
   h5: 'text-sm pt-3 pb-2',

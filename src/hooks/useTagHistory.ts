@@ -6,6 +6,9 @@ import { TagRecord } from '@/models/tag'
 
 const MaxCount = 100
 
+// for debug
+// void Storage.remove(STORAGE_KEY.TASK_TAGS)
+
 const tagRecordState = atom<TagRecord[]>({
   key: 'tagRecordState',
   default: selector({

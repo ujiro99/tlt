@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { atom, selector, useRecoilState } from 'recoil'
 
-import { nodeState, useTaskManager } from '@/hooks/useTaskManager'
+import { nodeState, useTaskManager, taskRecordKeyState } from '@/hooks/useTaskManager'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
 import Log from '@/services/log'
@@ -52,12 +52,16 @@ const trackingState = atom<TrackingState[]>({
 const trackingStateSelector = selector<TrackingState[]>({
   key: 'trackingStateSelector',
   get: ({ get }) => {
+    const key = get(taskRecordKeyState)
     const trackings = get(trackingState)
     const root = get(nodeState)
 
     // Since the node id changes with each parsing, find and update the new id
     // using the line number as a key.
     return trackings.map((t) => {
+      if(t.key !== key.toKey()) {
+        return t
+      }
       const node = root.find((n) => n.line === t.line)
       if (node) {
         return {
@@ -73,16 +77,12 @@ const trackingStateSelector = selector<TrackingState[]>({
   },
 })
 
-interface useTrackingStateReturn {
-  trackings: TrackingState[]
-  addTracking: (tracking: TrackingState) => void
-  removeTracking: (nodeId: string) => void
-  moveTracking: (from: number, to: number) => void
+interface useTrackingStopReturn {
   stopAllTracking: () => void
   stopOtherTracking: (nodeId: string) => void
 }
 
-export function useTrackingState(): useTrackingStateReturn {
+export function useTrackingStop(): useTrackingStopReturn {
   const manager = useTaskManager()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
 
@@ -121,6 +121,22 @@ export function useTrackingState(): useTrackingStateReturn {
       }),
     )
   }
+
+  return {
+    stopAllTracking,
+    stopOtherTracking
+  }
+}
+
+interface useTrackingStateReturn {
+  trackings: TrackingState[]
+  addTracking: (tracking: TrackingState) => void
+  removeTracking: (nodeId: string) => void
+  moveTracking: (from: number, to: number) => void
+}
+
+export function useTrackingState(): useTrackingStateReturn {
+  const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
 
   const addTracking = useCallback(
     (tracking: TrackingState) => {
@@ -180,7 +196,5 @@ export function useTrackingState(): useTrackingStateReturn {
     addTracking,
     removeTracking,
     moveTracking,
-    stopAllTracking,
-    stopOtherTracking,
   }
 }
