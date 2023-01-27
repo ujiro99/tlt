@@ -1,22 +1,19 @@
-import React, { CSSProperties } from 'react'
-import { AnimateLayoutChanges, useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import React, {CSSProperties} from 'react';
+import type {UniqueIdentifier} from '@dnd-kit/core';
+import {AnimateLayoutChanges, useSortable} from '@dnd-kit/sortable';
+import {CSS} from '@dnd-kit/utilities';
 
-import { TreeItem, Props as TreeItemProps } from './TreeItem'
-import { iOS } from '../../utilities'
-
-import { useItemAdapter } from '@/hooks/useItemAdapter'
+import {TreeItem, Props as TreeItemProps} from './TreeItem';
+import {iOS} from '../../utilities';
 
 interface Props extends TreeItemProps {
-  id: string
+  id: UniqueIdentifier;
 }
 
-const animateLayoutChanges: AnimateLayoutChanges = ({
-  isSorting,
-  wasDragging,
-}) => !(isSorting || wasDragging)
+const animateLayoutChanges: AnimateLayoutChanges = ({isSorting, wasDragging}) =>
+  isSorting || wasDragging ? false : true;
 
-export function SortableTreeItem({ id, depth, ...props }: Props): JSX.Element {
+export function SortableTreeItem({id, depth, ...props}: Props) {
   const {
     attributes,
     isDragging,
@@ -29,14 +26,11 @@ export function SortableTreeItem({ id, depth, ...props }: Props): JSX.Element {
   } = useSortable({
     id,
     animateLayoutChanges,
-  })
+  });
   const style: CSSProperties = {
     transform: CSS.Translate.toString(transform),
     transition,
-  }
-
-  const [getItem] = useItemAdapter()
-  const item = getItem(id)
+  };
 
   return (
     <TreeItem
@@ -52,8 +46,6 @@ export function SortableTreeItem({ id, depth, ...props }: Props): JSX.Element {
         ...listeners,
       }}
       {...props}
-    >
-      {item}
-    </TreeItem>
-  )
+    />
+  );
 }
