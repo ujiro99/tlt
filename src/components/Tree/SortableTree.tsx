@@ -39,32 +39,9 @@ import { sortableTreeKeyboardCoordinates } from './keyboardCoordinates'
 import { SortableTreeItem } from './components'
 import { CSS } from '@dnd-kit/utilities'
 
-const initialItems: TreeItems = [
-  {
-    id: 'Home',
-    children: [],
-  },
-  {
-    id: 'Collections',
-    children: [
-      { id: 'Spring', children: [] },
-      { id: 'Summer', children: [] },
-      { id: 'Fall', children: [] },
-      { id: 'Winter', children: [] },
-    ],
-  },
-  {
-    id: 'About Us',
-    children: [],
-  },
-  {
-    id: 'My Account',
-    children: [
-      { id: 'Addresses', children: [] },
-      { id: 'Order History', children: [] },
-    ],
-  },
-]
+import { useTaskManager } from '@/hooks/useTaskManager'
+import { useTrackingState } from '@/hooks/useTrackingState'
+import { treeItemsToNode, updateLines } from '@/services/util'
 
 const measuring = {
   droppable: {
@@ -97,7 +74,6 @@ const dropAnimationConfig: DropAnimation = {
 
 interface Props {
   collapsible?: boolean
-  defaultItems?: TreeItems
   indentationWidth?: number
   indicator?: boolean
   removable?: boolean
@@ -105,12 +81,10 @@ interface Props {
 
 export function SortableTree({
   collapsible,
-  defaultItems = initialItems,
   indicator = false,
-  indentationWidth = 50,
+  indentationWidth = 20,
   removable,
 }: Props) {
-  const [items, setItems] = useState(() => defaultItems)
   const [activeId, setActiveId] = useState<UniqueIdentifier | null>(null)
   const [overId, setOverId] = useState<UniqueIdentifier | null>(null)
   const [offsetLeft, setOffsetLeft] = useState(0)
@@ -118,6 +92,13 @@ export function SortableTree({
     parentId: UniqueIdentifier | null
     overId: UniqueIdentifier
   } | null>(null)
+  const [moved, setMoved] = useState(false)
+
+  const manager = useTaskManager()
+  const root = manager.getRoot()
+  const items = root.children
+
+  const { moveTracking } = useTrackingState()
 
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items)
@@ -259,6 +240,7 @@ export function SortableTree({
 
   function handleDragMove({ delta }: DragMoveEvent) {
     setOffsetLeft(delta.x)
+    setMoved(true)
   }
 
   function handleDragOver({ over }: DragOverEvent) {
@@ -279,13 +261,19 @@ export function SortableTree({
 
       clonedItems[activeIndex] = { ...activeTreeItem, depth, parentId }
 
-      const sortedItems = arrayMove(clonedItems, activeIndex, overIndex)
+      let sortedItems = arrayMove(clonedItems, activeIndex, overIndex)
+      sortedItems = updateLines(sortedItems)
       const newItems = buildTree(sortedItems)
+      moveTracking(activeIndex + 1, overIndex + 1)
 
-      setItems(newItems)
+      setTreeItems(newItems)
     }
   }
 
+  function setTreeItems(newItems: TreeItems) {
+    // update persistent data
+    manager.setRoot(treeItemsToNode(newItems))
+  }
   function handleDragCancel() {
     resetState()
   }
@@ -295,20 +283,20 @@ export function SortableTree({
     setActiveId(null)
     setOffsetLeft(0)
     setCurrentPosition(null)
+    setMoved(false)
 
     document.body.style.setProperty('cursor', '')
   }
 
   function handleRemove(id: UniqueIdentifier) {
-    setItems((items) => removeItem(items, id))
+    setTreeItems(removeItem(items, id))
   }
 
   function handleCollapse(id: UniqueIdentifier) {
-    setItems((items) =>
-      setProperty(items, id, 'collapsed', (value) => {
-        return !value
-      }),
-    )
+    const newItems = setProperty(items, id, 'collapsed', (value) => {
+      return !value
+    })
+    setTreeItems(newItems)
   }
 
   function getMovementAnnouncement(
@@ -341,7 +329,7 @@ export function SortableTree({
 
       const previousItem = sortedItems[overIndex - 1]
 
-      let announcement
+      let announcement: string
       const movedVerb = eventName === 'onDragEnd' ? 'dropped' : 'moved'
       const nestedVerb = eventName === 'onDragEnd' ? 'dropped' : 'nested'
 
