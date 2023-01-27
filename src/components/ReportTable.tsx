@@ -43,7 +43,7 @@ export function ReportTable(props: Props): JSX.Element {
       <thead className="bg-gray-200">
         <tr>
           {header.map((d) => {
-            return <th className="ReportTable__th" key={cell2str(d)}>{d}</th>
+            return <th className="ReportTable__th" key={cell2str(d)}>{d as React.ReactNode}</th>
           })}
         </tr>
       </thead>
@@ -51,12 +51,12 @@ export function ReportTable(props: Props): JSX.Element {
         {table.map((row) => {
           return (
             <tr className="border-t border-gray-200" key={row[0] as string}>
-              <Td>{row[1]}</Td>
-              <Td>{row[2]}</Td>
-              <Td>{row[3]}</Td>
-              <Td>{row[4]}</Td>
-              <Td>{row[5]}</Td>
-              <Td>{row[6]}</Td>
+              <Td>{row[1] as React.ReactNode}</Td>
+              <Td>{row[2] as React.ReactNode}</Td>
+              <Td>{row[3] as React.ReactNode}</Td>
+              <Td>{row[4] as React.ReactNode}</Td>
+              <Td>{row[5] as React.ReactNode}</Td>
+              <Td>{row[6] as React.ReactNode}</Td>
             </tr>
           )
         })}
