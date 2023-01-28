@@ -90,10 +90,6 @@
     "webpack-merge": "^5.8.0",
     "webpack-notifier": "^1.15.0"
   },
-  "resolutions": {
-    "@types/react": "^18.0.27",
-    "@types/react-dom": "^18.0.10"
-  },
   "prettier": {
     "semi": false,
     "singleQuote": true,
