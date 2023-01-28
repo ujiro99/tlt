@@ -1,4 +1,5 @@
 import React from 'react'
+import type { UniqueIdentifier } from '@dnd-kit/core'
 
 import { Node, NODE_TYPE } from '@/models/node'
 import { MdHeading } from '@/components/MdHeading'
@@ -7,13 +8,13 @@ import { MdText } from '@/components/MdText'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import Log from '@/services/log'
 
-type useItemAdapterReturn = [getItem: (id: string) => JSX.Element]
+type useItemAdapterReturn = [getItem: (id: UniqueIdentifier) => JSX.Element]
 
 export function useItemAdapter(): useItemAdapterReturn {
   const manager = useTaskManager()
   const rootNode = manager.getRoot()
 
-  const getItem = (id: string): JSX.Element => {
+  const getItem = (id: UniqueIdentifier): JSX.Element => {
     const node = rootNode.find((n) => n.id === id)
     if (!node) {
       Log.w(`${id} not found!`)

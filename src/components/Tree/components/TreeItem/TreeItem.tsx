@@ -1,7 +1,7 @@
 import React, { forwardRef, HTMLAttributes } from 'react'
 import classNames from 'classnames'
 
-import { Action, Handle, Remove } from '..'
+import { Action, Handle, Remove } from '../'
 import styles from './TreeItem.module.css'
 
 export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, 'id'> {
@@ -74,7 +74,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
               {collapseIcon}
             </Action>
           )}
-          <span className={styles.Text}>{value}</span>
+          {props.children}
           {!clone && onRemove && <Remove onClick={onRemove} />}
           {clone && childCount && childCount > 1 ? (
             <span className={styles.Count}>{childCount}</span>

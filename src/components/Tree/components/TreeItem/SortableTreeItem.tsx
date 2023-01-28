@@ -6,6 +6,8 @@ import { CSS } from '@dnd-kit/utilities'
 import { TreeItem, Props as TreeItemProps } from './TreeItem'
 import { iOS } from '../../utilities'
 
+import { useItemAdapter } from '@/hooks/useItemAdapter'
+
 interface Props extends TreeItemProps {
   id: UniqueIdentifier
 }
@@ -34,6 +36,9 @@ export function SortableTreeItem({ id, depth, ...props }: Props) {
     transition,
   }
 
+  const [getItem] = useItemAdapter()
+  const item = getItem(id)
+
   return (
     <TreeItem
       ref={setDraggableNodeRef}
@@ -48,6 +53,8 @@ export function SortableTreeItem({ id, depth, ...props }: Props) {
         ...listeners,
       }}
       {...props}
-    />
+    >
+      {item}
+    </TreeItem>
   )
 }
