@@ -1,149 +1,159 @@
 import {
   closestCorners,
-  getClientRect,
   getFirstCollision,
   KeyboardCode,
   KeyboardCoordinateGetter,
   DroppableContainer,
-} from '@dnd-kit/core';
+} from '@dnd-kit/core'
 
-import type {SensorContext} from './types';
-import {getProjection} from './utilities';
+import type { SensorContext } from './types'
+import { getProjection } from './utilities'
 
 const directions: string[] = [
   KeyboardCode.Down,
   KeyboardCode.Right,
   KeyboardCode.Up,
   KeyboardCode.Left,
-];
+]
 
-const horizontal: string[] = [KeyboardCode.Left, KeyboardCode.Right];
+const horizontal: string[] = [KeyboardCode.Left, KeyboardCode.Right]
 
 export const sortableTreeKeyboardCoordinates: (
   context: SensorContext,
-  indentationWidth: number
-) => KeyboardCoordinateGetter = (context, indentationWidth) => (
-  event,
-  {
-    currentCoordinates,
-    context: {active, over, collisionRect, droppableContainers},
-  }
-) => {
-  if (directions.includes(event.code)) {
-    if (!active || !collisionRect) {
-      return;
-    }
-
-    event.preventDefault();
-
-    const {
-      current: {items, offset},
-    } = context;
-
-    if (horizontal.includes(event.code) && over?.id) {
-      const {depth, maxDepth, minDepth} = getProjection(
-        items,
-        active.id,
-        over.id,
-        offset,
-        indentationWidth
-      );
-
-      switch (event.code) {
-        case KeyboardCode.Left:
-          if (depth > minDepth) {
-            return {
-              ...currentCoordinates,
-              x: currentCoordinates.x - indentationWidth,
-            };
-          }
-          break;
-        case KeyboardCode.Right:
-          if (depth < maxDepth) {
-            return {
-              ...currentCoordinates,
-              x: currentCoordinates.x + indentationWidth,
-            };
-          }
-          break;
+  indicator: boolean,
+  indentationWidth: number,
+) => KeyboardCoordinateGetter =
+  (context, indicator, indentationWidth) =>
+  (
+    event,
+    {
+      currentCoordinates,
+      context: {
+        active,
+        over,
+        collisionRect,
+        droppableRects,
+        droppableContainers,
+      },
+    },
+  ) => {
+    if (directions.includes(event.code)) {
+      if (!active || !collisionRect) {
+        return
       }
 
-      return undefined;
-    }
+      event.preventDefault()
 
-    const containers: DroppableContainer[] = [];
+      const {
+        current: { items, offset },
+      } = context
 
-    const overRect = over?.id
-      ? droppableContainers.get(over.id)?.rect.current
-      : undefined;
+      if (horizontal.includes(event.code) && over?.id) {
+        const { depth, maxDepth, minDepth } = getProjection(
+          items,
+          active.id,
+          over.id,
+          offset,
+          indentationWidth,
+        )
 
-    if (overRect) {
-      droppableContainers.forEach((container) => {
-        if (container?.disabled) {
-          return;
+        switch (event.code) {
+          case KeyboardCode.Left:
+            if (depth > minDepth) {
+              return {
+                ...currentCoordinates,
+                x: currentCoordinates.x - indentationWidth,
+              }
+            }
+            break
+          case KeyboardCode.Right:
+            if (depth < maxDepth) {
+              return {
+                ...currentCoordinates,
+                x: currentCoordinates.x + indentationWidth,
+              }
+            }
+            break
         }
 
-        const rect = container?.rect.current;
+        return undefined
+      }
+
+      const containers: DroppableContainer[] = []
+
+      droppableContainers.forEach((container) => {
+        if (container?.disabled || container.id === over?.id) {
+          return
+        }
+
+        const rect = droppableRects.get(container.id)
 
         if (!rect) {
-          return;
+          return
         }
 
         switch (event.code) {
           case KeyboardCode.Down:
-            if (overRect.top < rect.top) {
-              containers.push(container);
+            if (collisionRect.top < rect.top) {
+              containers.push(container)
             }
-            break;
+            break
           case KeyboardCode.Up:
-            if (overRect.top > rect.top) {
-              containers.push(container);
+            if (collisionRect.top > rect.top) {
+              containers.push(container)
             }
-            break;
+            break
         }
-      });
-    }
+      })
 
-    const collisions = closestCorners({
-      active,
-      collisionRect: collisionRect,
-      pointerCoordinates: null,
-      droppableContainers: containers,
-    });
-    const closestId = getFirstCollision(collisions, 'id');
+      const collisions = closestCorners({
+        active,
+        collisionRect,
+        pointerCoordinates: null,
+        droppableRects,
+        droppableContainers: containers,
+      })
+      let closestId = getFirstCollision(collisions, 'id')
 
-    if (closestId && over?.id) {
-      const newNode = droppableContainers.get(closestId)?.node.current;
-      const activeNodeRect = droppableContainers.get(active.id)?.rect.current;
+      if (closestId === over?.id && collisions.length > 1) {
+        closestId = collisions[1].id
+      }
 
-      if (newNode && activeNodeRect) {
-        const newRect = getClientRect(newNode, {ignoreTransform: true});
-        const newItem = items.find(({id}) => id === closestId);
-        const activeItem = items.find(({id}) => id === active.id);
+      if (closestId && over?.id) {
+        const activeRect = droppableRects.get(active.id)
+        const newRect = droppableRects.get(closestId)
+        const newDroppable = droppableContainers.get(closestId)
 
-        if (newItem && activeItem) {
-          const {depth} = getProjection(
-            items,
-            active.id,
-            closestId,
-            (newItem.depth - activeItem.depth) * indentationWidth,
-            indentationWidth
-          );
-          const offset =
-            newRect.top > activeNodeRect.top
-              ? Math.abs(activeNodeRect.height - newRect.height)
-              : 0;
+        if (activeRect && newRect && newDroppable) {
+          const newIndex = items.findIndex(({ id }) => id === closestId)
+          const newItem = items[newIndex]
+          const activeIndex = items.findIndex(({ id }) => id === active.id)
+          const activeItem = items[activeIndex]
 
-          const newCoordinates = {
-            x: newRect.left + depth * indentationWidth,
-            y: newRect.top + offset,
-          };
+          if (newItem && activeItem) {
+            const { depth } = getProjection(
+              items,
+              active.id,
+              closestId,
+              (newItem.depth - activeItem.depth) * indentationWidth,
+              indentationWidth,
+            )
+            const isBelow = newIndex > activeIndex
+            const modifier = isBelow ? 1 : -1
+            const offset = indicator
+              ? (collisionRect.height - activeRect.height) / 2
+              : 0
 
-          return newCoordinates;
+            const newCoordinates = {
+              x: newRect.left + depth * indentationWidth,
+              y: newRect.top + modifier * offset,
+            }
+
+            return newCoordinates
+          }
         }
       }
     }
-  }
 
-  return undefined;
-};
+    return undefined
+  }

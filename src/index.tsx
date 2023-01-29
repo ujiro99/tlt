@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 
 import '@/css/tailwind.css'
 import '@/css/tailwind-utils.css'
@@ -8,7 +8,8 @@ import Popup from '@/components/Popup'
 document.addEventListener(
   'DOMContentLoaded',
   function () {
-    ReactDOM.render(<Popup />, document.getElementById('popup'))
+    const root = createRoot(document.getElementById('popup'))
+    root.render(<Popup />)
   },
   false,
 )

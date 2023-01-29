@@ -22,7 +22,7 @@ export const MdText = (props: Props): JSX.Element => {
 
   return (
     <div tabIndex={0} className={classnames(baseClass)} onClick={focusOrEdit}>
-      <span>{props.node.data}</span>
+      <span>{props.node.data as React.ReactNode}</span>
     </div>
   )
 }

@@ -3,8 +3,7 @@
  */
 
 import { RecoilRoot } from 'recoil'
-import { renderHook, act } from '@testing-library/react-hooks'
-import { waitFor } from '@testing-library/react'
+import { waitFor, renderHook, act } from '@testing-library/react'
 import { useTrackingState } from './useTrackingState'
 import { TrackingState } from '@/@types/global'
 import { Time } from '@/models/time'

@@ -71,7 +71,7 @@ function MyCalendar(props: Props): JSX.Element {
 
   Modal.setAppElement(document.getElementById('popup'))
 
-  const value = selectRange ? [range.from, range.to] : date
+  const value : Date | [Date, Date] = selectRange ? [range.from, range.to] : date
 
   return (
     <div className="calendar" onClick={toggleCalendar}>
