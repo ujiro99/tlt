@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import classnames from 'classnames'
 
 import { useMode, MODE } from '@/hooks/useMode'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { Calendar } from '@/components/Menu/Calendar'
 import { ReportSummary } from '@/components/Menu/ReportSummary'
 import { Copy } from '@/components/Menu/Copy'
@@ -15,6 +16,7 @@ export function Menu(): JSX.Element {
   const [isFixed, setFixed] = useState(false)
   const [mode, setMode] = useMode()
   const isReport = mode === MODE.REPORT
+  const analytics = useAnalytics()
 
   useEffect(() => {
     let intersectionObserver: IntersectionObserver
@@ -38,6 +40,7 @@ export function Menu(): JSX.Element {
 
   const backTodo = () => {
     setMode(MODE.SHOW)
+    analytics.track('click back todo')
   }
 
   return (

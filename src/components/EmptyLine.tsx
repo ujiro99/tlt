@@ -3,13 +3,16 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditable } from '@/hooks/useEditable'
 import { LineEditor } from '@/components/LineEditor'
 import * as i18n from '@/services/i18n'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 export const EmptyLine: React.FC<unknown> = (): JSX.Element => {
   const manager = useTaskManager()
+  const analytics = useAnalytics()
   const line = manager.lineCount + 1
   const [isEditing, _, edit] = useEditable(line)
 
   if (isEditing) {
+    analytics.track('click new ToDo')
     return <LineEditor className="m-2" line={line} />
   }
 

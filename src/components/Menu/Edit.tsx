@@ -3,6 +3,7 @@ import classnames from 'classnames'
 
 import { useTrackingStop } from '@/hooks/useTrackingState'
 import { useMode, MODE } from '@/hooks/useMode'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
 import * as i18n from '@/services/i18n'
@@ -11,6 +12,7 @@ import './IconButton.css'
 
 export function Edit(): JSX.Element {
   const { stopAllTracking } = useTrackingStop()
+  const analytics = useAnalytics()
   const [labelVisible, setLabelVisible] = useState(false)
   const [timeoutId, setTimeoutId] = useState(0)
   const [mode, setMode] = useMode()
@@ -24,6 +26,9 @@ export function Edit(): JSX.Element {
     if (nextMode === MODE.EDIT) {
       // Automatically stop tracking before entering edit mode.
       stopAllTracking()
+      analytics.track('edit all start')
+    } else {
+      analytics.track('edit all finish')
     }
     setMode(nextMode)
   }

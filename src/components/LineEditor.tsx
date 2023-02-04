@@ -3,6 +3,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditFinish } from '@/hooks/useEditable'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { eventStop } from '@/services/util'
 import { DEFAULT, KEYCODE_ENTER } from '@/const'
 
@@ -14,12 +15,14 @@ type Props = {
 export function LineEditor(props: Props): JSX.Element {
   const line = props.line
   const manager = useTaskManager()
+  const analytics = useAnalytics()
   const [text, setText] = useState('')
   const finishEdit = useEditFinish()
 
   function finish() {
     if (text !== DEFAULT) {
       manager.setTextByLine(line, text)
+      analytics.track('edit line fnish')
     }
     finishEdit()
   }
@@ -33,6 +36,7 @@ export function LineEditor(props: Props): JSX.Element {
     if (!current) {
       current = DEFAULT
     }
+    analytics.track('edit line start')
     setText(current)
   }
 

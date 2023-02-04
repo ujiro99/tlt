@@ -4,7 +4,6 @@
 }
 
 .calendar {
-  cursor: pointer;
   height: 68px;
   width: fit-content;
   padding: 5px 10px;
@@ -41,7 +40,7 @@
 
   &__button {
     position: relative;
-    top: 2px;
+    display: inline-block;
     margin-left: 6px;
   }
 

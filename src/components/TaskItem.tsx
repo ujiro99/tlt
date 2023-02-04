@@ -3,6 +3,7 @@ import classnames from 'classnames'
 
 import Log from '@/services/log'
 import { useTaskManager, useTaskRecordKey } from '@/hooks/useTaskManager'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { useTrackingState, useTrackingStop } from '@/hooks/useTrackingState'
 import { useEditable } from '@/hooks/useEditable'
 import { Counter, CounterStopped } from '@/components/Counter'
@@ -35,6 +36,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const line = props.node.line
   const [started, setStarted] = useState(false)
   const manager = useTaskManager()
+  const analytics = useAnalytics()
   const { trackings, addTracking, removeTracking } = useTrackingState()
   const { stopOtherTracking } = useTrackingStop()
   const [isEditing, focusOrEdit] = useEditable(line)
@@ -76,6 +78,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
   const startTracking = (e: React.SyntheticEvent) => {
     e.stopPropagation()
+    analytics.track('click start')
 
     // Clone the objects for updating.
     const newNode = node.clone()
@@ -99,6 +102,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
   const stopTracking = (e: React.SyntheticEvent) => {
     e.stopPropagation()
+    analytics.track('click stop')
 
     if (isTracking) {
       removeTracking(node.id)
