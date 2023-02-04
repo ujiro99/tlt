@@ -4,6 +4,7 @@ import { useRecoilValue } from 'recoil'
 import { useMode, MODE } from '@/hooks/useMode'
 import { useHover } from '@/hooks/useHover'
 import { useTaskManager } from '@/hooks/useTaskManager'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { reportState } from '@/components/Report'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
@@ -14,6 +15,7 @@ import './IconButton.css'
 
 export function Copy(): JSX.Element {
   const manager = useTaskManager()
+  const analytics = useAnalytics()
   const report = useRecoilValue(reportState)
   const [mode] = useMode()
   const [hoverRef, isHovered] = useHover(200)
@@ -22,6 +24,7 @@ export function Copy(): JSX.Element {
   const [timeoutId, setTimeoutId] = useState(0)
 
   const copy = async () => {
+    analytics.track('click copy')
     let txt: string
     if (mode === MODE.SHOW) {
       txt = manager.getText()

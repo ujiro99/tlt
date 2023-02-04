@@ -8,6 +8,7 @@ import { aggregate, ifNull } from '@/services/util'
 import { nodeToTasks } from '@/models/node'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useMode, MODE } from '@/hooks/useMode'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import * as i18n from '@/services/i18n'
 import { Icon } from '@/components/Icon'
 
@@ -77,12 +78,14 @@ export function ReportSummary(props: ReportSummaryProps): JSX.Element {
   const [mode, setMode] = useMode()
   const manager = useTaskManager()
   const root = manager.getRoot()
+  const analytics = useAnalytics()
 
   // --- Summary
   const tasks = nodeToTasks(root, false)
   const all = aggregate(tasks)
 
   const onClick = () => {
+    analytics.track('click report')
     setMode(MODE.REPORT)
   }
 

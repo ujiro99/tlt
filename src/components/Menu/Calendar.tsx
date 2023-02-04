@@ -8,6 +8,7 @@ import { differenceInCalendarDays } from 'date-fns'
 import { TaskRecordKey } from '@/models/taskRecordKey'
 import { useMode, MODE } from '@/hooks/useMode'
 import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { RecordName } from '@/components/Menu/RecordName'
 import { Icon } from '@/components/Icon'
@@ -25,6 +26,7 @@ function MyCalendar(props: Props): JSX.Element {
   const [visible, setVisible] = useState(false)
   const { date, range, setDate, setDateRange } = useCalendarDate()
   const manager = useTaskManager()
+  const analytics = useAnalytics()
   const [recordKeys] = useTaskRecordKeys()
 
   const [mode] = useMode()
@@ -47,6 +49,9 @@ function MyCalendar(props: Props): JSX.Element {
 
   function toggleCalendar() {
     setVisible(!visible)
+    analytics.track(
+      `calendar ${visible ? 'close' : 'open'}`
+    )
   }
 
   function tileDisabled({ date, view }) {
@@ -71,23 +76,25 @@ function MyCalendar(props: Props): JSX.Element {
 
   Modal.setAppElement(document.getElementById('popup'))
 
-  const value : Date | [Date, Date] = selectRange ? [range.from, range.to] : date
+  const value: Date | [Date, Date] = selectRange ? [range.from, range.to] : date
 
   return (
-    <div className="calendar" onClick={toggleCalendar}>
-      <div className="calendar__date">
-        <RecordName date1={dates[0]} date2={dates[1]} />
-      </div>
-      <div
-        className={classnames('calendar__label', {
-          'calendar__label--fixed': props.fixed,
-        })}
-      >
-        <span>{label}</span>
-        <button className="calendar__button">
-          <Icon className="calendar__icon" name="calendar" />
-        </button>
-      </div>
+    <div className="calendar">
+      <button onClick={toggleCalendar}>
+        <div className="calendar__date">
+          <RecordName date1={dates[0]} date2={dates[1]} />
+        </div>
+        <div
+          className={classnames('calendar__label', {
+            'calendar__label--fixed': props.fixed,
+          })}
+        >
+          <span>{label}</span>
+          <div className="calendar__button">
+            <Icon className="calendar__icon" name="calendar" />
+          </div>
+        </div>
+      </button>
 
       <Modal
         isOpen={visible}

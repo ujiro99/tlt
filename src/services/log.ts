@@ -1,14 +1,9 @@
+import { isDebug } from '@/const'
+
 /**
  * Do not usually display.
  */
 const verbose = false
-
-/**
- * Setting value to switch the debug log output from this module.
- * true: enables all log. | false: disables debug log.
- */
-const environment = process.env.NODE_ENV || 'development'
-const isDebug = environment === 'development'
 
 interface ILog {
   v: (msg: unknown) => void
