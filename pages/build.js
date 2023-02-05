@@ -11,8 +11,9 @@ const DIST_DIR = 'dist'
 const TEMPLATE = await fs.readFile('template.ejs', 'utf8')
 
 async function postBuild() {
-  const s = await fs.stat(DIST_DIR)
-  if (!s.isDirectory()) {
+  try {
+    await fs.stat(DIST_DIR)
+  } catch {
     await fs.mkdir(DIST_DIR)
   }
 }
@@ -21,7 +22,7 @@ async function postBuild() {
  * main function.
  */
 async function build() {
-  postBuild()
+  await postBuild()
 
   const options = {
     ignore: 'node_modules/**/*.md',
