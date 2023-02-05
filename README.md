@@ -1,18 +1,15 @@
+<img width="700" src="https://raw.githubusercontent.com/ujiro99/tlt/main/docs/img/logo.png" />
+
 [![codecov](https://codecov.io/gh/ujiro99/tlt/branch/main/graph/badge.svg?token=fzeIIssgyo)](https://codecov.io/gh/ujiro99/tlt)
 [![Maintainability](https://api.codeclimate.com/v1/badges/977b93b655ce7724625a/maintainability)](https://codeclimate.com/github/ujiro99/tlt/maintainability)
 
-<img width="700" src="https://github.com/ujiro99/tlt/blob/main/docs/img/logo.png" />
-
-## TLT
-
-This is a Chrome Extension for ToDo and budget control with a minimal UI.
-
+**TLT** is a Chrome Extension for ToDo and budget control with a minimal UI.
 
 ## Feature
 
 Using a text-based notation inspired by todo.md, you can easily manage tasks.
 
-<img width="500" src="https://github.com/ujiro99/tlt/blob/main/docs/img/todo-format.png" />
+<img width="500" src="https://raw.githubusercontent.com/ujiro99/tlt/main/docs/img/todo-format.png" />
 
 
 ## Install
