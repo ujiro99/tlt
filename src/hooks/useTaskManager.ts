@@ -131,6 +131,7 @@ interface ITaskManager {
   setText: (value: string) => void
   getTextByLine: (line: number) => string
   setTextByLine: (line: number, text: string) => void
+  appendText: (text: string) => void
   getRoot: () => Node
   setRoot: (node: Node) => void
   getNodeByLine: (line: number) => Node
@@ -234,6 +235,11 @@ export function useTaskManager(): ITaskManager {
     setTextByLine: (line: number, text: string) => {
       const root = Parser.parseMd(text)
       setNodeByLine(root.children[0], line)
+    },
+    appendText: (text: string) => {
+      const parsed = Parser.parseMd(text)
+      const newRoot = root.append(parsed.children[0])
+      setRoot(newRoot)
     },
     getRoot: () => {
       return root

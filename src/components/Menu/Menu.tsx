@@ -7,6 +7,7 @@ import { Calendar } from '@/components/Menu/Calendar'
 import { ReportSummary } from '@/components/Menu/ReportSummary'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
+import { Import } from '@/components/Menu/Import'
 import { Icon } from '@/components/Icon'
 import { sleep } from '@/services/util'
 
@@ -47,6 +48,7 @@ export function Menu(): JSX.Element {
     <>
       <header className="menu__sticky">
         <div className="menu__button">
+          <Import />
           <Edit />
           <Copy />
         </div>
