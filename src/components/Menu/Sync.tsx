@@ -13,7 +13,7 @@ import * as i18n from '@/services/i18n'
 
 import './IconButton.css'
 
-export function Import(): JSX.Element {
+export function Sync(): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const [mode] = useMode()
@@ -52,13 +52,13 @@ export function Import(): JSX.Element {
 
   return (
     <button
-      className={classnames('icon-button group mod--import', {
+      className={classnames('icon-button group mod--sync', {
         hidden: !isVisible,
       })}
       onClick={importGoogle}
       ref={hoverRef as React.RefObject<HTMLButtonElement>}
     >
-      <Icon className="icon-button__icon" name="cloud-download" />
+      <Icon className="icon-button__icon" name="cloud" />
       <Tooltip
         show={tooltipVisible}
         location={'bottom'}
