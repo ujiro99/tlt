@@ -4,6 +4,12 @@ import { Time } from '@/models/time'
 import Log from '@/services/log'
 import { DEFAULT } from '@/const'
 
+type Profile = {
+  name: string
+  email: string
+  phpto: string
+}
+
 type Event = {
   title: string
   start: string
@@ -12,10 +18,19 @@ type Event = {
   time: Time
 }
 
-async function fetchEvent(token: string): Promise<Event[]> {
-  Log.d(token)
+async function getProfile(token: string): Promise<Profile> {
+  const url =
+    'https://people.googleapis.com/v1/people/me?personFields=names%2Cphotos%2CemailAddresses'
+  const response = await fetch(url, getHeader(token))
+  const data = await response.json()
+  Log.d(data)
 
-  const init = {
+  let p = {} as Profile
+  return p
+}
+
+function getHeader(token: string) {
+  return {
     method: 'GET',
     async: true,
     headers: {
@@ -24,6 +39,10 @@ async function fetchEvent(token: string): Promise<Event[]> {
     },
     contentType: 'json',
   }
+}
+
+async function fetchEvent(token: string): Promise<Event[]> {
+  Log.d(token)
 
   const url = 'https://www.googleapis.com/calendar/v3/calendars/primary/events'
   const timeZone = 'Asia/Tokyo'
@@ -40,7 +59,7 @@ async function fetchEvent(token: string): Promise<Event[]> {
   p.append('timeZone', timeZone)
   Log.d(p.toString())
 
-  const response = await fetch(url + '?' + p.toString(), init)
+  const response = await fetch(url + '?' + p.toString(), getHeader(token))
   const data = await response.json()
 
   const res = []
@@ -64,6 +83,21 @@ export const GoogleCalendar = {
     return new Promise((resolve) => {
       chrome.identity.getAuthToken({ interactive: true }, (token: string) => {
         resolve(fetchEvent(token))
+      })
+    })
+  },
+  async getProfile(): Promise<Profile> {
+    return new Promise((resolve) => {
+
+      let url = chrome.identity.getRedirectURL()
+      chrome.identity.launchWebAuthFlow({ url: url, interactive: true }, (url) => {
+
+        Log.d(url)
+      })
+
+
+      chrome.identity.getAuthToken({ interactive: true }, (token: string) => {
+        resolve(getProfile(token))
       })
     })
   },

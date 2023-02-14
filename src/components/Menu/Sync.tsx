@@ -3,40 +3,21 @@ import classnames from 'classnames'
 
 import { useMode, MODE } from '@/hooks/useMode'
 import { useHover } from '@/hooks/useHover'
-import { useTaskManager } from '@/hooks/useTaskManager'
-import { useAnalytics } from '@/hooks/useAnalytics'
+import { useSyncModal } from '@/hooks/useSyncModal'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
-import { sleep } from '@/services/util'
-import { GoogleCalendar } from '@/services/googleCalendar'
 import * as i18n from '@/services/i18n'
 
 import './IconButton.css'
 
 export function Sync(): JSX.Element {
-  const manager = useTaskManager()
-  const analytics = useAnalytics()
   const [mode] = useMode()
+  const [_, setVisible] = useSyncModal()
   const [hoverRef, isHovered] = useHover(200)
   const [tooltipVisible, setTooltipVisible] = useState(false)
   const [labelVisible, setLabelVisible] = useState(false)
   const [timeoutId, setTimeoutId] = useState(0)
   const isVisible = mode === MODE.SHOW
-
-  const importGoogle = async () => {
-    analytics.track('click import google calendar')
-    let events = await GoogleCalendar.getEvents()
-
-    for (let e of events) {
-      manager.appendText(e.md)
-    }
-
-    setLabelVisible(false)
-    await sleep(100)
-    setTooltipVisible(true)
-    await sleep(800)
-    setTooltipVisible(false)
-  }
 
   useEffect(() => {
     clearTimeout(timeoutId)
@@ -49,13 +30,18 @@ export function Sync(): JSX.Element {
       setTimeoutId(id)
     }
   }, [isHovered])
+  
+
+  const showModal = () => {
+    setVisible(true)
+  }
 
   return (
     <button
       className={classnames('icon-button group mod--sync', {
         hidden: !isVisible,
       })}
-      onClick={importGoogle}
+      onClick={showModal}
       ref={hoverRef as React.RefObject<HTMLButtonElement>}
     >
       <Icon className="icon-button__icon" name="cloud" />

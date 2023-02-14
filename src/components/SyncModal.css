@@ -1,0 +1,40 @@
+.sync-modal {
+  @apply drop-shadow-xl;
+  @apply rounded-md;
+  @apply bg-white;
+  @apply p-8;
+  @apply text-base;
+
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+
+  &-header__close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+
+    .icon-button__icon {
+      width: 22px;
+      height: 22px;
+    }
+  }
+}
+
+.google-calendar {
+  &__button {
+    @apply bg-white;
+    @apply hover:bg-gray-100;
+    @apply font-semibold;
+    @apply py-2;
+    @apply px-4;
+    @apply border;
+    @apply border-gray-400;
+    @apply rounded;
+    @apply shadow;
+  }
+}
