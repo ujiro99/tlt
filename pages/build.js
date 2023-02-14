@@ -7,6 +7,7 @@ import githubMarkdownCss from 'generate-github-markdown-css'
 
 const SOURCE_DIR = '../docs/'
 const DIST_DIR = 'dist'
+
 // EJS template
 const TEMPLATE = await fs.readFile('template.ejs', 'utf8')
 
@@ -29,6 +30,7 @@ async function build() {
   }
 
   conv('../README.md', 'index.html')
+  conv('./oauth.md')
 
   // files in docs folder
   glob(`${SOURCE_DIR}/**/*.md`, options, function (er, files) {
@@ -40,12 +42,17 @@ async function build() {
   css()
 }
 
-async function conv(fileName, outName) {
+/**
+ * Converts markdown to html. 
+ * @param {string} srcFilePath 
+ * @param {string} distName? 
+ */
+async function conv(srcFilePath, distName) {
   // generate file name
-  const name = path.basename(fileName).split('.').shift()
+  const name = path.basename(srcFilePath).split('.').shift()
 
   // MarkdownファイルをHTML文字列に変換する
-  const content = await fs.readFile(fileName, { encoding: 'utf8' })
+  const content = await fs.readFile(srcFilePath, { encoding: 'utf8' })
   let html = marked.parse(content, { gfm: true })
   html = ejs.render(TEMPLATE, {
     title: name,
@@ -53,13 +60,13 @@ async function conv(fileName, outName) {
   })
 
   let outPath
-  if (outName) {
-    outPath = path.join(DIST_DIR, outName)
+  if (distName) {
+    outPath = path.join(DIST_DIR, distName)
   } else {
     outPath = path.join(DIST_DIR, `${name}.html`)
   }
   await fs.writeFile(outPath, html)
-  console.log(fileName)
+  console.log(srcFilePath)
 }
 
 async function css() {
