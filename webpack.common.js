@@ -7,6 +7,7 @@ const WebpackNotifierPlugin = require('webpack-notifier')
 module.exports = {
   entry: {
     'dist/js/popup': path.join(__dirname, 'src/index.tsx'),
+    'dist/js/content': path.join(__dirname, 'src/content.ts'),
     'dist/eventPage': path.join(__dirname, 'src/eventPage.ts'),
   },
   output: {

@@ -17,6 +17,12 @@
     "128": "icon128.png"
   },
   "permissions": ["storage", "alarms", "identity"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["/js/content.js"]
+    }
+  ],
   "oauth2": {
     "client_id": "577324617872-i23023laljvobjuo80ei0ru98j2ttlmt.apps.googleusercontent.com",
     "scopes": [

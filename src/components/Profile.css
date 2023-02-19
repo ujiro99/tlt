@@ -1,0 +1,54 @@
+.profile {
+  display: flex;
+  padding: 6px 10px;
+  border: solid 1px;
+  border-radius: 14px;
+  @apply border-gray-300;
+
+  &__photo {
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+
+    &.mod--loading {
+      @apply bg-slate-200;
+      @apply animate-pulse;
+    }
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-left: 10px;
+  }
+
+  &__name {
+    @apply text-gray-500;
+
+    &.mod--loading {
+      @apply bg-slate-200;
+      @apply animate-pulse;
+      height: 1em;
+      width: 10em;
+      border-radius: 6px;
+    }
+  }
+
+  &__email {
+    @apply text-gray-400;
+    font-size: 14px;
+    line-height: 16px;
+    margin-bottom: 8px;
+
+    &.mod--loading {
+      @apply bg-slate-200;
+      @apply animate-pulse;
+      height: 1em;
+      width: 14em;
+      border-radius: 4px;
+      margin-top: 6px;
+      margin-bottom: 0;
+    }
+  }
+}

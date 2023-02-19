@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react'
 import { RecoilRoot } from 'recoil'
+import { QueryClient, QueryClientProvider } from 'react-query'
+
 import { ErrorFallback } from '@/components/ErrorFallback'
 import { TaskTextarea } from '@/components/TaskTextarea'
 import { useMode, MODE } from '@/hooks/useMode'
@@ -18,16 +20,26 @@ export default function Popup(): JSX.Element {
     chrome.runtime.sendMessage({ command: 'popupMounted' })
   }, [])
 
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        suspense: true,
+      },
+    },
+  })
+
   return (
-    <ErrorFallback>
-      <RecoilRoot>
-        <React.Suspense fallback={<div></div>}>
-          <Init />
-          <Menu />
-          <TaskList />
-        </React.Suspense>
-      </RecoilRoot>
-    </ErrorFallback>
+    <QueryClientProvider client={queryClient}>
+      <ErrorFallback>
+        <RecoilRoot>
+          <React.Suspense fallback={<div></div>}>
+            <Init />
+            <Menu />
+            <TaskList />
+          </React.Suspense>
+        </RecoilRoot>
+      </ErrorFallback>
+    </QueryClientProvider>
   )
 }
 

@@ -1,6 +1,8 @@
 import Log from "@/services/log";
 
 export const STORAGE_KEY = {
+  ACCESS_TOKEN: "access_token",
+  OAUTH_STATE: "oauth_state",
   ICON_START_MINUTES: "icon_start_minutes",
   TASK_LIST_TEXT: "task_list_text",
   TASK_TAGS: "task_tags",

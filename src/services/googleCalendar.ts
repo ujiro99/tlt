@@ -4,29 +4,12 @@ import { Time } from '@/models/time'
 import Log from '@/services/log'
 import { DEFAULT } from '@/const'
 
-type Profile = {
-  name: string
-  email: string
-  phpto: string
-}
-
 type Event = {
   title: string
   start: string
   end: string
   md: string
   time: Time
-}
-
-async function getProfile(token: string): Promise<Profile> {
-  const url =
-    'https://people.googleapis.com/v1/people/me?personFields=names%2Cphotos%2CemailAddresses'
-  const response = await fetch(url, getHeader(token))
-  const data = await response.json()
-  Log.d(data)
-
-  let p = {} as Profile
-  return p
 }
 
 function getHeader(token: string) {
@@ -83,21 +66,6 @@ export const GoogleCalendar = {
     return new Promise((resolve) => {
       chrome.identity.getAuthToken({ interactive: true }, (token: string) => {
         resolve(fetchEvent(token))
-      })
-    })
-  },
-  async getProfile(): Promise<Profile> {
-    return new Promise((resolve) => {
-
-      let url = chrome.identity.getRedirectURL()
-      chrome.identity.launchWebAuthFlow({ url: url, interactive: true }, (url) => {
-
-        Log.d(url)
-      })
-
-
-      chrome.identity.getAuthToken({ interactive: true }, (token: string) => {
-        resolve(getProfile(token))
       })
     })
   },

@@ -6,6 +6,7 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import { useSyncModal } from '@/hooks/useSyncModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { Icon } from '@/components/Icon'
+import { Profile } from '@/components/Profile' 
 
 import '@/components/SyncModal.css'
 
@@ -17,32 +18,7 @@ export function SyncModal(): JSX.Element {
   const analytics = useAnalytics()
   const [visible, setVisible] = useSyncModal()
 
-  const afterOpenModal = async () => {
-    const REDIRECT_URL = chrome.identity.getRedirectURL()
-    const oauth2Manifest = chrome.runtime.getManifest().oauth2
-    const CLIENT_ID = oauth2Manifest?.client_id
-    const SCOPES = oauth2Manifest?.scopes
-    if (CLIENT_ID == null || SCOPES == null) {
-      return
-    }
-    console.log(REDIRECT_URL)
-
-    const S = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-    const state = Array.from(crypto.getRandomValues(new Uint8Array(12)))
-      .map((n) => S[n % S.length])
-      .join('')
-
-    const AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(
-      REDIRECT_URL,
-    )}&scope=${encodeURIComponent(SCOPES.join(' '))}&state=${state}`
-
-    chrome.identity.launchWebAuthFlow(
-      { interactive: true, url: AUTH_URL },
-      (responseUrl) => {
-        console.log(responseUrl)
-      },
-    )
-  }
+  const afterOpenModal = () => {}
 
   const onRequestClose = () => {
     setVisible(false)
@@ -78,6 +54,7 @@ export function SyncModal(): JSX.Element {
         <div className="google-calendar">
           <section className="google-calendar__login">
             <h3 className="google-calendar__section-title">Login</h3>
+            <Profile />
           </section>
           <section className="google-calendar__import">
             <h3 className="google-calendar__section-title">Import</h3>
