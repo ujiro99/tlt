@@ -6,12 +6,12 @@
   @apply text-base;
 
   position: absolute;
-  top: 20%;
+  top: 30%;
   left: 50%;
   right: auto;
   bottom: auto;
   margin-right: -50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -30%);
 
   &-header__close {
     position: absolute;

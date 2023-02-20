@@ -1,0 +1,56 @@
+.account {
+  $this: .account;
+
+  @apply hover:bg-slate-100;
+  @apply duration-300;
+  @apply ease-out;
+
+  border-radius: 14px;
+  position: relative;
+
+  &__logout {
+    @apply text-gray-400;
+    @apply hover:text-gray-500;
+    @apply duration-300;
+    @apply ease-out;
+
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    height: 60px;
+    width: 110px;
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    text-align: right;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 1) 40%,
+      rgba(255, 255, 255, 1) 100%
+    );
+    opacity: 0;
+
+    @at-root {
+      $(this):hover $(this)__logout {
+        opacity: 0.9;
+      }
+    }
+  }
+
+  &__login {
+    margin: 0 auto;
+    display: block;
+
+    img {
+      height: 62px;
+    }
+  }
+
+  @at-root {
+    $(this).mod--login {
+      @apply hover:bg-inherit;
+    }
+  }
+}

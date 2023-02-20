@@ -1,6 +1,6 @@
 import Log from '@/services/log'
 import { getHeader } from './util'
-import { ensureToken } from './oauth'
+import { OAuth } from './oauth'
 
 export type Profile = {
   name: string
@@ -28,7 +28,7 @@ async function getProfile(token: string): Promise<Profile> {
 export const GoogleProfile = {
   async getProfile(): Promise<Profile> {
     return new Promise(async (resolve) => {
-      const token = await ensureToken()
+      const token = await OAuth.ensureToken()
       const profile = await getProfile(token)
       Log.v(profile)
       resolve(profile)

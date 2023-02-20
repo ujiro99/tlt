@@ -1,4 +1,6 @@
 .profile {
+  $this: .profile;
+
   display: flex;
   padding: 6px 10px;
   border: solid 1px;
@@ -9,11 +11,6 @@
     border-radius: 50%;
     width: 46px;
     height: 46px;
-
-    &.mod--loading {
-      @apply bg-slate-200;
-      @apply animate-pulse;
-    }
   }
 
   &__info {
@@ -25,14 +22,6 @@
 
   &__name {
     @apply text-gray-500;
-
-    &.mod--loading {
-      @apply bg-slate-200;
-      @apply animate-pulse;
-      height: 1em;
-      width: 10em;
-      border-radius: 6px;
-    }
   }
 
   &__email {
@@ -40,15 +29,36 @@
     font-size: 14px;
     line-height: 16px;
     margin-bottom: 8px;
+  }
 
-    &.mod--loading {
-      @apply bg-slate-200;
-      @apply animate-pulse;
-      height: 1em;
-      width: 14em;
-      border-radius: 4px;
-      margin-top: 6px;
-      margin-bottom: 0;
+  @at-root {
+    $(this).mod--loading {
+      $(this)__photo {
+        @apply bg-slate-200;
+        @apply animate-pulse;
+      }
+
+      $(this)__info {
+        padding: 6px 0;
+      }
+
+      $(this)__name {
+        @apply bg-slate-200;
+        @apply animate-pulse;
+        height: 1em;
+        width: 10em;
+        border-radius: 4px;
+      }
+
+      $(this)__email {
+        @apply bg-slate-200;
+        @apply animate-pulse;
+        height: 1em;
+        width: 14em;
+        border-radius: 4px;
+        margin-top: 6px;
+        margin-bottom: 0;
+      }
     }
   }
 }

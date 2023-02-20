@@ -28,13 +28,13 @@ function ProfileInner(): JSX.Element {
 
 function ProfileLoading(): JSX.Element {
   return (
-    <div className="profile">
+    <div className="profile mod--loading">
       <div>
-        <div className="profile__photo mod--loading" />
+        <div className="profile__photo" />
       </div>
       <div className="profile__info">
-        <div className="profile__name mod--loading"></div>
-        <div className="profile__email mod--loading"></div>
+        <div className="profile__name"></div>
+        <div className="profile__email"></div>
       </div>
     </div>
   )

@@ -6,7 +6,7 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import { useSyncModal } from '@/hooks/useSyncModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { Icon } from '@/components/Icon'
-import { Profile } from '@/components/Profile' 
+import { Account } from '@/components/Account'
 
 import '@/components/SyncModal.css'
 
@@ -53,8 +53,7 @@ export function SyncModal(): JSX.Element {
       <div className="sync-modal-content">
         <div className="google-calendar">
           <section className="google-calendar__login">
-            <h3 className="google-calendar__section-title">Login</h3>
-            <Profile />
+            <Account />
           </section>
           <section className="google-calendar__import">
             <h3 className="google-calendar__section-title">Import</h3>

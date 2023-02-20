@@ -16,55 +16,61 @@ const AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${CLIEN
   REDIRECT_URL,
 )}&scope=${encodeURIComponent(SCOPES.join(' '))}&state=${state}`
 
-const tokenRefresh = (): Promise<boolean> => {
-  return new Promise(async (resolve) => {
-    await Storage.set(STORAGE_KEY.OAUTH_STATE, state)
-    const window = await chrome.windows.create({
-      url: AUTH_URL,
-      width: 530,
-      height: 700,
-      type: 'popup',
+export const OAuth = {
+  tokenRefresh(): Promise<boolean> {
+    return new Promise(async (resolve) => {
+      await Storage.set(STORAGE_KEY.OAUTH_STATE, state)
+      const window = await chrome.windows.create({
+        url: AUTH_URL,
+        width: 530,
+        height: 700,
+        type: 'popup',
+      })
+      Ipc.addListener('token', (param: boolean) => {
+        chrome.windows.remove(window.id)
+        if (param) {
+          Log.d('token updated.')
+          Storage.set(STORAGE_KEY.LOGIN_STATE, true)
+        } else {
+          Log.d('update token failed.')
+        }
+        resolve(param)
+        return false
+      })
     })
-    Ipc.addListener('token', (param: boolean) => {
-      chrome.windows.remove(window.id)
-      if (param) {
-        Log.d('token updated.')
-      } else {
-        Log.d('update token failed.')
+  },
+
+  async ensureToken(): Promise<string> {
+    const token = (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
+    try {
+      const response = await fetch(
+        `https://oauth2.googleapis.com/tokeninfo?access_token=${token}`,
+      )
+      if (!response.ok) {
+        throw new Error('invalid token')
       }
-      resolve(param)
-      return false
-    })
-  })
-}
-
-export const ensureToken = async (): Promise<string> => {
-  const token = (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
-  try {
-    const response = await fetch(
-      `https://oauth2.googleapis.com/tokeninfo?access_token=${token}`,
-    )
-    if (!response.ok) {
-      throw new Error('invalid token')
+      const data = await response.json()
+      if (data.aud && data.aud === CLIENT_ID) {
+        Storage.set(STORAGE_KEY.LOGIN_STATE, true)
+        return token
+      } else {
+        throw new Error('invalid token')
+      }
+    } catch {
+      Log.d('need to refresh token')
+      await OAuth.tokenRefresh()
+      return (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
     }
-    const data = await response.json()
-    if (data.aud && data.aud === CLIENT_ID) {
-      return token
+  },
+
+  async logout(): Promise<boolean> {
+    const res = await Storage.remove(STORAGE_KEY.ACCESS_TOKEN)
+    if (res) {
+      Storage.set(STORAGE_KEY.LOGIN_STATE, false)
+      return true
     } else {
-      throw new Error('invalid token')
+      Log.e('logout failed')
+      return false 
     }
-  } catch {
-    Log.d('need to refresh token')
-    await tokenRefresh()
-    return (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
-  }
-}
-
-export const logout = async (): Promise<boolean> => {
-  const res = await Storage.remove(STORAGE_KEY.ACCESS_TOKEN)
-  if (res) {
-    return true
-  } else {
-    Log.e('logout failed')
-  }
+  },
 }

@@ -3,7 +3,7 @@ import { isDebug } from '@/const'
 /**
  * Do not usually display.
  */
-const verbose = true
+const verbose = false
 
 interface ILog {
   v: (msg: unknown) => void
