@@ -12,7 +12,8 @@ const fetch = () => {
 }
 
 function ProfileInner(): JSX.Element {
-  const { data } = fetch()
+  // const { data } = fetch()
+  const data = {} as Profile
   return (
     <div className="profile">
       <div>

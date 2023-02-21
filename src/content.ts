@@ -8,22 +8,21 @@ const getOAuthToken = async () => {
     return
   }
 
-  const params = new URLSearchParams(new URL(responseUrl).hash.slice(1))
+  const params = new URLSearchParams(document.location.search);
   const state = params.get('state')
-  const token = params.get('access_token')
+  const code = params.get('code')
   const oauthState = await Storage.get(STORAGE_KEY.OAUTH_STATE)
   await Storage.remove(STORAGE_KEY.OAUTH_STATE)
 
-  if (state === oauthState && token) {
-    await Storage.set(STORAGE_KEY.ACCESS_TOKEN, token)
+  if (state === oauthState && code) {
     Ipc.send({
-      command: 'token',
-      param: true,
+      command: 'code',
+      param: code,
     })
   } else {
     Ipc.send({
-      command: 'token',
-      param: false,
+      command: 'code',
+      param: null,
     })
   }
 }

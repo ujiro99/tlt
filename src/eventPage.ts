@@ -44,7 +44,7 @@ const onMessageFuncs: OnMessageFuncs = {
     return true
   },
 
-  token() {
+  code() {
     // nothting to do, here.
     return true
   },
