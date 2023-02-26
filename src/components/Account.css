@@ -1,5 +1,6 @@
 .account {
   $this: .account;
+  $height: 60px;
 
   @apply hover:bg-slate-100;
   @apply duration-300;
@@ -17,7 +18,7 @@
     position: absolute;
     top: 1px;
     right: 1px;
-    height: 60px;
+    height: calc($height - 2px);
     width: 110px;
     border-top-right-radius: 14px;
     border-bottom-right-radius: 14px;
@@ -34,7 +35,10 @@
 
     @at-root {
       $(this):hover $(this)__logout {
-        opacity: 0.9;
+        opacity: 0.8;
+        &:hover {
+          opacity: 1;
+        }
       }
     }
   }
@@ -44,7 +48,7 @@
     display: block;
 
     img {
-      height: 62px;
+      height: $height;
     }
   }
 

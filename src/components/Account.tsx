@@ -18,7 +18,7 @@ export function Account(): JSX.Element {
   console.log(`isLoggedIn: ${isLoggedIn}`)
 
   const login = () => {
-    OAuth.tokenRefresh().then((ret: string) => {
+    OAuth.ensureToken().then((ret: string) => {
       setIsLoggedIn(true)
     })
   }

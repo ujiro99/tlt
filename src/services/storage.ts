@@ -2,6 +2,7 @@ import Log from "@/services/log";
 
 export const STORAGE_KEY = {
   ACCESS_TOKEN: "access_token",
+  REFRESH_TOKEN: "refresh_token",
   OAUTH_STATE: "oauth_state",
   LOGIN_STATE: "login_state",
   ICON_START_MINUTES: "icon_start_minutes",
