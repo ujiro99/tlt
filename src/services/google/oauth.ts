@@ -17,28 +17,75 @@ async function postData(url = '', data = {}) {
   return res.json()
 }
 
-export const OAuth = {
-  async updateToken(): Promise<boolean> {
-    let ret = await OAuth.fetchAccessToken()
-    if (!ret) {
-      ret = await OAuth.fetchRefreshToken()
-    }
-    return ret
-  },
+function fetchAccessToken(): Promise<boolean> {
+  Log.d('fetchAccessToken')
+  return new Promise(async (resolve) => {
+    const refreshToken = await Storage.get(STORAGE_KEY.REFRESH_TOKEN)
+    const tokenUrl = `https://oauth2.googleapis.com/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECLET}&refresh_token=${refreshToken}&grant_type=refresh_token`
+    postData(tokenUrl)
+      .then(async (res) => {
+        if (!res.access_token) {
+          Log.d(res)
+          resolve(false)
+          return
+        }
+        await Storage.set(STORAGE_KEY.ACCESS_TOKEN, res.access_token)
+        await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
+        resolve(true)
+      })
+      .catch((err) => {
+        Log.e(err)
+        resolve(false)
+      })
+  })
+}
 
-  fetchAccessToken(): Promise<boolean> {
-    Log.d('fetchAccessToken')
-    return new Promise(async (resolve) => {
-      const refreshToken = await Storage.get(STORAGE_KEY.REFRESH_TOKEN)
-      const tokenUrl = `https://oauth2.googleapis.com/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECLET}&refresh_token=${refreshToken}&grant_type=refresh_token`
+function fetchRefreshToken(): Promise<boolean> {
+  Log.d('fetchRefreshToken')
+  return new Promise(async (resolve) => {
+    const S = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+    const state = Array.from(crypto.getRandomValues(new Uint8Array(12)))
+      .map((n) => S[n % S.length])
+      .join('')
+    await Storage.set(STORAGE_KEY.OAUTH_STATE, state)
+
+    const AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?scope=${encodeURIComponent(
+      SCOPES.join(' '),
+    )}&access_type=offline&include_granted_scopes=true&response_type=code&state=${state}&redirect_uri=${encodeURIComponent(
+      REDIRECT_URL,
+    )}&client_id=${CLIENT_ID}&prompt=consent`
+
+    // start oauth2
+    const window = await chrome.windows.create({
+      url: AUTH_URL,
+      width: 530,
+      height: 700,
+      type: 'popup',
+    })
+
+    Ipc.addListener('code', (param: string) => {
+      chrome.windows.remove(window.id)
+      if (!param) {
+        Log.w('get code failed.')
+        resolve(false)
+        return false
+      }
+      Log.d('code updated.')
+
+      // fetch referesh token
+      const tokenUrl = `https://oauth2.googleapis.com/token?code=${param}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECLET}&redirect_uri=${encodeURIComponent(
+        REDIRECT_URL,
+      )}&grant_type=authorization_code`
+
       postData(tokenUrl)
         .then(async (res) => {
-          if (!res.access_token) {
-            Log.d(res)
+          if (!res.access_token || !res.refresh_token) {
+            Log.w(res)
             resolve(false)
             return
           }
           await Storage.set(STORAGE_KEY.ACCESS_TOKEN, res.access_token)
+          await Storage.set(STORAGE_KEY.REFRESH_TOKEN, res.refresh_token)
           await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
           resolve(true)
         })
@@ -46,65 +93,18 @@ export const OAuth = {
           Log.e(err)
           resolve(false)
         })
+      return false
     })
-  },
+  })
+}
 
-  fetchRefreshToken(): Promise<boolean> {
-    Log.d('fetchRefreshToken')
-    return new Promise(async (resolve) => {
-      const S = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-      const state = Array.from(crypto.getRandomValues(new Uint8Array(12)))
-        .map((n) => S[n % S.length])
-        .join('')
-      await Storage.set(STORAGE_KEY.OAUTH_STATE, state)
-
-      const AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?scope=${encodeURIComponent(
-        SCOPES.join(' '),
-      )}&access_type=offline&include_granted_scopes=true&response_type=code&state=${state}&redirect_uri=${encodeURIComponent(
-        REDIRECT_URL,
-      )}&client_id=${CLIENT_ID}&prompt=consent`
-
-      // start oauth2
-      const window = await chrome.windows.create({
-        url: AUTH_URL,
-        width: 530,
-        height: 700,
-        type: 'popup',
-      })
-
-      Ipc.addListener('code', (param: string) => {
-        chrome.windows.remove(window.id)
-        if (!param) {
-          Log.w('get code failed.')
-          resolve(false)
-          return false
-        }
-        Log.d('code updated.')
-
-        // fetch referesh token
-        const tokenUrl = `https://oauth2.googleapis.com/token?code=${param}&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECLET}&redirect_uri=${encodeURIComponent(
-          REDIRECT_URL,
-        )}&grant_type=authorization_code`
-
-        postData(tokenUrl)
-          .then(async (res) => {
-            if (!res.access_token || !res.refresh_token) {
-              Log.w(res)
-              resolve(false)
-              return
-            }
-            await Storage.set(STORAGE_KEY.ACCESS_TOKEN, res.access_token)
-            await Storage.set(STORAGE_KEY.REFRESH_TOKEN, res.refresh_token)
-            await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
-            resolve(true)
-          })
-          .catch((err) => {
-            Log.e(err)
-            resolve(false)
-          })
-        return false
-      })
-    })
+export const OAuth = {
+  async updateToken(): Promise<boolean> {
+    let ret = await fetchAccessToken()
+    if (!ret) {
+      ret = await fetchRefreshToken()
+    }
+    return ret
   },
 
   async ensureToken(): Promise<string> {
@@ -128,6 +128,10 @@ export const OAuth = {
       await OAuth.updateToken()
       return (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
     }
+  },
+
+  async getToken(): Promise<string> {
+    return (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
   },
 
   async logout(): Promise<boolean> {

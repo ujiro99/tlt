@@ -1,6 +1,5 @@
 import Log from '@/services/log'
-import { getHeader } from './util'
-import { OAuth } from './oauth'
+import { fetchWrapper } from './util'
 
 export type Profile = {
   name: string
@@ -8,11 +7,10 @@ export type Profile = {
   photo: string
 }
 
-async function getProfile(token: string): Promise<Profile> {
+async function getProfile(): Promise<Profile> {
   const url =
     'https://people.googleapis.com/v1/people/me?personFields=names%2Cphotos%2CemailAddresses'
-  const response = await fetch(url, getHeader(token))
-  const data = await response.json()
+  const data = await fetchWrapper(url)
   const p = {} as Profile
   try {
     p.name = data['names'][0]['displayName']
@@ -28,8 +26,7 @@ async function getProfile(token: string): Promise<Profile> {
 export const GoogleProfile = {
   async getProfile(): Promise<Profile> {
     return new Promise(async (resolve) => {
-      const token = await OAuth.ensureToken()
-      const profile = await getProfile(token)
+      const profile = await getProfile()
       Log.v(profile)
       resolve(profile)
     })
