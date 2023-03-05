@@ -3,7 +3,8 @@ import { useQuery } from 'react-query'
 
 import { Icon } from '@/components/Icon'
 import { GoogleCalendar, Calendar } from '@/services/google/calendar'
-import { Storage, STORAGE_KEY } from '@/services/storage'
+import { STORAGE_KEY } from '@/services/storage'
+import { useStorage } from '@/hooks/useStorage'
 
 import './CalendarList.css'
 
@@ -14,35 +15,29 @@ const fetchCalendars = () => {
   })
 }
 
-const getCalendarFromStorage = () => {
-  return useQuery({
-    queryKey: ['calendarFromStorage'],
-    queryFn: () => Storage.get(STORAGE_KEY.CALENDAR_DOWNLOAD),
-  })
-}
-
 type CalendarListProps = {
   onChangeCalendar: (calendar: Calendar) => void
 }
 
 function Inner(props: CalendarListProps): JSX.Element {
   const resApi = fetchCalendars()
-  const resStrg = getCalendarFromStorage()
-  const calendar = resStrg.data as Calendar
+  const [calendar, setCalendar] = useStorage<Calendar>(
+    STORAGE_KEY.CALENDAR_DOWNLOAD,
+  )
 
   const onChange = async (e) => {
     const id = e.target.value
     if (id) {
       const cal = resApi.data.find((c) => c.id === id)
-      await Storage.set(STORAGE_KEY.CALENDAR_DOWNLOAD, cal)
+      setCalendar(cal)
       props.onChangeCalendar(cal)
     }
     e.target.blur()
   }
 
   useEffect(() => {
-    if (calendar?.id) {
-      props.onChangeCalendar(resStrg.data as Calendar)
+    if (calendar) {
+      props.onChangeCalendar(calendar)
     }
   }, [])
 
@@ -51,7 +46,7 @@ function Inner(props: CalendarListProps): JSX.Element {
       <select
         className="calendar-list__select"
         onChange={onChange}
-        defaultValue={calendar.id}
+        defaultValue={calendar?.id}
       >
         <option key="0" value="" disabled>
           -- please select --
