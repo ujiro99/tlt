@@ -1,0 +1,14 @@
+.event-list {
+  @apply px-3;
+  @apply py-2;
+  @apply text-gray-600;
+  @apply bg-gray-100;
+  @apply rounded-md;
+
+  margin-top: 4px;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+  }
+}

@@ -4,7 +4,7 @@
   display: flex;
   padding: 6px 10px;
   border: solid 1px;
-  border-radius: 14px;
+  @apply rounded-lg;
   @apply border-gray-300;
 
   &__photo {
@@ -39,7 +39,7 @@
       }
 
       $(this)__info {
-        padding: 6px 0;
+        padding: 4px 0;
       }
 
       $(this)__name {

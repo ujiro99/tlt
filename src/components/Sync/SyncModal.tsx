@@ -1,14 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Modal from 'react-modal'
+import { useQuery } from 'react-query'
 
-import { GoogleCalendar } from '@/services/googleCalendar'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useSyncModal } from '@/hooks/useSyncModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { Icon } from '@/components/Icon'
-import { Account } from '@/components/Account'
+import { Calendar } from '@/services/google/calendar'
+import { Storage, STORAGE_KEY } from '@/services/storage'
 
-import '@/components/SyncModal.css'
+import { CalendarList } from './CalendarList'
+import { EventList } from './EventList'
+import { Account } from './Account'
+
+import './SyncModal.css'
 
 // Make sure to bind modal to your appElement (https://reactcommunity.org/react-modal/accessibility/)
 Modal.setAppElement(document.getElementById('popup'))
@@ -17,6 +22,7 @@ export function SyncModal(): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const [visible, setVisible] = useSyncModal()
+  const [calendar, setCalendar] = useState<Calendar>()
 
   const afterOpenModal = () => {}
 
@@ -26,11 +32,9 @@ export function SyncModal(): JSX.Element {
 
   const importGoogle = async () => {
     analytics.track('import google calendar')
-    let events = await GoogleCalendar.getEvents()
-
-    for (let e of events) {
-      manager.appendText(e.md)
-    }
+    // for (let e of events) {
+    //   manager.appendText(e.md)
+    // }
   }
 
   return (
@@ -59,9 +63,10 @@ export function SyncModal(): JSX.Element {
             <h3 className="google-calendar__section-title">Import</h3>
             <div className="google-calendar__select-calendar">
               Select the calendar you wish to import.
-              <select></select>
+              <CalendarList onChangeCalendar={setCalendar} />
+              <EventList calendar={calendar} />
             </div>
-            <div>
+            <div className="google-calendar__import-button">
               <button
                 className="google-calendar__button"
                 onClick={importGoogle}

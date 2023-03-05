@@ -1,8 +1,7 @@
 import React from 'react'
-import { Profile } from '@/components/Profile'
 import { OAuth } from '@/services/google/oauth'
 import { useOauthState } from '@/hooks/useOauthState'
-
+import { Profile } from './Profile'
 import './Account.css'
 
 function Login({ startLogin }): JSX.Element {
@@ -15,7 +14,6 @@ function Login({ startLogin }): JSX.Element {
 
 export function Account(): JSX.Element {
   const [isLoggedIn, setIsLoggedIn] = useOauthState()
-  console.log(`isLoggedIn: ${isLoggedIn}`)
 
   const login = () => {
     OAuth.ensureToken().then((ret: string) => {

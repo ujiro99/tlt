@@ -9,7 +9,7 @@ import { Menu } from '@/components/Menu/Menu'
 import { EmptyLine } from '@/components/EmptyLine'
 import { SortableTree } from '@/components/Tree/SortableTree'
 import { Report } from '@/components/Report'
-import { SyncModal } from '@/components/SyncModal'
+import { SyncModal } from '@/components/Sync/SyncModal'
 import { useTaskStorage } from '@/hooks/useTaskManager'
 
 import '@/css/common.css'

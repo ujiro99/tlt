@@ -7,7 +7,7 @@ export type Profile = {
   photo: string
 }
 
-async function getProfile(): Promise<Profile> {
+async function fetchProfile(): Promise<Profile> {
   const url =
     'https://people.googleapis.com/v1/people/me?personFields=names%2Cphotos%2CemailAddresses'
   const data = await fetchWrapper(url)
@@ -25,10 +25,6 @@ async function getProfile(): Promise<Profile> {
 
 export const GoogleProfile = {
   async getProfile(): Promise<Profile> {
-    return new Promise(async (resolve) => {
-      const profile = await getProfile()
-      Log.v(profile)
-      resolve(profile)
-    })
+    return await fetchProfile()
   },
 }

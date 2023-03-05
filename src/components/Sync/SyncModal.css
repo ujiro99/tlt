@@ -1,3 +1,5 @@
+@import '../../css/mixin.css';
+
 .sync-modal {
   @apply drop-shadow-xl;
   @apply rounded-md;
@@ -5,6 +7,7 @@
   @apply p-8;
   @apply text-base;
 
+  color: var(--text-600);
   position: absolute;
   top: 30%;
   left: 50%;
@@ -12,6 +15,14 @@
   bottom: auto;
   margin-right: -50%;
   transform: translate(-50%, -30%);
+
+  &-header {
+    padding: 10px 0 20px;
+  }
+
+  &-header > h2 {
+    @apply text-lg;
+  }
 
   &-header__close {
     position: absolute;
@@ -26,15 +37,37 @@
 }
 
 .google-calendar {
+  &__import {
+    margin-top: 20px;
+    width: 300px;
+  }
+
+  &__section-title {
+    @apply text-lg;
+  }
+
+  &__select-calendar {
+    @apply text-sm;
+    margin-top: 6px;
+  }
+
+  &__import-button {
+    text-align: right;
+    margin-top: 4px;
+  }
+
   &__button {
+    @mixin interactable;
+
     @apply bg-white;
-    @apply hover:bg-gray-100;
     @apply font-semibold;
-    @apply py-2;
+    @apply pt-0.5;
+    @apply pb-1.5;
     @apply px-4;
     @apply border;
-    @apply border-gray-400;
-    @apply rounded;
+    @apply border-gray-300;
+    @apply rounded-lg;
     @apply shadow;
   }
 }
+

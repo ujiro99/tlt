@@ -1,7 +1,7 @@
-import { Ipc } from '../ipc'
-import { Storage, STORAGE_KEY } from '../storage'
 import { REDIRECT_URL, CLIENT_ID_WEB, CLIENT_SECLET } from '@/const'
-import Log from '../log'
+import { Ipc } from '@/services/ipc'
+import { Storage, STORAGE_KEY } from '@/services/storage'
+import Log from '@/services/log'
 
 const oauth2Manifest = chrome.runtime.getManifest().oauth2
 const SCOPES = oauth2Manifest?.scopes
@@ -15,6 +15,24 @@ async function postData(url = '', data = {}) {
     },
   })
   return res.json()
+}
+
+function fetchAccessTokenByChromeIdentity(): Promise<boolean> {
+  Log.d('fetchAccessTokenByChromeIdentity')
+  return new Promise((resolve, reject) => {
+    chrome.identity.getAuthToken(
+      { interactive: true },
+      async (token: string) => {
+        if (chrome.runtime.lastError != null || !token) {
+          Log.w(chrome.runtime.lastError)
+          reject(false)
+          return
+        }
+        await Storage.set(STORAGE_KEY.ACCESS_TOKEN, token)
+        resolve(true)
+      },
+    )
+  })
 }
 
 function fetchAccessToken(): Promise<boolean> {
@@ -100,11 +118,16 @@ function fetchRefreshToken(): Promise<boolean> {
 
 export const OAuth = {
   async updateToken(): Promise<boolean> {
-    let ret = await fetchAccessToken()
-    if (!ret) {
-      ret = await fetchRefreshToken()
+    try {
+      return await fetchAccessTokenByChromeIdentity()
+    } catch {
+      // Do not use chrome.identity in browsers other than chrome.
+      let ret = await fetchAccessToken()
+      if (!ret) {
+        ret = await fetchRefreshToken()
+      }
+      return ret
     }
-    return ret
   },
 
   async ensureToken(): Promise<string> {

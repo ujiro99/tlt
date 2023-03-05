@@ -16,9 +16,9 @@
 <path d="M0 0h24v24H0z" fill="none"/><path d="M6 6h12v12H6z"/>
 </symbol>
 
-<!-- expand more -->
-<symbol id="icon-expand-more" viewBox="0 0 24 24">
-<path d="M24 24H0V0h24v24z" fill="none" opacity=".87"/><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6-1.41-1.41z"/>
+<!-- expand -->
+<symbol id="icon-expand" viewBox="0 96 960 960">
+<path d="M480 711 240 471l43-43 197 198 197-197 43 43-240 239Z"/>
 </symbol>
 
 <!-- info -->

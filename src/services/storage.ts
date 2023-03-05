@@ -3,6 +3,7 @@ import Log from "@/services/log";
 export const STORAGE_KEY = {
   ACCESS_TOKEN: "access_token",
   REFRESH_TOKEN: "refresh_token",
+  CALENDAR_DOWNLOAD: "calendar_download",
   OAUTH_STATE: "oauth_state",
   LOGIN_STATE: "login_state",
   ICON_START_MINUTES: "icon_start_minutes",
@@ -25,7 +26,7 @@ export const Storage = {
         if (chrome.runtime.lastError != null) {
           reject(chrome.runtime.lastError);
         } else {
-          Log.d(result[key]);
+          Log.v(result[key]);
           resolve(result[key]);
         }
       });

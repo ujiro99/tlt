@@ -1,0 +1,54 @@
+@import '../../css/mixin.css';
+
+.calendar-list {
+  position: relative;
+  margin-top: 4px;
+
+  &__select {
+    @mixin interactable;
+    @apply rounded-lg;
+    @apply border;
+    @apply border-gray-300;
+    @apply px-3;
+    @apply pt-1;
+    @apply pb-1.5;
+    @apply text-base;
+    @apply text-gray-500;
+
+    width: 100%;
+    cursor: pointer;
+    appearance: none;
+
+    option {
+      background: white;
+    }
+
+    option[disabled] {
+      display: none;
+    }
+
+    &:focus-visible {
+      @apply outline;
+      @apply outline-gray-500/50;
+    }
+  }
+
+  &__select.mod-loading {
+    @apply bg-slate-200;
+    @apply animate-pulse;
+  }
+
+  &__expand {
+    @apply fill-gray-500;
+    width: 1.6em;
+    height: 1.6em;
+    position: absolute;
+    right: 4px;
+    top: 0.5em;
+    transition: transform 0.2s ease-out;
+  }
+
+  &__select:focus + &__expand {
+    transform: rotate(180deg);
+  }
+}
