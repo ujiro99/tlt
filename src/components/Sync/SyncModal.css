@@ -55,19 +55,4 @@
     text-align: right;
     margin-top: 4px;
   }
-
-  &__button {
-    @mixin interactable;
-
-    @apply bg-white;
-    @apply font-semibold;
-    @apply pt-0.5;
-    @apply pb-1.5;
-    @apply px-4;
-    @apply border;
-    @apply border-gray-300;
-    @apply rounded-lg;
-    @apply shadow;
-  }
 }
-

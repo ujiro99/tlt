@@ -238,7 +238,10 @@ export function useTaskManager(): ITaskManager {
     },
     appendText: (text: string) => {
       const parsed = Parser.parseMd(text)
-      const newRoot = root.append(parsed.children[0])
+      let newRoot = root
+      for (let c of parsed.children) {
+        newRoot = newRoot.append(c)
+      }
       setRoot(newRoot)
     },
     getRoot: () => {

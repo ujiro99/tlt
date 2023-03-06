@@ -19,11 +19,14 @@ type CalendarListProps = {
   onChangeCalendar: (calendar: Calendar) => void
 }
 
-function Inner(props: CalendarListProps): JSX.Element {
-  const resApi = fetchCalendars()
+function CalendarListInner(props: CalendarListProps): JSX.Element {
   const [calendar, setCalendar] = useStorage<Calendar>(
     STORAGE_KEY.CALENDAR_DOWNLOAD,
   )
+
+  const resApi = fetchCalendars()
+  const needReAuth = resApi.data == null
+  const calendarFound = resApi.data?.length > 0
 
   const onChange = async (e) => {
     const id = e.target.value
@@ -41,8 +44,28 @@ function Inner(props: CalendarListProps): JSX.Element {
     }
   }, [])
 
+  if (needReAuth) {
+    return (
+      <p className="calendar-list__error">
+        <Icon className="calendar-list__error-icon" name="error" />
+        Re-authorization is required.
+      </p>
+    )
+  }
+
+  if (!calendarFound) {
+    return (
+      <select className="calendar-list__select" defaultValue="">
+        <option key="0" value="" disabled>
+          No calendar found
+        </option>
+      </select>
+    )
+  }
+
   return (
     <>
+      Select a calendar you wish to import.
       <select
         className="calendar-list__select"
         onChange={onChange}
@@ -72,7 +95,7 @@ export function CalendarList(props: CalendarListProps): JSX.Element {
           <select className="calendar-list__select mod-loading"></select>
         }
       >
-        <Inner {...props} />
+        <CalendarListInner {...props} />
       </Suspense>
     </div>
   )

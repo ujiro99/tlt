@@ -1,6 +1,6 @@
-import React, { Suspense } from 'react'
+import React, { Suspense, useEffect } from 'react'
 import { useQuery } from 'react-query'
-import { GoogleCalendar, Calendar } from '@/services/google/calendar'
+import { GoogleCalendar, Calendar, Event } from '@/services/google/calendar'
 
 import './EventList.css'
 
@@ -13,11 +13,16 @@ const fetchEvents = (calendar: Calendar) => {
 
 type EventListProps = {
   calendar: Calendar
+  onChangeEvents: (events: Event[]) => void
 }
 
 function Inner(props: EventListProps): JSX.Element {
   const { data } = fetchEvents(props.calendar)
   const isExist = data.length !== 0
+
+  useEffect(() => {
+    props.onChangeEvents(data)
+  }, [data])
 
   return isExist ? (
     <ul>

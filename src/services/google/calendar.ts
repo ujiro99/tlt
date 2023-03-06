@@ -18,7 +18,17 @@ async function fetchCalendar(): Promise<Calendar[]> {
   p.append('minAccessRole', 'writer')
   Log.v(p.toString())
 
-  const data = await fetchWrapper(url)
+  let data
+  try {
+    data = await fetchWrapper(url)
+    if (!data) throw Error()
+  } catch (err) {
+    if (err && err.message === '403') {
+      return null
+    }
+    Log.w('fetch calendar list failed')
+    return []
+  }
 
   const res = []
   for (const item of data.items) {
@@ -65,8 +75,9 @@ async function fetchEvent(calendar: Calendar): Promise<Event[]> {
   let data
   try {
     data = await fetchWrapper(url + '?' + p.toString())
+    if (!data) throw Error()
   } catch {
-    Log.w('fetch failed')
+    Log.w('fetch event list failed')
     return []
   }
 

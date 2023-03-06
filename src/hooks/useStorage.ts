@@ -4,8 +4,15 @@ import { Storage } from '@/services/storage'
 
 const localPersist =
   (key) =>
-  ({ onSet, setSelf }) => {
-    setSelf(async () => await Storage.get(key))
+  ({ onSet, setSelf, trigger }) => {
+    if (trigger === 'get') {
+      setSelf(async () => await Storage.get(key))
+    }
+    
+    Storage.addListener(key, (newVal) => {
+      setSelf(newVal)
+    })
+    
     onSet((newVal) => {
       if (newVal instanceof DefaultValue) {
         Storage.remove(key)

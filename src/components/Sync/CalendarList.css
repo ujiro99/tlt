@@ -2,7 +2,6 @@
 
 .calendar-list {
   position: relative;
-  margin-top: 4px;
 
   &__select {
     @mixin interactable;
@@ -15,8 +14,8 @@
     @apply text-base;
     @apply text-gray-500;
 
+    margin-top: 4px;
     width: 100%;
-    cursor: pointer;
     appearance: none;
 
     option {
@@ -44,11 +43,25 @@
     height: 1.6em;
     position: absolute;
     right: 4px;
-    top: 0.5em;
+    bottom: 0.5em;
     transition: transform 0.2s ease-out;
   }
 
   &__select:focus + &__expand {
     transform: rotate(180deg);
+  }
+
+  &__error {
+    @apply text-rose-500;
+  }
+
+  &__error-icon {
+    @apply fill-rose-500;
+
+    display: inline-block;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-right: 4px;
+    margin-bottom: 2px;
   }
 }

@@ -1,17 +1,18 @@
 import React, { useState } from 'react'
 import Modal from 'react-modal'
-import { useQuery } from 'react-query'
 
+import { useOauthState } from '@/hooks/useOauthState'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useSyncModal } from '@/hooks/useSyncModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { Icon } from '@/components/Icon'
-import { Calendar } from '@/services/google/calendar'
-import { Storage, STORAGE_KEY } from '@/services/storage'
+import { Calendar, Event } from '@/services/google/calendar'
+import { sleep } from '@/services/util'
 
 import { CalendarList } from './CalendarList'
 import { EventList } from './EventList'
 import { Account } from './Account'
+import { SyncButton } from './SyncButton'
 
 import './SyncModal.css'
 
@@ -21,8 +22,13 @@ Modal.setAppElement(document.getElementById('popup'))
 export function SyncModal(): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
+  const isLoggedIn = useOauthState()
   const [visible, setVisible] = useSyncModal()
   const [calendar, setCalendar] = useState<Calendar>()
+  const [events, setEvents] = useState<Event[]>()
+
+  const calendarExists = calendar != null
+  const eventExists = events?.length > 0
 
   const afterOpenModal = () => {}
 
@@ -32,9 +38,10 @@ export function SyncModal(): JSX.Element {
 
   const importGoogle = async () => {
     analytics.track('import google calendar')
-    // for (let e of events) {
-    //   manager.appendText(e.md)
-    // }
+    const tasks = events.map((e) => e.md).join('\n')
+    manager.appendText(tasks)
+    await sleep(2000)
+    return true
   }
 
   return (
@@ -59,25 +66,25 @@ export function SyncModal(): JSX.Element {
           <section className="google-calendar__login">
             <Account />
           </section>
-          <section className="google-calendar__import">
-            <h3 className="google-calendar__section-title">Import</h3>
-            <div className="google-calendar__select-calendar">
-              Select the calendar you wish to import.
-              <CalendarList onChangeCalendar={setCalendar} />
-              <EventList calendar={calendar} />
-            </div>
-            <div className="google-calendar__import-button">
-              <button
-                className="google-calendar__button"
-                onClick={importGoogle}
-              >
-                Import
-              </button>
-            </div>
-          </section>
-          <section className="google-calendar__upload">
-            <h3 className="google-calendar__section-title">Upload</h3>
-          </section>
+          {isLoggedIn ? (
+            <>
+              <section className="google-calendar__import">
+                <h3 className="google-calendar__section-title">Import</h3>
+                <div className="google-calendar__select-calendar">
+                  <CalendarList onChangeCalendar={setCalendar} />
+                  {calendarExists && (
+                    <EventList calendar={calendar} onChangeEvents={setEvents} />
+                  )}
+                </div>
+                <div className="google-calendar__import-button">
+                  <SyncButton enable={eventExists} onClick={importGoogle} />
+                </div>
+              </section>
+              <section className="google-calendar__upload">
+                <h3 className="google-calendar__section-title">Upload</h3>
+              </section>
+            </>
+          ) : null}
         </div>
       </div>
     </Modal>

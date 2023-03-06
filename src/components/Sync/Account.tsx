@@ -13,18 +13,14 @@ function Login({ startLogin }): JSX.Element {
 }
 
 export function Account(): JSX.Element {
-  const [isLoggedIn, setIsLoggedIn] = useOauthState()
+  const isLoggedIn = useOauthState()
 
   const login = () => {
-    OAuth.ensureToken().then((ret: string) => {
-      setIsLoggedIn(true)
-    })
+    OAuth.ensureToken()
   }
 
   const logout = () => {
-    OAuth.logout().then((ret: boolean) => {
-      setIsLoggedIn(!ret)
-    })
+    OAuth.logout()
   }
 
   return isLoggedIn ? (

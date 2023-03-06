@@ -1,6 +1,6 @@
 import { REDIRECT_URL, CLIENT_ID_WEB, CLIENT_SECLET } from '@/const'
 import { Ipc } from '@/services/ipc'
-import { Storage, STORAGE_KEY } from '@/services/storage'
+import { Storage, STORAGE_KEY, ACCOUNT_DATA } from '@/services/storage'
 import Log from '@/services/log'
 
 const oauth2Manifest = chrome.runtime.getManifest().oauth2
@@ -124,6 +124,11 @@ export const OAuth = {
       // Do not use chrome.identity in browsers other than chrome.
       let ret = await fetchAccessToken()
       if (!ret) {
+        const oauthState = await Storage.get(STORAGE_KEY.OAUTH_STATE)
+        if (oauthState) {
+          //  If the authentication process has already started, it ends here.
+          return
+        }
         ret = await fetchRefreshToken()
       }
       return ret
@@ -148,6 +153,7 @@ export const OAuth = {
       }
     } catch {
       Log.d('need to refresh token')
+      await Storage.remove(STORAGE_KEY.OAUTH_STATE)
       await OAuth.updateToken()
       return (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
     }
@@ -170,6 +176,7 @@ export const OAuth = {
 
     if (res1 && res2) {
       Storage.set(STORAGE_KEY.LOGIN_STATE, false)
+      ACCOUNT_DATA.forEach((key) => Storage.remove(key))
       return true
     } else {
       Log.e('logout failed')

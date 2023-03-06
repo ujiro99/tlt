@@ -33,6 +33,10 @@ export async function fetchWrapper(url, retryCount = 0): Promise<any> {
       await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
       return fetchWrapper(url, retryCount++)
     }
+  } else if (res.status === 403) {
+    // 403 Forbidden
+    // Requires reauthorization
+    throw Error("403")
   } else {
     let text = await res.text()
     throw Error(`${res.status} ${res.statusText}\n${text}`)
