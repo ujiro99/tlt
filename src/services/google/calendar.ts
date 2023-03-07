@@ -70,6 +70,8 @@ async function fetchEvent(calendar: Calendar): Promise<Event[]> {
   p.append('timeMin', min)
   p.append('timeMax', max)
   p.append('timeZone', timeZone)
+  p.append('orderBy', 'startTime')
+  p.append('singleEvents', 'true')
   Log.d(p.toString())
 
   let data
