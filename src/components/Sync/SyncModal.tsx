@@ -6,8 +6,11 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import { useSyncModal } from '@/hooks/useSyncModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { Icon } from '@/components/Icon'
-import { Calendar, Event } from '@/services/google/calendar'
+import { Calendar, CalendarEvent } from '@/services/google/calendar'
 import { sleep } from '@/services/util'
+import { eventToNode } from '@/services/google/util'
+import { NODE_TYPE } from '@/models/node'
+import { Task } from '@/models/task'
 
 import { CalendarList } from './CalendarList'
 import { EventList } from './EventList'
@@ -25,7 +28,7 @@ export function SyncModal(): JSX.Element {
   const isLoggedIn = useOauthState()
   const [visible, setVisible] = useSyncModal()
   const [calendar, setCalendar] = useState<Calendar>()
-  const [events, setEvents] = useState<Event[]>()
+  const [events, setEvents] = useState<CalendarEvent[]>()
 
   const calendarExists = calendar != null
   const eventExists = events?.length > 0
@@ -38,9 +41,38 @@ export function SyncModal(): JSX.Element {
 
   const importGoogle = async () => {
     analytics.track('import google calendar')
-    const tasks = events.map((e) => e.md).join('\n')
-    manager.appendText(tasks)
-    await sleep(2000)
+
+    let nodes = events.map(eventToNode)
+    let root = manager.getRoot()
+
+    // merge
+    nodes = nodes.filter((n) => {
+      const matched = root.find((x) => {
+        return (
+          x.type === NODE_TYPE.TASK &&
+          (x.data as Task).title === (n.data as Task).title
+        )
+      })
+      if (matched) {
+        const t1 = matched.data as Task
+        const t2 = n.data as Task
+        t2.id = t1.id
+        t2.taskState = t1.taskState
+        t2.actualTimes = t1.actualTimes
+        t2.tags = t1.tags
+        n.data = t2
+        n.children = matched.children
+        root = root.replace(n.clone(), (nn) => nn.line === matched.line)
+        return false
+      } else {
+        return true
+      }
+    })
+    nodes.forEach((n) => root = root.append(n))
+
+    // update root
+    manager.setRoot(root)
+    await sleep(1500)
     return true
   }
 

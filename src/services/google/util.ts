@@ -1,5 +1,8 @@
 import { OAuth } from './oauth'
+import { CalendarEvent } from './calendar'
 import { Storage, STORAGE_KEY } from '@/services/storage'
+import { Task } from '@/models/task'
+import { Node, NODE_TYPE } from '@/models/node'
 import Log from '@/services/log'
 
 function getHeader(token: string) {
@@ -36,9 +39,14 @@ export async function fetchWrapper(url, retryCount = 0): Promise<any> {
   } else if (res.status === 403) {
     // 403 Forbidden
     // Requires reauthorization
-    throw Error("403")
+    throw Error('403')
   } else {
     let text = await res.text()
     throw Error(`${res.status} ${res.statusText}\n${text}`)
   }
+}
+
+export function eventToNode(event: CalendarEvent): Node {
+  const task = Task.parse(event.md)
+  return new Node(NODE_TYPE.TASK, 0, task, null)
 }

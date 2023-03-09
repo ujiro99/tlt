@@ -1,6 +1,6 @@
 import React, { Suspense, useEffect } from 'react'
 import { useQuery } from 'react-query'
-import { GoogleCalendar, Calendar, Event } from '@/services/google/calendar'
+import { GoogleCalendar, Calendar, CalendarEvent } from '@/services/google/calendar'
 
 import './EventList.css'
 
@@ -13,7 +13,7 @@ const fetchEvents = (calendar: Calendar) => {
 
 type EventListProps = {
   calendar: Calendar
-  onChangeEvents: (events: Event[]) => void
+  onChangeEvents: (events: CalendarEvent[]) => void
 }
 
 function Inner(props: EventListProps): JSX.Element {
