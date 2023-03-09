@@ -30,7 +30,6 @@ export async function fetchWrapper(url, retryCount = 0): Promise<any> {
     return await res.json()
   } else if (res.status === 401) {
     // 401 Unauthorized
-    await Storage.set(STORAGE_KEY.LOGIN_STATE, false)
     const ret = await OAuth.updateToken()
     if (ret) {
       await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
