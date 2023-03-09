@@ -68,7 +68,7 @@ export function SyncModal(): JSX.Element {
         return true
       }
     })
-    nodes.forEach((n) => root = root.append(n))
+    nodes.forEach((n) => (root = root.append(n)))
 
     // update root
     manager.setRoot(root)
@@ -102,15 +102,21 @@ export function SyncModal(): JSX.Element {
             <>
               <section className="google-calendar__import">
                 <h3 className="google-calendar__section-title">Import</h3>
+                {calendarExists && (
+                  <p className="google-calendar__section-desc">
+                    Select a calendar you wish to import.
+                  </p>
+                )}
+
                 <div className="google-calendar__select-calendar">
                   <CalendarList onChangeCalendar={setCalendar} />
-                  {calendarExists && (
-                    <EventList calendar={calendar} onChangeEvents={setEvents} />
-                  )}
+                  <div className="google-calendar__import-button">
+                    <SyncButton enable={eventExists} onClick={importGoogle} />
+                  </div>
                 </div>
-                <div className="google-calendar__import-button">
-                  <SyncButton enable={eventExists} onClick={importGoogle} />
-                </div>
+                {calendarExists && (
+                  <EventList calendar={calendar} onChangeEvents={setEvents} />
+                )}
               </section>
               <section className="google-calendar__upload">
                 <h3 className="google-calendar__section-title">Upload</h3>

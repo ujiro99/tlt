@@ -28,8 +28,8 @@ function Inner(props: EventListProps): JSX.Element {
     <ul>
       {data.map((e) => (
         <li key={e.id} className="event-list__item">
-          <span>{e.title}</span>
-          <span>{e.time.toString()}</span>
+          <span className='event-list__title'>{e.title}</span>
+          <span className='event-list__time'>{e.time.toString()}</span>
         </li>
       ))}
     </ul>

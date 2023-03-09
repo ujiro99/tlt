@@ -7,11 +7,13 @@
   @apply font-semibold;
   @apply pt-0.5;
   @apply pb-1.5;
-  @apply px-4;
+  @apply px-2;
   @apply border;
   @apply border-gray-300;
   @apply rounded-lg;
   @apply shadow;
+
+  font-size: 14px;
 
   &.mod-disable {
     cursor: not-allowed;

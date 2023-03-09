@@ -2,21 +2,22 @@
 
 .calendar-list {
   position: relative;
+  flex: 1;
 
   &__select {
     @mixin interactable;
     @apply rounded-lg;
     @apply border;
     @apply border-gray-300;
-    @apply px-3;
-    @apply pt-1;
+    @apply pl-3;
+    @apply pr-8;
+    @apply pt-0.5;
     @apply pb-1.5;
-    @apply text-base;
     @apply text-gray-500;
 
-    margin-top: 4px;
     width: 100%;
     appearance: none;
+    font-size: 0.9rem;
 
     option {
       background: white;
@@ -43,7 +44,7 @@
     height: 1.6em;
     position: absolute;
     right: 4px;
-    bottom: 0.5em;
+    bottom: 0.3em;
     transition: transform 0.2s ease-out;
   }
 

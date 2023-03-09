@@ -65,7 +65,6 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
 
   return (
     <>
-      Select a calendar you wish to import.
       <select
         className="calendar-list__select"
         onChange={onChange}

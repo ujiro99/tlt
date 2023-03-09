@@ -37,22 +37,26 @@
 }
 
 .google-calendar {
-  &__import {
+  &__import, &__upload {
     margin-top: 20px;
     width: 300px;
+  }
+
+  &__select-calendar {
+    display: flex;
+    margin-top: 6px;
   }
 
   &__section-title {
     @apply text-lg;
   }
 
-  &__select-calendar {
+  &__section-desc {
     @apply text-sm;
     margin-top: 6px;
   }
 
   &__import-button {
-    text-align: right;
-    margin-top: 4px;
+    margin-left: 6px;
   }
 }
