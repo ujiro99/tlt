@@ -15,7 +15,7 @@ export function SyncButton(param: SyncButtonParam): JSX.Element {
   const [completed, setCompleted] = useState(false)
 
   const onClick = async () => {
-    if (sync || completed) return
+    if (sync || completed || !param.enable) return
 
     setSync(true)
     await param.onClick()

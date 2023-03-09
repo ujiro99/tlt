@@ -2,9 +2,10 @@ import React, { Suspense, useEffect } from 'react'
 import { useQuery } from 'react-query'
 
 import { Icon } from '@/components/Icon'
+import { useStorage } from '@/hooks/useStorage'
 import { GoogleCalendar, Calendar } from '@/services/google/calendar'
 import { STORAGE_KEY } from '@/services/storage'
-import { useStorage } from '@/hooks/useStorage'
+import Log from '@/services/log'
 
 import './CalendarList.css'
 
@@ -39,9 +40,8 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
   }
 
   useEffect(() => {
-    if (calendar) {
-      props.onChangeCalendar(calendar)
-    }
+    Log.v(calendar)
+    props.onChangeCalendar(calendar)
   }, [])
 
   if (needReAuth) {

@@ -54,6 +54,7 @@
 
   &__error {
     @apply text-rose-500;
+    margin-top: 3px;
   }
 
   &__error-icon {

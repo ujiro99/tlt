@@ -107,7 +107,6 @@ export function SyncModal(): JSX.Element {
                     Select a calendar you wish to import.
                   </p>
                 )}
-
                 <div className="google-calendar__select-calendar">
                   <CalendarList onChangeCalendar={setCalendar} />
                   <div className="google-calendar__import-button">
