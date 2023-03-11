@@ -40,7 +40,7 @@ import { SortableTreeItem } from './components'
 import { CSS } from '@dnd-kit/utilities'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
-import { useTrackingState } from '@/hooks/useTrackingState'
+import { useTrackingMove } from '@/hooks/useTrackingState'
 import { treeItemsToNode, updateLines } from '@/services/util'
 
 const measuring = {
@@ -98,7 +98,7 @@ export function SortableTree({
   const root = manager.getRoot()
   const items = root.children
 
-  const { moveTracking } = useTrackingState()
+  const { moveTracking } = useTrackingMove()
 
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items)

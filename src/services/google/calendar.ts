@@ -1,9 +1,9 @@
 import { format } from 'date-fns-tz'
 import { differenceInMinutes } from 'date-fns'
 import { Time } from '@/models/time'
-import { fetchWrapper } from './util'
+import { fetchWrapper, FetchMethod } from './util'
 import Log from '@/services/log'
-import { DEFAULT } from '@/const'
+import { DEFAULT, API_KEY } from '@/const'
 
 export type Calendar = {
   id: string
@@ -12,7 +12,7 @@ export type Calendar = {
   colorId: string
 }
 
-async function fetchCalendar(): Promise<Calendar[]> {
+async function fetchCalendars(): Promise<Calendar[]> {
   const url = 'https://www.googleapis.com/calendar/v3/users/me/calendarList'
 
   let p = new URLSearchParams()
@@ -21,7 +21,7 @@ async function fetchCalendar(): Promise<Calendar[]> {
 
   let data
   try {
-    data = await fetchWrapper(url)
+    data = await fetchWrapper(url + '?' + p.toString())
     if (!data) throw Error()
   } catch (err) {
     if (err && err.message === '403') {
@@ -41,7 +41,7 @@ async function fetchCalendar(): Promise<Calendar[]> {
     res.push(e)
   }
 
-  Log.d(res)
+  Log.v(res)
   return res
 }
 
@@ -54,9 +54,10 @@ export type CalendarEvent = {
   time: Time
   htmlLink: string
   status: string
+  description: string
 }
 
-async function fetchEvent(calendar: Calendar): Promise<CalendarEvent[]> {
+async function fetchEvents(calendar: Calendar): Promise<CalendarEvent[]> {
   if (!calendar) return []
   const calendarId = calendar.id
   const timeZone = calendar.timeZone
@@ -104,15 +105,53 @@ async function fetchEvent(calendar: Calendar): Promise<CalendarEvent[]> {
     }
   }
 
-  Log.d(res)
+  Log.v(res)
   return res
 }
 
+async function insertEvent(
+  calendar: Calendar,
+  event: CalendarEvent,
+): Promise<boolean> {
+  const calendarId = calendar.id
+  // const timeZone = calendar.timeZone
+  const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`
+
+  let p = new URLSearchParams()
+  p.append('key', API_KEY)
+  Log.v(p.toString())
+
+  let option = {
+    method: FetchMethod.POST,
+    body: {
+      summary: event.title,
+      start: {
+        dateTime: event.start,
+      },
+      end: {
+        dateTime: event.end,
+      },
+      description: event.description,
+    },
+  }
+
+  let data
+  try {
+    data = await fetchWrapper(url + '?' + p.toString(), option)
+    if (!data) throw Error()
+  } catch (err) {
+    if (err && err.message === '403') {
+      return null
+    }
+    Log.w('post event failed')
+    return false
+  }
+
+  return true
+}
+
 export const GoogleCalendar = {
-  async getCalendar(): Promise<Calendar[]> {
-    return fetchCalendar()
-  },
-  async getEvents(calendar: Calendar): Promise<CalendarEvent[]> {
-    return fetchEvent(calendar)
-  },
+  fetchCalendars,
+  fetchEvents,
+  insertEvent,
 }

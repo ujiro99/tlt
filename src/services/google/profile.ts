@@ -24,7 +24,5 @@ async function fetchProfile(): Promise<Profile> {
 }
 
 export const GoogleProfile = {
-  async getProfile(): Promise<Profile> {
-    return await fetchProfile()
-  },
+  fetchProfile,
 }

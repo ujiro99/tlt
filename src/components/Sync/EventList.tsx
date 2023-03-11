@@ -7,7 +7,7 @@ import './EventList.css'
 const fetchEvents = (calendar: Calendar) => {
   return useQuery({
     queryKey: ['calendar', calendar],
-    queryFn: async () => GoogleCalendar.getEvents(calendar),
+    queryFn: async () => GoogleCalendar.fetchEvents(calendar),
   })
 }
 

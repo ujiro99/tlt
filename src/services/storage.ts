@@ -4,6 +4,8 @@ export const STORAGE_KEY = {
   ACCESS_TOKEN: 'access_token',
   REFRESH_TOKEN: 'refresh_token',
   CALENDAR_DOWNLOAD: 'calendar_download',
+  CALENDAR_UPLOAD: 'calendar_upload',
+  CALENAR_EVENTS: 'calenar_events',
   OAUTH_STATE: 'oauth_state',
   LOGIN_STATE: 'login_state',
   ICON_START_MINUTES: 'icon_start_minutes',
@@ -11,12 +13,14 @@ export const STORAGE_KEY = {
   TASK_TAGS: 'task_tags',
   TRACKING_START_MS: 'tracking_start_ms',
   TRACKING_STATE: 'tracking_state',
-}
+} as const
+type StorageKey = (typeof STORAGE_KEY)[keyof typeof STORAGE_KEY]
 
 export const ACCOUNT_DATA = [
   STORAGE_KEY.ACCESS_TOKEN,
   STORAGE_KEY.REFRESH_TOKEN,
   STORAGE_KEY.CALENDAR_DOWNLOAD,
+  STORAGE_KEY.CALENDAR_UPLOAD,
 ]
 
 type onChangedCallback = (newVal, oldVal) => void
@@ -25,9 +29,9 @@ export const Storage = {
   /**
    * Get a item from chrome local storage.
    *
-   * @param {string} key of item in storage.
+   * @param {StorageKey} key of item in storage.
    */
-  get: (key: string): Promise<unknown> => {
+  get: (key: StorageKey): Promise<unknown> => {
     return new Promise((resolve, reject) => {
       chrome.storage.local.get(key, function (result) {
         Log.d('storage get: ' + key)
@@ -68,7 +72,7 @@ export const Storage = {
    *
    * @param {string} key key of item.
    */
-  remove: (key: string): Promise<boolean | chrome.runtime.LastError> => {
+  remove: (key: StorageKey): Promise<boolean | chrome.runtime.LastError> => {
     return new Promise((resolve, reject) => {
       chrome.storage.local.remove(key, function () {
         Log.d('storage remove: ' + key)
@@ -97,7 +101,7 @@ export const Storage = {
     })
   },
 
-  addListener: (key: string, cb: onChangedCallback) => {
+  addListener: (key: StorageKey, cb: onChangedCallback) => {
     chrome.storage.onChanged.addListener((changes) => {
       for (let [k, { oldValue, newValue }] of Object.entries(changes)) {
         if (k === key) cb(newValue, oldValue)

@@ -7,7 +7,7 @@ import './Profile.css'
 const fetch = () => {
   return useQuery({
     queryKey: ['profile'],
-    queryFn: GoogleProfile.getProfile,
+    queryFn: GoogleProfile.fetchProfile,
   })
 }
 

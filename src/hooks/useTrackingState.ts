@@ -1,11 +1,17 @@
 import { useCallback } from 'react'
 import { atom, selector, useRecoilState } from 'recoil'
 
-import { nodeState, useTaskManager, taskRecordKeyState } from '@/hooks/useTaskManager'
+import {
+  nodeState,
+  useTaskManager,
+  taskRecordKeyState,
+  useTaskRecordKey,
+} from '@/hooks/useTaskManager'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
 import Log from '@/services/log'
 import { TrackingState, TimeObject } from '@/@types/global'
+import { Node } from '@/models/node'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 
@@ -39,7 +45,7 @@ const trackingState = atom<TrackingState[]>({
       })
     },
   }),
-  effects_UNSTABLE: [
+  effects: [
     ({ onSet }) => {
       onSet((state) => {
         // Automatically save the tracking status.
@@ -59,7 +65,7 @@ const trackingStateSelector = selector<TrackingState[]>({
     // Since the node id changes with each parsing, find and update the new id
     // using the line number as a key.
     return trackings.map((t) => {
-      if(t.key !== key.toKey()) {
+      if (t.key !== key.toKey()) {
         return t
       }
       const node = root.find((n) => n.line === t.line)
@@ -124,22 +130,39 @@ export function useTrackingStop(): useTrackingStopReturn {
 
   return {
     stopAllTracking,
-    stopOtherTracking
+    stopOtherTracking,
   }
 }
 
 interface useTrackingStateReturn {
   trackings: TrackingState[]
-  addTracking: (tracking: TrackingState) => void
-  removeTracking: (nodeId: string) => void
-  moveTracking: (from: number, to: number) => void
+  startTracking: (node: Node) => void
+  stopTracking: (node: Node, checked?: boolean) => void
 }
 
 export function useTrackingState(): useTrackingStateReturn {
+  const manager = useTaskManager()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
+  const trackingKey = useTaskRecordKey()
 
-  const addTracking = useCallback(
-    (tracking: TrackingState) => {
+  const startTracking = useCallback(
+    (node: Node) => {
+      // start new task.
+      const newNode = node.clone()
+      const newTask = newNode.data as Task
+      const trackingStartTime = newTask.trackingStart()
+      const tracking = {
+        key: trackingKey.toKey(),
+        nodeId: node.id,
+        isTracking: true,
+        trackingStartTime,
+        elapsedTime: newTask.actualTimes,
+        line: node.line,
+      }
+
+      // Clone the objects for updating.
+      manager.setNodeByLine(newNode, node.line)
+
       const newVal = [...trackings, tracking]
       setTrackings(newVal)
       Ipc.send({
@@ -150,16 +173,35 @@ export function useTrackingState(): useTrackingStateReturn {
     [trackings],
   )
 
-  const removeTracking = useCallback(
-    (nodeId: string) => {
+  const stopTracking = useCallback(
+    (node: Node, checked?: boolean) => {
+      // Clone the objects for updating.
+      const newNode = node.clone()
+      const newTask = newNode.data as Task
+      if (checked != null) newTask.setComplete(checked)
+      const tracking = trackings.find((n) => n.nodeId === node.id)
+      if (tracking) newTask.trackingStop(tracking.trackingStartTime)
+      manager.setNodeByLine(newNode, node.line)
+      
+      // stop tracking state
       const newVal = trackings.filter((n) => {
-        return n.nodeId !== nodeId
+        return n.nodeId !== node.id
       })
       setTrackings(newVal)
       Ipc.send({ command: 'stopTracking' })
     },
     [trackings],
   )
+
+  return {
+    trackings,
+    startTracking,
+    stopTracking
+  }
+}
+
+export function useTrackingMove() {
+  const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
 
   const moveTracking = useCallback(
     (from: number, to: number) => {
@@ -193,8 +235,6 @@ export function useTrackingState(): useTrackingStateReturn {
 
   return {
     trackings,
-    addTracking,
-    removeTracking,
     moveTracking,
   }
-}
+} 

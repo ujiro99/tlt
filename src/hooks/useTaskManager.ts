@@ -14,7 +14,7 @@ import { Tag, hasTags } from '@/models/tag'
 import { flat } from '@/models/flattenedNode'
 import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
 import { useTagHistory } from '@/hooks/useTagHistory'
-import { useTrackingState } from '@/hooks/useTrackingState'
+import { useTrackingMove } from '@/hooks/useTrackingState'
 import { unique, difference } from '@/services/util'
 import { COLOR } from '@/const'
 
@@ -142,7 +142,7 @@ export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState<Node>(nodeState)
   const setRecordKey = useSetRecoilState(taskRecordKeyState)
   const setIsPossibleToSave = useSetRecoilState(isPossibleToSaveState)
-  const { trackings, moveTracking } = useTrackingState()
+  const { trackings, moveTracking } = useTrackingMove()
   const { tags, setTag } = useTagHistory()
 
   const flatten = flat(root)

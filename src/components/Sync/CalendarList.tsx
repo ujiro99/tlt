@@ -12,7 +12,7 @@ import './CalendarList.css'
 const fetchCalendars = () => {
   return useQuery({
     queryKey: ['calendar'],
-    queryFn: GoogleCalendar.getCalendar,
+    queryFn: GoogleCalendar.fetchCalendars,
   })
 }
 

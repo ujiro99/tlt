@@ -12,9 +12,11 @@ export const COLOR = {
 
 // for oAuth
 export const REDIRECT_URL = 'https://todolist-timetracking.com/oauth'
-export const CLIENT_ID_WEB =
-  '577324617872-233r38j2ivo2vfjhukbfgav954hm3ugv.apps.googleusercontent.com'
+export const CLIENT_ID_WEB = '577324617872-233r38j2ivo2vfjhukbfgav954hm3ugv.apps.googleusercontent.com'
 export const CLIENT_SECLET = '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'
+
+// for api
+export const API_KEY = 'AIzaSyBK5S_Av3w0HloD8Q5u13jSqZmCHIrW-Z8'
 
 /**
  * Setting value to switch the debug log output from this module.
