@@ -5,10 +5,17 @@ import { useOauthState } from '@/hooks/useOauthState'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useSyncModal } from '@/hooks/useSyncModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
+import { useCalendarEvents } from '@/hooks/useCalendarEvent'
 import { Icon } from '@/components/Icon'
-import { Calendar, CalendarEvent } from '@/services/google/calendar'
 import { sleep } from '@/services/util'
+import { STORAGE_KEY } from '@/services/storage'
 import { eventToNode } from '@/services/google/util'
+import {
+  Calendar,
+  CalendarColor,
+  CalendarEvent,
+  GoogleCalendar,
+} from '@/services/google/calendar'
 import { NODE_TYPE } from '@/models/node'
 import { Task } from '@/models/task'
 
@@ -16,6 +23,8 @@ import { CalendarList } from './CalendarList'
 import { EventList } from './EventList'
 import { Account } from './Account'
 import { SyncButton } from './SyncButton'
+import { UplaodEventList } from './UploadEventList'
+import { CalendarColorPicker } from './CalendarColorPicker'
 
 import './SyncModal.css'
 
@@ -27,10 +36,13 @@ export function SyncModal(): JSX.Element {
   const analytics = useAnalytics()
   const isLoggedIn = useOauthState()
   const [visible, setVisible] = useSyncModal()
-  const [calendar, setCalendar] = useState<Calendar>()
+  const { events: savedEvents, removeEvents } = useCalendarEvents()
+  const [calendarDown, setCalendarDown] = useState<Calendar>()
+  const [calendarUp, setCalendarUp] = useState<Calendar>()
   const [events, setEvents] = useState<CalendarEvent[]>()
-
-  const calendarExists = calendar != null
+  const [color, setColor] = useState<CalendarColor>()
+  
+  const calendarExists = calendarDown != null
   const eventExists = events?.length > 0
 
   const afterOpenModal = () => {}
@@ -76,6 +88,18 @@ export function SyncModal(): JSX.Element {
     return true
   }
 
+  const uploadGoogle = async () => {
+    analytics.track('upload google calendar')
+    for (let e of savedEvents) {
+      if (color) e = { ...e, colorId: color.id }
+      await sleep(400)
+      await GoogleCalendar.insertEvent(calendarUp, e)
+      removeEvents([e])
+    }
+    await sleep(1000)
+    return true
+  }
+
   return (
     <Modal
       isOpen={visible}
@@ -108,17 +132,49 @@ export function SyncModal(): JSX.Element {
                   </p>
                 )}
                 <div className="google-calendar__select-calendar">
-                  <CalendarList onChangeCalendar={setCalendar} />
+                  <CalendarList
+                    onChangeCalendar={setCalendarDown}
+                    calendarKey={STORAGE_KEY.CALENDAR_DOWNLOAD}
+                  />
                   <div className="google-calendar__import-button">
-                    <SyncButton enable={eventExists} onClick={importGoogle} />
+                    <SyncButton enable={eventExists} onClick={importGoogle}>
+                      Import
+                    </SyncButton>
                   </div>
                 </div>
                 {calendarExists && (
-                  <EventList calendar={calendar} onChangeEvents={setEvents} />
+                  <EventList
+                    calendar={calendarDown}
+                    onChangeEvents={setEvents}
+                  />
                 )}
               </section>
               <section className="google-calendar__upload">
                 <h3 className="google-calendar__section-title">Upload</h3>
+                {calendarExists && (
+                  <p className="google-calendar__section-desc">
+                    Select a calendar you wish to upload.
+                  </p>
+                )}
+                <div className="google-calendar__select-calendar">
+                  <CalendarList
+                    onChangeCalendar={setCalendarUp}
+                    calendarKey={STORAGE_KEY.CALENDAR_UPLOAD}
+                  />
+                  <div className="google-calendar__color">
+                    <CalendarColorPicker
+                      defaultId={calendarUp?.colorId}
+                      onChangeColor={setColor}
+                      type="event"
+                    />
+                  </div>
+                  <div className="google-calendar__import-button">
+                    <SyncButton enable={true} onClick={uploadGoogle}>
+                      Upload
+                    </SyncButton>
+                  </div>
+                </div>
+                <UplaodEventList />
               </section>
             </>
           ) : null}

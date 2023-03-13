@@ -5,7 +5,7 @@ export const STORAGE_KEY = {
   REFRESH_TOKEN: 'refresh_token',
   CALENDAR_DOWNLOAD: 'calendar_download',
   CALENDAR_UPLOAD: 'calendar_upload',
-  CALENAR_EVENTS: 'calenar_events',
+  CALENDAR_COLOR: 'calendar_color',
   OAUTH_STATE: 'oauth_state',
   LOGIN_STATE: 'login_state',
   ICON_START_MINUTES: 'icon_start_minutes',
@@ -13,15 +13,22 @@ export const STORAGE_KEY = {
   TASK_TAGS: 'task_tags',
   TRACKING_START_MS: 'tracking_start_ms',
   TRACKING_STATE: 'tracking_state',
+  ACTIVITIES: 'ACTIVITIES',
 } as const
-type StorageKey = (typeof STORAGE_KEY)[keyof typeof STORAGE_KEY]
+export type StorageKey = (typeof STORAGE_KEY)[keyof typeof STORAGE_KEY]
 
 export const ACCOUNT_DATA = [
   STORAGE_KEY.ACCESS_TOKEN,
   STORAGE_KEY.REFRESH_TOKEN,
   STORAGE_KEY.CALENDAR_DOWNLOAD,
   STORAGE_KEY.CALENDAR_UPLOAD,
+  STORAGE_KEY.CALENDAR_COLOR,
 ]
+
+export const DEFAULTS = {
+  [STORAGE_KEY.ACTIVITIES]: [],
+  [STORAGE_KEY.CALENDAR_COLOR]: {},
+}
 
 type onChangedCallback = (newVal, oldVal) => void
 

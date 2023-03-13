@@ -50,11 +50,12 @@ export type CalendarEvent = {
   title: string
   start: string
   end: string
-  md: string
-  time: Time
-  htmlLink: string
-  status: string
-  description: string
+  md?: string
+  time?: Time
+  htmlLink?: string
+  status?: string
+  description?: string
+  colorId?: string
 }
 
 async function fetchEvents(calendar: Calendar): Promise<CalendarEvent[]> {
@@ -114,7 +115,6 @@ async function insertEvent(
   event: CalendarEvent,
 ): Promise<boolean> {
   const calendarId = calendar.id
-  // const timeZone = calendar.timeZone
   const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`
 
   let p = new URLSearchParams()
@@ -132,6 +132,7 @@ async function insertEvent(
         dateTime: event.end,
       },
       description: event.description,
+      colorId: event.colorId
     },
   }
 
@@ -150,8 +151,58 @@ async function insertEvent(
   return true
 }
 
+export const COLOR_TYPE = {
+  CALENDAR: 'calendar',
+  EVENT: 'event',
+} as const
+type COLOR_TYPE = (typeof COLOR_TYPE)[keyof typeof COLOR_TYPE]
+
+export type CalendarColor = {
+  id: string
+  type: string
+  background: string
+  foreground: string
+}
+
+async function fetchColors(): Promise<CalendarColor[]> {
+  const url = 'https://www.googleapis.com/calendar/v3/colors'
+
+  let p = new URLSearchParams()
+  p.append('key', API_KEY)
+  Log.v(p.toString())
+
+  let data
+  try {
+    data = await fetchWrapper(url + '?' + p.toString())
+    if (!data) throw Error()
+  } catch (err) {
+    if (err && err.message === '403') {
+      return null
+    }
+    Log.w('fetch colors failed')
+    return []
+  }
+
+  const res = []
+  for (const typeKey in COLOR_TYPE) {
+    const type = COLOR_TYPE[typeKey]
+    for (const key in data[type]) {
+      const c = {} as CalendarColor
+      c.id = key
+      c.type = type
+      c.background = data[type][key].background
+      c.foreground = data[type][key].foreground
+      res.push(c)
+    }
+  }
+
+  Log.d(res)
+  return res
+}
+
 export const GoogleCalendar = {
   fetchCalendars,
   fetchEvents,
   insertEvent,
+  fetchColors,
 }

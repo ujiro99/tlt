@@ -8,6 +8,7 @@ import './SyncButton.css'
 type SyncButtonParam = {
   enable: boolean
   onClick: () => Promise<boolean>
+  children?: React.ReactNode
 }
 
 export function SyncButton(param: SyncButtonParam): JSX.Element {
@@ -41,7 +42,7 @@ export function SyncButton(param: SyncButtonParam): JSX.Element {
       ) : completed ? (
         <span>Completed!</span>
       ) : (
-        <span className="sync-button__label">Import</span>
+        <span className="sync-button__label">{param.children}</span>
       )}
     </button>
   )

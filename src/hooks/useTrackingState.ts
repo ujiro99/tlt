@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { format } from 'date-fns-tz'
 import { atom, selector, useRecoilState } from 'recoil'
 
 import {
@@ -7,6 +8,7 @@ import {
   taskRecordKeyState,
   useTaskRecordKey,
 } from '@/hooks/useTaskManager'
+import { useCalendarEvents } from './useCalendarEvent'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
 import Log from '@/services/log'
@@ -14,6 +16,8 @@ import { TrackingState, TimeObject } from '@/@types/global'
 import { Node } from '@/models/node'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
+
+const TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
 
 const trackingState = atom<TrackingState[]>({
   key: 'trackingState',
@@ -90,6 +94,7 @@ interface useTrackingStopReturn {
 
 export function useTrackingStop(): useTrackingStopReturn {
   const manager = useTaskManager()
+  const { appendEvents } = useCalendarEvents()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
 
   const stopAllTracking = useCallback(() => {
@@ -108,6 +113,7 @@ export function useTrackingStop(): useTrackingStopReturn {
 
   const stopTrackings = (exceptNodeId?: string) => {
     const root = manager.getRoot()
+    const events = []
     for (const tracking of trackings) {
       if (tracking.isTracking && tracking.nodeId !== exceptNodeId) {
         const node = root.find((n) => n.id === tracking.nodeId)
@@ -118,9 +124,22 @@ export function useTrackingStop(): useTrackingStopReturn {
           newTask.trackingStop(tracking.trackingStartTime)
           // TODO fix to be update multiple nodes.
           manager.setNodeByLine(newNode, node.line)
+
+          const start = format(tracking.trackingStartTime, TIME_FORMAT)
+          const end = format(Date.now(), TIME_FORMAT)
+          events.push({
+            id: '' + Math.random(),
+            title: newTask.title,
+            start,
+            end,
+          })
         }
       }
     }
+
+    // update calendar events
+    if (events.length > 0) appendEvents(events)
+
     setTrackings(
       trackings.filter((n) => {
         return n.nodeId === exceptNodeId
@@ -142,6 +161,7 @@ interface useTrackingStateReturn {
 
 export function useTrackingState(): useTrackingStateReturn {
   const manager = useTaskManager()
+  const { appendEvents } = useCalendarEvents()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
   const trackingKey = useTaskRecordKey()
 
@@ -178,11 +198,27 @@ export function useTrackingState(): useTrackingStateReturn {
       // Clone the objects for updating.
       const newNode = node.clone()
       const newTask = newNode.data as Task
+
+      // update node & task
       if (checked != null) newTask.setComplete(checked)
       const tracking = trackings.find((n) => n.nodeId === node.id)
       if (tracking) newTask.trackingStop(tracking.trackingStartTime)
       manager.setNodeByLine(newNode, node.line)
-      
+
+      // update calendar events
+      if (tracking) {
+        const start = format(tracking.trackingStartTime, TIME_FORMAT)
+        const end = format(Date.now(), TIME_FORMAT)
+        appendEvents([
+          {
+            id: '' + Math.random(),
+            title: newTask.title,
+            start,
+            end,
+          },
+        ])
+      }
+
       // stop tracking state
       const newVal = trackings.filter((n) => {
         return n.nodeId !== node.id
@@ -196,7 +232,7 @@ export function useTrackingState(): useTrackingStateReturn {
   return {
     trackings,
     startTracking,
-    stopTracking
+    stopTracking,
   }
 }
 
@@ -237,4 +273,4 @@ export function useTrackingMove() {
     trackings,
     moveTracking,
   }
-} 
+}

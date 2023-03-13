@@ -1,18 +1,20 @@
 import { atomFamily, useRecoilState, DefaultValue } from 'recoil'
-
-import { Storage } from '@/services/storage'
+import { Storage, StorageKey, DEFAULTS } from '@/services/storage'
 
 const localPersist =
   (key) =>
   ({ onSet, setSelf, trigger }) => {
     if (trigger === 'get') {
-      setSelf(async () => await Storage.get(key))
+      setSelf(async () => {
+        const val = await Storage.get(key)
+        return val === undefined ? DEFAULTS[key] : val
+      })
     }
-    
+
     Storage.addListener(key, (newVal) => {
       setSelf(newVal)
     })
-    
+
     onSet((newVal) => {
       if (newVal instanceof DefaultValue) {
         Storage.remove(key)
@@ -27,7 +29,7 @@ const storageState = atomFamily({
   effects: (key) => [localPersist(key)],
 })
 
-export function useStorage<P>(key: string): [P, (P) => void] {
+export function useStorage<P>(key: StorageKey): [P, (P) => void] {
   const [data, setData] = useRecoilState(storageState(key))
   return [data as P, setData]
 }

@@ -4,7 +4,7 @@ import { useQuery } from 'react-query'
 import { Icon } from '@/components/Icon'
 import { useStorage } from '@/hooks/useStorage'
 import { GoogleCalendar, Calendar } from '@/services/google/calendar'
-import { STORAGE_KEY } from '@/services/storage'
+import { StorageKey } from '@/services/storage'
 import Log from '@/services/log'
 
 import './CalendarList.css'
@@ -13,19 +13,19 @@ const fetchCalendars = () => {
   return useQuery({
     queryKey: ['calendar'],
     queryFn: GoogleCalendar.fetchCalendars,
+    staleTime: 60 * 1000,
   })
 }
 
 type CalendarListProps = {
+  calendarKey: StorageKey
   onChangeCalendar: (calendar: Calendar) => void
 }
 
 function CalendarListInner(props: CalendarListProps): JSX.Element {
-  const [calendar, setCalendar] = useStorage<Calendar>(
-    STORAGE_KEY.CALENDAR_DOWNLOAD,
-  )
-
+  const [calendar, setCalendar] = useStorage<Calendar>(props.calendarKey)
   const resApi = fetchCalendars()
+  
   const needReAuth = resApi.data == null
   const calendarFound = resApi.data?.length > 0
 
@@ -68,7 +68,7 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
       <select
         className="calendar-list__select"
         onChange={onChange}
-        defaultValue={calendar?.id}
+        defaultValue={calendar ? calendar.id : ""}
       >
         <option key="0" value="" disabled>
           -- please select --

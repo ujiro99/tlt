@@ -19,11 +19,22 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    flex: 1;
+  }
+
+  &__time-space {
+    margin-left: 2px;
+    font-size: 1rem;
+    line-height: 1rem;
   }
 
   &__time {
     @apply text-xs;
     @apply font-mono;
     margin-left: 1em;
+  }
+  
+  &__time-space + &__time {
+    margin-left: 2px;
   }
 }
