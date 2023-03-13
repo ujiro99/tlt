@@ -29,7 +29,7 @@
 
     &:focus-visible {
       @apply outline;
-      @apply outline-gray-500/50;
+      @apply outline-gray-500/30;
     }
   }
 
@@ -39,12 +39,13 @@
   }
 
   &__expand {
-    @apply fill-gray-500;
-    width: 1.6em;
-    height: 1.6em;
+    @apply fill-gray-400;
+    pointer-events: none;
+    width: 1.4em;
+    height: 1.4em;
     position: absolute;
     right: 4px;
-    bottom: 0.3em;
+    bottom: 6px;
     transition: transform 0.2s ease-out;
   }
 
