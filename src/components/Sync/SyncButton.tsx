@@ -7,7 +7,7 @@ import './SyncButton.css'
 
 type SyncButtonParam = {
   enable: boolean
-  onClick: () => Promise<boolean>
+  onClick: () => Promise<unknown>
   children?: React.ReactNode
 }
 

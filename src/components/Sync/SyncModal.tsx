@@ -14,7 +14,6 @@ import {
   Calendar,
   CalendarColor,
   CalendarEvent,
-  GoogleCalendar,
 } from '@/services/google/calendar'
 import { NODE_TYPE } from '@/models/node'
 import { Task } from '@/models/task'
@@ -36,14 +35,15 @@ export function SyncModal(): JSX.Element {
   const analytics = useAnalytics()
   const isLoggedIn = useOauthState()
   const [visible, setVisible] = useSyncModal()
-  const { events: savedEvents, removeEvents } = useCalendarEvents()
+  const { events: savedEvents, uploadEvents } = useCalendarEvents()
   const [calendarDown, setCalendarDown] = useState<Calendar>()
   const [calendarUp, setCalendarUp] = useState<Calendar>()
   const [events, setEvents] = useState<CalendarEvent[]>()
   const [color, setColor] = useState<CalendarColor>()
-  
+
   const calendarExists = calendarDown != null
   const eventExists = events?.length > 0
+  const savedExists = savedEvents?.length > 0
 
   const afterOpenModal = () => {}
 
@@ -88,16 +88,11 @@ export function SyncModal(): JSX.Element {
     return true
   }
 
-  const uploadGoogle = async () => {
+  const uploadGoogle = () => {
     analytics.track('upload google calendar')
-    for (let e of savedEvents) {
-      if (color) e = { ...e, colorId: color.id }
-      await sleep(400)
-      await GoogleCalendar.insertEvent(calendarUp, e)
-      removeEvents([e])
-    }
-    await sleep(1000)
-    return true
+    return new Promise((resolve) => {
+      uploadEvents(savedEvents, calendarUp, color, resolve)
+    })
   }
 
   return (
@@ -169,7 +164,7 @@ export function SyncModal(): JSX.Element {
                     />
                   </div>
                   <div className="google-calendar__import-button">
-                    <SyncButton enable={true} onClick={uploadGoogle}>
+                    <SyncButton enable={savedExists} onClick={uploadGoogle}>
                       Upload
                     </SyncButton>
                   </div>
