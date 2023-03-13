@@ -72,7 +72,8 @@ export function useCalendarEvents(): useCalendarEventsReturn {
 
   const appendEvents = useCallback(
     (es: CalendarEvent[]) => {
-      const newEvents = [...events, ...es]
+      let ee = es.filter((e) => e.time.toMinutes() > 1)
+      const newEvents = [...events, ...ee]
       Log.d(newEvents)
       _setEvents(newEvents)
     },

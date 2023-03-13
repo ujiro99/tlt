@@ -209,10 +209,13 @@ export function useTrackingState(): useTrackingStateReturn {
       if (tracking) {
         const start = format(tracking.trackingStartTime, TIME_FORMAT)
         const end = format(Date.now(), TIME_FORMAT)
+        const ems = Date.now() - tracking.trackingStartTime
+        const time = Time.parseMs(ems)
         appendEvents([
           {
             id: '' + Math.random(),
             title: newTask.title,
+            time,
             start,
             end,
           },
