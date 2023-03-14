@@ -14,10 +14,9 @@
     margin-top: 12px;
     padding-top: 6px;
     max-height: 176px;
-    overflow-y: scroll;
+    overflow-y: auto;
     color: #e2e8f0;
     font-size: 12px;
-    font-weight: medium;
   }
 
   .TagButton {
