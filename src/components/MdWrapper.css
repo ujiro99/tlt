@@ -12,9 +12,9 @@
   &:has(.mod-h1) {
     @apply bg-neutral-100;
 
-      &:hover {
-        background-color: var(--bg-gray-100);
-      }
+    &:hover {
+      background-color: var(--bg-gray-100);
+    }
   }
 
   &:has(.mod-h1),
@@ -22,7 +22,7 @@
     margin-top: 12px;
   }
 
-  &:hover:has(textarea)  {
+  &:hover:has(textarea) {
     background: none;
   }
 
@@ -39,8 +39,24 @@
   &:hover &__drag {
     opacity: 1;
   }
-  
+
   &:hover:has(textarea) &__drag {
-      opacity: 0;
+    opacity: 0;
+  }
+
+  &:has(.task-item--running) {
+    animation: bg-progress 2s linear infinite;
+    background-image: linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.125) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.125) 50%,
+      rgba(255, 255, 255, 0.125) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 60px 60px;
+    background-color: rgb(199 210 254);
   }
 }

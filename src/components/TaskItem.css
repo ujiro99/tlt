@@ -12,7 +12,7 @@
   @apply select-none;
 
   width: 100%;
-  padding-right: 8px;
+  padding-right: 12px;
 
   &__label {
     @apply flex;
@@ -37,22 +37,6 @@
 
   .counter + &__estimated-time {
     margin-left: 0;
-  }
-
-  &--running {
-    animation: bg-progress 2s linear infinite;
-    background-image: linear-gradient(
-      -45deg,
-      rgba(255, 255, 255, 0.125) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.125) 50%,
-      rgba(255, 255, 255, 0.125) 75%,
-      transparent 75%,
-      transparent
-    );
-    background-size: 60px 60px;
-    background-color: rgb(199 210 254);
   }
 
   &--complete {
