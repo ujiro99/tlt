@@ -60,9 +60,9 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
           } as React.CSSProperties
         }
         {...props}
+        {...handleProps}
       >
         <div className={styles.TreeItem} ref={ref} style={style}>
-          <Handle {...handleProps} />
           {onCollapse && (
             <Action
               onClick={onCollapse}
