@@ -95,11 +95,11 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   const taskItemClass = classnames(
+    'task-item',
     {
       'task-item--running': isTracking,
       'task-item--complete': task.isComplete(),
     },
-    ['task-item', 'item-color'],
   )
 
   const style = {
@@ -107,12 +107,11 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   if (isEditing) {
-    return <LineEditor className="indent-[10px]" line={line} />
+    return <LineEditor line={line} />
   }
 
   return (
     <div
-      tabIndex={0}
       className={taskItemClass}
       style={style}
       data-line={line}

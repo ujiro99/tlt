@@ -2,8 +2,6 @@
 
 .task-item {
   @apply relative;
-  @apply pl-3;
-  @apply pr-2;
   @apply py-2;
   @apply min-h-[40px];
   @apply leading-relaxed;
@@ -12,6 +10,9 @@
   @apply items-center;
   @apply cursor-pointer;
   @apply select-none;
+
+  width: 100%;
+  padding-right: 8px;
 
   &__label {
     @apply flex;
@@ -72,11 +73,6 @@
     border-bottom: solid 1px rgb(156 163 175);
     @apply shadow-lg;
   }
-}
-
-.item-color {
-  @mixin interactable;
-  @apply focus:bg-indigo-50;
 }
 
 @keyframes bg-pulse {

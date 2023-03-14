@@ -26,7 +26,7 @@ body {
 
 .task-textarea {
   position: relative;
-  padding: 20px 16px 30px 16px;
+  padding: 20px 14px 30px 12px;
 
   textarea {
     line-height: 2;

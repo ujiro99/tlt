@@ -5,6 +5,7 @@ import { Node, NODE_TYPE } from '@/models/node'
 import { MdHeading } from '@/components/MdHeading'
 import { MdTaskItem } from '@/components/MdTaskItem'
 import { MdText } from '@/components/MdText'
+import { MdWrapper } from '@/components/MdWrapper'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import Log from '@/services/log'
 
@@ -23,13 +24,15 @@ export function useItemAdapter(): useItemAdapterReturn {
       return <MdText node={empty} />
     }
 
+    let elm
     if (node.type === NODE_TYPE.TASK) {
-      return <MdTaskItem key={node.id} node={node} />
+      elm = <MdTaskItem key={node.id} node={node} />
     } else if (node.type === NODE_TYPE.HEADING) {
-      return <MdHeading key={node.id} node={node} />
+      elm = <MdHeading key={node.id} node={node} />
     } else {
-      return <MdText key={node.id} node={node} />
+      elm = <MdText key={node.id} node={node} />
     }
+    return <MdWrapper>{elm}</MdWrapper>
   }
 
   return [getItem]

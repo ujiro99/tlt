@@ -6,9 +6,11 @@
   @apply leading-normal;
   @apply tracking-wide;
   @apply cursor-pointer;
-  @apply px-3;
   @apply flex;
   @apply items-center;
+
+  padding-left: 2px;
+  padding-right: 12px;
 
   &__tagmenu,
   &__add-todo {

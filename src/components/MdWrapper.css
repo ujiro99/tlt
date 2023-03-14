@@ -1,0 +1,46 @@
+@import '../css/mixin.css';
+
+.item-wrapper {
+  @mixin interactable;
+  @apply focus:bg-indigo-50;
+
+  width: 100%;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+
+  &:has(.mod-h1) {
+    @apply bg-neutral-100;
+
+      &:hover {
+        background-color: var(--bg-gray-100);
+      }
+  }
+
+  &:has(.mod-h1),
+  &:has(.mod-h2) {
+    margin-top: 12px;
+  }
+
+  &:hover:has(textarea)  {
+    background: none;
+  }
+
+  &__drag {
+    @apply fill-gray-300;
+    width: 18px;
+    height: 18px;
+    margin-left: 4px;
+    margin-right: 2px;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
+  }
+
+  &:hover &__drag {
+    opacity: 1;
+  }
+  
+  &:hover:has(textarea) &__drag {
+      opacity: 0;
+  }
+}

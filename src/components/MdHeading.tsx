@@ -16,12 +16,12 @@ import Log from '@/services/log'
 import './Heading.css'
 
 const otherClass = {
-  h1: 'text-base pt-5 pb-3',
-  h2: 'text-base pt-5 pb-3',
-  h3: 'text-sm pt-3 pb-2',
-  h4: 'text-sm pt-3 pb-2',
-  h5: 'text-sm pt-3 pb-2',
-  h6: 'text-sm pt-3 pb-2',
+  h1: 'text-base py-3',
+  h2: 'text-base py-3',
+  h3: 'text-sm py-2',
+  h4: 'text-sm py-2',
+  h5: 'text-sm py-2',
+  h6: 'text-sm py-2',
 }
 
 type NodeProps = {
@@ -58,7 +58,12 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   if (isEditing) {
     return (
       <LineEditor
-        className={classnames('Heading', otherClass[TagName])}
+        className={classnames(
+          'Heading',
+          `mod-${TagName}`,
+          'bg-transparent',
+          otherClass[TagName],
+        )}
         line={line}
       />
     )
@@ -66,8 +71,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
 
   return (
     <div
-      tabIndex={0}
-      className={classnames('Heading', 'item-color', otherClass[TagName])}
+      className={classnames('Heading', `mod-${TagName}`, otherClass[TagName])}
       onClick={focusOrEdit}
     >
       <TagName>{group.title}</TagName>
