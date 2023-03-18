@@ -19,7 +19,7 @@ export default function Popup(): JSX.Element {
   useEffect(() => {
     chrome.runtime.sendMessage({ command: 'popupMounted' })
   }, [])
-
+  
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
