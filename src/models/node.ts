@@ -111,6 +111,14 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     }
     return false
   }
+  
+  public isRoot(): boolean {
+    return this.type === NODE_TYPE.ROOT
+  }
+
+  public isHeading(): boolean {
+    return this.type === NODE_TYPE.HEADING
+  }
 
   public append(node: Node): Node {
     const [cloned] = clone([this])

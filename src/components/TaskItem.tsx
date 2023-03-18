@@ -94,11 +94,13 @@ export const TaskItem: React.FC<TaskItemProps> = (
     manager.setNodeByLine(newNode, line)
   }
 
+  const oneLineAbove = manager.getNodeByLine(line - 1)
   const taskItemClass = classnames(
     'task-item',
     {
       'task-item--running': isTracking,
       'task-item--complete': task.isComplete(),
+      'mod-top-margin': node.parent.isRoot() && oneLineAbove.isHeading()
     },
   )
 

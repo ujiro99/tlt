@@ -19,6 +19,7 @@ export interface Props extends Omit<HTMLAttributes<HTMLLIElement>, 'id'> {
   onCollapse?(): void
   onRemove?(): void
   wrapperRef?(node: HTMLLIElement): void
+  dragTarget?: boolean
 }
 
 export const TreeItem = forwardRef<HTMLDivElement, Props>(
@@ -39,6 +40,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
       style,
       value,
       wrapperRef,
+      dragTarget,
       ...props
     },
     ref,
@@ -53,6 +55,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
           disableSelection && styles.disableSelection,
           disableInteraction && styles.disableInteraction,
           clone && 'dragging',
+          dragTarget && 'drag-target'
         )}
         ref={wrapperRef}
         style={

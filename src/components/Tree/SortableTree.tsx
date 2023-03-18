@@ -92,7 +92,12 @@ export function SortableTree({
     parentId: UniqueIdentifier | null
     overId: UniqueIdentifier
   } | null>(null)
-  const [moved, setMoved] = useState(false)
+
+  // debug
+  console.log('overId: ', overId)
+  console.log('activeId: ', activeId)
+  console.log('offsetLeft: ', offsetLeft)
+  console.log('currentPosition: ', currentPosition)
 
   const manager = useTaskManager()
   const root = manager.getRoot()
@@ -202,6 +207,7 @@ export function SortableTree({
                 : undefined
             }
             onRemove={removable ? () => handleRemove(id) : undefined}
+            dragTarget={id === currentPosition?.parentId}
           />
         ))}
         {createPortal(
@@ -244,7 +250,6 @@ export function SortableTree({
 
   function handleDragMove({ delta }: DragMoveEvent) {
     setOffsetLeft(delta.x)
-    setMoved(true)
   }
 
   function handleDragOver({ over }: DragOverEvent) {
@@ -286,7 +291,6 @@ export function SortableTree({
     setActiveId(null)
     setOffsetLeft(0)
     setCurrentPosition(null)
-    setMoved(false)
 
     document.body.style.setProperty('cursor', '')
   }

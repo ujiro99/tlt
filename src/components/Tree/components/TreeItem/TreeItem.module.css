@@ -31,21 +31,17 @@
       .TreeItem {
         position: relative;
         padding: 0;
-        height: 8px;
-        border-color: #2389ff;
-        background-color: #56a1f8;
+        height: 2px;
+        background-color: var(--indigo-300);
 
         &:before {
           position: absolute;
-          left: -8px;
-          top: -4px;
           display: block;
           content: '';
-          width: 12px;
-          height: 12px;
-          border-radius: 50%;
-          border: 1px solid #2389ff;
-          background-color: #ffffff;
+          left: 0px;
+          top: -4px;
+          border: 5px solid transparent;
+          border-left: 8px solid var(--indigo-300);
         }
 
         > * {

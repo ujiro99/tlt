@@ -13,21 +13,13 @@
 
   &:has(.mod-h1) {
     @apply bg-neutral-100;
-
     &:hover {
       background-color: var(--bg-gray-100);
     }
   }
 
-  &:has(.mod-h1),
-  &:has(.mod-h2) {
+  &:has(.mod-h1, .mod-h2, .mod-top-margin) {
     margin-top: 12px;
-
-    @at-root {
-      .dragging $(this):has(.mod-h1, .mod-h2) {
-        margin-top: 0;
-      }
-    }
   }
 
   &:hover:has(textarea) {
@@ -69,10 +61,10 @@
     background-size: 60px 60px;
     background-color: rgb(199 210 254);
   }
-}
 
-.dragging .item-wrapper {
- .item-wrapper__drag {
-    opacity: 1;
+  @at-root {
+    .drag-target $(this) {
+      background-color: var(--indigo-50);
+    }
   }
 }
