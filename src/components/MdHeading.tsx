@@ -42,6 +42,11 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
 
   const TagName = (level <= 6 ? `h${level}` : `h6`) as HeadingTag
 
+  const topMargin = () => {
+    if (line === 0) return false
+    return level <= 2
+  }
+
   const onChangeTags = (tags: Tag[]) => {
     const newNode = props.node.clone()
     const group = newNode.data as Group
@@ -63,6 +68,9 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
           `mod-${TagName}`,
           'bg-transparent',
           otherClass[TagName],
+          {
+            'mod-top-margin': topMargin(),
+          },
         )}
         line={line}
       />
@@ -71,7 +79,9 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
 
   return (
     <div
-      className={classnames('Heading', `mod-${TagName}`, otherClass[TagName])}
+      className={classnames('Heading', `mod-${TagName}`, otherClass[TagName], {
+        'mod-top-margin': topMargin(),
+      })}
       onClick={focusOrEdit}
     >
       <TagName>{group.title}</TagName>

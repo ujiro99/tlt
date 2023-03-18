@@ -57,4 +57,21 @@
       }
     }
   }
+
+  h1 {
+    position: relative;
+    z-index: 0;
+
+    &:after {
+      @apply bg-gray-200;
+      content: '';
+      position: absolute;
+      z-index: -1;
+      left: -8px;
+      bottom: 0;
+      width: calc(100% + 14px);
+      height: 0.6rem;
+      border-radius: 2px;
+    }
+  }
 }

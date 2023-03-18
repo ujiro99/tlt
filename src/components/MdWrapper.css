@@ -11,14 +11,7 @@
   align-items: center;
   border-radius: var(--radius-md);
 
-  &:has(.mod-h1) {
-    @apply bg-neutral-100;
-    &:hover {
-      background-color: var(--bg-gray-100);
-    }
-  }
-
-  &:has(.mod-h1, .mod-h2, .mod-top-margin) {
+  &:has(.mod-top-margin) {
     margin-top: 12px;
   }
 
@@ -35,6 +28,12 @@
     margin-right: 2px;
     opacity: 0;
     transition: opacity 0.2s ease-out;
+
+    @at-root {
+      .dragging $(this)__drag {
+        opacity: 1;
+      }
+    }
   }
 
   &:hover &__drag {
@@ -64,7 +63,7 @@
 
   @at-root {
     .drag-target $(this) {
-      background-color: var(--indigo-50);
+      background-color: var(--bg-gray-100);
     }
   }
 }

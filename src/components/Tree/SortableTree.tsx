@@ -93,12 +93,6 @@ export function SortableTree({
     overId: UniqueIdentifier
   } | null>(null)
 
-  // debug
-  console.log('overId: ', overId)
-  console.log('activeId: ', activeId)
-  console.log('offsetLeft: ', offsetLeft)
-  console.log('currentPosition: ', currentPosition)
-
   const manager = useTaskManager()
   const root = manager.getRoot()
   const items = root.children
@@ -154,6 +148,13 @@ export function SortableTree({
     ? flattenedItems.find(({ id }) => id === activeId)
     : null
 
+  const isDragTarget = (id, parentId, currentPosition) => {
+    return (
+      id === currentPosition?.parentId ||
+      (parentId != null && parentId === currentPosition?.parentId)
+    )
+  }
+
   useEffect(() => {
     sensorContext.current = {
       items: flattenedItems,
@@ -192,7 +193,7 @@ export function SortableTree({
       onDragCancel={handleDragCancel}
     >
       <SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
-        {flattenedItems.map(({ id, children, collapsed, depth }) => (
+        {flattenedItems.map(({ id, children, collapsed, depth, parentId }) => (
           <SortableTreeItem
             key={id}
             id={id}
@@ -207,7 +208,7 @@ export function SortableTree({
                 : undefined
             }
             onRemove={removable ? () => handleRemove(id) : undefined}
-            dragTarget={id === currentPosition?.parentId}
+            dragTarget={isDragTarget(id, parentId, currentPosition)}
           />
         ))}
         {createPortal(

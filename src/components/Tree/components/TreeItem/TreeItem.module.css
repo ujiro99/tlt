@@ -31,7 +31,8 @@
       .TreeItem {
         position: relative;
         padding: 0;
-        height: 2px;
+        height: 0;
+        box-shadow: 1px 1px 0px 1px var(--indigo-200);
         background-color: var(--indigo-300);
 
         &:before {
