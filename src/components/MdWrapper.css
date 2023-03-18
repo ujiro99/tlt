@@ -23,11 +23,12 @@
   }
 
   &:hover:has(textarea) {
+    transition: none;
     background: none;
   }
 
   &__drag {
-    @apply fill-gray-300;
+    @apply fill-gray-400;
     width: 18px;
     height: 18px;
     margin-left: 4px;
@@ -41,6 +42,7 @@
   }
 
   &:hover:has(textarea) &__drag {
+    transition: none;
     opacity: 0;
   }
 
@@ -58,5 +60,11 @@
     );
     background-size: 60px 60px;
     background-color: rgb(199 210 254);
+  }
+}
+
+.dragging .item-wrapper {
+ .item-wrapper__drag {
+    opacity: 1;
   }
 }

@@ -52,6 +52,7 @@ export const TreeItem = forwardRef<HTMLDivElement, Props>(
           indicator && styles.indicator,
           disableSelection && styles.disableSelection,
           disableInteraction && styles.disableInteraction,
+          clone && 'dragging',
         )}
         ref={wrapperRef}
         style={
