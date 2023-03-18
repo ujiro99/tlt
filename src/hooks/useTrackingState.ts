@@ -127,9 +127,12 @@ export function useTrackingStop(): useTrackingStopReturn {
 
           const start = format(tracking.trackingStartTime, TIME_FORMAT)
           const end = format(Date.now(), TIME_FORMAT)
+          const ems = Date.now() - tracking.trackingStartTime
+          const time = Time.parseMs(ems)
           events.push({
             id: '' + Math.random(),
             title: newTask.title,
+            time,
             start,
             end,
           })
