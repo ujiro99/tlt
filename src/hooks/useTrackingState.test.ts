@@ -4,9 +4,8 @@
 
 import { RecoilRoot } from 'recoil'
 import { waitFor, renderHook, act } from '@testing-library/react'
-import { useTrackingState } from './useTrackingState'
-import { TrackingState } from '@/@types/global'
-import { Time } from '@/models/time'
+import { useTrackingState, useTrackingMove } from './useTrackingState'
+import { Parser } from '@/services/parser'
 
 jest.mock('@/services/storage')
 jest.mock('@/services/ipc')
@@ -25,16 +24,10 @@ test('Add a tracking', async () => {
     wrapper: RecoilRoot,
   })
 
-  const tracking = {
-    nodeId: 'id',
-    isTracking: true,
-    trackingStartTime: 0,
-    elapsedTime: new Time(),
-    line: 1,
-  } as TrackingState
+  const rootNode = Parser.parseMd('- [ ] task')
 
   act(() => {
-    result.current.addTracking(tracking)
+    result.current.startTracking(rootNode.children[0])
   })
 
   await waitFor(() => {
@@ -47,21 +40,18 @@ test('Move a tracking position', async () => {
   const { result } = renderHook(() => useTrackingState(), {
     wrapper: RecoilRoot,
   })
+  const { result: move } = renderHook(() => useTrackingMove(), {
+    wrapper: RecoilRoot,
+  })
 
-  const tracking = {
-    nodeId: 'id',
-    isTracking: true,
-    trackingStartTime: 0,
-    elapsedTime: new Time(),
-    line: 1,
-  } as TrackingState
+  const rootNode = Parser.parseMd('- [ ] task')
 
   act(() => {
-    result.current.addTracking(tracking)
+    result.current.startTracking(rootNode.children[0])
   })
 
   act(() => {
-    result.current.moveTracking(1, 2)
+    move.current.moveTracking(1, 2)
   })
 
   await waitFor(() => {
@@ -73,21 +63,18 @@ test('Move a line above the line being tracked', async () => {
   const { result } = renderHook(() => useTrackingState(), {
     wrapper: RecoilRoot,
   })
+  const { result: move } = renderHook(() => useTrackingMove(), {
+    wrapper: RecoilRoot,
+  })
 
-  const tracking = {
-    nodeId: 'id',
-    isTracking: true,
-    trackingStartTime: 0,
-    elapsedTime: new Time(),
-    line: 1,
-  } as TrackingState
+  const rootNode = Parser.parseMd('- [ ] task')
 
   act(() => {
-    result.current.addTracking(tracking)
+    result.current.startTracking(rootNode.children[0])
   })
 
   act(() => {
-    result.current.moveTracking(2, 1)
+    move.current.moveTracking(2, 1)
   })
 
   await waitFor(() => {
@@ -99,21 +86,18 @@ test('Move a line below the line being tracked', async () => {
   const { result } = renderHook(() => useTrackingState(), {
     wrapper: RecoilRoot,
   })
+  const { result: move } = renderHook(() => useTrackingMove(), {
+    wrapper: RecoilRoot,
+  })
 
-  const tracking = {
-    nodeId: 'id',
-    isTracking: true,
-    trackingStartTime: 0,
-    elapsedTime: new Time(),
-    line: 1,
-  } as TrackingState
+  const rootNode = Parser.parseMd('- [ ] task')
 
   act(() => {
-    result.current.addTracking(tracking)
+    result.current.startTracking(rootNode.children[0])
   })
 
   act(() => {
-    result.current.moveTracking(0, 2)
+    move.current.moveTracking(0, 2)
   })
 
   await waitFor(() => {

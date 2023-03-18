@@ -1,7 +1,7 @@
+@import "../css/mixin.css";
+
 .task-item {
   @apply relative;
-  @apply pl-3;
-  @apply pr-2;
   @apply py-2;
   @apply min-h-[40px];
   @apply leading-relaxed;
@@ -10,6 +10,9 @@
   @apply items-center;
   @apply cursor-pointer;
   @apply select-none;
+
+  width: 100%;
+  padding-right: 12px;
 
   &__label {
     @apply flex;
@@ -36,22 +39,6 @@
     margin-left: 0;
   }
 
-  &--running {
-    animation: bg-progress 2s linear infinite;
-    background-image: linear-gradient(
-      -45deg,
-      rgba(255, 255, 255, 0.125) 25%,
-      transparent 25%,
-      transparent 50%,
-      rgba(255, 255, 255, 0.125) 50%,
-      rgba(255, 255, 255, 0.125) 75%,
-      transparent 75%,
-      transparent
-    );
-    background-size: 60px 60px;
-    background-color: rgb(199 210 254);
-  }
-
   &--complete {
     @apply text-gray-500;
   }
@@ -70,14 +57,6 @@
     border-bottom: solid 1px rgb(156 163 175);
     @apply shadow-lg;
   }
-}
-
-.item-color {
-  transition: background-color 0.2s ease-out;
-  &:hover {
-    background-color: var(--bg-gray-100);
-  }
-  @apply focus:bg-indigo-50;
 }
 
 @keyframes bg-pulse {

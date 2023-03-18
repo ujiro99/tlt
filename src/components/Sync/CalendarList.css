@@ -1,0 +1,70 @@
+@import '../../css/mixin.css';
+
+.calendar-list {
+  position: relative;
+  flex: 1;
+
+  &__select {
+    @mixin interactable;
+    @apply rounded-lg;
+    @apply border;
+    @apply border-gray-300;
+    @apply pl-3;
+    @apply pr-8;
+    @apply pt-0.5;
+    @apply pb-1.5;
+    @apply text-gray-500;
+
+    width: 100%;
+    appearance: none;
+    font-size: 0.9rem;
+
+    option {
+      background: white;
+    }
+
+    option[disabled] {
+      display: none;
+    }
+
+    &:focus-visible {
+      @apply outline;
+      @apply outline-gray-500/30;
+    }
+  }
+
+  &__select.mod-loading {
+    @apply bg-slate-200;
+    @apply animate-pulse;
+  }
+
+  &__expand {
+    @apply fill-gray-400;
+    pointer-events: none;
+    width: 1.4em;
+    height: 1.4em;
+    position: absolute;
+    right: 4px;
+    bottom: 6px;
+    transition: transform 0.2s ease-out;
+  }
+
+  &__select:focus + &__expand {
+    transform: rotate(180deg);
+  }
+
+  &__error {
+    @apply text-rose-500;
+    margin-top: 3px;
+  }
+
+  &__error-icon {
+    @apply fill-rose-500;
+
+    display: inline-block;
+    width: 1.2rem;
+    height: 1.2rem;
+    margin-right: 4px;
+    margin-bottom: 2px;
+  }
+}

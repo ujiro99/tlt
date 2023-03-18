@@ -1,0 +1,7 @@
+@define-mixin interactable {
+  cursor: pointer;
+  transition: background-color 0.2s ease-out;
+  &:hover {
+    background-color: var(--bg-gray-100);
+  }
+}

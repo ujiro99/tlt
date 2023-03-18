@@ -1,12 +1,17 @@
+const webpack = require('webpack')
 const path = require('path')
 const CopyPlugin = require('copy-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const StylelintPlugin = require('stylelint-webpack-plugin')
 const WebpackNotifierPlugin = require('webpack-notifier')
 
+const dotenv = require('dotenv')
+const env = dotenv.config().parsed
+
 module.exports = {
   entry: {
     'dist/js/popup': path.join(__dirname, 'src/index.tsx'),
+    'dist/js/content': path.join(__dirname, 'src/content.ts'),
     'dist/eventPage': path.join(__dirname, 'src/eventPage.ts'),
   },
   output: {
@@ -66,5 +71,18 @@ module.exports = {
       },
       alwaysNotify: true,
     }),
+    env !== undefined
+      ? new webpack.DefinePlugin({
+          'process.env': JSON.stringify(env),
+        })
+      : new webpack.DefinePlugin({
+          'process.env.CLIENT_ID_WEB': JSON.stringify(
+            process.env.CLIENT_ID_WEB,
+          ),
+          'process.env.CLIENT_SECLET': JSON.stringify(
+            process.env.CLIENT_SECLET,
+          ),
+          'process.env.API_KEY ': JSON.stringify(process.env.API_KEY),
+        }),
   ],
 }

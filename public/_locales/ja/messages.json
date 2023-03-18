@@ -30,6 +30,9 @@
   "label_custom": {
     "message": "カスタム"
   },
+  "label_google_calendar": {
+    "message": "Googleカレンダー読み込み"
+  },
   "actual": {
     "message": "実績",
     "description": "Actual results in budget control."

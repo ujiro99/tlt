@@ -1,4 +1,4 @@
-import { analytics } from '@/services/analytics'
+import { Analytics } from '@/services/analytics'
 import { useMode } from '@/hooks/useMode'
 
 type Return = { track: (eventName: string) => void }
@@ -8,7 +8,7 @@ export function useAnalytics(): Return {
 
   const track = (eventName: string) => {
     const screen = mode
-    analytics.track(eventName, screen)
+    Analytics.track(eventName, screen)
   }
 
   return { track: track }

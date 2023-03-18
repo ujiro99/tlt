@@ -13,24 +13,26 @@ type Request = {
   param: unknown
 }
 
-chrome.runtime.onMessage.addListener((request: Request, _: chrome.runtime.MessageSender, sendResponse) => {
-  // do not use async/await here !
+chrome.runtime.onMessage.addListener(
+  (request: Request, _: chrome.runtime.MessageSender, sendResponse) => {
+    // do not use async/await here !
 
-  const command = request.command
-  const param = request.param
+    const command = request.command
+    const param = request.param
 
-  Log.d(`command: ${command}`)
-  if (param != null) Log.d(param)
+    Log.d(`command: ${command}`)
+    if (param != null) Log.d(param)
 
-  // onMessage must return "true" if response is async.
-  const func = onMessageFuncs[command]
-  if (func) {
-    return func(param, sendResponse)
-  }
-  Log.w('command not found: ' + command)
+    // onMessage must return "true" if response is async.
+    const func = onMessageFuncs[command]
+    if (func) {
+      return func(param, sendResponse)
+    }
+    Log.w('command not found: ' + command)
 
-  return false
-})
+    return false
+  },
+)
 
 type OnMessageFuncs = {
   [key: string]: (param: unknown, sendResponse: () => void) => boolean
@@ -39,6 +41,11 @@ type OnMessageFuncs = {
 const onMessageFuncs: OnMessageFuncs = {
   popupMounted() {
     Log.d('popupMounted')
+    return true
+  },
+
+  code() {
+    // nothting to do, here.
     return true
   },
 
@@ -72,7 +79,7 @@ const onMessageFuncs: OnMessageFuncs = {
  * Display an icon using the saved time information.
  */
 async function updateIconTime() {
-  Log.d("updateIconTime")
+  Log.d('updateIconTime')
   const trackingStartTime = (await Storage.get(
     STORAGE_KEY.TRACKING_START_MS,
   )) as number

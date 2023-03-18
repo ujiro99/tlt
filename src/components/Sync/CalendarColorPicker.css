@@ -1,0 +1,51 @@
+@define-mixin color-item-wrapper {
+  width: 26px;
+  height: 26px;
+}
+
+@define-mixin color-item {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  margin-left: 1px;
+  transition: all 0.06s ease-out;
+
+  &:hover {
+    width: 26px;
+    height: 26px;
+    margin-left: 0px;
+    box-shadow: rgb(0 0 0 / 14%) 0px 2px 1px 0px;
+  }
+}
+
+.calendar-color {
+  @mixin color-item-wrapper;
+
+  &__item {
+    @mixin color-item;
+  }
+}
+
+.color-picker {
+  @apply z-10;
+  @apply rounded-lg;
+  @apply shadow-md;
+
+  width: 186px;
+  padding: 8px;
+  background-color: white;
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &__li {
+    margin: 4px;
+    @mixin color-item-wrapper;
+  }
+
+  &__item {
+    @mixin color-item;
+  }
+}

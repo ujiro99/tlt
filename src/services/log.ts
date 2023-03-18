@@ -23,11 +23,11 @@ const Log: ILog = {
   /**
    * Output verbose level log.
    */
-  v: verbose ? console.log : nop,
+  v: verbose ? console.debug : nop,
   /**
    * Output debug level log.
    */
-  d: isDebug ? console.debug : nop,
+  d: isDebug ? console.log : nop,
   /**
    * Output warning level log.
    */

@@ -17,8 +17,6 @@ export const MdTaskItem: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   return (
-    <div className='w-full' >
-      <TaskItem checkboxProps={checkboxProps} node={node} />
-    </div>
+    <TaskItem checkboxProps={checkboxProps} node={node} />
   )
 }

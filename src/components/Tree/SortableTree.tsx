@@ -40,7 +40,7 @@ import { SortableTreeItem } from './components'
 import { CSS } from '@dnd-kit/utilities'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
-import { useTrackingState } from '@/hooks/useTrackingState'
+import { useTrackingMove } from '@/hooks/useTrackingState'
 import { treeItemsToNode, updateLines } from '@/services/util'
 
 const measuring = {
@@ -92,13 +92,12 @@ export function SortableTree({
     parentId: UniqueIdentifier | null
     overId: UniqueIdentifier
   } | null>(null)
-  const [moved, setMoved] = useState(false)
 
   const manager = useTaskManager()
   const root = manager.getRoot()
   const items = root.children
 
-  const { moveTracking } = useTrackingState()
+  const { moveTracking } = useTrackingMove()
 
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items)
@@ -131,7 +130,11 @@ export function SortableTree({
     sortableTreeKeyboardCoordinates(sensorContext, indicator, indentationWidth),
   )
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 4, // to enables editting by double click.
+      },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter,
     }),
@@ -144,6 +147,13 @@ export function SortableTree({
   const activeItem = activeId
     ? flattenedItems.find(({ id }) => id === activeId)
     : null
+
+  const isDragTarget = (id, parentId, currentPosition) => {
+    return (
+      id === currentPosition?.parentId ||
+      (parentId != null && parentId === currentPosition?.parentId)
+    )
+  }
 
   useEffect(() => {
     sensorContext.current = {
@@ -183,7 +193,7 @@ export function SortableTree({
       onDragCancel={handleDragCancel}
     >
       <SortableContext items={sortedIds} strategy={verticalListSortingStrategy}>
-        {flattenedItems.map(({ id, children, collapsed, depth }) => (
+        {flattenedItems.map(({ id, children, collapsed, depth, parentId }) => (
           <SortableTreeItem
             key={id}
             id={id}
@@ -198,6 +208,7 @@ export function SortableTree({
                 : undefined
             }
             onRemove={removable ? () => handleRemove(id) : undefined}
+            dragTarget={isDragTarget(id, parentId, currentPosition)}
           />
         ))}
         {createPortal(
@@ -240,7 +251,6 @@ export function SortableTree({
 
   function handleDragMove({ delta }: DragMoveEvent) {
     setOffsetLeft(delta.x)
-    setMoved(true)
   }
 
   function handleDragOver({ over }: DragOverEvent) {
@@ -282,7 +292,6 @@ export function SortableTree({
     setActiveId(null)
     setOffsetLeft(0)
     setCurrentPosition(null)
-    setMoved(false)
 
     document.body.style.setProperty('cursor', '')
   }

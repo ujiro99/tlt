@@ -7,6 +7,7 @@ import { Calendar } from '@/components/Menu/Calendar'
 import { ReportSummary } from '@/components/Menu/ReportSummary'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
+import { Sync } from '@/components/Menu/Sync'
 import { Icon } from '@/components/Icon'
 import { sleep } from '@/services/util'
 
@@ -47,14 +48,18 @@ export function Menu(): JSX.Element {
     <>
       <header className="menu__sticky">
         <div className="menu__button">
+          <Sync />
           <Edit />
           <Copy />
         </div>
       </header>
       {isReport && (
-        <button className={classnames("menu__back", {
-          "menu__back--fixed": isFixed
-        })} onClick={backTodo}>
+        <button
+          className={classnames('menu__back', {
+            'menu__back--fixed': isFixed,
+          })}
+          onClick={backTodo}
+        >
           <Icon name="arrow-back" />
         </button>
       )}

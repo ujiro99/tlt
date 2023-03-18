@@ -1,0 +1,68 @@
+@import '../../css/mixin.css';
+
+.sync-modal {
+  @apply drop-shadow-xl;
+  @apply rounded-md;
+  @apply bg-white;
+  @apply p-8;
+  @apply text-base;
+
+  color: var(--text-600);
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  margin-right: -50%;
+  transform: translate(-50%, -30%);
+
+  &-header {
+    padding: 10px 0 20px;
+  }
+
+  &-header > h2 {
+    @apply text-lg;
+  }
+
+  &-header__close {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+
+    .icon-button__icon {
+      width: 22px;
+      height: 22px;
+    }
+  }
+}
+
+.google-calendar {
+  &__import,
+  &__upload {
+    margin-top: 20px;
+    width: 300px;
+  }
+
+  &__select-calendar {
+    display: flex;
+    margin-top: 6px;
+  }
+
+  &__section-title {
+    @apply text-lg;
+  }
+
+  &__section-desc {
+    @apply text-sm;
+    margin-top: 6px;
+  }
+
+  &__import-button {
+    margin-left: 6px;
+  }
+
+  &__color {
+    margin-left: 6px;
+    margin-top: 5px;
+  }
+}

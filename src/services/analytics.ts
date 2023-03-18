@@ -3,7 +3,7 @@ import { isDebug } from '@/const'
 
 // mixpanel
 
-export const analytics = {
+export const Analytics = {
   init() {
     mixpanel.init('a6bc5429291d17f1f25b16ed4cff3ae2', {
       debug: isDebug,

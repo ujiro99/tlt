@@ -16,8 +16,20 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "permissions": [
-    "storage",
-    "alarms"
-  ]
+  "permissions": ["storage", "alarms", "identity"],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["/js/content.js"]
+    }
+  ],
+  "oauth2": {
+    "client_id": "577324617872-i23023laljvobjuo80ei0ru98j2ttlmt.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/calendar",
+      "https://www.googleapis.com/auth/userinfo.profile",
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
+  },
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAu9xQByZC8NtYvL0yfbFPdyUYGE1dMuFtR0S9Me8v7cjqP4ell3j+RqQ24vwtGi/q5Qg02uafP//ETnMNBUmebLlPihMN6ctuUjBP9ZzQ29EsQAuWgGanM8YogUtAh5GkvEDcTeU7XdisTuZI8EB/1Jq/60afSF/794jJfuNEtchxrGN5aEGobbDvaGfxD4lLsal4CefjSmi3+EEa1Ru8xbjRwt1arv3DAj5Nq53HZAemAdcgGwirxZRFTZ6B9X9c+d3SyZDYoLyIMfh24bSo2iqIbOqbXKHaAETpByBzXlzj4ttvVmShtvmNkDc/uKV+T23YAnowQ/afxe3heAHeBQIDAQAB"
 }

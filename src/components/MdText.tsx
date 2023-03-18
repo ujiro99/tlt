@@ -10,7 +10,7 @@ type Props = {
 }
 
 const baseClass =
-  'w-full raw-text relative leading-normal cursor-pointer px-3 py-2 min-h-[40px] group item-color'
+  'w-full raw-text relative leading-normal cursor-pointer pr-[2px] pr-3 py-2 min-h-[40px] group'
 
 export const MdText = (props: Props): JSX.Element => {
   const line = props.node.line
@@ -21,7 +21,7 @@ export const MdText = (props: Props): JSX.Element => {
   }
 
   return (
-    <div tabIndex={0} className={classnames(baseClass)} onClick={focusOrEdit}>
+    <div className={classnames(baseClass)} onClick={focusOrEdit}>
       <span>{props.node.data as React.ReactNode}</span>
     </div>
   )

@@ -9,6 +9,7 @@
   --text-700: rgb(63 63 70);
   --text-800: rgb(39 39 42);
 
+  --gray-50: rgb(249 250 251);
   --bg-gray-100: rgb(243 244 246);
   --bg-gray-200: rgb(229 231 235);
   --bg-gray-300: rgb(209 213 219);
@@ -16,6 +17,11 @@
   --bg-gray-500: rgb(107 114 128);
   --bg-gray-600: rgb(75 85 99);
   --bg-gray-700: rgb(55 65 81);
+  
+  --indigo-50: rgb(238 242 255);
+  --indigo-100: rgb(224 231 255);
+  --indigo-200: rgb(199 210 254);
+  --indigo-300: rgb(165 180 252);
 
   --radius-md: 6px;
 }

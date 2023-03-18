@@ -2,7 +2,7 @@ import React, { useState, useEffect, CSSProperties } from 'react'
 import classnames from 'classnames'
 
 import Log from '@/services/log'
-import { useTaskManager, useTaskRecordKey } from '@/hooks/useTaskManager'
+import { useTaskManager } from '@/hooks/useTaskManager'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useTrackingState, useTrackingStop } from '@/hooks/useTrackingState'
 import { useEditable } from '@/hooks/useEditable'
@@ -37,7 +37,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const [started, setStarted] = useState(false)
   const manager = useTaskManager()
   const analytics = useAnalytics()
-  const { trackings, addTracking, removeTracking } = useTrackingState()
+  const { trackings, startTracking, stopTracking } = useTrackingState()
   const { stopOtherTracking } = useTrackingStop()
   const [isEditing, focusOrEdit] = useEditable(line)
   const task = node.data as Task
@@ -45,7 +45,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const isTracking = tracking == null ? false : tracking.isTracking
   const id = `check-${task.id}`
   const hasEstimatedTime = !task.estimatedTimes.isEmpty()
-  const trackingKey = useTaskRecordKey()
 
   Log.v(`${line} ${id} ${isTracking ? 'tracking' : 'stop'}`)
 
@@ -63,55 +62,23 @@ export const TaskItem: React.FC<TaskItemProps> = (
     const checked = e.target.checked
     Log.d(`checkbox clicked at ${line} to ${checked ? 'true' : 'false'}`)
 
-    const newNode = node.clone()
-    const newTask = newNode.data as Task
-
-    if (isTracking) {
-      // If task has been tracking, stop automatically.
-      removeTracking(node.id)
-      newTask.trackingStop(tracking.trackingStartTime)
-    }
-    newTask.setComplete(checked)
-
-    manager.setNodeByLine(newNode, line)
+    // If task has been tracking, stop automatically.
+    stopTracking(node, checked)
   }
 
-  const startTracking = (e: React.SyntheticEvent) => {
+  const start = (e: React.SyntheticEvent) => {
     e.stopPropagation()
     analytics.track('click start')
-
-    // Clone the objects for updating.
-    const newNode = node.clone()
-    const newTask = newNode.data as Task
-
-    // start new task.
-    const trackingStartTime = newTask.trackingStart()
-    const newTracking = {
-      key: trackingKey.toKey(),
-      nodeId: node.id,
-      isTracking: true,
-      trackingStartTime: trackingStartTime,
-      elapsedTime: newTask.actualTimes,
-      line,
-    }
-    addTracking(newTracking)
-
+    startTracking(node)
     setStarted(true)
-    manager.setNodeByLine(newNode, line)
   }
 
-  const stopTracking = (e: React.SyntheticEvent) => {
+  const stop = (e: React.SyntheticEvent) => {
     e.stopPropagation()
     analytics.track('click stop')
 
     if (isTracking) {
-      removeTracking(node.id)
-
-      // Clone the objects for updating.
-      const newNode = node.clone()
-      const newTask = newNode.data as Task
-      newTask.trackingStop(tracking.trackingStartTime)
-      manager.setNodeByLine(newNode, line)
+      stopTracking(node)
     }
   }
 
@@ -127,12 +94,14 @@ export const TaskItem: React.FC<TaskItemProps> = (
     manager.setNodeByLine(newNode, line)
   }
 
+  const oneLineAbove = manager.getNodeByLine(line - 1)
   const taskItemClass = classnames(
+    'task-item',
     {
       'task-item--running': isTracking,
       'task-item--complete': task.isComplete(),
+      'mod-top-margin': node.parent.isRoot() && oneLineAbove.isHeading()
     },
-    ['task-item', 'item-color'],
   )
 
   const style = {
@@ -140,12 +109,11 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   if (isEditing) {
-    return <LineEditor className="indent-[10px]" line={line} />
+    return <LineEditor line={line} />
   }
 
   return (
     <div
-      tabIndex={0}
       className={taskItemClass}
       style={style}
       data-line={line}
@@ -177,8 +145,8 @@ export const TaskItem: React.FC<TaskItemProps> = (
         ) : null}
       </div>
       <TaskController
-        onClickStart={startTracking}
-        onClickStop={stopTracking}
+        onClickStart={start}
+        onClickStop={stop}
         isTracking={isTracking}
         isComplete={task.isComplete()}
         tags={task.tags}

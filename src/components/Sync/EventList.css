@@ -1,0 +1,40 @@
+.event-list {
+  @apply px-3;
+  @apply py-2;
+  @apply text-gray-600;
+  @apply bg-gray-100;
+  @apply rounded-md;
+
+  margin-top: 6px;
+  max-height: 6rem;
+  overflow-y: auto;
+
+  &__item {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__title {
+    @apply text-xs;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  &__time-space {
+    margin-left: 2px;
+    font-size: 1rem;
+    line-height: 1rem;
+  }
+
+  &__time {
+    @apply text-xs;
+    @apply font-mono;
+    margin-left: 1em;
+  }
+  
+  &__time-space + &__time {
+    margin-left: 2px;
+  }
+}

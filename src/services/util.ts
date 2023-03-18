@@ -1,5 +1,5 @@
 import React from 'react'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import { Node, NODE_TYPE } from '@/models/node'
 import type { TreeItems, FlattenedItem } from '@/components/Tree/types'
 import { Task } from '@/models/task'
@@ -11,7 +11,7 @@ import Log from '@/services/log'
  * Stops processing for the specified time.
  * @param {number} msec Sleep time in millisconds
  */
-export function sleep(msec: number): Promise<unknown> {
+export function sleep(msec: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, msec))
 }
 
@@ -88,7 +88,7 @@ export function getIndent(str: string): string {
     const m = indentRegexp.exec(str)
     return m[0]
   }
-  return ""
+  return ''
 }
 
 /**
@@ -113,11 +113,18 @@ export function asciiBar(percentage: number, length = 20, box = true): string {
   }
 }
 
-export function formatDaysAgo(value: number | string | Date, locale: string): string {
-  const date = new Date(value);
-  const deltaDays = (date.getTime() - Date.now()) / (1000 * 3600 * 24);
-  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" });
-  return rtf.format(Math.ceil(deltaDays), 'days').replace(' ', '');
+export function formatDaysAgo(
+  value: number | string | Date,
+  locale: string,
+): string {
+  const date = new Date(value)
+  const deltaDays = (date.getTime() - Date.now()) / (1000 * 3600 * 24)
+  const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' })
+  return rtf.format(Math.ceil(deltaDays), 'days').replace(' ', '')
+}
+
+export function formatTime(dateString: string) {
+  return format(parseISO(dateString), 'HH:mm')
 }
 
 type TimeTotal = {

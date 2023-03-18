@@ -1,0 +1,58 @@
+.account {
+  $this: .account;
+  $height: 60px;
+
+  @apply hover:bg-slate-100;
+  @apply duration-300;
+  @apply ease-out;
+  @apply rounded-lg;
+  position: relative;
+
+  &__logout {
+    @apply text-gray-400;
+    @apply hover:text-gray-500;
+    @apply ease-out;
+    @apply rounded-r-lg;
+
+    transition: opacity 0.3s;
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    height: calc($height - 2px);
+    width: 110px;
+    padding-right: 10px;
+    padding-bottom: 5px;
+    text-align: right;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 1) 40%,
+      rgba(255, 255, 255, 1) 100%
+    );
+    opacity: 0;
+
+    @at-root {
+      $(this):hover $(this)__logout {
+        opacity: 0.6;
+        &:hover {
+          opacity: 1;
+        }
+      }
+    }
+  }
+
+  &__login {
+    margin: 0 auto;
+    display: block;
+
+    img {
+      height: $height;
+    }
+  }
+
+  @at-root {
+    $(this).mod--login {
+      @apply hover:bg-inherit;
+    }
+  }
+}
