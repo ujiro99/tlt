@@ -3,8 +3,6 @@ import { Ipc } from '@/services/ipc'
 import { Storage, STORAGE_KEY, ACCOUNT_DATA } from '@/services/storage'
 import Log from '@/services/log'
 
-const oauth2Manifest = chrome.runtime.getManifest().oauth2
-const SCOPES = oauth2Manifest?.scopes
 const CLIENT_ID = CLIENT_ID_WEB
 
 async function postData(url = '', data = {}) {
@@ -67,6 +65,8 @@ function fetchRefreshToken(): Promise<boolean> {
       .join('')
     await Storage.set(STORAGE_KEY.OAUTH_STATE, state)
 
+    const oauth2Manifest = chrome.runtime.getManifest().oauth2
+    const SCOPES = oauth2Manifest?.scopes
     const AUTH_URL = `https://accounts.google.com/o/oauth2/v2/auth?scope=${encodeURIComponent(
       SCOPES.join(' '),
     )}&access_type=offline&include_granted_scopes=true&response_type=code&state=${state}&redirect_uri=${encodeURIComponent(
