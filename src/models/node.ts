@@ -15,7 +15,7 @@ export const NODE_TYPE = {
   OTHER: 'OTHER',
   ROOT: 'ROOT',
 }
-type NodeType = typeof NODE_TYPE[keyof typeof NODE_TYPE]
+type NodeType = (typeof NODE_TYPE)[keyof typeof NODE_TYPE]
 
 /**
  * @see https://qiita.com/SoraKumo/items/1d593796de973095f101
@@ -182,7 +182,6 @@ export class Node implements TreeItem, INode, IClonable<INode> {
 
       // Update line number
       updateLineNumber(cloned)
-
     } catch (e) {
       Log.w(e)
     }
@@ -190,7 +189,7 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     return cloned
   }
 
-  public replace(node: Node, predicate: Predicate, keepChildren=true): Node {
+  public replace(node: Node, predicate: Predicate, keepChildren = true): Node {
     const [cloned] = clone([this])
     const target = cloned.find(predicate)
     if (target == null) return cloned

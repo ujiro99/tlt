@@ -1,6 +1,8 @@
 @import '../css/mixin.css';
 
 .item-wrapper {
+  $this: .item-wrapper;
+
   @mixin interactable;
   @apply focus:bg-indigo-50;
 
@@ -20,6 +22,12 @@
   &:has(.mod-h1),
   &:has(.mod-h2) {
     margin-top: 12px;
+
+    @at-root {
+      .dragging $(this):has(.mod-h1, .mod-h2) {
+        margin-top: 0;
+      }
+    }
   }
 
   &:hover:has(textarea) {
