@@ -18,6 +18,6 @@
   }
 
   &__more {
-    display: contents;
+    display: inline-flex;
   }
 }

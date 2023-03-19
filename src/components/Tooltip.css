@@ -1,12 +1,10 @@
 .tooltip {
-  --position-offset: 10px;
-
+  $this: .tooltip;
   @apply relative;
+  
+  z-index: 1;
 
   &__inner {
-    @apply inline-block;
-    @apply absolute;
-    @apply z-10;
     @apply py-1;
     @apply px-2;
     @apply bg-gray-700;
@@ -15,69 +13,47 @@
     @apply text-white;
     @apply rounded-lg;
     @apply shadow;
-
-    &:after {
-      --triangle-height: 4px;
-
-      content: '';
-      width: 0;
-      height: 0;
-      border-style: solid;
-      border-width: var(--triangle-height);
-      border-color: transparent transparent transparent transparent;
-      @apply absolute;
-    }
   }
 
-  &--top {
-    bottom: calc(100% + var(--position-offset));
-    left: 50%;
-    transform: translateX(-50%);
+  &__arrow {
+    --triangle-height: 4px;
 
-    &:after {
-      right: 14px;
-      bottom: calc(0px - var(--triangle-height));
-      border-bottom-width: 0;
-      @apply border-t-gray-700;
-    }
-  }
+    content: '';
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: var(--triangle-height);
+    border-color: transparent transparent transparent transparent;
+    @apply absolute;
 
-  &--bottom {
-    top: calc(100% + var(--position-offset));
-    left: 50%;
-    transform: translateX(-50%);
+    @at-root {
+      $(this)[data-popper-placement^='top'] > $(this)__arrow {
+        right: 14px;
+        bottom: calc(0px - var(--triangle-height));
+        border-bottom-width: 0;
+        @apply border-t-gray-700;
+      }
 
-    &:after {
-      right: 14px;
-      top: calc(0px - var(--triangle-height));
-      border-top-width: 0;
-      @apply border-b-gray-700;
-    }
-  }
+      $(this)[data-popper-placement^='bottom'] > $(this)__arrow {
+        right: 14px;
+        top: calc(0px - var(--triangle-height));
+        border-top-width: 0;
+        @apply border-b-gray-700;
+      }
 
-  &--left {
-    top: 50%;
-    right: calc(100% + var(--position-offset));
-    transform: translateY(-50%);
+      $(this)[data-popper-placement^='left'] > $(this)__arrow {
+        top: 6px;
+        right: calc(0px - var(--triangle-height));
+        border-right-width: 0;
+        @apply border-l-gray-700;
+      }
 
-    &:after {
-      top: 6px;
-      right: calc(0px - var(--triangle-height));
-      border-right-width: 0;
-      @apply border-l-gray-700;
-    }
-  }
-
-  &--right {
-    top: 50%;
-    left: calc(100% + var(--position-offset));
-    transform: translateY(-50%);
-
-    &:after {
-      top: 6px;
-      left: calc(0px - var(--triangle-height));
-      border-left-width: 0;
-      @apply border-r-gray-700;
+      $(this)[data-popper-placement^='right'] > $(this)__arrow {
+        top: 6px;
+        left: calc(0px - var(--triangle-height));
+        border-left-width: 0;
+        @apply border-r-gray-700;
+      }
     }
   }
 }

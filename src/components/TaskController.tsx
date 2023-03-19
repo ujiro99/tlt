@@ -30,6 +30,7 @@ function PlayStopButton(props: PlayStopProps) {
   const className = classnames('controll-button', {
     'mod-disable': !available,
   })
+  const [refElm, setRefElm] = useState(null)
 
   const onClickStart = available ? props.onClickStart : null
 
@@ -58,6 +59,7 @@ function PlayStopButton(props: PlayStopProps) {
       onClick={onClickStart}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      ref={setRefElm}
     >
       <svg className="icon">
         <use xlinkHref="/icons.svg#icon-play" />
@@ -65,11 +67,8 @@ function PlayStopButton(props: PlayStopProps) {
       <Tooltip
         show={tooltipVisible}
         location={'left'}
-        style={{
-          width: '10rem',
-          top: '18px',
-          transform: 'translate(-20px, -50%)',
-        }}
+        style={{ width: '10rem' }}
+        refElm={refElm}
       >
         <span>{i18n.t('start_only_today')}</span>
       </Tooltip>

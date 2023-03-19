@@ -4,62 +4,55 @@ import { eventStop } from '@/services/util'
 type useHoverReturn = [
   hoverRef: React.RefObject<HTMLElement>,
   isHovered: boolean,
-  event: MouseEvent,
 ]
 
-export function useHover(wait=0 /* ms */): useHoverReturn {
+export function useHover(wait = 0 /* ms */): useHoverReturn {
   const [hovered, setHovered] = useState(false)
-  const [result, setResult] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const [timeoutID, setTimeoutID] = useState<number>()
-  const [event, setEvent] = useState<MouseEvent>()
-  const ref = useRef<HTMLElement>(null)
+  const hoverRef = useRef<HTMLElement>(null)
 
-  const handleMouseOver = (e: MouseEvent) => {
+  const handleMouseEnter = (e: MouseEvent) => {
     if (timeoutID) clearTimeout(timeoutID)
 
-    setEvent(e)
     setHovered(true)
 
     if (wait > 0) {
       const newTimeoutId = window.setTimeout(() => {
-        setResult(true)
+        setIsHovered(true)
         setTimeoutID(null)
       }, wait)
       setTimeoutID(newTimeoutId)
     } else {
-      setResult(true)
+      setIsHovered(true)
     }
   }
 
-  const handleMouseOut = (e: MouseEvent) => {
+  const handleMouseLeave = (e: MouseEvent) => {
     clearTimeout(timeoutID)
-    setEvent(e)
     setHovered(false)
-    setResult(false)
+    setIsHovered(false)
   }
 
   useEffect(() => {
-    if(!hovered && timeoutID > 0) {
+    if (!hovered && timeoutID > 0) {
       clearTimeout(timeoutID)
       setTimeoutID(null)
     }
   }, [hovered, timeoutID])
 
-  useEffect(
-    () => {
-      const node = ref.current
-      if (node) {
-        node.addEventListener('mouseover', handleMouseOver)
-        node.addEventListener('mouseout', handleMouseOut)
-        return () => {
-          node.removeEventListener('mouseover', handleMouseOver)
-          node.removeEventListener('mouseout', handleMouseOut)
-        }
+  useEffect(() => {
+    const node = hoverRef.current
+    if (node) {
+      node.addEventListener('mouseenter', handleMouseEnter)
+      node.addEventListener('mouseleave', handleMouseLeave)
+      return () => {
+        node.removeEventListener('mouseenter', handleMouseEnter)
+        node.removeEventListener('mouseleave', handleMouseLeave)
       }
-    },
-    [ref.current], // Recall only if ref changes
-  )
-  return [ref, result, event]
+    }
+  }, [hoverRef.current])
+  return [hoverRef, isHovered]
 }
 
 type useHoverCancelReturn = [hoverRef: React.RefObject<HTMLElement>]
@@ -67,19 +60,16 @@ type useHoverCancelReturn = [hoverRef: React.RefObject<HTMLElement>]
 export function useHoverCancel(): useHoverCancelReturn {
   const ref = useRef<HTMLElement>(null)
 
-  useEffect(
-    () => {
-      const node = ref.current
-      if (node) {
-        node.addEventListener('mouseover', eventStop)
-        node.addEventListener('mouseout', eventStop)
-        return () => {
-          node.removeEventListener('mouseover', eventStop)
-          node.removeEventListener('mouseout', eventStop)
-        }
+  useEffect(() => {
+    const node = ref.current
+    if (node) {
+      node.addEventListener('mouseenter', eventStop)
+      node.addEventListener('mouseleave', eventStop)
+      return () => {
+        node.removeEventListener('mouseenter', eventStop)
+        node.removeEventListener('mouseleave', eventStop)
       }
-    },
-    [ref.current], // Recall only if ref changes
-  )
+    }
+  }, [ref.current])
   return [ref]
 }

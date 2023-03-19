@@ -35,8 +35,9 @@ export function TaskTags(props: Props): JSX.Element {
           </div>
           <Tooltip
             show={isHovered}
-            location={'top'}
-            style={{ width: '8em', left: '-3.4em', bottom: '20px' }}
+            location='auto'
+            style={{ width: '8em' }}
+            refElm={hoverRef.current}
           >
             <span>{tooltip}</span>
           </Tooltip>
