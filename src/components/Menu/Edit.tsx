@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
+import React from 'react'
 import classnames from 'classnames'
 
 import { useTrackingStop } from '@/hooks/useTrackingState'
 import { useMode, MODE } from '@/hooks/useMode'
+import { useHover } from '@/hooks/useHover'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
@@ -13,8 +14,7 @@ import './IconButton.css'
 export function Edit(): JSX.Element {
   const { stopAllTracking } = useTrackingStop()
   const analytics = useAnalytics()
-  const [labelVisible, setLabelVisible] = useState(false)
-  const [timeoutId, setTimeoutId] = useState(0)
+  const [hoverRef, isHovered] = useHover(200)
   const [mode, setMode] = useMode()
   const isEdit = mode === MODE.EDIT
   const label = isEdit ? i18n.t('label_save') : i18n.t('label_edit')
@@ -33,35 +33,24 @@ export function Edit(): JSX.Element {
     setMode(nextMode)
   }
 
-  const hover = (e: React.SyntheticEvent<HTMLButtonElement>) => {
-    clearTimeout(timeoutId)
-    if (e.type === 'mouseover') {
-      const id = window.setTimeout(() => {
-        setLabelVisible(true)
-      }, 200)
-      setTimeoutId(id)
-    } else {
-      const id = window.setTimeout(() => {
-        setLabelVisible(false)
-      }, 50)
-      setTimeoutId(id)
-    }
-  }
-
   return (
     <button
-      className={classnames('icon-button group', isEdit ? 'mod--save' : 'mod--edit', {
-        hidden: !isVisible,
-      })}
+      className={classnames(
+        'icon-button group',
+        isEdit ? 'mod--save' : 'mod--edit',
+        {
+          hidden: !isVisible,
+        },
+      )}
       onClick={toggleMode}
-      onMouseOver={hover}
-      onMouseLeave={hover}
+      ref={hoverRef as React.RefObject<HTMLButtonElement>}
     >
       <Icon className="icon-button__icon" name={icon} />
       <Tooltip
-        show={labelVisible}
+        show={isHovered}
         location={'bottom'}
-        style={{ width: '4em', left: '0.8em', top: '14px' }}
+        style={{ width: '4em', top: '14px' }}
+        refElm={hoverRef.current}
       >
         <span>{label}</span>
       </Tooltip>

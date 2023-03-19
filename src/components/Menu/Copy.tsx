@@ -62,6 +62,7 @@ export function Copy(): JSX.Element {
         show={tooltipVisible}
         location={'bottom'}
         style={{ whiteSpace: 'nowrap', left: '4px' }}
+        refElm={hoverRef.current}
       >
         <span>{i18n.t('copied')}</span>
       </Tooltip>
@@ -69,6 +70,7 @@ export function Copy(): JSX.Element {
         show={labelVisible}
         location={'bottom'}
         style={{ whiteSpace: 'nowrap', top: '14px' }}
+        refElm={hoverRef.current}
       >
         <span>{i18n.t('label_copy')}</span>
       </Tooltip>

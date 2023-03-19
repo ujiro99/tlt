@@ -1,63 +1,68 @@
-import React, { CSSProperties, useRef, useState } from 'react'
-import classnames from 'classnames'
+import React, { CSSProperties, useState } from 'react'
+import { usePopper } from 'react-popper'
 import { CSSTransition } from 'react-transition-group'
 
 import '@/components/Tooltip.css'
 import '@/css/fadeIn.css'
 
-const TOOLTIP_POSITION = {
-  TOP: 'top',
-  BOTTOM: 'bottom',
-  LEFT: 'left',
-  RIGHT: 'right',
-} as const
-type TooltipPosition = typeof TOOLTIP_POSITION[keyof typeof TOOLTIP_POSITION]
+type Location =
+  | 'auto'
+  | 'auto-start'
+  | 'auto-end'
+  | 'top'
+  | 'top-start'
+  | 'top-end'
+  | 'bottom'
+  | 'bottom-start'
+  | 'bottom-end'
+  | 'right'
+  | 'right-start'
+  | 'right-end'
+  | 'left'
+  | 'left-start'
+  | 'left-end'
 
 type TooltipProp = {
   show: boolean
-  location: TooltipPosition
+  refElm: Element
+  location: Location
   style?: CSSProperties
   timeout?: number
   children?: React.ReactNode
 }
 
 export function Tooltip(props: TooltipProp): JSX.Element {
+  const [popperElement, setPopperElement] = useState(null)
+  const [arrowElement, setArrowElement] = useState(null)
+  const { styles, attributes } = usePopper(props.refElm, popperElement, {
+    placement: props.location,
+    modifiers: [
+      { name: 'arrow', options: { element: arrowElement } },
+      { name: 'offset', options: { offset: [0, 8] } },
+    ],
+  })
+
   const show = props.show
-  const location = props.location
   const timeout = props.timeout || 200
-  const className = classnames('tooltip__inner', `tooltip--${location}`)
-  const [ bound, setBound ] = useState<DOMRect>()
-  const ref = useRef<HTMLDivElement>()
-
-  const onEnter = () => {
-    const node = ref.current
-    if (node) {
-      const b = node.getBoundingClientRect()
-      setBound(b)
-    }
-  }
-
-  let size = { w: 0, h: 0 }
-  let pos = { x: 0, y: 0 }
-  if (bound) {
-    size = { w: bound.width, h: bound.height }
-    pos = { x: bound.left, y: bound.top }
-  }
-
-  let left = Math.min(pos.x, window.innerWidth - size.w - 5) - pos.x as number | string
-  if (props.style.left) {
-    left = props.style.left
-  }
 
   const style = {
     ...props.style,
-    left,
   }
 
   return (
-    <CSSTransition in={show} timeout={timeout} onEnter={onEnter} classNames="fade" unmountOnExit>
-      <div className="tooltip">
-        <div className={className} style={style} ref={ref}>
+    <CSSTransition in={show} timeout={timeout} classNames="fade" unmountOnExit>
+      <div
+        className="tooltip"
+        ref={setPopperElement}
+        style={styles.popper}
+        {...attributes.popper}
+      >
+        <div
+          className="tooltip__arrow"
+          ref={setArrowElement}
+          style={styles.arrow}
+        />
+        <div className="tooltip__inner" style={style}>
           {props.children}
         </div>
       </div>

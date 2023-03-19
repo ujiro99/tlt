@@ -67,9 +67,9 @@
       content: '';
       position: absolute;
       z-index: -1;
-      left: -8px;
+      left: -6px;
       bottom: 0;
-      width: calc(100% + 14px);
+      width: calc(100% + 12px);
       height: 0.6rem;
       border-radius: 2px;
     }

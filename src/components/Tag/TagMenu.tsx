@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import classnames from 'classnames'
 import { TagPicker } from '@/components/Tag/TagPicker'
 import { Icon } from '@/components/Icon'
-import { Position } from '@/components/BasePicker'
 import { eventStop } from '@/services/util'
 import { Tag } from '@/models/tag'
 import { useAnalytics } from '@/hooks/useAnalytics'
@@ -16,12 +15,11 @@ export type TagMenuProps = {
 
 export function TagMenu(props: TagMenuProps): JSX.Element {
   const [pickerVisible, setPickerVisible] = useState(false)
-  const [pickerPosition, setPickerPosition] = useState<Position>()
+  const [refElm, setRefElm] = useState(null)
   const analytics = useAnalytics()
 
   const showPicker = (e: React.MouseEvent | MouseEvent) => {
     eventStop(e)
-    setPickerPosition({ x: e.clientX, y: e.clientY })
     setPickerVisible(true)
     analytics.track('picker open')
   }
@@ -37,12 +35,12 @@ export function TagMenu(props: TagMenuProps): JSX.Element {
 
   return (
     <>
-      <div className={className} onClick={showPicker}>
+      <div className={className} onClick={showPicker} ref={setRefElm}>
         <Icon name="tag" />
       </div>
       <TagPicker
         visible={pickerVisible}
-        position={pickerPosition}
+        refElm={refElm}
         onRequestClose={closePicker}
         onChange={props.onChangeTags}
         initialTags={props.tags} // Not omitted here.

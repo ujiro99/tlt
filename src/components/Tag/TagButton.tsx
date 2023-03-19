@@ -72,6 +72,7 @@ const calcLabelColor = (rgb: string): string => {
 type TagButtonProps = {
   onClick: (e: React.MouseEvent, tagName: string) => void
   tag: Tag
+  pickerRef?: React.MutableRefObject<Element>
 }
 
 export const TagButton = (props: TagButtonProps): JSX.Element => {
@@ -101,6 +102,7 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
       name={tag.name}
       style={style}
       onClick={(e) => props.onClick(e, tag.name)}
+      ref={props.pickerRef as React.LegacyRef<HTMLButtonElement>}
     >
       <span style={{ color: labelColor }}>{tag2str(tag)}</span>
     </button>
