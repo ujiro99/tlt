@@ -13,6 +13,7 @@ import './TagPicker.css'
 
 type Props = {
   visible: boolean
+  refElm: Element
   onChange: (tags: Tag[]) => void
   initialTags: Tag[]
 } & BasePickerProps
@@ -50,7 +51,7 @@ export const TagPicker = (props: Props): JSX.Element => {
     >
       <BasePicker
         onRequestClose={props.onRequestClose}
-        position={props.position}
+        refElm={props.refElm}
       >
         <div className="TagPicker">
           <div className="TagPicker__current">

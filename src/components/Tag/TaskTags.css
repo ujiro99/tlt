@@ -1,6 +1,7 @@
 .TaskTags {
   display: flex;
   align-items: center;
+  position: relative;
 
   &__icon {
     display: inline-block;

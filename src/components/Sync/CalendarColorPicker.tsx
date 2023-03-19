@@ -8,7 +8,7 @@ import {
   CalendarColor,
   COLOR_TYPE,
 } from '@/services/google/calendar'
-import { BasePicker, BasePickerProps, Position } from '@/components/BasePicker'
+import { BasePicker, BasePickerProps } from '@/components/BasePicker'
 import { useAnalytics } from '@/hooks/useAnalytics'
 
 import '@/css/fadeIn.css'
@@ -36,7 +36,7 @@ type CalendarColorsProps = {
 function Inner(props: CalendarColorsProps): JSX.Element {
   const analytics = useAnalytics()
   const [visible, setVisible] = useState(false)
-  const [pickerPosition, setPickerPosition] = useState<Position>()
+  const [refElm, setRefElm] = useState(null)
   const [colors, setColors] = useStorage<ColorStorage>(
     STORAGE_KEY.CALENDAR_COLOR,
   )
@@ -51,7 +51,6 @@ function Inner(props: CalendarColorsProps): JSX.Element {
 
   const onClick = (e) => {
     analytics.track('click calendar color')
-    setPickerPosition({ x: e.clientX, y: e.clientY })
     setVisible(true)
   }
 
@@ -75,12 +74,13 @@ function Inner(props: CalendarColorsProps): JSX.Element {
         className="calendar-color__item"
         style={{ backgroundColor: color.background }}
         onClick={onClick}
+        ref={setRefElm}
       />
       <ColorPicker
         visible={visible}
+        refElm={refElm}
         colors={colorsApi}
         onSelect={onChange}
-        position={pickerPosition}
         onRequestClose={() => setVisible(false)}
       />
     </>
@@ -123,7 +123,8 @@ const ColorPicker = (props: ColorPickerProps): JSX.Element => {
     >
       <BasePicker
         onRequestClose={props.onRequestClose}
-        position={props.position}
+        refElm={props.refElm}
+        location='top'
       >
         <div className="color-picker">
           <ul className="color-picker__list">

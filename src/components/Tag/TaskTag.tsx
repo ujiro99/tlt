@@ -1,8 +1,7 @@
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { ColorResult } from 'react-color'
 import { Tag } from '@/models/tag'
 import { TagButton } from '@/components/Tag/TagButton'
-import { Position } from '@/components/BasePicker'
 import { ColorPicker } from '@/components/ColorPicker'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { COLOR } from '@/const'
@@ -14,7 +13,7 @@ type Props = {
 export const TaskTag = (props: Props): JSX.Element => {
   const tag = props.tag
   const [pickerVisible, setPickerVisible] = useState(false)
-  const [pickerPosition, setPickerPosition] = useState<Position>()
+  const refElm = useRef<Element>(null)
   const { tags, setTag } = useTagHistory()
   const tagRecord = tags.find((t) => t.name === tag.name)
   const bgColor = tagRecord?.colorHex || COLOR.Gray200
@@ -26,14 +25,13 @@ export const TaskTag = (props: Props): JSX.Element => {
   }
 
   const showPicker = (e: React.MouseEvent) => {
-    setPickerPosition({ x: e.clientX, y: e.clientY })
     setPickerVisible(true)
     e.stopPropagation()
   }
-
+  
   return (
     <>
-      <TagButton tag={tag} onClick={showPicker} />
+      <TagButton tag={tag} onClick={showPicker} pickerRef={refElm} />
 
       {pickerVisible ? (
         <ColorPicker
@@ -41,7 +39,7 @@ export const TaskTag = (props: Props): JSX.Element => {
           onChange={handleChange}
           onChangeComplete={handleChange}
           initialColor={bgColor}
-          position={pickerPosition}
+          refElm={refElm.current}
           presetColors={presetColors}
         />
       ) : null}

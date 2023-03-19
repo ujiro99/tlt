@@ -1,12 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
+import { CSSTransition } from 'react-transition-group'
 import { SketchPicker, ColorResult } from 'react-color'
 import { unique } from '@/services/util'
 import { BasePicker, BasePickerProps } from '@/components/BasePicker'
-
-const PickerSize = {
-  w: 220,
-  h: 300,
-}
 
 const PresetMax = 16
 
@@ -26,6 +22,7 @@ const PresetColors = [
 ]
 
 type Props = {
+  refElm: Element
   onChange: (color: ColorResult) => void
   onChangeComplete: (color: ColorResult) => void
   initialColor: string
@@ -33,6 +30,7 @@ type Props = {
 } & BasePickerProps
 
 export const ColorPicker = (props: Props): JSX.Element => {
+  const [visible, setVisible] = useState(false)
   let presets = unique(props.presetColors) || []
   if (presets.length < PresetMax) {
     presets = unique(presets.concat(PresetColors))
@@ -41,19 +39,24 @@ export const ColorPicker = (props: Props): JSX.Element => {
     }
   }
 
+  useEffect(() => {
+    window.setTimeout(() => {
+      // Wait for SketchPicker to initialize before making the picker visible
+      setVisible(true)
+    }, 100)
+  }, [])
+
   return (
-    <BasePicker
-      onRequestClose={props.onRequestClose}
-      position={props.position}
-      size={PickerSize}
-    >
-      <SketchPicker
-        disableAlpha={true}
-        color={props.initialColor}
-        onChange={props.onChange}
-        onChangeComplete={props.onChangeComplete}
-        presetColors={presets}
-      />
-    </BasePicker>
+    <CSSTransition in={visible} timeout={200} classNames="fade" unmountOnExit>
+      <BasePicker onRequestClose={props.onRequestClose} refElm={props.refElm}>
+        <SketchPicker
+          disableAlpha={true}
+          color={props.initialColor}
+          onChange={props.onChange}
+          onChangeComplete={props.onChangeComplete}
+          presetColors={presets}
+        />
+      </BasePicker>
+    </CSSTransition>
   )
 }
