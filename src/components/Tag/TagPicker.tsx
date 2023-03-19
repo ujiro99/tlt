@@ -6,7 +6,7 @@ import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { difference, eventStop } from '@/services/util'
 import { Task } from '@/models/task'
-import { COLOR } from '@/const'
+import { COLOR, KEYCODE_ENTER } from '@/const'
 import * as i18n from '@/services/i18n'
 
 import '@/css/fadeIn.css'
@@ -69,6 +69,16 @@ export const TagPicker = (props: Props): JSX.Element => {
     setTmpTag(newTag.name)
   }
 
+  function onKeyDown(e: React.KeyboardEvent) {
+    if (e.keyCode === KEYCODE_ENTER) {
+      if (showNewTag) {
+        createTag(e)
+      }
+    }
+    // Prevent key events to reach the SortableTree.
+    e.stopPropagation()
+  }
+
   const handleChange = (e) => {
     setInputTxt(e.target.value)
   }
@@ -83,7 +93,12 @@ export const TagPicker = (props: Props): JSX.Element => {
       <BasePicker onRequestClose={props.onRequestClose} refElm={props.refElm}>
         <div className="TagPicker">
           <div className="TagPicker__input">
-            <input type="text" value={inputTxt} onChange={handleChange} />
+            <input
+              type="text"
+              value={inputTxt}
+              onChange={handleChange}
+              onKeyDown={onKeyDown}
+            />
           </div>
           <div className="TagPicker__current">
             <span className="TagPicker__label">{i18n.t('current_tags')}</span>
@@ -99,7 +114,7 @@ export const TagPicker = (props: Props): JSX.Element => {
             })}
             {showNewTag ? (
               <div className="TagPicker__create">
-                <span>Create new tag?</span>{' '}
+                <span>Create New: </span>
                 <TagButton tag={newTag} key={inputTxt} onClick={createTag} />
               </div>
             ) : null}
