@@ -165,7 +165,7 @@ export function difference<T>(a: T[], b: T[], equal: Equal<T>): T[] {
 }
 
 export function eventStop(e: React.MouseEvent | MouseEvent): void {
-  e.stopPropagation()
+  if (e) e.stopPropagation()
 }
 
 export function tag2str(tag: Tag): string {

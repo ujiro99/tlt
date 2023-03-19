@@ -126,17 +126,11 @@ export function SortableTree({
     items: flattenedItems,
     offset: offsetLeft,
   })
-  const [coordinateGetter] = useState(() =>
-    sortableTreeKeyboardCoordinates(sensorContext, indicator, indentationWidth),
-  )
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 4, // to enables editting by double click.
       },
-    }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter,
     }),
   )
 

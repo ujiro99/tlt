@@ -5,6 +5,8 @@ import { BasePicker, BasePickerProps } from '@/components/BasePicker'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { difference, eventStop } from '@/services/util'
+import { Task } from '@/models/task'
+import { COLOR } from '@/const'
 import * as i18n from '@/services/i18n'
 
 import '@/css/fadeIn.css'
@@ -20,17 +22,35 @@ type Props = {
 
 export const TagPicker = (props: Props): JSX.Element => {
   const [currentTags, setCurrentTags] = useState(props.initialTags)
-  const { tags } = useTagHistory()
+  const [inputTxt, setInputTxt] = useState('')
+  const [tmpTag, setTmpTag] = useState<string>(null)
+  const { tags, setTag } = useTagHistory()
 
   useEffect(() => {
     props.onChange(currentTags)
   }, [currentTags])
 
+  useEffect(() => {
+    if (tmpTag) {
+      addTag(null, tmpTag)
+    }
+    setTmpTag(null)
+  }, [tmpTag])
+
   const additionalTags = difference(
     tags,
     currentTags,
     (a, b) => a.name === b.name,
-  )
+  ).filter((tag) => tag.name.match(inputTxt))
+
+  let newTag
+  let showNewTag = additionalTags.length === 0 && inputTxt != ''
+  if (showNewTag) {
+    const parsed = Task.parseTags(`#${inputTxt.replace(/^#+/, '')}`)
+    newTag = parsed[0]
+    showNewTag = showNewTag && newTag != null
+  }
+
   const addTag = (e: React.MouseEvent, tagName: string) => {
     const tag = tags.find((t) => t.name === tagName)
     if (tag) setCurrentTags([...currentTags, tag])
@@ -42,6 +62,17 @@ export const TagPicker = (props: Props): JSX.Element => {
     eventStop(e)
   }
 
+  const createTag = (e) => {
+    if (!newTag) return eventStop(e)
+    setTag({ ...newTag, colorHex: COLOR.Gray200 })
+    setInputTxt('')
+    setTmpTag(newTag.name)
+  }
+
+  const handleChange = (e) => {
+    setInputTxt(e.target.value)
+  }
+
   return (
     <CSSTransition
       in={props.visible}
@@ -49,11 +80,11 @@ export const TagPicker = (props: Props): JSX.Element => {
       classNames="fade"
       unmountOnExit
     >
-      <BasePicker
-        onRequestClose={props.onRequestClose}
-        refElm={props.refElm}
-      >
+      <BasePicker onRequestClose={props.onRequestClose} refElm={props.refElm}>
         <div className="TagPicker">
+          <div className="TagPicker__input">
+            <input type="text" value={inputTxt} onChange={handleChange} />
+          </div>
           <div className="TagPicker__current">
             <span className="TagPicker__label">{i18n.t('current_tags')}</span>
             {currentTags.map((t) => {
@@ -62,10 +93,16 @@ export const TagPicker = (props: Props): JSX.Element => {
           </div>
           <div className="TagPicker__history">
             <span className="TagPicker__label">{i18n.t('add_tags')}</span>
-            {additionalTags.length === 0 && <span>{i18n.t('no_tags')}</span>}
+            {tags.length === 0 && <span>{i18n.t('no_tags')}</span>}
             {additionalTags.map((t) => {
               return <TagButton tag={t} key={t.name} onClick={addTag} />
             })}
+            {showNewTag ? (
+              <div className="TagPicker__create">
+                <span>Create new tag?</span>{' '}
+                <TagButton tag={newTag} key={inputTxt} onClick={createTag} />
+              </div>
+            ) : null}
           </div>
         </div>
       </BasePicker>

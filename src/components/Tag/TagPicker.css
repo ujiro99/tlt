@@ -9,6 +9,21 @@
   @apply rounded-lg;
   @apply shadow-md;
 
+  &__input {
+    padding: 0 0 8px;
+
+    & > input {
+      @apply bg-gray-200;
+      border-radius: var(--radius-md);
+      padding: 2px 8px;
+      width: 100%;
+    }
+
+    & > input:focus-visible {
+      outline: solid 2px var(--indigo-300);
+    }
+  }
+
   &__history {
     border-top: solid 1px #9ca3af;
     margin-top: 12px;
