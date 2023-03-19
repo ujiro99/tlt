@@ -93,7 +93,7 @@ export class Task implements IClonable<Task> {
     return new Time()
   }
 
-  private static parseTags(taskStr: string): Tag[] {
+  public static parseTags(taskStr: string): Tag[] {
     const tags: Tag[] = []
     let match: RegExpExecArray
     while ((match = Task.tagRegexp.exec(taskStr)) !== null) {
