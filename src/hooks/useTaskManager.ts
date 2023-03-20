@@ -159,21 +159,15 @@ export function useTaskManager(): ITaskManager {
     } else if (node) {
       newRoot = root.replace(node, (n) => n.line === line)
     } else {
-      const target = root.find((n) => n.line === line)
-      if (target.children.length > 0) {
-        // set empty line
-        newRoot = root.replace(EmptyNode, (n) => n.line === line)
-      } else {
-        // remove this line
-        newRoot = root.filter((n) => n.line !== line)
-        Log.d(`removed ${line}`)
-        trackings.forEach((n) => {
-          if (line < n.line) {
-            // Move up
-            moveTracking(n.line, n.line - 1)
-          }
-        })
-      }
+      // remove this line
+      newRoot = root.filter((n) => n.line !== line)
+      Log.d(`removed ${line}`)
+      trackings.forEach((n) => {
+        if (line < n.line) {
+          // Move up
+          moveTracking(n.line, n.line - 1)
+        }
+      })
     }
     setRoot(newRoot)
   }
@@ -194,7 +188,7 @@ export function useTaskManager(): ITaskManager {
   }
 
   const removeLine = (line: number) => {
-    const newRoot = root.filter(n => n.line !== line)
+    const newRoot = root.filter((n) => n.line !== line)
     setRoot(newRoot)
     trackings.forEach((t) => {
       if (line < t.line) {
@@ -254,7 +248,7 @@ export function useTaskManager(): ITaskManager {
     getNodeByLine,
     setNodeByLine,
     addEmptyChild,
-    removeLine
+    removeLine,
   }
 }
 

@@ -181,10 +181,17 @@ export class Node implements TreeItem, INode, IClonable<INode> {
       // Remove nodes
       reverse.forEach((n) => {
         const match = predicate(n)
-        if (!match && n.children.length === 0) {
+        if (!match) {
           // remove a node
           const parent = n.parent
+          const idx = parent.children.findIndex(c => c.id === n.id)
           parent.children = parent.children.filter((c) => c.id !== n.id)
+
+          if (n.children.length > 0) {
+            // replace a parent node
+            parent.children.splice(idx, 0, ...n.children)
+            n.children.forEach(c => c.parent = parent)
+          }
         }
       })
 
