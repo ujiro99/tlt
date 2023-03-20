@@ -39,6 +39,7 @@ export function useTagHistory(): useTagHistoryReturn {
 
   const setTag = useCallback(
     (record: TagRecord) => {
+      if (record.name === '') return
       const newTags = tags.filter((t) => t.name !== record.name)
       newTags.push(record)
 
