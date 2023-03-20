@@ -1,8 +1,10 @@
 .task-controll {
+  $this: .task-controll;
   display: none;
   width: 5.8rem;
   right: 0px;
   pointer-events: none;
+  z-index: var(--z-index-picker);
   background: rgb(249, 250, 251);
   background: linear-gradient(
     90deg,
@@ -25,6 +27,14 @@
   .TagMenu {
     margin-left: 4px;
     height: 40px;
+  }
+
+  @at-root {
+    .task-item:hover $(this) {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
   }
 }
 

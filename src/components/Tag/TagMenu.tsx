@@ -21,12 +21,12 @@ export function TagMenu(props: TagMenuProps): JSX.Element {
   const showPicker = (e: React.MouseEvent | MouseEvent) => {
     eventStop(e)
     setPickerVisible(true)
-    analytics.track('picker open')
+    analytics.track('TagPicker open')
   }
 
   const closePicker = () => {
     setPickerVisible(false)
-    analytics.track('picker close')
+    analytics.track('TagPicker close')
   }
 
   const className = classnames('TagMenu', {
