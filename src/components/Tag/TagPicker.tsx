@@ -98,6 +98,7 @@ export const TagPicker = (props: Props): JSX.Element => {
               value={inputTxt}
               onChange={handleChange}
               onKeyDown={onKeyDown}
+              placeholder='Filter or Create'
             />
           </div>
           <div className="TagPicker__current">
