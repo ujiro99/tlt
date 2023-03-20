@@ -24,8 +24,10 @@ export function LineEditor(props: Props): JSX.Element {
   function finish() {
     if (text !== DEFAULT) {
       manager.setTextByLine(line, text)
-      analytics.track('edit line fnish')
+    } else {
+      manager.removeLine(line)
     }
+    analytics.track('edit line fnish')
     finishEdit()
   }
 

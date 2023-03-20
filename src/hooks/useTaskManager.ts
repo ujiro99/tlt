@@ -136,6 +136,7 @@ interface ITaskManager {
   getNodeByLine: (line: number) => Node
   setNodeByLine: (node: Node, line: number) => void
   addEmptyChild: (line: number) => number
+  removeLine: (line: number) => void
 }
 
 export function useTaskManager(): ITaskManager {
@@ -192,6 +193,17 @@ export function useTaskManager(): ITaskManager {
     return appendLine
   }
 
+  const removeLine = (line: number) => {
+    const newRoot = root.filter(n => n.line !== line)
+    setRoot(newRoot)
+    trackings.forEach((t) => {
+      if (line < t.line) {
+        // Move up
+        moveTracking(t.line, t.line - 1)
+      }
+    })
+  }
+
   const tagEq = (a: Tag, b: Tag) => a.name === b.name
 
   const updateTagHistory = (): void => {
@@ -242,6 +254,7 @@ export function useTaskManager(): ITaskManager {
     getNodeByLine,
     setNodeByLine,
     addEmptyChild,
+    removeLine
   }
 }
 
