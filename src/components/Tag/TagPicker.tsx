@@ -12,6 +12,7 @@ import * as i18n from '@/services/i18n'
 import '@/css/fadeIn.css'
 
 import './TagPicker.css'
+import { add } from 'date-fns'
 
 type Props = {
   visible: boolean
@@ -44,14 +45,18 @@ export const TagPicker = (props: Props): JSX.Element => {
   ).filter((tag) => tag.name.match(inputTxt))
 
   let newTag
-  let showNewTag = additionalTags.length === 0 && inputTxt != ''
+  let isSelected = currentTags.find((t) => t.name === inputTxt)
+  let showNewTag = additionalTags.length === 0 && inputTxt != '' && !isSelected
   if (showNewTag) {
     const parsed = Task.parseTags(`#${inputTxt.replace(/^#+/, '')}`)
     newTag = parsed[0]
     showNewTag = showNewTag && newTag != null
   }
 
-  const addTag = (e: React.MouseEvent, tagName: string) => {
+  const exactMatch = additionalTags.find((t) => t.name === inputTxt)
+  const isNarrowedToOne = additionalTags.length === 1
+
+  const addTag = (e: React.SyntheticEvent, tagName: string) => {
     const tag = tags.find((t) => t.name === tagName)
     if (tag) setCurrentTags([...currentTags, tag])
     eventStop(e)
@@ -73,6 +78,12 @@ export const TagPicker = (props: Props): JSX.Element => {
     if (e.keyCode === KEYCODE_ENTER) {
       if (showNewTag) {
         createTag(e)
+      } else if (isNarrowedToOne) {
+        addTag(e, additionalTags[0].name)
+        setInputTxt('')
+      } else if (exactMatch) {
+        addTag(e, exactMatch.name)
+        setInputTxt('')
       }
     }
     // Prevent key events to reach the SortableTree.
@@ -98,21 +109,26 @@ export const TagPicker = (props: Props): JSX.Element => {
               value={inputTxt}
               onChange={handleChange}
               onKeyDown={onKeyDown}
-              placeholder='Filter or Create'
+              placeholder="Filter or Create"
             />
           </div>
           <div className="TagPicker__current">
             <span className="TagPicker__label">{i18n.t('current_tags')}</span>
-            {currentTags.map((t) => {
-              return <TagButton tag={t} key={t.name} onClick={removeTag} />
-            })}
+            {currentTags.map((t) => (
+              <TagButton tag={t} key={t.name} onClick={removeTag} />
+            ))}
           </div>
           <div className="TagPicker__history">
             <span className="TagPicker__label">{i18n.t('add_tags')}</span>
             {tags.length === 0 && <span>{i18n.t('no_tags')}</span>}
-            {additionalTags.map((t) => {
-              return <TagButton tag={t} key={t.name} onClick={addTag} />
-            })}
+            {additionalTags.map((t) => (
+              <TagButton
+                tag={t}
+                key={t.name}
+                onClick={addTag}
+                selected={isNarrowedToOne || t.name === inputTxt}
+              />
+            ))}
             {showNewTag ? (
               <div className="TagPicker__create">
                 <span>Create New: </span>

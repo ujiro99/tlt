@@ -1,4 +1,5 @@
 import React, { useState, useEffect, CSSProperties } from 'react'
+import classnames from 'classnames'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { tag2str } from '@/services/util'
@@ -73,6 +74,7 @@ type TagButtonProps = {
   onClick: (e: React.MouseEvent, tagName: string) => void
   tag: Tag
   pickerRef?: React.MutableRefObject<Element>
+  selected?: boolean
 }
 
 export const TagButton = (props: TagButtonProps): JSX.Element => {
@@ -98,7 +100,7 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
 
   return (
     <button
-      className="TagButton"
+      className={classnames('TagButton', { 'mod-selected': props.selected })}
       name={tag.name}
       style={style}
       onClick={(e) => props.onClick(e, tag.name)}
