@@ -1,0 +1,19 @@
+.line-editor {
+  @apply align-top;
+  @apply font-mono;
+  @apply w-full;
+  @apply leading-relaxed;
+  @apply outline-0;
+  @apply min-h-[40px];
+  @apply cursor-text;
+  @apply resize-none;
+
+  &.mod-task {
+    @apply py-2;
+    margin-left: -18px;
+  }
+
+  &.mod-heading {
+    margin-left: -18px;
+  }
+}

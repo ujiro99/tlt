@@ -1,4 +1,4 @@
-@import "../css/mixin.css";
+@import '../css/mixin.css';
 
 .task-item {
   @apply relative;
@@ -48,7 +48,8 @@
     position: absolute;
     width: 0;
     top: 50%;
-    left: 36px;
+    left: 24px;
+    z-index: 0;
     transition: width cubic-bezier(0.4, 0, 0.2, 1) 0.35s;
   }
 
@@ -75,13 +76,5 @@
   }
   100% {
     background-position: 60px 60px;
-  }
-}
-
-.task-item:hover {
-  .task-controll {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
   }
 }

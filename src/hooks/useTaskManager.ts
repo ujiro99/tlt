@@ -136,6 +136,7 @@ interface ITaskManager {
   getNodeByLine: (line: number) => Node
   setNodeByLine: (node: Node, line: number) => void
   addEmptyChild: (line: number) => number
+  removeLine: (line: number) => void
 }
 
 export function useTaskManager(): ITaskManager {
@@ -158,21 +159,15 @@ export function useTaskManager(): ITaskManager {
     } else if (node) {
       newRoot = root.replace(node, (n) => n.line === line)
     } else {
-      const target = root.find((n) => n.line === line)
-      if (target.children.length > 0) {
-        // set empty line
-        newRoot = root.replace(EmptyNode, (n) => n.line === line)
-      } else {
-        // remove this line
-        newRoot = root.filter((n) => n.line !== line)
-        Log.d(`removed ${line}`)
-        trackings.forEach((n) => {
-          if (line < n.line) {
-            // Move up
-            moveTracking(n.line, n.line - 1)
-          }
-        })
-      }
+      // remove this line
+      newRoot = root.filter((n) => n.line !== line)
+      Log.d(`removed ${line}`)
+      trackings.forEach((n) => {
+        if (line < n.line) {
+          // Move up
+          moveTracking(n.line, n.line - 1)
+        }
+      })
     }
     setRoot(newRoot)
   }
@@ -190,6 +185,17 @@ export function useTaskManager(): ITaskManager {
       }
     })
     return appendLine
+  }
+
+  const removeLine = (line: number) => {
+    const newRoot = root.filter((n) => n.line !== line)
+    setRoot(newRoot)
+    trackings.forEach((t) => {
+      if (line < t.line) {
+        // Move up
+        moveTracking(t.line, t.line - 1)
+      }
+    })
   }
 
   const tagEq = (a: Tag, b: Tag) => a.name === b.name
@@ -242,6 +248,7 @@ export function useTaskManager(): ITaskManager {
     getNodeByLine,
     setNodeByLine,
     addEmptyChild,
+    removeLine,
   }
 }
 

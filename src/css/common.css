@@ -17,11 +17,14 @@
   --bg-gray-500: rgb(107 114 128);
   --bg-gray-600: rgb(75 85 99);
   --bg-gray-700: rgb(55 65 81);
-  
+
   --indigo-50: rgb(238 242 255);
   --indigo-100: rgb(224 231 255);
   --indigo-200: rgb(199 210 254);
   --indigo-300: rgb(165 180 252);
+  --indigo-400: rgb(129 140 248);
 
   --radius-md: 6px;
+
+  --z-index-picker: 12;
 }

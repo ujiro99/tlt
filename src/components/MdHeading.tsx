@@ -66,6 +66,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
         className={classnames(
           'Heading',
           `mod-${TagName}`,
+          `mod-heading`,
           'bg-transparent',
           otherClass[TagName],
           {

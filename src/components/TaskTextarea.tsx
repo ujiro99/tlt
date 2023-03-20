@@ -24,8 +24,13 @@ export function TaskTextarea(): JSX.Element {
   const [text, setText] = useState(manager.getText())
   const [timeoutID, setTimeoutID] = useState<number>()
   const [iconVisible, setIconVisible] = useState(false)
+  const [iconHidden, setIconHidden] = useState(true)
   const [selection, setSelection] = useState<Selection>()
   const inputArea = useRef<HTMLTextAreaElement>()
+  
+  useEffect(() => {
+    sleep(2000).then(() => setIconHidden(false))
+  }, [])
 
   useEffect(() => {
     if (timeoutID) clearTimeout(timeoutID)
@@ -145,7 +150,7 @@ export function TaskTextarea(): JSX.Element {
 
   return (
     <div className="task-textarea">
-      {iconVisible ? (
+      {iconVisible && !iconHidden ? (
         <LoadingIcon>
           <span>{i18n.t('saving')}</span>
         </LoadingIcon>

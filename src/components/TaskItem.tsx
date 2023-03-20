@@ -109,7 +109,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   if (isEditing) {
-    return <LineEditor line={line} />
+    return <LineEditor className='mod-task' line={line} />
   }
 
   return (

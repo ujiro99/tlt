@@ -7,6 +7,8 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { eventStop } from '@/services/util'
 import { DEFAULT, KEYCODE_ENTER } from '@/const'
 
+import './LineEditor.css'
+
 type Props = {
   line: number
   className?: string
@@ -22,8 +24,10 @@ export function LineEditor(props: Props): JSX.Element {
   function finish() {
     if (text !== DEFAULT) {
       manager.setTextByLine(line, text)
-      analytics.track('edit line fnish')
+    } else {
+      manager.removeLine(line)
     }
+    analytics.track('edit line fnish')
     finishEdit()
   }
 
@@ -32,7 +36,7 @@ export function LineEditor(props: Props): JSX.Element {
   }
 
   function onFocus() {
-    let current = manager.getTextByLine(line);
+    let current = manager.getTextByLine(line)
     if (!current) {
       current = DEFAULT
     }
@@ -46,7 +50,7 @@ export function LineEditor(props: Props): JSX.Element {
 
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.keyCode === KEYCODE_ENTER) {
-        finish()
+      finish()
     }
     // Prevent key events to reach the SortableTree.
     e.stopPropagation()
@@ -54,7 +58,7 @@ export function LineEditor(props: Props): JSX.Element {
 
   return (
     <TextareaAutosize
-      className={`${props.className} align-top font-mono w-full py-2 leading-relaxed outline-0 min-h-[40px] cursor-text resize-none`}
+      className={`line-editor ${props.className}`}
       value={text}
       onBlur={onBlur}
       onChange={onChange}

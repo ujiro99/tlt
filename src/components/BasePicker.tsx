@@ -38,12 +38,19 @@ export type BasePickerProps = {
 
 export const BasePicker = (props: BasePickerProps): JSX.Element => {
   const eventType = props.eventType || EVENT_TYPE.CLICK
-  const [hoverRef, isHovered] = useHover()
+  const [boundaryRef, isBoundaryHovered] = useHover()
+  const [overlayRef, isOverlayHovered] = useHover()
   const [contentRef] = useHoverCancel()
 
   const { styles, attributes } = usePopper(props.refElm, contentRef.current, {
     placement: props.location,
-    modifiers: [{ name: 'offset', options: { offset: [0, 8] } }],
+    modifiers: [
+      { name: 'offset', options: { offset: [0, 8] } },
+      {
+        name: 'preventOverflow',
+        options: { boundary: boundaryRef.current, padding: 30 },
+      },
+    ],
   })
 
   const onClickOverlay = (e: React.MouseEvent) => {
@@ -54,27 +61,38 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
   }
 
   useEffect(() => {
-    if (isHovered && eventType === EVENT_TYPE.HOVER) {
+    if (isOverlayHovered && eventType === EVENT_TYPE.HOVER) {
       props.onRequestClose()
     }
-  }, [isHovered])
+  }, [isOverlayHovered])
+
+  useEffect(() => {
+    if (isBoundaryHovered && !isOverlayHovered) {
+      props.onRequestClose()
+    }
+  }, [isBoundaryHovered, isOverlayHovered])
 
   return (
     <div
-      className="BasePicker__overlay"
-      onClick={onClickOverlay}
-      onDragStart={eventStop}
-      onPointerDown={eventStop}
-      ref={hoverRef as React.RefObject<HTMLDivElement>}
+      className="BasePicker__boundary"
+      ref={boundaryRef as React.RefObject<HTMLDivElement>}
     >
       <div
-        className="BasePicker__content"
-        style={styles.popper}
-        ref={contentRef as React.RefObject<HTMLDivElement>}
-        onClick={eventStop}
-        {...attributes.popper}
+        className="BasePicker__overlay"
+        onClick={onClickOverlay}
+        onDragStart={eventStop}
+        onPointerDown={eventStop}
+        ref={overlayRef as React.RefObject<HTMLDivElement>}
       >
-        {props.children}
+        <div
+          className="BasePicker__content"
+          style={styles.popper}
+          ref={contentRef as React.RefObject<HTMLDivElement>}
+          onClick={eventStop}
+          {...attributes.popper}
+        >
+          {props.children}
+        </div>
       </div>
     </div>
   )
