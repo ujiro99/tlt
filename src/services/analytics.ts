@@ -1,13 +1,14 @@
 import mixpanel from 'mixpanel-browser'
-import { isDebug } from '@/const'
+import { isDebug, MIXPANEL_TOKEN } from '@/const'
 
 // mixpanel
 
 export const Analytics = {
   init() {
-    mixpanel.init('a6bc5429291d17f1f25b16ed4cff3ae2', {
+    mixpanel.init(MIXPANEL_TOKEN, {
       debug: isDebug,
       persistence: 'localStorage',
+      api_host: 'https://api.mixpanel.com',
     })
   },
 

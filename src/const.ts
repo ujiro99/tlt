@@ -12,11 +12,14 @@ export const COLOR = {
 
 // for oAuth
 export const REDIRECT_URL = 'https://todolist-timetracking.com/oauth'
-export const CLIENT_ID_WEB = process.env.CLIENT_ID_WEB 
-export const CLIENT_SECLET = process.env.CLIENT_SECLET 
+export const CLIENT_ID_WEB = process.env.CLIENT_ID_WEB
+export const CLIENT_SECLET = process.env.CLIENT_SECLET
 
 // for api
 export const API_KEY = process.env.API_KEY
+
+// for mixpanel
+export const MIXPANEL_TOKEN = process.env.MIXPANEL_TOKEN
 
 /**
  * Setting value to switch the debug log output from this module.
