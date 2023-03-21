@@ -39,13 +39,16 @@ async function build() {
     }
   })
 
+  // images in docs folder
+  await fs.rename(`${SOURCE_DIR}/img`, `${DIST_DIR}/img`)
+
   css()
 }
 
 /**
- * Converts markdown to html. 
- * @param {string} srcFilePath 
- * @param {string} distName? 
+ * Converts markdown to html.
+ * @param {string} srcFilePath
+ * @param {string} distName?
  */
 async function conv(srcFilePath, distName) {
   // generate file name
