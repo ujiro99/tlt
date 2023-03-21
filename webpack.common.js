@@ -83,6 +83,9 @@ module.exports = {
             process.env.CLIENT_SECLET,
           ),
           'process.env.API_KEY ': JSON.stringify(process.env.API_KEY),
+          'process.env.MIXPANEL_TOKEN ': JSON.stringify(
+            process.env.MIXPANEL_TOKEN,
+          ),
         }),
   ],
 }
