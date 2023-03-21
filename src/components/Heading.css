@@ -16,11 +16,14 @@
   &__add-todo {
     height: 22px;
     opacity: 0;
-    margin-left: 4px;
-    z-index: var(--z-index-picker);
+    z-index: calc(var(--z-index-picker) - 1);
 
     @apply duration-200;
     @apply transition-opacity;
+  }
+
+  &__tagmenu {
+    margin-left: 8px;
   }
 
   &__add-todo {
