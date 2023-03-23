@@ -61,8 +61,9 @@
 }
 
 .calendar-date {
-  font-family: var(--font-mono);
   color: var(--text-600);
+  text-align: left;
+  font-family: var(--font-mono);
   font-weight: normal;
   font-size: 14px;
   letter-spacing: -0.05em;

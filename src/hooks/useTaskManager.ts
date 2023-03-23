@@ -9,7 +9,7 @@ import {
 import Log from '@/services/log'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Parser } from '@/services/parser'
-import { Node, nodeToString, NODE_TYPE } from '@/models/node'
+import { Node, nodeToString } from '@/models/node'
 import { Tag, hasTags } from '@/models/tag'
 import { flat } from '@/models/flattenedNode'
 import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
@@ -17,8 +17,6 @@ import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
 import { unique, difference } from '@/services/util'
 import { COLOR } from '@/const'
-
-const EmptyNode = new Node(NODE_TYPE.OTHER, 0, '')
 
 enum TaskRecordType {
   Date,
@@ -273,7 +271,6 @@ export function useTaskStorage(): void {
 
   const saveToStorage = async () => {
     const data = nodeToString(root)
-    if (data.length === 0) return
     setSaving(true)
     let found = false
     const newRecords = records.map((r) => {
