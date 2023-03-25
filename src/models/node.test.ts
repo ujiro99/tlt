@@ -162,14 +162,15 @@ describe('filter', () => {
     const filterd = root.filter((n) => !n.isComplete())
     expect(nodeToString(filterd)).toBe(`- [ ] completed task`)
   })
-  
+
   test('Remove grandfather node', () => {
     const root = Parser.parseMd(`- [x] task 1
-  - [ ] task 2 
+  - [ ] task 2
     - [ ] task 3`)
     const filterd = root.filter((n) => !n.isComplete())
-    expect(nodeToString(filterd)).toBe(`- [ ] task 2
-  - [ ] task 3`)
+    const ret = nodeToString(filterd)
+    const resExpect = `- [ ] task 2\n  - [ ] task 3`
+    expect(ret).toBe(resExpect)
   })
 
   test('Remove a completed task which has a completed child', () => {
