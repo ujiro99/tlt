@@ -43,7 +43,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   const TagName = (level <= 6 ? `h${level}` : `h6`) as HeadingTag
 
   const topMargin = () => {
-    if (line === 0) return false
+    if (line === 1) return false
     return level <= 2
   }
 
