@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import {
   atom,
   selector,
@@ -18,7 +17,7 @@ import { useTrackingMove } from '@/hooks/useTrackingState'
 import { unique, difference } from '@/services/util'
 import { COLOR } from '@/const'
 
-enum TaskRecordType {
+export enum TaskRecordType {
   Date,
 }
 
@@ -27,8 +26,7 @@ interface TaskRecord {
   type: TaskRecordType
   data: string
 }
-
-type TaskRecordArray = TaskRecord[]
+export type TaskRecordArray = TaskRecord[]
 
 export const taskRecordKeyState = atom<TaskRecordKey>({
   key: 'taskRecordKeyState',
@@ -40,11 +38,6 @@ export const isPossibleToSaveState = atom<boolean>({
   default: true,
 })
 
-export const savingState = atom<boolean>({
-  key: 'savingState',
-  default: false,
-})
-
 // void Storage.clear()
 
 const loadRecords = async (): Promise<TaskRecordArray> => {
@@ -54,20 +47,10 @@ const loadRecords = async (): Promise<TaskRecordArray> => {
   return records
 }
 
-const saveRecords = async (records: TaskRecordArray): Promise<boolean> => {
-  try {
-    const res = await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
-    return res === true
-  } catch (e) {
-    Log.w(e)
-    return false
-  }
-}
-
 /**
  * All of TaskRecords saved in chrome storage.
  */
-const taskRecordsState = atom({
+export const taskRecordsState = atom({
   key: 'taskRecordsState',
   default: selector({
     key: 'nodeStateSelctor',
@@ -81,7 +64,7 @@ const taskRecordsState = atom({
 /**
  * Task text saved in chrome storage.
  */
-const taskRecordSelector = selector<Node>({
+export const taskRecordSelector = selector<Node>({
   key: 'taskRecordSelector',
   get: ({ get }) => {
     const records = get(taskRecordsState)
@@ -247,54 +230,6 @@ export function useTaskManager(): ITaskManager {
     setNodeByLine,
     addEmptyChild,
     removeLine,
-  }
-}
-
-export function useTaskStorage(): void {
-  const [records, setRecords] = useRecoilState(taskRecordsState)
-  const setSaving = useSetRecoilState(savingState)
-  const isPossibleToSave = useRecoilValue(isPossibleToSaveState)
-
-  const record = useRecoilValue(taskRecordSelector)
-  const key = useRecoilValue(taskRecordKeyState)
-  const [root, setRoot] = useRecoilState(nodeState)
-
-  useEffect(() => {
-    if (isPossibleToSave) {
-      void saveToStorage()
-    }
-  }, [root])
-
-  useEffect(() => {
-    setRoot(record)
-  }, [key])
-
-  const saveToStorage = async () => {
-    const data = nodeToString(root)
-    setSaving(true)
-    let found = false
-    const newRecords = records.map((r) => {
-      if (r.key === key.toKey()) {
-        found = true
-        return {
-          ...r,
-          data,
-        }
-      } else {
-        return r
-      }
-    })
-    if (!found) {
-      const record = {
-        key: key.toKey(),
-        type: TaskRecordType.Date,
-        data,
-      }
-      newRecords.push(record)
-    }
-    setRecords(newRecords)
-    await saveRecords(newRecords)
-    setSaving(false)
   }
 }
 

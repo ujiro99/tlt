@@ -10,7 +10,7 @@ import { EmptyLine } from '@/components/EmptyLine'
 import { SortableTree } from '@/components/Tree/SortableTree'
 import { Report } from '@/components/Report'
 import { SyncModal } from '@/components/Sync/SyncModal'
-import { useTaskStorage } from '@/hooks/useTaskManager'
+import { useTaskStorage } from '@/hooks/useTaskStorage'
 
 import '@/css/common.css'
 import '@/components/Popup.css'
