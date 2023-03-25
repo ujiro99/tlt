@@ -5,7 +5,7 @@ import { useOauthState } from '@/hooks/useOauthState'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useSyncModal } from '@/hooks/useSyncModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
-import { useCalendarEvents } from '@/hooks/useCalendarEvent'
+import { useCalendarEvent } from '@/hooks/useCalendarEvent'
 import { Icon } from '@/components/Icon'
 import { sleep } from '@/services/util'
 import { STORAGE_KEY } from '@/services/storage'
@@ -35,7 +35,7 @@ export function SyncModal(): JSX.Element {
   const analytics = useAnalytics()
   const isLoggedIn = useOauthState()
   const [visible, setVisible] = useSyncModal()
-  const { events: savedEvents, uploadEvents } = useCalendarEvents()
+  const { events: savedEvents, uploadEvents } = useCalendarEvent()
   const [calendarDown, setCalendarDown] = useState<Calendar>()
   const [calendarUp, setCalendarUp] = useState<Calendar>()
   const [events, setEvents] = useState<CalendarEvent[]>()

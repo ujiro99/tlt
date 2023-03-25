@@ -7,7 +7,7 @@ import {
   useTaskManager,
 } from '@/hooks/useTaskManager'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
-import { useCalendarEvents } from './useCalendarEvent'
+import { useCalendarEvent } from './useCalendarEvent'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
 import Log from '@/services/log'
@@ -94,7 +94,7 @@ interface useTrackingStateReturn {
 
 export function useTrackingState(): useTrackingStateReturn {
   const manager = useTaskManager()
-  const { appendEvents } = useCalendarEvents()
+  const { appendEvents } = useCalendarEvent()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
   const trackingKey = useRecoilValue(taskRecordKeyState)
 
@@ -218,7 +218,7 @@ interface useTrackingStopReturn {
 
 export function useTrackingStop(): useTrackingStopReturn {
   const manager = useTaskManager()
-  const { appendEvents } = useCalendarEvents()
+  const { appendEvents } = useCalendarEvent()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
 
   const stopAllTracking = useCallback(() => {

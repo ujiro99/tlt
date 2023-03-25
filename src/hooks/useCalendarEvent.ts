@@ -13,7 +13,6 @@ import Log from '@/services/log'
 
 type useCalendarEventsReturn = {
   events: CalendarEvent[]
-  setEvents: (events: CalendarEvent[]) => void
   appendEvents: (events: CalendarEvent[]) => void
   uploadEvents: (
     events: CalendarEvent[],
@@ -30,8 +29,11 @@ type UploadParam = {
   resolve: (v: unknown) => void
 }
 
-export function useCalendarEvents(): useCalendarEventsReturn {
+export function useCalendarEvent(): useCalendarEventsReturn {
   const [uploadParam, setUploadParam] = useState<UploadParam>()
+  const [events, setEvents] = useStorage<CalendarEvent[]>(
+    STORAGE_KEY.ACTIVITIES,
+  )
 
   useEffect(() => {
     if (!uploadParam) return
@@ -58,24 +60,12 @@ export function useCalendarEvents(): useCalendarEventsReturn {
     upload()
   }, [uploadParam])
 
-  const [events, _setEvents] = useStorage<CalendarEvent[]>(
-    STORAGE_KEY.ACTIVITIES,
-  )
-
-  const setEvents = useCallback(
-    (es: CalendarEvent[]) => {
-      Log.d(es)
-      _setEvents(es)
-    },
-    [events],
-  )
-
   const appendEvents = useCallback(
     (es: CalendarEvent[]) => {
       let ee = es.filter((e) => e.time.toMinutes() > 1)
       const newEvents = [...events, ...ee]
       Log.d(newEvents)
-      _setEvents(newEvents)
+      setEvents(newEvents)
     },
     [events],
   )
@@ -86,7 +76,7 @@ export function useCalendarEvents(): useCalendarEventsReturn {
         return !es.some((n) => n.id === e.id)
       })
       Log.d(newEvents)
-      _setEvents(newEvents)
+      setEvents(newEvents)
     },
     [events],
   )
@@ -103,5 +93,5 @@ export function useCalendarEvents(): useCalendarEventsReturn {
     [],
   )
 
-  return { events, setEvents, appendEvents, uploadEvents }
+  return { events, appendEvents, uploadEvents }
 }
