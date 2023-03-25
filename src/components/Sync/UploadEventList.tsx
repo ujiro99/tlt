@@ -1,5 +1,5 @@
 import React from 'react'
-import { useCalendarEvents } from '@/hooks/useCalendarEvent'
+import { useCalendarEvent } from '@/hooks/useCalendarEvent'
 import { formatTime } from '@/services/util'
 
 import './EventList.css'
@@ -7,7 +7,7 @@ import './EventList.css'
 type EventListProps = {}
 
 export function UplaodEventList(props: EventListProps): JSX.Element {
-  const { events } = useCalendarEvents()
+  const { events } = useCalendarEvent()
   const isExist = events && events.length !== 0
 
   return (
