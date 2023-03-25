@@ -1,10 +1,11 @@
 import { atom, selector, useRecoilState } from 'recoil'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
+import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
 import { Node, nodeToString } from '@/models/node'
 import { Tag, hasTags } from '@/models/tag'
 import { flat } from '@/models/flattenedNode'
-import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
+import { KEY_TYPE } from '@/models/taskRecordKey'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Parser } from '@/services/parser'
 import { unique, difference } from '@/services/util'
@@ -21,11 +22,6 @@ interface TaskRecord {
   data: string
 }
 export type TaskRecordArray = TaskRecord[]
-
-export const taskRecordKeyState = atom<TaskRecordKey>({
-  key: 'taskRecordKeyState',
-  default: TaskRecordKey.fromDate(new Date()),
-})
 
 // void Storage.clear()
 

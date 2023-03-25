@@ -1,7 +1,12 @@
-import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { taskRecordKeyState, taskRecordsState } from '@/hooks/useTaskManager'
+import { atom, useRecoilValue, useSetRecoilState } from 'recoil'
+import { taskRecordsState } from '@/hooks/useTaskManager'
 import { isPossibleToSaveState } from '@/hooks/useTaskStorage'
 import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
+
+export const taskRecordKeyState = atom<TaskRecordKey>({
+  key: 'taskRecordKeyState',
+  default: TaskRecordKey.fromDate(new Date()),
+})
 
 interface useTaskRecordKeyReturn {
   setKey: (key: TaskRecordKey) => void
@@ -11,7 +16,6 @@ interface useTaskRecordKeyReturn {
 export function useTaskRecordKey(): useTaskRecordKeyReturn {
   const setRecordKey = useSetRecoilState(taskRecordKeyState)
   const setIsPossibleToSave = useSetRecoilState(isPossibleToSaveState)
-
   const records = useRecoilValue(taskRecordsState)
   const recordKeys = records.map((r) => r.key)
 

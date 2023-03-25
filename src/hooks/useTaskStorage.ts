@@ -4,10 +4,10 @@ import {
   nodeState,
   taskRecordsState,
   taskRecordSelector,
-  taskRecordKeyState,
   TaskRecordType,
   TaskRecordArray,
 } from '@/hooks/useTaskManager'
+import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
 import { nodeToString } from '@/models/node'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import Log from '@/services/log'
