@@ -5,13 +5,17 @@ import {
   taskRecordsState,
   taskRecordSelector,
   taskRecordKeyState,
-  isPossibleToSaveState,
   TaskRecordType,
   TaskRecordArray,
 } from '@/hooks/useTaskManager'
 import { nodeToString } from '@/models/node'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import Log from '@/services/log'
+
+export const isPossibleToSaveState = atom<boolean>({
+  key: 'isPossibleToSaveState',
+  default: true,
+})
 
 export const savingState = atom<boolean>({
   key: 'savingState',

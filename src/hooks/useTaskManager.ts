@@ -1,20 +1,14 @@
-import {
-  atom,
-  selector,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
-import Log from '@/services/log'
-import { STORAGE_KEY, Storage } from '@/services/storage'
-import { Parser } from '@/services/parser'
+import { atom, selector, useRecoilState } from 'recoil'
+import { useTagHistory } from '@/hooks/useTagHistory'
+import { useTrackingMove } from '@/hooks/useTrackingState'
 import { Node, nodeToString } from '@/models/node'
 import { Tag, hasTags } from '@/models/tag'
 import { flat } from '@/models/flattenedNode'
 import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
-import { useTagHistory } from '@/hooks/useTagHistory'
-import { useTrackingMove } from '@/hooks/useTrackingState'
+import { STORAGE_KEY, Storage } from '@/services/storage'
+import { Parser } from '@/services/parser'
 import { unique, difference } from '@/services/util'
+import Log from '@/services/log'
 import { COLOR } from '@/const'
 
 export enum TaskRecordType {
@@ -31,11 +25,6 @@ export type TaskRecordArray = TaskRecord[]
 export const taskRecordKeyState = atom<TaskRecordKey>({
   key: 'taskRecordKeyState',
   default: TaskRecordKey.fromDate(new Date()),
-})
-
-export const isPossibleToSaveState = atom<boolean>({
-  key: 'isPossibleToSaveState',
-  default: true,
 })
 
 // void Storage.clear()
@@ -107,7 +96,6 @@ export const nodeState = atom<Node>({
 
 interface ITaskManager {
   lineCount: number
-  setKey: (key: TaskRecordKey) => void
   getText: () => string
   setText: (value: string) => void
   getTextByLine: (line: number) => string
@@ -122,8 +110,6 @@ interface ITaskManager {
 
 export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState<Node>(nodeState)
-  const setRecordKey = useSetRecoilState(taskRecordKeyState)
-  const setIsPossibleToSave = useSetRecoilState(isPossibleToSaveState)
   const { trackings, moveTracking } = useTrackingMove()
   const { tags, setTag } = useTagHistory()
 
@@ -199,14 +185,6 @@ export function useTaskManager(): ITaskManager {
 
   return {
     lineCount: flatten.length,
-    setKey: (key: TaskRecordKey) => {
-      if (key.keyType === KEY_TYPE.RANGE) {
-        setIsPossibleToSave(false)
-      } else {
-        setIsPossibleToSave(true)
-      }
-      setRecordKey(key)
-    },
     getText: () => {
       return nodeToString(root)
     },
@@ -231,15 +209,4 @@ export function useTaskManager(): ITaskManager {
     addEmptyChild,
     removeLine,
   }
-}
-
-export function useTaskRecordKey(): TaskRecordKey {
-  return useRecoilValue(taskRecordKeyState)
-}
-
-type TaskRecordKeys = [keys: string[]]
-export function useTaskRecordKeys(): TaskRecordKeys {
-  const records = useRecoilValue(taskRecordsState)
-  const keys = records.map((r) => r.key)
-  return [keys]
 }

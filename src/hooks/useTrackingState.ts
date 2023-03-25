@@ -1,12 +1,11 @@
 import { useCallback } from 'react'
 import { format } from 'date-fns-tz'
-import { atom, selector, useRecoilState } from 'recoil'
+import { atom, selector, useRecoilState, useRecoilValue } from 'recoil'
 
 import {
   nodeState,
   useTaskManager,
   taskRecordKeyState,
-  useTaskRecordKey,
 } from '@/hooks/useTaskManager'
 import { useCalendarEvents } from './useCalendarEvent'
 import { STORAGE_KEY, Storage } from '@/services/storage'
@@ -97,7 +96,7 @@ export function useTrackingState(): useTrackingStateReturn {
   const manager = useTaskManager()
   const { appendEvents } = useCalendarEvents()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
-  const trackingKey = useTaskRecordKey()
+  const trackingKey = useRecoilValue(taskRecordKeyState)
 
   const startTracking = useCallback(
     (node: Node) => {

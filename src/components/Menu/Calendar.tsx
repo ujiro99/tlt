@@ -7,7 +7,7 @@ import { differenceInCalendarDays } from 'date-fns'
 
 import { TaskRecordKey } from '@/models/taskRecordKey'
 import { useMode, MODE } from '@/hooks/useMode'
-import { useTaskManager, useTaskRecordKeys } from '@/hooks/useTaskManager'
+import { useTaskRecordKey } from '@/hooks/useTaskRecordKey'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { RecordName } from '@/components/Menu/RecordName'
@@ -25,9 +25,8 @@ type Props = {
 function MyCalendar(props: Props): JSX.Element {
   const [visible, setVisible] = useState(false)
   const { date, range, setDate, setDateRange } = useCalendarDate()
-  const manager = useTaskManager()
+  const { setKey, recordKeys } = useTaskRecordKey()
   const analytics = useAnalytics()
-  const [recordKeys] = useTaskRecordKeys()
 
   const [mode] = useMode()
   const selectRange = mode === MODE.REPORT
@@ -49,9 +48,7 @@ function MyCalendar(props: Props): JSX.Element {
 
   function toggleCalendar() {
     setVisible(!visible)
-    analytics.track(
-      `calendar ${visible ? 'close' : 'open'}`
-    )
+    analytics.track(`calendar ${visible ? 'close' : 'open'}`)
   }
 
   function tileDisabled({ date, view }) {
@@ -70,7 +67,7 @@ function MyCalendar(props: Props): JSX.Element {
     } else {
       setDate(date as Date)
     }
-    manager.setKey(TaskRecordKey.fromDate(date))
+    setKey(TaskRecordKey.fromDate(date))
     setVisible(false)
   }
 
