@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
@@ -12,6 +11,7 @@ import { Parser } from '@/services/parser'
 import { unique, difference } from '@/services/util'
 import Log from '@/services/log'
 import { COLOR } from '@/const'
+import { TaskRecordKey } from '@/models/taskRecordKey'
 
 export enum TaskRecordType {
   Date,
@@ -47,36 +47,42 @@ export const allRecordsState = atom({
   }),
 })
 
+export function selectRecord(
+  key: TaskRecordKey,
+  records: TaskRecordArray,
+): Node {
+  if (key.keyType === KEY_TYPE.SINGLE) {
+    const record = records.find((r) => r.key === key.toKey())
+    if (record) {
+      return Parser.parseMd(record.data)
+    } else {
+      // If today's task data does not exist,
+      // copy the uncompleted data from the most recent past data.
+      const lastRecord = records[records.length - 1]
+      if (lastRecord) {
+        const lastRoot = Parser.parseMd(lastRecord.data)
+        return lastRoot.filter((n) => !n.isComplete())
+      } else {
+        // Nothing to load.
+        return Parser.parseMd('')
+      }
+    }
+  } else {
+    const range = records.filter((r) => key.keys.includes(r.key))
+    return Parser.parseArray(range.map((r) => r.data))
+  }
+}
+
 /**
  * Task text saved in chrome storage.
  */
 const taskRecordSelector = selector<Node>({
   key: 'taskRecordSelector',
   get: ({ get }) => {
-    const records = get(allRecordsState)
     const key = get(taskRecordKeyState)
+    const records = get(allRecordsState)
     Log.d(`get taskRecordSelector: ${key.toKey()}`)
-
-    if (key.keyType === KEY_TYPE.SINGLE) {
-      const record = records.find((r) => r.key === key.toKey())
-      if (record) {
-        return Parser.parseMd(record.data)
-      } else {
-        // If today's task data does not exist,
-        // copy the uncompleted data from the most recent past data.
-        const lastRecord = records[records.length - 1]
-        if (lastRecord) {
-          const lastRoot = Parser.parseMd(lastRecord.data)
-          return lastRoot.filter((n) => !n.isComplete())
-        } else {
-          // Nothing to load.
-          return Parser.parseMd('')
-        }
-      }
-    } else {
-      const range = records.filter((r) => key.keys.includes(r.key))
-      return Parser.parseArray(range.map((r) => r.data))
-    }
+    return selectRecord(key, records)
   },
 })
 
@@ -106,15 +112,9 @@ interface ITaskManager {
 }
 
 export function useTaskManager(): ITaskManager {
-  const record = useRecoilValue(taskRecordSelector)
-  const key = useRecoilValue(taskRecordKeyState)
   const [root, setRoot] = useRecoilState<Node>(nodeState)
   const { trackings, moveTracking } = useTrackingMove()
   const { tags, setTag } = useTagHistory()
-
-  useEffect(() => {
-    setRoot(record)
-  }, [key])
 
   const flatten = flat(root)
 

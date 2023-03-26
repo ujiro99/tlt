@@ -39,7 +39,6 @@ export function useTaskStorage(): void {
   const isPossibleToSave = useRecoilValue(isPossibleToSaveState)
 
   useEffect(() => {
-    console.log(isPossibleToSave, key)
     if (isPossibleToSave) {
       void saveToStorage()
     }
