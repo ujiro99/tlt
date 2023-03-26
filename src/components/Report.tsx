@@ -277,7 +277,7 @@ export function Report(): JSX.Element {
   builder += table(gsTable)
   builder += `\n\n`
   builder += table(gdTable)
-  Log.d(gdTable)
+  Log.v(gdTable)
 
   setReport(builder)
 

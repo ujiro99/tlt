@@ -1,7 +1,6 @@
 import { atom, useRecoilValue, useSetRecoilState } from 'recoil'
 import { taskRecordsState } from '@/hooks/useTaskManager'
-import { isPossibleToSaveState } from '@/hooks/useTaskStorage'
-import { TaskRecordKey, KEY_TYPE } from '@/models/taskRecordKey'
+import { TaskRecordKey } from '@/models/taskRecordKey'
 
 export const taskRecordKeyState = atom<TaskRecordKey>({
   key: 'taskRecordKeyState',
@@ -15,19 +14,11 @@ interface useTaskRecordKeyReturn {
 
 export function useTaskRecordKey(): useTaskRecordKeyReturn {
   const setRecordKey = useSetRecoilState(taskRecordKeyState)
-  const setIsPossibleToSave = useSetRecoilState(isPossibleToSaveState)
   const records = useRecoilValue(taskRecordsState)
   const recordKeys = records.map((r) => r.key)
 
   return {
-    setKey: (key: TaskRecordKey) => {
-      if (key.keyType === KEY_TYPE.RANGE) {
-        setIsPossibleToSave(false)
-      } else {
-        setIsPossibleToSave(true)
-      }
-      setRecordKey(key)
-    },
+    setKey: setRecordKey,
     recordKeys,
   }
 }

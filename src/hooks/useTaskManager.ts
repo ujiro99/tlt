@@ -1,4 +1,5 @@
-import { atom, selector, useRecoilState } from 'recoil'
+import { useEffect } from 'react'
+import { atom, selector, useRecoilState, useRecoilValue } from 'recoil'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
@@ -105,9 +106,15 @@ interface ITaskManager {
 }
 
 export function useTaskManager(): ITaskManager {
+  const record = useRecoilValue(taskRecordSelector)
+  const key = useRecoilValue(taskRecordKeyState)
   const [root, setRoot] = useRecoilState<Node>(nodeState)
   const { trackings, moveTracking } = useTrackingMove()
   const { tags, setTag } = useTagHistory()
+
+  useEffect(() => {
+    setRoot(record)
+  }, [key])
 
   const flatten = flat(root)
 

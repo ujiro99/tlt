@@ -3,7 +3,6 @@ import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   nodeState,
   taskRecordsState,
-  taskRecordSelector,
   TaskRecordType,
   TaskRecordArray,
 } from '@/hooks/useTaskManager'
@@ -34,22 +33,17 @@ const saveRecords = async (records: TaskRecordArray): Promise<boolean> => {
 
 export function useTaskStorage(): void {
   const [records, setRecords] = useRecoilState(taskRecordsState)
+  const key = useRecoilValue(taskRecordKeyState)
+  const root = useRecoilValue(nodeState)
   const setSaving = useSetRecoilState(savingState)
   const isPossibleToSave = useRecoilValue(isPossibleToSaveState)
 
-  const record = useRecoilValue(taskRecordSelector)
-  const key = useRecoilValue(taskRecordKeyState)
-  const [root, setRoot] = useRecoilState(nodeState)
-
   useEffect(() => {
+    console.log(isPossibleToSave, key)
     if (isPossibleToSave) {
       void saveToStorage()
     }
   }, [root])
-
-  useEffect(() => {
-    setRoot(record)
-  }, [key])
 
   const saveToStorage = async () => {
     const data = nodeToString(root)
@@ -67,12 +61,12 @@ export function useTaskStorage(): void {
       }
     })
     if (!found) {
-      const record = {
+      const r = {
         key: key.toKey(),
         type: TaskRecordType.Date,
         data,
       }
-      newRecords.push(record)
+      newRecords.push(r)
     }
     setRecords(newRecords)
     await saveRecords(newRecords)
