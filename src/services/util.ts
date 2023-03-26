@@ -1,7 +1,10 @@
 import React from 'react'
 import { format, parseISO } from 'date-fns'
 import { Node, NODE_TYPE } from '@/models/node'
-import type { TreeItems, FlattenedItem } from '@/components/Tree/types'
+import type {
+  TreeItems,
+  FlattenedItem,
+} from '@/components/Tree/types'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 import { Tag } from '@/models/tag'
@@ -13,13 +16,6 @@ import Log from '@/services/log'
  */
 export function sleep(msec: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, msec))
-}
-
-function tryParse(obj: unknown): Node | null {
-  const node = Node.tryParse(obj)
-  if (node) {
-    return node
-  }
 }
 
 export function updateLines(items: FlattenedItem[]): FlattenedItem[] {
@@ -34,8 +30,10 @@ export function updateLines(items: FlattenedItem[]): FlattenedItem[] {
  * @param {TreeItems} items Convertion target.
  */
 export function treeItemsToNode(items: TreeItems): Node {
-  let queue: TreeItems = [...items]
   let parent = new Node(NODE_TYPE.ROOT, 0, null)
+  let queue: TreeItems = [...items]
+
+  // for ROOT
   if (items.length === 1) {
     const node = Node.tryParse(items[0])
     if (node.type === NODE_TYPE.ROOT) {
@@ -48,11 +46,13 @@ export function treeItemsToNode(items: TreeItems): Node {
   try {
     while (queue.length > 0) {
       const obj = queue.shift()
-      const node = tryParse(obj)
+      const node = Node.tryParse(obj)
       if (node) {
         parent.children.push(node)
+        node.parent = parent
         if (obj.children.length > 0) {
           node.children = treeItemsToNode(obj.children).children
+          node.children.forEach(c => c.parent = node)
         }
       }
     }

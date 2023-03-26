@@ -35,6 +35,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const node = props.node
   const line = props.node.line
   const [started, setStarted] = useState(false)
+  const [topMargin, setTopMargin] = useState(false)
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const { trackings, startTracking, stopTracking } = useTrackingState()
@@ -93,23 +94,28 @@ export const TaskItem: React.FC<TaskItemProps> = (
     newTask.tags = tags
     manager.setNodeByLine(newNode, line)
   }
-
+  
+  // Calculate the margin above the element
   const oneLineAbove = manager.getNodeByLine(line - 1)
-  const taskItemClass = classnames(
-    'task-item',
-    {
-      'task-item--running': isTracking,
-      'task-item--complete': task.isComplete(),
-      'mod-top-margin': node.parent.isRoot() && oneLineAbove.isHeading()
-    },
-  )
+  const calcTopMargin = () => {
+    return node.parent.isRoot() && oneLineAbove.isMemberOfHeading()
+  }
+  useEffect(() => {
+    setTopMargin(calcTopMargin())
+  }, [line, oneLineAbove, node.parent])
+
+  const taskItemClass = classnames('task-item', {
+    'task-item--running': isTracking,
+    'task-item--complete': task.isComplete(),
+    'mod-top-margin': topMargin,
+  })
 
   const style = {
     ...props.style,
   }
 
   if (isEditing) {
-    return <LineEditor className='mod-task' line={line} />
+    return <LineEditor className="mod-task" line={line} />
   }
 
   return (

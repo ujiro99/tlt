@@ -256,7 +256,7 @@ export function SortableTree({
 
     if (projected && over) {
       const { depth, parentId } = projected
-      // TODO: Implementing deep clone
+
       const clonedItems: FlattenedItem[] = flattenTree(items)
       const overIndex = clonedItems.findIndex(({ id }) => id === over.id)
       const activeIndex = clonedItems.findIndex(({ id }) => id === active.id)

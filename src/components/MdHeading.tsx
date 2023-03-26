@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import classnames from 'classnames'
 
 import { useEditable } from '@/hooks/useEditable'
@@ -16,12 +16,12 @@ import Log from '@/services/log'
 import './Heading.css'
 
 const otherClass = {
-  h1: 'text-base py-3',
-  h2: 'text-base py-3',
-  h3: 'text-sm py-2',
-  h4: 'text-sm py-2',
-  h5: 'text-sm py-2',
-  h6: 'text-sm py-2',
+  h1: 'text-base',
+  h2: 'text-base',
+  h3: 'text-sm',
+  h4: 'text-sm',
+  h5: 'text-sm',
+  h6: 'text-sm',
 }
 
 type NodeProps = {
@@ -33,6 +33,7 @@ type HeadingTag = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
 export const MdHeading = (props: NodeProps): JSX.Element => {
   Log.v(props.node.data)
   const manager = useTaskManager()
+  const [topMargin, setTopMargin] = useState(false)
   const line = props.node.line
   const group = props.node.data as Group
   const level = group.level
@@ -41,11 +42,6 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   const [isEditing, focusOrEdit, edit] = useEditable(line)
 
   const TagName = (level <= 6 ? `h${level}` : `h6`) as HeadingTag
-
-  const topMargin = () => {
-    if (line === 1) return false
-    return level <= 2
-  }
 
   const onChangeTags = (tags: Tag[]) => {
     const newNode = props.node.clone()
@@ -60,6 +56,15 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
     eventStop(e)
   }
 
+  // Calculate the margin above the element
+  const calcTopMargin = () => {
+    if (line === 1) return false
+    if (props.node.parent.isRoot()) return level <= 2
+  }
+  useEffect(() => {
+    setTopMargin(calcTopMargin())
+  }, [line, level, props.node.parent])
+
   if (isEditing) {
     return (
       <LineEditor
@@ -70,7 +75,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
           'bg-transparent',
           otherClass[TagName],
           {
-            'mod-top-margin': topMargin(),
+            'mod-top-margin': topMargin,
           },
         )}
         line={line}
@@ -81,7 +86,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   return (
     <div
       className={classnames('Heading', `mod-${TagName}`, otherClass[TagName], {
-        'mod-top-margin': topMargin(),
+        'mod-top-margin': topMargin,
       })}
       onClick={focusOrEdit}
     >

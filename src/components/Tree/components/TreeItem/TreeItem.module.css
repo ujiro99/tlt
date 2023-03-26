@@ -29,26 +29,26 @@
       margin-bottom: -1px;
 
       .TreeItem {
-        position: relative;
-        padding: 0;
-        height: 0;
-        box-shadow: 1px 1px 0px 1px var(--indigo-200);
-        background-color: var(--indigo-300);
-
         &:before {
           position: absolute;
           display: block;
           content: '';
           left: 0px;
-          top: -4px;
+          top: -6px;
           border: 5px solid transparent;
           border-left: 8px solid var(--indigo-300);
         }
 
-        > * {
-          /* Items are hidden using height and opacity to retain focus */
-          opacity: 0;
-          height: 0;
+        &:after {
+          position: absolute;
+          display: block;
+          content: '';
+          left: 0px;
+          right: 0px;
+          top: -2px;
+          height: 2px;
+          background: var(--indigo-200);
+          z-index: -1;
         }
       }
     }

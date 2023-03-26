@@ -179,4 +179,39 @@ describe('filter', () => {
     const filterd = root.filter((n) => !n.isComplete())
     expect(nodeToString(filterd)).toBe(``)
   })
+
+})
+
+describe('isMemberOfHeading', () => {
+  test('return false if it is Root', () => {
+    const root = Parser.parseMd(`# heading`)
+    expect(root.isMemberOfHeading()).toBe(false)
+  })
+
+  test('return true if it is Heading', () => {
+    const root = Parser.parseMd(`# heading`)
+    expect(root.children[0].isMemberOfHeading()).toBe(false)
+  })
+
+  test('return true if parent is Heading', () => {
+    const root = Parser.parseMd(`# heading
+  - [ ] task 1
+    - [ ] task 2`)
+    expect(root.children[0].children[0].isMemberOfHeading()).toBe(true)
+  })
+
+  test('return true if its grandfather is Heading', () => {
+    const root = Parser.parseMd(`# heading
+  - [ ] task 1
+    - [ ] task 2`)
+    expect(root.children[0].children[0].children[0].isMemberOfHeading()).toBe(true)
+  })
+
+  test('return false if', () => {
+    const root = Parser.parseMd(`# heading
+  - [ ] task 1
+    - [ ] task 2 
+- [ ] task 3`)
+    expect(root.children[1].isMemberOfHeading()).toBe(false)
+  })
 })
