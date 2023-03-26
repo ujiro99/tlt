@@ -12,21 +12,21 @@
     @apply text-gray-400;
     @apply hover:text-gray-500;
     @apply ease-out;
-    @apply rounded-r-lg;
 
     transition: opacity 0.3s;
     position: absolute;
-    top: 1px;
-    right: 1px;
-    height: calc($height - 2px);
+    top: 0px;
+    right: 0px;
+    height: $height;
     width: 110px;
     padding-right: 10px;
     padding-bottom: 5px;
+    border-radius: var(--radius-md);
     text-align: right;
     background: linear-gradient(
       90deg,
       rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 1) 40%,
+      rgba(255, 255, 255, 1) 70%,
       rgba(255, 255, 255, 1) 100%
     );
     opacity: 0;
@@ -36,6 +36,12 @@
         opacity: 0.6;
         &:hover {
           opacity: 1;
+          background: linear-gradient(
+            90deg,
+            rgba(243, 244, 246, 0) 0%,
+            rgba(243, 244, 246, 1) 70%,
+            rgba(243, 244, 246, 1) 100%
+          );
         }
       }
     }

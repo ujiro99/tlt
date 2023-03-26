@@ -22,6 +22,7 @@
 
   &-header > h2 {
     @apply text-lg;
+    font-weight: bold;
   }
 
   &-header__close {
@@ -39,7 +40,7 @@
 .google-calendar {
   &__import,
   &__upload {
-    margin-top: 20px;
+    margin-top: 30px;
     width: 300px;
   }
 
@@ -50,6 +51,17 @@
 
   &__section-title {
     @apply text-lg;
+    @apply fill-gray-500;
+    font-weight: 500;
+
+    & > .Icon {
+      @apply fill-gray-400;
+      display: inline-block;
+      width: 22px;
+      height: 20px;
+      margin-right: 4px;
+      margin-bottom: 2px;
+    }
   }
 
   &__section-desc {
@@ -63,6 +75,6 @@
 
   &__color {
     margin-left: 6px;
-    margin-top: 5px;
+    margin-top: 4px;
   }
 }

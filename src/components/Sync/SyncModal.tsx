@@ -120,7 +120,10 @@ export function SyncModal(): JSX.Element {
           {isLoggedIn ? (
             <>
               <section className="google-calendar__import">
-                <h3 className="google-calendar__section-title">Import</h3>
+                <h3 className="google-calendar__section-title">
+                  <Icon name="download" />
+                  Download
+                </h3>
                 {calendarExists && (
                   <p className="google-calendar__section-desc">
                     Select a calendar you wish to import.
@@ -145,7 +148,10 @@ export function SyncModal(): JSX.Element {
                 )}
               </section>
               <section className="google-calendar__upload">
-                <h3 className="google-calendar__section-title">Upload</h3>
+                <h3 className="google-calendar__section-title">
+                  <Icon name="upload" />
+                  Upload
+                </h3>
                 {calendarExists && (
                   <p className="google-calendar__section-desc">
                     Select a calendar you wish to upload.

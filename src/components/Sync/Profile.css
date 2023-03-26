@@ -3,9 +3,9 @@
 
   display: flex;
   padding: 6px 10px;
-  border: solid 1px;
-  @apply rounded-lg;
-  @apply border-gray-300;
+  border: solid 1px var(--bg-gray-200);
+  border-radius: var(--radius-md);
+  background: white;
 
   &__photo {
     border-radius: 50%;

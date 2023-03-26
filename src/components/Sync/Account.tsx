@@ -27,7 +27,7 @@ export function Account(): JSX.Element {
     <div className="account">
       <Profile />
       <button className="account__logout" onClick={logout}>
-        Logout
+        Logout?
       </button>
     </div>
   ) : (

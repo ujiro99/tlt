@@ -14,7 +14,7 @@
     width: 26px;
     height: 26px;
     margin-left: 0px;
-    box-shadow: rgb(0 0 0 / 14%) 0px 2px 1px 0px;
+    box-shadow: var(--shadow-2);
   }
 }
 
