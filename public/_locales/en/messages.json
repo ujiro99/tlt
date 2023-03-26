@@ -30,6 +30,9 @@
   "label_custom": {
     "message": "Custom"
   },
+  "label_days": {
+    "message": "days"
+  },
   "label_google_calendar": {
     "message": "Import Google Calendar"
   },
