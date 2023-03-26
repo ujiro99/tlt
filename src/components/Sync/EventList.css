@@ -4,6 +4,7 @@
   @apply text-gray-600;
   @apply bg-gray-100;
   @apply rounded-md;
+  @apply text-xs;
 
   margin-top: 6px;
   max-height: 6rem;

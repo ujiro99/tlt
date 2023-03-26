@@ -9,11 +9,11 @@
   @apply pb-1.5;
   @apply px-2;
   @apply border;
-  @apply border-gray-300;
-  @apply rounded-lg;
-  @apply shadow;
+  @apply border-gray-200;
 
   font-size: 14px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-1);
 
   &.mod-disable {
     cursor: not-allowed;

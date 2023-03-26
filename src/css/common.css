@@ -23,6 +23,9 @@
   --indigo-200: rgb(199 210 254);
   --indigo-300: rgb(165 180 252);
   --indigo-400: rgb(129 140 248);
+  
+  --shadow-1: rgb(0 0 0 / 14%) 0px 1px 1px 0px;
+  --shadow-2: rgb(0 0 0 / 14%) 0px 2px 1px 0px;
 
   --radius-md: 6px;
 

@@ -6,9 +6,8 @@
 
   &__select {
     @mixin interactable;
-    @apply rounded-lg;
     @apply border;
-    @apply border-gray-300;
+    @apply border-gray-200;
     @apply pl-3;
     @apply pr-8;
     @apply pt-0.5;
@@ -18,6 +17,7 @@
     width: 100%;
     appearance: none;
     font-size: 0.9rem;
+    border-radius: var(--radius-md);
 
     option {
       background: white;
