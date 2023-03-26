@@ -1,5 +1,6 @@
 .Heading {
   @apply w-full;
+  @apply py-2;
   @apply font-bold;
   @apply relative;
   @apply text-gray-700;

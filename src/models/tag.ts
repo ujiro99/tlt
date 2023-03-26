@@ -16,5 +16,5 @@ interface Tagged {
  */
 export function hasTags(arg: any): arg is Tagged {
   /* eslint @typescript-eslint/no-unsafe-member-access: 0 */
-  return arg.tags !== undefined
+  return arg != null && arg.tags !== undefined
 }

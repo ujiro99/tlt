@@ -19,6 +19,7 @@
     font-size: 28px;
     margin-top: 10px;
     color: var(--text-600);
+    text-align: left;
     user-select: none;
     transition: all ease-out 0.2s;
 

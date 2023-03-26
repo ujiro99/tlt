@@ -39,7 +39,7 @@ function MyCalendar(props: Props): JSX.Element {
       label = formatDaysAgo(range.from, i18n.getUILanguage())
       dates[0] = range.from
     } else {
-      label = i18n.t('label_custom')
+      label = `${Math.abs(diff) + 1}${i18n.t('label_days')}`
       dates = [range.from, range.to]
     }
   } else {

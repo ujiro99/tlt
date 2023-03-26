@@ -133,9 +133,9 @@ export function useTrackingState(): useTrackingStateReturn {
       const newTask = newNode.data as Task
 
       // update node & task
-      if (checked != null) newTask.setComplete(checked)
       const tracking = trackings.find((n) => n.nodeId === node.id)
       if (tracking) newTask.trackingStop(tracking.trackingStartTime)
+      if (checked != null) newTask.setComplete(checked)
       manager.setNodeByLine(newNode, node.line)
 
       // update calendar events

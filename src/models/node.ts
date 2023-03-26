@@ -111,13 +111,19 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     }
     return false
   }
-  
+
   public isRoot(): boolean {
     return this.type === NODE_TYPE.ROOT
   }
 
   public isHeading(): boolean {
     return this.type === NODE_TYPE.HEADING
+  }
+
+  public isMemberOfHeading(): boolean {
+    if (this.isRoot()) return false
+    if (this.parent.isHeading()) return true
+    return this.parent.isMemberOfHeading()
   }
 
   public append(node: Node): Node {
@@ -184,13 +190,13 @@ export class Node implements TreeItem, INode, IClonable<INode> {
         if (!match) {
           // remove a node
           const parent = n.parent
-          const idx = parent.children.findIndex(c => c.id === n.id)
+          const idx = parent.children.findIndex((c) => c.id === n.id)
           parent.children = parent.children.filter((c) => c.id !== n.id)
 
           if (n.children.length > 0) {
             // replace a parent node
             parent.children.splice(idx, 0, ...n.children)
-            n.children.forEach(c => c.parent = parent)
+            n.children.forEach((c) => (c.parent = parent))
           }
         }
       })
