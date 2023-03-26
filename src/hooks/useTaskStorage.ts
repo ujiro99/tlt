@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import {
   nodeState,
-  taskRecordsState,
+  allRecordsState,
   TaskRecordType,
   TaskRecordArray,
 } from '@/hooks/useTaskManager'
@@ -32,7 +32,7 @@ const saveRecords = async (records: TaskRecordArray): Promise<boolean> => {
 }
 
 export function useTaskStorage(): void {
-  const [records, setRecords] = useRecoilState(taskRecordsState)
+  const [records, setRecords] = useRecoilState(allRecordsState)
   const key = useRecoilValue(taskRecordKeyState)
   const root = useRecoilValue(nodeState)
   const setSaving = useSetRecoilState(savingState)

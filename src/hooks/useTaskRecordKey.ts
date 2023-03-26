@@ -1,5 +1,5 @@
 import { atom, useRecoilValue, useSetRecoilState } from 'recoil'
-import { taskRecordsState } from '@/hooks/useTaskManager'
+import { allRecordsState } from '@/hooks/useTaskManager'
 import { TaskRecordKey } from '@/models/taskRecordKey'
 
 export const taskRecordKeyState = atom<TaskRecordKey>({
@@ -14,7 +14,7 @@ interface useTaskRecordKeyReturn {
 
 export function useTaskRecordKey(): useTaskRecordKeyReturn {
   const setRecordKey = useSetRecoilState(taskRecordKeyState)
-  const records = useRecoilValue(taskRecordsState)
+  const records = useRecoilValue(allRecordsState)
   const recordKeys = records.map((r) => r.key)
 
   return {

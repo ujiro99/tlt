@@ -36,7 +36,7 @@ const loadRecords = async (): Promise<TaskRecordArray> => {
 /**
  * All of TaskRecords saved in chrome storage.
  */
-export const taskRecordsState = atom({
+export const allRecordsState = atom({
   key: 'taskRecordsState',
   default: selector({
     key: 'nodeStateSelctor',
@@ -50,10 +50,10 @@ export const taskRecordsState = atom({
 /**
  * Task text saved in chrome storage.
  */
-export const taskRecordSelector = selector<Node>({
+const taskRecordSelector = selector<Node>({
   key: 'taskRecordSelector',
   get: ({ get }) => {
-    const records = get(taskRecordsState)
+    const records = get(allRecordsState)
     const key = get(taskRecordKeyState)
     Log.d(`get taskRecordSelector: ${key.toKey()}`)
 
