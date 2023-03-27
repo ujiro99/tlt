@@ -107,6 +107,7 @@ interface ITaskManager {
   setRoot: (node: Node) => void
   getNodeByLine: (line: number) => Node
   setNodeByLine: (node: Node, line: number) => void
+  addEmptyNodeTop: () => void
   addEmptyChild: (line: number) => number
   removeLine: (line: number) => void
 }
@@ -140,6 +141,16 @@ export function useTaskManager(): ITaskManager {
       })
     }
     setRoot(newRoot)
+  }
+
+  const addEmptyNodeTop = (): void => {
+    const newRoot = root.insertEmptyTaskTop()
+    setRoot(newRoot)
+    Log.d(`add empty top`)
+    trackings.forEach((n) => {
+      // Move down
+      moveTracking(n.line, n.line + 1)
+    })
   }
 
   const addEmptyChild = (line: number): number => {
@@ -209,6 +220,7 @@ export function useTaskManager(): ITaskManager {
     setRoot: setRoot,
     getNodeByLine,
     setNodeByLine,
+    addEmptyNodeTop,
     addEmptyChild,
     removeLine,
   }

@@ -5,26 +5,26 @@ import { LineEditor } from '@/components/LineEditor'
 import * as i18n from '@/services/i18n'
 import { useAnalytics } from '@/hooks/useAnalytics'
 
-export const EmptyLine: React.FC<unknown> = (): JSX.Element => {
+import './EmptyLine.css'
+
+export function EmptyLine(): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const line = manager.lineCount + 1
   const [isEditing, _, edit] = useEditable(line)
 
-  if (isEditing) {
+  const onClick = () => {
     analytics.track('click new ToDo')
+    edit()
+  }
+
+  if (isEditing) {
     return <LineEditor className="m-2" line={line} />
   }
 
   return (
-    <div
-      tabIndex={0}
-      className="h-[40px] rounded-xl my-4 mx-2 border border-gray-200 hover:bg-gray-100 focus:bg-indigo-50 cursor-pointer group text-center leading-10"
-      onClick={() => edit()}
-    >
-      <span className="text-gray-600 group-hover:opacity-100 duration-200 transition-opacity group-hover:duration-500">
-        {i18n.t('new_todo')}
-      </span>
+    <div tabIndex={0} className="empty-line" onClick={onClick}>
+      <span className="empty-line__label">{i18n.t('new_todo')}</span>
     </div>
   )
 }
