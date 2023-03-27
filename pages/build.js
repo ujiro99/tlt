@@ -29,7 +29,7 @@ async function build() {
     ignore: 'node_modules/**/*.md',
   }
 
-  conv('../README.md', 'index.html')
+  conv('../README.md', 'index.html', 'TLT - ToDo List & Time Tracking')
   conv('./oauth.md')
 
   // files in docs folder
@@ -49,16 +49,20 @@ async function build() {
  * Converts markdown to html.
  * @param {string} srcFilePath
  * @param {string} distName?
+ * @param {string} title?
  */
-async function conv(srcFilePath, distName) {
+async function conv(srcFilePath, distName, title) {
   // generate file name
   const name = path.basename(srcFilePath).split('.').shift()
+  if (title == null) {
+    title = name
+  }
 
   // MarkdownファイルをHTML文字列に変換する
   const content = await fs.readFile(srcFilePath, { encoding: 'utf8' })
   let html = marked.parse(content, { gfm: true })
   html = ejs.render(TEMPLATE, {
-    title: name,
+    title: title,
     content: html,
   })
 
