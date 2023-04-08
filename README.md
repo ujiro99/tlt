@@ -29,4 +29,4 @@ If you find this app useful, please support the author!🌟
 [Terms and conditions](https://todolist-timetracking.com/terms-and-conditions)
 
 ## Disclosure
-TLT use and transfer to any other app of information received from Google APIs will adhere to (Google API Services User Data Policy)(https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes), including the Limited Use requirements.
+TLT use and transfer to any other app of information received from Google APIs will adhere to [Google API Services User Data Policy](https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes), including the Limited Use requirements.
