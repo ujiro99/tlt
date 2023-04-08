@@ -7,9 +7,12 @@
 
 ## Feature
 
-Using a text-based notation inspired by todo.md, you can easily manage tasks.
+- Using a text-based notation inspired by todo.md, you can easily manage tasks.
+  <img width="500" src="https://raw.githubusercontent.com/ujiro99/tlt/main/docs/img/todo-format.png" />
 
-<img width="500" src="https://raw.githubusercontent.com/ujiro99/tlt/main/docs/img/todo-format.png" />
+- Video: [Create Todo list](https://www.youtube.com/watch?v=NyErYZp16kc)
+
+- Video: [Integration with the Google Calendar](https://www.youtube.com/watch?v=5EALIDn_COM)
 
 
 ## Install
