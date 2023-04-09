@@ -145,14 +145,19 @@ export const OAuth = {
         throw new Error('invalid token')
       }
       const data = await response.json()
-      if (data.aud && data.aud === CLIENT_ID) {
+      const CLIENT_ID_CHROME = chrome.runtime.getManifest().oauth2.client_id
+      if (
+        data.aud &&
+        (data.aud === CLIENT_ID || data.aud === CLIENT_ID_CHROME)
+      ) {
         await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
         return token
       } else {
-        throw new Error('invalid token')
+        throw new Error('CLIENT_ID mismatch')
       }
-    } catch {
+    } catch (e) {
       Log.d('need to refresh token')
+      Log.e(e)
       await Storage.remove(STORAGE_KEY.OAUTH_STATE)
       await OAuth.updateToken()
       return (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
