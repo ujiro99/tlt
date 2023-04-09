@@ -1,0 +1,12 @@
+
+## Demo Video Transcript
+
+- This application is a Chrome Extension.
+- Click on the "cloud" icon to launch the Synchronization with Google Calendar screen.
+- client_id is "..."
+- Use the "userinfo.email" and "userinfo.profile" scopes to display the name, photo, and email address of the logged-in account.
+- Use the "calendar.calendarlist.readonly" scope to get a list of calendars.
+- The "calendar.events.owned" scope is used for two functions.
+- The first location is the function to retrieve events associated with the selected calendar.
+- The second location is the ability to upload activities recorded on this application to a calendar you selected.
+- Activity has been uploaded.
