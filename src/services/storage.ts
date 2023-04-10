@@ -3,6 +3,7 @@ import Log from '@/services/log'
 export const STORAGE_KEY = {
   ACCESS_TOKEN: 'access_token',
   REFRESH_TOKEN: 'refresh_token',
+  TOKEN_TYPE: 'token_type',
   CALENDAR_DOWNLOAD: 'calendar_download',
   CALENDAR_UPLOAD: 'calendar_upload',
   CALENDAR_COLOR: 'calendar_color',
@@ -13,17 +14,23 @@ export const STORAGE_KEY = {
   TASK_TAGS: 'task_tags',
   TRACKING_START_MS: 'tracking_start_ms',
   TRACKING_STATE: 'tracking_state',
-  ACTIVITIES: 'ACTIVITIES',
+  ACTIVITIES: 'activities',
 } as const
 export type StorageKey = (typeof STORAGE_KEY)[keyof typeof STORAGE_KEY]
 
 export const ACCOUNT_DATA = [
   STORAGE_KEY.ACCESS_TOKEN,
   STORAGE_KEY.REFRESH_TOKEN,
+  STORAGE_KEY.TOKEN_TYPE,
   STORAGE_KEY.CALENDAR_DOWNLOAD,
   STORAGE_KEY.CALENDAR_UPLOAD,
   STORAGE_KEY.CALENDAR_COLOR,
 ]
+
+export const TOKEN_TYPE = {
+  CHROME: 'chrome',
+  WEB: 'web',
+}
 
 export const DEFAULTS = {
   [STORAGE_KEY.ACTIVITIES]: [],
