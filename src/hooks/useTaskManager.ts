@@ -52,7 +52,16 @@ export function selectRecord(
   records: TaskRecordArray,
 ): Node {
   if (key.keyType === KEY_TYPE.SINGLE) {
+    if (records.length === 0)  {
+      // empty state
+      const emptyState =
+        '# Welcome to TLT !\n  - [ ] This is sample todo ~/1h\n  - [ ] Double click to edit ~/2h #tag'
+      const root = Parser.parseMd(emptyState)
+      return root
+    }
+
     const record = records.find((r) => r.key === key.toKey())
+
     if (record) {
       return Parser.parseMd(record.data)
     } else {
