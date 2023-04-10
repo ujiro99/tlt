@@ -68,7 +68,8 @@ export async function fetchWrapper(
     const ret = await OAuth.updateToken()
     if (ret) {
       await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
-      return fetchWrapper(url, option, retryCount++)
+      retryCount++
+      return fetchWrapper(url, option, retryCount)
     }
   } else if (res.status === 403) {
     // 403 Forbidden

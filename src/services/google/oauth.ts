@@ -1,6 +1,11 @@
 import { REDIRECT_URL, CLIENT_ID_WEB, CLIENT_SECLET } from '@/const'
 import { Ipc } from '@/services/ipc'
-import { Storage, STORAGE_KEY, ACCOUNT_DATA } from '@/services/storage'
+import {
+  Storage,
+  STORAGE_KEY,
+  ACCOUNT_DATA,
+  TOKEN_TYPE,
+} from '@/services/storage'
 import Log from '@/services/log'
 
 const CLIENT_ID = CLIENT_ID_WEB
@@ -23,10 +28,13 @@ function fetchAccessTokenByChromeIdentity(): Promise<boolean> {
       async (token: string) => {
         if (chrome.runtime.lastError != null || !token) {
           Log.w(chrome.runtime.lastError)
+          await Storage.set(STORAGE_KEY.LOGIN_STATE, false)
           reject(false)
           return
         }
         await Storage.set(STORAGE_KEY.ACCESS_TOKEN, token)
+        await Storage.set(STORAGE_KEY.TOKEN_TYPE, TOKEN_TYPE.CHROME)
+        await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
         resolve(true)
       },
     )
@@ -46,6 +54,7 @@ function fetchAccessToken(): Promise<boolean> {
           return
         }
         await Storage.set(STORAGE_KEY.ACCESS_TOKEN, res.access_token)
+        await Storage.set(STORAGE_KEY.TOKEN_TYPE, TOKEN_TYPE.WEB)
         await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
         resolve(true)
       })
@@ -119,6 +128,15 @@ function fetchRefreshToken(): Promise<boolean> {
 export const OAuth = {
   async updateToken(): Promise<boolean> {
     try {
+      // Remove cached AuthToken if exists.
+      const tokenType = await Storage.get(STORAGE_KEY.TOKEN_TYPE)
+      const token = (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
+      if (tokenType === TOKEN_TYPE.CHROME && token != null) {
+        await new Promise((resolve) => {
+          chrome.identity.removeCachedAuthToken({ token }, () => resolve(true))
+        })
+      }
+
       return await fetchAccessTokenByChromeIdentity()
     } catch {
       // Do not use chrome.identity in browsers other than chrome.
@@ -145,14 +163,19 @@ export const OAuth = {
         throw new Error('invalid token')
       }
       const data = await response.json()
-      if (data.aud && data.aud === CLIENT_ID) {
+      const CLIENT_ID_CHROME = chrome.runtime.getManifest().oauth2.client_id
+      if (
+        data.aud &&
+        (data.aud === CLIENT_ID || data.aud === CLIENT_ID_CHROME)
+      ) {
         await Storage.set(STORAGE_KEY.LOGIN_STATE, true)
         return token
       } else {
-        throw new Error('invalid token')
+        throw new Error('CLIENT_ID mismatch')
       }
-    } catch {
+    } catch (e) {
       Log.d('need to refresh token')
+      Log.e(e)
       await Storage.remove(STORAGE_KEY.OAUTH_STATE)
       await OAuth.updateToken()
       return (await Storage.get(STORAGE_KEY.ACCESS_TOKEN)) as string
@@ -164,17 +187,29 @@ export const OAuth = {
   },
 
   async logout(): Promise<boolean> {
-    let token = await Storage.get(STORAGE_KEY.ACCESS_TOKEN)
-    let url = `https://oauth2.googleapis.com/revoke?token=${token}`
-    await postData(url)
-    let res1 = await Storage.remove(STORAGE_KEY.ACCESS_TOKEN)
+    let logoutResult
 
-    token = await Storage.get(STORAGE_KEY.REFRESH_TOKEN)
-    url = `https://oauth2.googleapis.com/revoke?token=${token}`
-    await postData(url)
-    let res2 = await Storage.remove(STORAGE_KEY.REFRESH_TOKEN)
+    const tokenType = await Storage.get(STORAGE_KEY.TOKEN_TYPE)
+    if (tokenType === TOKEN_TYPE.WEB) {
+      let token = await Storage.get(STORAGE_KEY.ACCESS_TOKEN)
+      let url = `https://oauth2.googleapis.com/revoke?token=${token}`
+      await postData(url)
+      let res1 = await Storage.remove(STORAGE_KEY.ACCESS_TOKEN)
+      token = await Storage.get(STORAGE_KEY.REFRESH_TOKEN)
+      url = `https://oauth2.googleapis.com/revoke?token=${token}`
+      await postData(url)
+      let res2 = await Storage.remove(STORAGE_KEY.REFRESH_TOKEN)
+      logoutResult = res1 && res2
+    } else {
+      await new Promise((resolve) => {
+        chrome.identity.clearAllCachedAuthTokens(() => {
+          logoutResult = true
+          resolve(true)
+        })
+      })
+    }
 
-    if (res1 && res2) {
+    if (logoutResult) {
       Storage.set(STORAGE_KEY.LOGIN_STATE, false)
       ACCOUNT_DATA.forEach((key) => Storage.remove(key))
       return true
