@@ -88,6 +88,9 @@ function Inner(props: CalendarColorsProps): JSX.Element {
 }
 
 export function CalendarColorPicker(props: CalendarColorsProps): JSX.Element {
+  if (props.defaultId == null) {
+    return <></>
+  }
   return (
     <div className="calendar-color">
       <Suspense
