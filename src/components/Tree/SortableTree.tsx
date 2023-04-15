@@ -129,7 +129,7 @@ export function SortableTree({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 4, // to enables editting by double click.
+        distance: 2, // to enables editting by double click.
       },
     }),
   )
