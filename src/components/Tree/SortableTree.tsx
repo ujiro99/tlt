@@ -129,7 +129,7 @@ export function SortableTree({
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 4, // to enables editting by double click.
+        distance: 2, // to enables editting by double click.
       },
     }),
   )
@@ -138,16 +138,23 @@ export function SortableTree({
     () => flattenedItems.map(({ id }) => id),
     [flattenedItems],
   )
+
   const activeItem = activeId
     ? flattenedItems.find(({ id }) => id === activeId)
     : null
 
-  const isDragTarget = (id, parentId, currentPosition) => {
+  const isDropTarget = (id, parentId, currentPosition) => {
     return (
       id === currentPosition?.parentId ||
       (parentId != null && parentId === currentPosition?.parentId)
     )
   }
+
+  const dropTargetBottom = useMemo(() => {
+    return flattenedItems
+      .filter(({ id, parentId }) => isDropTarget(id, parentId, currentPosition))
+      .pop()
+  }, [flattenedItems, currentPosition])
 
   useEffect(() => {
     sensorContext.current = {
@@ -202,7 +209,9 @@ export function SortableTree({
                 : undefined
             }
             onRemove={removable ? () => handleRemove(id) : undefined}
-            dragTarget={isDragTarget(id, parentId, currentPosition)}
+            dropTarget={isDropTarget(id, parentId, currentPosition)}
+            dropTargetParent={id === currentPosition?.parentId}
+            dropTargetBottom={id === dropTargetBottom?.id}
           />
         ))}
         {createPortal(

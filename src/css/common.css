@@ -26,8 +26,15 @@
   
   --shadow-1: rgb(0 0 0 / 14%) 0px 1px 1px 0px;
   --shadow-2: rgb(0 0 0 / 14%) 0px 2px 1px 0px;
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 
   --radius-md: 6px;
 
+  --z-index-task-controller: 11;
   --z-index-picker: 12;
+
+  --contexify-menu-shadow: var(--shadow-md);
+  --contexify-menu-minWidth: 100px;
+  --contexify-activeItem-bgColor: var(--bg-gray-100);
+  --contexify-itemContent-padding: 4px 6px 6px;
 }

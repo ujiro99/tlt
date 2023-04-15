@@ -4,7 +4,7 @@
   width: 5.8rem;
   right: 0px;
   pointer-events: none;
-  z-index: var(--z-index-picker);
+  z-index: var(--z-index-task-controller);
   background: rgb(249, 250, 251);
   background: linear-gradient(
     90deg,

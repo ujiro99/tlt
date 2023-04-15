@@ -9,8 +9,7 @@
     pointer-events: none;
     width: 100%;
     padding: 0;
-    margin-left: 5px;
-    margin-top: 5px;
+    margin-top: 20px; 
     opacity: 0.8;
 
     .TreeItem {
@@ -26,7 +25,6 @@
       opacity: 1;
       position: relative;
       z-index: 1;
-      margin-bottom: -1px;
 
       .TreeItem {
         &:before {
@@ -37,6 +35,7 @@
           top: -6px;
           border: 5px solid transparent;
           border-left: 8px solid var(--indigo-300);
+          z-index: 1;
         }
 
         &:after {
@@ -48,7 +47,7 @@
           top: -2px;
           height: 2px;
           background: var(--indigo-200);
-          z-index: -1;
+          z-index: 0;
         }
       }
     }

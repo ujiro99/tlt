@@ -11,6 +11,7 @@
   @apply shadow-md;
 
   &__input {
+    font-size: 14px;
     padding: 0 0 8px;
 
     & > input {

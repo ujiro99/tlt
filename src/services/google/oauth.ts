@@ -28,7 +28,6 @@ function fetchAccessTokenByChromeIdentity(): Promise<boolean> {
       async (token: string) => {
         if (chrome.runtime.lastError != null || !token) {
           Log.w(chrome.runtime.lastError)
-          await Storage.set(STORAGE_KEY.LOGIN_STATE, false)
           reject(false)
           return
         }

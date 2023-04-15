@@ -62,8 +62,39 @@
   }
 
   @at-root {
-    .drag-target $(this) {
+    .drop-target $(this) {
       background-color: var(--bg-gray-100);
+      border-radius: 0;
+    }
+
+    .drop-target.drop-target-parent $(this) {
+      border-top-left-radius: var(--radius-md);
+      border-top-right-radius: var(--radius-md);
+      border-bottom-left-radius: var(--radius-md);
+    }
+
+    .drop-target.drop-target-parent + .drop-target $(this):before,
+    .drop-target.drop-target-parent + .drop-target $(this):after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: calc(0px - var(--radius-md));
+      width: var(--radius-md);
+      height: var(--radius-md);
+    }
+
+    .drop-target.drop-target-parent + .drop-target $(this):before {
+      background-color: var(--bg-gray-100);
+    }
+
+    .drop-target.drop-target-parent + .drop-target $(this):after {
+      background-color: white;
+      border-top-right-radius: var(--radius-md);
+    }
+
+    .drop-target.drop-target-bottom $(this) {
+      border-bottom-left-radius: var(--radius-md);
+      border-bottom-right-radius: var(--radius-md);
     }
   }
 }

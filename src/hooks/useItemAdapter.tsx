@@ -32,7 +32,7 @@ export function useItemAdapter(): useItemAdapterReturn {
     } else {
       elm = <MdText key={node.id} node={node} />
     }
-    return <MdWrapper>{elm}</MdWrapper>
+    return <MdWrapper line={node.line}>{elm}</MdWrapper>
   }
 
   return [getItem]
