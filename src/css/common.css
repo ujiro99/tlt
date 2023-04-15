@@ -30,6 +30,7 @@
 
   --radius-md: 6px;
 
+  --z-index-task-controller: 11;
   --z-index-picker: 12;
 
   --contexify-menu-shadow: var(--shadow-md);

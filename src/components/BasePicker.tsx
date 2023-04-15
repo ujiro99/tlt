@@ -89,6 +89,7 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
           style={styles.popper}
           ref={contentRef as React.RefObject<HTMLDivElement>}
           onClick={eventStop}
+          onContextMenu={eventStop}
           {...attributes.popper}
         >
           {props.children}
