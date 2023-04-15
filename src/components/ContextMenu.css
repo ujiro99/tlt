@@ -1,0 +1,18 @@
+.context-menu {
+  &__delete {
+    @apply text-rose-500;
+    font-size: 14px;
+
+    & > span {
+      margin-left: 4px;
+    }
+
+    &-icon {
+      @apply fill-rose-500;
+      width: 16px;
+      height: 16px;
+      display: inline;
+      margin-top: -2px;
+    }
+  }
+}
