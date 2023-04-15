@@ -3,6 +3,7 @@ import classnames from 'classnames'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { tag2str } from '@/services/util'
+import { eventStop } from '@/services/util'
 
 import './TagButton.css'
 
@@ -104,6 +105,7 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
       name={tag.name}
       style={style}
       onClick={(e) => props.onClick(e, tag.name)}
+      onContextMenu={eventStop}
       ref={props.pickerRef as React.LegacyRef<HTMLButtonElement>}
     >
       <span style={{ color: labelColor }}>{tag2str(tag)}</span>
