@@ -43,6 +43,8 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
         <Icon className="item-wrapper__drag" name="drag" />
         {props.children}
       </div>
+
+      { /* context menu */ }
       <Menu id={MENU_ID}>
         <Item id="delete" onClick={handleItemClick}>
           <div className="context-menu__delete">
