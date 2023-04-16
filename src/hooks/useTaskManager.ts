@@ -1,4 +1,4 @@
-import { atom, selector, useRecoilState, useRecoilValue } from 'recoil'
+import { atom, selector, useRecoilState } from 'recoil'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'

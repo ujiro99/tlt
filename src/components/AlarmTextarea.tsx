@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import TextareaAutosize from 'react-textarea-autosize'
+
 import { useStorage } from '@/hooks/useStorage'
 import { STORAGE_KEY } from '@/services/storage'
 import { Icon } from '@/components/Icon'
-import TextareaAutosize from 'react-textarea-autosize'
 import { Alarm } from '@/models/alarm'
 import Log from '@/services/log'
 
