@@ -10,6 +10,6 @@
   &__unit + &__days,
   &__unit + &__minutes,
   &__unit + &__hour {
-    margin-left: 3px;
+    margin-left: 2px;
   }
 }

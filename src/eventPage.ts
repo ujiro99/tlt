@@ -3,7 +3,8 @@ import { Icon } from '@/services/icon'
 import { Storage, STORAGE_KEY } from '@/services/storage'
 
 /** Alarm name */
-const TIMER_NAME = 'ICON_TIMER'
+const ALARM_ICON_TIMER = 'ICON_TIMER'
+const ALARM_NOTIFICATION = 'NOTIFICATION'
 
 /** Hour in minutes */
 const HOUR = 60
@@ -34,6 +35,12 @@ chrome.runtime.onMessage.addListener(
   },
 )
 
+export type AlarmParam = {
+  minutes: number
+  title: string
+  message: string
+}
+
 type OnMessageFuncs = {
   [key: string]: (param: unknown, sendResponse: () => void) => boolean
 }
@@ -61,7 +68,7 @@ const onMessageFuncs: OnMessageFuncs = {
     void updateIconTime()
 
     // start timer
-    chrome.alarms.create(TIMER_NAME, { periodInMinutes: 1 })
+    chrome.alarms.create(ALARM_ICON_TIMER, { periodInMinutes: 1 })
     return true
   },
 
@@ -69,8 +76,33 @@ const onMessageFuncs: OnMessageFuncs = {
    * Stop tracking, and clear badge text.
    */
   stopTracking() {
-    void chrome.alarms.clear(TIMER_NAME)
+    void chrome.alarms.clear(ALARM_ICON_TIMER)
     Icon.clearText()
+    return true
+  },
+
+  setAlarm(param: AlarmParam) {
+    const obj = {
+      name: ALARM_NOTIFICATION,
+      param,
+    }
+    chrome.alarms.create(JSON.stringify(obj), {
+      delayInMinutes: param.minutes,
+    })
+    return true
+  },
+
+  stopAllAlarm() {
+    chrome.notifications.getAll((notifications) => {
+      Object.keys(notifications).forEach((notificationId) => {
+        chrome.notifications.clear(notificationId)
+      })
+    })
+    chrome.alarms.getAll((alarms) => {
+      Object.values(alarms).forEach((alarm) => {
+        chrome.alarms.clear(alarm.name)
+      })
+    })
     return true
   },
 }
@@ -98,6 +130,18 @@ async function updateIconTime() {
 }
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name !== TIMER_NAME) return
-  void updateIconTime()
+  if (alarm.name === ALARM_ICON_TIMER) {
+    void updateIconTime()
+  } else {
+    const obj = JSON.parse(alarm.name)
+    if (obj.name === ALARM_NOTIFICATION) {
+      Log.d(ALARM_NOTIFICATION + ' ' + obj.param.title)
+      chrome.notifications.create({
+        type: 'basic',
+        title: obj.param.title,
+        message: obj.param.message,
+        iconUrl: '/icon128.png',
+      })
+    }
+  }
 })

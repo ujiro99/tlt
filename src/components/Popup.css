@@ -1,3 +1,5 @@
+@import '../css/mixin.css';
+
 body {
   margin: 0;
   height: 600px;
@@ -29,8 +31,6 @@ body {
   padding: 20px 14px 30px 12px;
 
   textarea {
-    line-height: 2;
-    overflow: hidden;
     @apply w-full;
     @apply p-4;
     @apply text-gray-900;
@@ -39,6 +39,28 @@ body {
     @apply bg-gray-100;
     @apply font-mono;
     @apply rounded-md;
+    line-height: 2;
+    overflow: hidden;
+    overflow-x: auto;
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+
+  &__section-title {
+    @mixin section-title;
+
+    & > .Icon {
+      @apply fill-gray-400;
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      margin-right: 4px;
+      margin-bottom: 2px;
+    }
+  }
+
+  textarea + &__section-title {
+    margin-top: 20px;
   }
 }
 

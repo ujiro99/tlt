@@ -16,7 +16,7 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "permissions": ["storage", "alarms", "identity"],
+  "permissions": ["storage", "alarms", "identity", "notifications"],
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],

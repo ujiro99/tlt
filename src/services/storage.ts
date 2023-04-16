@@ -15,6 +15,7 @@ export const STORAGE_KEY = {
   TRACKING_START_MS: 'tracking_start_ms',
   TRACKING_STATE: 'tracking_state',
   ACTIVITIES: 'activities',
+  ALARMS: 'alarms',
 } as const
 export type StorageKey = (typeof STORAGE_KEY)[keyof typeof STORAGE_KEY]
 
@@ -34,6 +35,7 @@ export const TOKEN_TYPE = {
 
 export const DEFAULTS = {
   [STORAGE_KEY.ACTIVITIES]: [],
+  [STORAGE_KEY.ALARMS]: [],
   [STORAGE_KEY.CALENDAR_COLOR]: {},
 }
 
