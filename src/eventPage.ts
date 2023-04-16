@@ -115,14 +115,18 @@ async function updateIconTime() {
   const trackingStartTime = (await Storage.get(
     STORAGE_KEY.TRACKING_START_MS,
   )) as number
-  const startMinutes = (await Storage.get(
-    STORAGE_KEY.ICON_START_MINUTES,
-  )) as number
+  
+  // Extension icon shows the time from when tracking was started.
+  const startMinutes = 0
+  // TODO: Make the total elapsed time display optionally selectable
+  // const startMinutes = (await Storage.get(
+  //   STORAGE_KEY.ICON_START_MINUTES,
+  // )) as number
   const elapsedMs = Date.now() - trackingStartTime
   const elapsedMin = Math.floor(elapsedMs / (60 * 1000))
   const currentMin = startMinutes + elapsedMin
   if (currentMin >= HOUR) {
-    const time = (startMinutes + elapsedMin) / HOUR
+    const time = currentMin / HOUR
     Icon.setText(`${time.toFixed(1)}h`)
   } else {
     Icon.setText(`${Math.floor(currentMin)}m`)
