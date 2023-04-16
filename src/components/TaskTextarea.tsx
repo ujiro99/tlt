@@ -3,13 +3,17 @@ import TextareaAutosize from 'react-textarea-autosize'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useStorageWatcher } from '@/hooks/useStorageWatcher'
+import { useTaskRecordKey } from '@/hooks/useTaskRecordKey'
 import { depthToIndent } from '@/models/node'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import { LoadingIcon } from '@/components/LoadingIcon'
+import { Icon } from '@/components/Icon'
+import { AlarmTaskTextarea } from '@/components/AlarmTextarea'
 import { sleep, getIndent } from '@/services/util'
 import * as i18n from '@/services/i18n'
 import { INDENT_SIZE, KEY, KEYCODE_ENTER, DEFAULT } from '@/const'
+import Log from '@/services/log'
 
 const INDENT = depthToIndent(1)
 
@@ -21,16 +25,23 @@ type Selection = {
 export function TaskTextarea(): JSX.Element {
   const manager = useTaskManager()
   const [saving] = useStorageWatcher()
-  const [text, setText] = useState(manager.getText())
+  const [text, setText] = useState('')
   const [timeoutID, setTimeoutID] = useState<number>()
   const [iconVisible, setIconVisible] = useState(false)
   const [iconHidden, setIconHidden] = useState(true)
   const [selection, setSelection] = useState<Selection>()
+  const { currentKey } = useTaskRecordKey()
+  
   const inputArea = useRef<HTMLTextAreaElement>()
   
   useEffect(() => {
+    setText(manager.getText())
+  }, [currentKey])
+
+  useEffect(() => {
+    setIconHidden(true)
     sleep(2000).then(() => setIconHidden(false))
-  }, [])
+  }, [currentKey])
 
   useEffect(() => {
     if (timeoutID) clearTimeout(timeoutID)
@@ -155,6 +166,10 @@ export function TaskTextarea(): JSX.Element {
           <span>{i18n.t('saving')}</span>
         </LoadingIcon>
       ) : null}
+      <h3 className="task-textarea__section-title">
+        <Icon name="task" />
+        Tasks
+      </h3>
       <TextareaAutosize
         className=""
         onChange={onChange}
@@ -163,6 +178,7 @@ export function TaskTextarea(): JSX.Element {
         value={text}
         ref={inputArea}
       ></TextareaAutosize>
+      <AlarmTaskTextarea />
     </div>
   )
 }

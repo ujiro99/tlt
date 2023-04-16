@@ -2,12 +2,10 @@ import { useCallback } from 'react'
 import { format } from 'date-fns-tz'
 import { atom, selector, useRecoilState, useRecoilValue } from 'recoil'
 
-import {
-  nodeState,
-  useTaskManager,
-} from '@/hooks/useTaskManager'
+import { nodeState, useTaskManager } from '@/hooks/useTaskManager'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
 import { useCalendarEvent } from './useCalendarEvent'
+import { useStorage } from './useStorage'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
 import Log from '@/services/log'
@@ -15,6 +13,7 @@ import { TrackingState, TimeObject } from '@/@types/global'
 import { Node } from '@/models/node'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
+import { Alarm, ALARM_ANCHOR, ALARM_TIMING } from '@/models/alarm'
 
 const TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
 
@@ -97,6 +96,7 @@ export function useTrackingState(): useTrackingStateReturn {
   const { appendEvents } = useCalendarEvent()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
   const trackingKey = useRecoilValue(taskRecordKeyState)
+  const [alarms] = useStorage<Alarm[]>(STORAGE_KEY.ALARMS)
 
   const startTracking = useCallback(
     (node: Node) => {
@@ -122,8 +122,50 @@ export function useTrackingState(): useTrackingStateReturn {
         command: 'startTracking',
         param: tracking.elapsedTime.toMinutes(),
       })
+      setAlarms(newTask)
     },
     [trackings],
+  )
+
+  const setAlarms = useCallback(
+    (task: Task) => {
+      alarms.forEach((alarm) => {
+        let minutes = 0
+        if (alarm.anchor === ALARM_ANCHOR.START) {
+          if (alarm.timing === ALARM_TIMING.AFTER) {
+            minutes = alarm.minutes
+          }
+        } else if (alarm.anchor === ALARM_ANCHOR.SCEHEDULED) {
+          if (task.estimatedTimes.toMinutes() === 0) {
+            Log.d('alarm not set because scheduled time is 0.')
+            return
+          }
+          if (alarm.timing === ALARM_TIMING.BEFORE) {
+            minutes =
+              task.estimatedTimes.toMinutes() -
+              task.actualTimes.toMinutes() -
+              alarm.minutes
+          } else {
+            minutes =
+              task.estimatedTimes.toMinutes() -
+              task.actualTimes.toMinutes() +
+              alarm.minutes
+          }
+        }
+
+        Ipc.send({
+          command: 'setAlarm',
+          param: {
+            title: task.title,
+            message: `${
+              alarm.minutes
+            } minutes ${alarm.timing.toLowerCase()} the ${alarm.anchor}`,
+            minutes: minutes,
+          },
+        })
+      })
+    },
+    [alarms],
   )
 
   const stopTracking = useCallback(
@@ -161,6 +203,7 @@ export function useTrackingState(): useTrackingStateReturn {
       })
       setTrackings(newVal)
       Ipc.send({ command: 'stopTracking' })
+      Ipc.send({ command: 'stopAllAlarm' })
     },
     [trackings],
   )
@@ -178,7 +221,7 @@ export function useTrackingMove() {
   const moveTracking = useCallback(
     (from: number, to: number) => {
       const newVal = trackings.map((n) => {
-        // From -> to 
+        // From -> to
         if (n.line === from) {
           return {
             ...n,
@@ -226,6 +269,7 @@ export function useTrackingStop(): useTrackingStopReturn {
     Log.d('stopAllTracking')
     stopTrackings()
     Ipc.send({ command: 'stopTracking' })
+    Ipc.send({ command: 'stopAllAlarm' })
   }, [trackings])
 
   const stopOtherTracking = useCallback(
