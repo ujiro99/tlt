@@ -1,11 +1,14 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { ColorResult } from 'react-color'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { Menu, Item, useContextMenu } from '@/lib/react-contexify'
 import { Icon } from '@/components/Icon'
+import { ColorPicker } from '@/components/ColorPicker'
 import { eventStop } from '@/services/util'
 import { t } from '@/services/i18n'
 import { TagRecord } from '@/models/tag'
+import { COLOR } from '@/const'
 
 import 'react-contexify/ReactContexify.css'
 import '@/components/ContextMenu.css'
@@ -13,31 +16,48 @@ import '@/components/ContextMenu.css'
 type TagContextMenuProps = {
   id: string
   tag: TagRecord
-  visible: boolean
-  onVisibilityChange: (visible: boolean) => void
+  tagRef: React.MutableRefObject<Element>
+  enableDelete?: boolean
 }
 
 export const TagContextMenu = (props: TagContextMenuProps) => {
+  const tag = props.tag
   const manager = useTaskManager()
-  const { deleteTags } = useTagHistory()
+  const [menuVisible, setMenuVisible] = useState(false)
+  const [pickerVisible, setPickerVisible] = useState(false)
+  const { tags, upsertTag, deleteTags } = useTagHistory()
   const { hideAll } = useContextMenu()
+  const presetColors = tags.map((t) => t.colorHex).reverse()
+  const bgColor = tag.colorHex || COLOR.Gray200
 
   function clickBackdrop(e) {
     hideAll()
     eventStop(e)
   }
 
-  function handleDelete() {
-    deleteTags([props.tag])
+  function handleItemClick({ id = '', triggerEvent }) {
+    switch (id) {
+      case 'delete':
+        deleteTags([props.tag])
+        break
+      case 'color':
+        setPickerVisible(true)
+        break
+    }
+    eventStop(triggerEvent)
   }
 
   function deleteDisabled() {
     return manager.tags.some((tag) => tag.name === props.tag.name)
   }
 
+  const changeColor = (color: ColorResult) => {
+    upsertTag({ name: tag.name, colorHex: color.hex })
+  }
+
   return (
     <>
-      {props.visible && (
+      {menuVisible && (
         <div
           className="TagButton--backdrop"
           onClick={clickBackdrop}
@@ -47,14 +67,37 @@ export const TagContextMenu = (props: TagContextMenuProps) => {
           data-name={props.tag.name}
         />
       )}
-      <Menu id={props.id} onVisibilityChange={props.onVisibilityChange}>
-        <Item id="delete" onClick={handleDelete} disabled={deleteDisabled}>
-          <div className="context-menu__delete">
-            <Icon className="context-menu__delete-icon" name="delete" />
-            <span>{t('tag_delete_from_history')}</span>
+      <Menu
+        className="context-menu"
+        id={props.id}
+        onVisibilityChange={setMenuVisible}
+      >
+        <Item id="color" onClick={handleItemClick}>
+          <div className="context-menu__color">
+            <Icon className="context-menu__color-icon" name="palette" />
+            <span>{t('tag_change_color')}</span>
           </div>
         </Item>
+        {props.enableDelete && (
+          <Item id="delete" onClick={handleItemClick} disabled={deleteDisabled}>
+            <div className="context-menu__delete">
+              <Icon className="context-menu__delete-icon" name="delete" />
+              <span>{t('tag_delete_from_history')}</span>
+            </div>
+          </Item>
+        )}
       </Menu>
+
+      {pickerVisible ? (
+        <ColorPicker
+          onRequestClose={() => setPickerVisible(false)}
+          onChange={changeColor}
+          onChangeComplete={changeColor}
+          initialColor={bgColor}
+          refElm={props.tagRef.current}
+          presetColors={presetColors}
+        />
+      ) : null}
     </>
   )
 }

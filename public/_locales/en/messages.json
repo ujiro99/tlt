@@ -50,6 +50,9 @@
   "tag_delete_from_history": {
     "message": "Remove from history"
   },
+  "tag_change_color": {
+    "message": "Change color"
+  },
   "group": {
     "message": "group"
   },
