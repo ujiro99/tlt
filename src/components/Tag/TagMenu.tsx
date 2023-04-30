@@ -11,6 +11,7 @@ import './TagMenu.css'
 export type TagMenuProps = {
   tags: Tag[]
   onChangeTags: (tags: Tag[]) => void
+  menuOpened?: (opened: boolean) => void
 }
 
 export function TagMenu(props: TagMenuProps): JSX.Element {
@@ -21,11 +22,13 @@ export function TagMenu(props: TagMenuProps): JSX.Element {
   const showPicker = (e: React.MouseEvent | MouseEvent) => {
     eventStop(e)
     setPickerVisible(true)
+    props.menuOpened && props.menuOpened(true)
     analytics.track('TagPicker open')
   }
 
   const closePicker = () => {
     setPickerVisible(false)
+    props.menuOpened && props.menuOpened(false)
     analytics.track('TagPicker close')
   }
 

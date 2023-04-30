@@ -14,14 +14,14 @@ export const TaskTag = (props: Props): JSX.Element => {
   const tag = props.tag
   const [pickerVisible, setPickerVisible] = useState(false)
   const refElm = useRef<Element>(null)
-  const { tags, setTag } = useTagHistory()
+  const { tags, upsertTag } = useTagHistory()
   const tagRecord = tags.find((t) => t.name === tag.name)
   const bgColor = tagRecord?.colorHex || COLOR.Gray200
 
   const presetColors = tags.map((t) => t.colorHex).reverse()
 
   const handleChange = (color: ColorResult) => {
-    setTag({ name: tag.name, colorHex: color.hex })
+    upsertTag({ name: tag.name, colorHex: color.hex })
   }
 
   const showPicker = (e: React.MouseEvent) => {

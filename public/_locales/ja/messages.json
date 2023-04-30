@@ -47,6 +47,9 @@
   "tag": {
     "message": "タグ"
   },
+  "tag_delete_from_history": {
+    "message": "履歴から削除"
+  },
   "group": {
     "message": "グループ"
   },
@@ -64,7 +67,7 @@
     "message": "現在のタグ"
   },
   "add_tags": {
-    "message": "タグを追加"
+    "message": "履歴から追加"
   },
   "no_tags": {
     "message": "タグはまだありません"

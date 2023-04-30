@@ -124,7 +124,7 @@ interface ITaskManager {
 export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState<Node>(nodeState)
   const { trackings, moveTracking } = useTrackingMove()
-  const { tags, setTag } = useTagHistory()
+  const { tags, upsertTag } = useTagHistory()
 
   const flatten = flat(root)
 
@@ -200,7 +200,7 @@ export function useTaskManager(): ITaskManager {
     }, [] as Tag[])
     const newTags = unique(difference(tagsA, tags, tagEq), tagEq)
     newTags.forEach((tag) => {
-      setTag({ name: tag.name, colorHex: COLOR.Gray200 })
+      upsertTag({ name: tag.name, colorHex: COLOR.Gray200 })
     })
   }
 

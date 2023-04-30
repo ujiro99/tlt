@@ -47,6 +47,9 @@
   "tag": {
     "message": "tag"
   },
+  "tag_delete_from_history": {
+    "message": "Remove from history"
+  },
   "group": {
     "message": "group"
   },
@@ -64,7 +67,7 @@
     "message": "Current tags"
   },
   "add_tags": {
-    "message": "Add tags"
+    "message": "Add from History"
   },
   "no_tags": {
     "message": "No tags yet."

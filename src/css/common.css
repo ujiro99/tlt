@@ -32,6 +32,7 @@
 
   --z-index-task-controller: 11;
   --z-index-picker: 12;
+  --z-index-contextmenu: 13;
 
   --contexify-menu-shadow: var(--shadow-md);
   --contexify-menu-minWidth: 100px;

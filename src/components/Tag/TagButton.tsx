@@ -1,9 +1,16 @@
 import React, { useState, useEffect, CSSProperties } from 'react'
+import { createPortal } from 'react-dom'
 import classnames from 'classnames'
-import { Tag } from '@/models/tag'
+import { Tag, TagRecord } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { tag2str } from '@/services/util'
 import { eventStop } from '@/services/util'
+import { t } from '@/services/i18n'
+
+import { Menu, Item, useContextMenu } from '@/lib/react-contexify'
+import { Icon } from '@/components/Icon'
+import 'react-contexify/ReactContexify.css'
+import '@/components/ContextMenu.css'
 
 import './TagButton.css'
 
@@ -76,6 +83,54 @@ type TagButtonProps = {
   tag: Tag
   pickerRef?: React.MutableRefObject<Element>
   selected?: boolean
+  enableDelete?: boolean
+}
+
+const MENU_ID_PREFIX = 'tag-button-'
+
+function Portal({ children }) {
+  return createPortal(children, document.getElementById('popup'))
+}
+
+type TagContextMenuProps = {
+  id: string
+  tag: TagRecord
+  visible: boolean
+  onVisibilityChange: (visible: boolean) => void
+}
+
+const TagContextMenu = (props: TagContextMenuProps) => {
+  const { deleteTags } = useTagHistory()
+  const { hideAll } = useContextMenu()
+
+  function handleDelete() {
+    deleteTags([props.tag])
+  }
+
+  function clickBackdrop(e) {
+    hideAll()
+    eventStop(e)
+  }
+
+  return (
+    <>
+      {props.visible && (
+        <div
+          className="TagButton--backdrop"
+          onClick={clickBackdrop}
+          data-name={props.tag.name}
+        />
+      )}
+      <Menu id={props.id} onVisibilityChange={props.onVisibilityChange}>
+        <Item id="delete" onClick={handleDelete}>
+          <div className="context-menu__delete">
+            <Icon className="context-menu__delete-icon" name="delete" />
+            <span>{t('tag_delete_from_history')}</span>
+          </div>
+        </Item>
+      </Menu>
+    </>
+  )
 }
 
 export const TagButton = (props: TagButtonProps): JSX.Element => {
@@ -85,6 +140,17 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
   const initialBg = tagRecord?.colorHex || Gray200
   const [bgColor, setBgColor] = useState(initialBg)
   const [labelColor, setLabelColor] = useState(calcLabelColor(initialBg))
+  const [menuVisible, setMenuVisible] = useState(false)
+
+  const MENU_ID = MENU_ID_PREFIX + tag.name
+  const { show } = useContextMenu({ id: MENU_ID })
+  function openContextMenu(event) {
+    if (props.enableDelete) {
+      setMenuVisible(true)
+      show({ event })
+    }
+    eventStop(event)
+  }
 
   useEffect(() => {
     const tagRecord = tags.find((t) => t.name === tag.name)
@@ -100,15 +166,26 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
   } as CSSProperties
 
   return (
-    <button
-      className={classnames('TagButton', { 'mod-selected': props.selected })}
-      name={tag.name}
-      style={style}
-      onClick={(e) => props.onClick(e, tag.name)}
-      onContextMenu={eventStop}
-      ref={props.pickerRef as React.LegacyRef<HTMLButtonElement>}
-    >
-      <span style={{ color: labelColor }}>{tag2str(tag)}</span>
-    </button>
+    <>
+      <button
+        className={classnames('TagButton', { 'mod-selected': props.selected })}
+        name={tag.name}
+        style={style}
+        onClick={(e) => props.onClick(e, tag.name)}
+        onContextMenu={openContextMenu}
+        ref={props.pickerRef as React.LegacyRef<HTMLButtonElement>}
+      >
+        <span style={{ color: labelColor }}>{tag2str(tag)}</span>
+      </button>
+      {/* context menu */}
+      <Portal>
+        <TagContextMenu
+          id={MENU_ID}
+          tag={tag}
+          visible={menuVisible}
+          onVisibilityChange={setMenuVisible}
+        />
+      </Portal>
+    </>
   )
 }

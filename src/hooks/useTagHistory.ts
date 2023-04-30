@@ -31,13 +31,14 @@ const tagRecordState = atom<TagRecord[]>({
 
 interface useTagHistoryReturn {
   tags: TagRecord[]
-  setTag: (record: TagRecord) => void
+  upsertTag: (record: TagRecord) => void
+  deleteTags: (records: TagRecord[]) => void
 }
 
 export function useTagHistory(): useTagHistoryReturn {
   const [tags, setTags] = useRecoilState(tagRecordState)
 
-  const setTag = useCallback(
+  const upsertTag = useCallback(
     (record: TagRecord) => {
       if (record.name === '') return
       const newTags = tags.filter((t) => t.name !== record.name)
@@ -53,8 +54,19 @@ export function useTagHistory(): useTagHistoryReturn {
     [tags],
   )
 
+  const deleteTags = useCallback(
+    (records: TagRecord[]) => {
+      const newTags = tags.filter(
+        (t) => !records.some((r) => r.name === t.name),
+      )
+      setTags(newTags)
+    },
+    [tags],
+  )
+
   return {
     tags,
-    setTag,
+    upsertTag,
+    deleteTags,
   }
 }

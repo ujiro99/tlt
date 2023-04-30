@@ -5,7 +5,7 @@ import { isToday } from 'date-fns'
 import { useCalendarDate } from '@/hooks/useCalendarDate'
 import { Tooltip } from '@/components/Tooltip'
 import { TagMenu, TagMenuProps } from '@/components/Tag/TagMenu'
-import { sleep } from '@/services/util'
+import { sleep, eventStop } from '@/services/util'
 import * as i18n from '@/services/i18n'
 
 import '@/components/TaskController.css'
@@ -83,19 +83,20 @@ function PlayStopButton(props: PlayStopProps) {
 }
 
 export function TaskController(props: TaskControllerProps): JSX.Element {
-  // Stop event bubbling to avoid a parent element hide this component.
-  const stopPropagation = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
+  const [menuOpen, setMenuOpened] = useState(false)
 
   const buttonProps = {
     ...props,
     available: !props.isComplete,
   }
 
+  const className = classnames('task-controll', {
+    'task-controll--visible': menuOpen,
+  })
+
   return (
-    <div className="task-controll" onMouseDown={stopPropagation}>
-      <TagMenu {...props} />
+    <div className={className} onContextMenu={eventStop}>
+      <TagMenu {...props} menuOpened={setMenuOpened} />
       <PlayStopButton {...buttonProps} />
     </div>
   )

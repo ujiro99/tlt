@@ -1,7 +1,17 @@
 .task-controll {
   $this: .task-controll;
+
+  @apply absolute;
+  @apply h-full;
+  @apply text-right;
+  @apply select-none;
+  @apply cursor-default;
+  
   display: none;
+  align-items: center;
+  justify-content: flex-end;
   width: 5.8rem;
+  top: 0px;
   right: 0px;
   pointer-events: none;
   z-index: var(--z-index-task-controller);
@@ -13,13 +23,6 @@
     rgba(255, 255, 255, 1) 100%
   );
 
-  @apply absolute;
-  @apply h-full;
-  @apply top-0;
-  @apply text-right;
-  @apply select-none;
-  @apply cursor-default;
-
   > * {
     pointer-events: auto;
   }
@@ -30,10 +33,8 @@
   }
 
   @at-root {
-    .task-item:hover $(this) {
+    .task-item:hover $this, $(this)--visible {
       display: flex;
-      align-items: center;
-      justify-content: flex-end;
     }
   }
 }

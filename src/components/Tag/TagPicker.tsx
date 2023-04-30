@@ -10,9 +10,7 @@ import { COLOR, KEYCODE_ENTER } from '@/const'
 import * as i18n from '@/services/i18n'
 
 import '@/css/fadeIn.css'
-
 import './TagPicker.css'
-import { add } from 'date-fns'
 
 type Props = {
   visible: boolean
@@ -25,7 +23,7 @@ export const TagPicker = (props: Props): JSX.Element => {
   const [currentTags, setCurrentTags] = useState(props.initialTags)
   const [inputTxt, setInputTxt] = useState('')
   const [tmpTag, setTmpTag] = useState<string>(null)
-  const { tags, setTag } = useTagHistory()
+  const { tags, upsertTag } = useTagHistory()
 
   useEffect(() => {
     props.onChange(currentTags)
@@ -69,7 +67,7 @@ export const TagPicker = (props: Props): JSX.Element => {
 
   const createTag = (e) => {
     if (!newTag) return eventStop(e)
-    setTag({ ...newTag, colorHex: COLOR.Gray200 })
+    upsertTag({ ...newTag, colorHex: COLOR.Gray200 })
     setInputTxt('')
     setTmpTag(newTag.name)
   }
@@ -127,6 +125,7 @@ export const TagPicker = (props: Props): JSX.Element => {
                 key={t.name}
                 onClick={addTag}
                 selected={isNarrowedToOne || t.name === inputTxt}
+                enableDelete={true}
               />
             ))}
             {showNewTag ? (
