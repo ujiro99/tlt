@@ -1,16 +1,12 @@
 import React, { useState, useEffect, CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import classnames from 'classnames'
-import { Tag, TagRecord } from '@/models/tag'
+import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { tag2str } from '@/services/util'
 import { eventStop } from '@/services/util'
-import { t } from '@/services/i18n'
-
-import { Menu, Item, useContextMenu } from '@/lib/react-contexify'
-import { Icon } from '@/components/Icon'
-import 'react-contexify/ReactContexify.css'
-import '@/components/ContextMenu.css'
+import { useContextMenu } from '@/lib/react-contexify'
+import { TagContextMenu } from '@/components/Tag/TagContextMenu'
 
 import './TagButton.css'
 
@@ -92,47 +88,6 @@ function Portal({ children }) {
   return createPortal(children, document.getElementById('popup'))
 }
 
-type TagContextMenuProps = {
-  id: string
-  tag: TagRecord
-  visible: boolean
-  onVisibilityChange: (visible: boolean) => void
-}
-
-const TagContextMenu = (props: TagContextMenuProps) => {
-  const { deleteTags } = useTagHistory()
-  const { hideAll } = useContextMenu()
-
-  function handleDelete() {
-    deleteTags([props.tag])
-  }
-
-  function clickBackdrop(e) {
-    hideAll()
-    eventStop(e)
-  }
-
-  return (
-    <>
-      {props.visible && (
-        <div
-          className="TagButton--backdrop"
-          onClick={clickBackdrop}
-          data-name={props.tag.name}
-        />
-      )}
-      <Menu id={props.id} onVisibilityChange={props.onVisibilityChange}>
-        <Item id="delete" onClick={handleDelete}>
-          <div className="context-menu__delete">
-            <Icon className="context-menu__delete-icon" name="delete" />
-            <span>{t('tag_delete_from_history')}</span>
-          </div>
-        </Item>
-      </Menu>
-    </>
-  )
-}
-
 export const TagButton = (props: TagButtonProps): JSX.Element => {
   const tag = props.tag
   const { tags } = useTagHistory()
@@ -177,6 +132,7 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
       >
         <span style={{ color: labelColor }}>{tag2str(tag)}</span>
       </button>
+
       {/* context menu */}
       <Portal>
         <TagContextMenu
