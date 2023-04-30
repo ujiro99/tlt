@@ -14,6 +14,7 @@ import { Node } from '@/models/node'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 import { Alarm, ALARM_ANCHOR, ALARM_TIMING } from '@/models/alarm'
+import { t } from '@/services/i18n'
 
 const TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
 
@@ -131,9 +132,11 @@ export function useTrackingState(): useTrackingStateReturn {
     (task: Task) => {
       alarms.forEach((alarm) => {
         let minutes = 0
+        let message: string
         if (alarm.anchor === ALARM_ANCHOR.START) {
           if (alarm.timing === ALARM_TIMING.AFTER) {
             minutes = alarm.minutes
+            message = t('alarm_after_start', [`${minutes}`])
           }
         } else if (alarm.anchor === ALARM_ANCHOR.SCEHEDULED) {
           if (task.estimatedTimes.toMinutes() === 0) {
@@ -145,21 +148,22 @@ export function useTrackingState(): useTrackingStateReturn {
               task.estimatedTimes.toMinutes() -
               task.actualTimes.toMinutes() -
               alarm.minutes
+            message = t('alarm_before_schedule', [`${minutes}`])
           } else {
             minutes =
               task.estimatedTimes.toMinutes() -
               task.actualTimes.toMinutes() +
               alarm.minutes
+            message = t('alarm_after_schedule', [`${minutes}`])
           }
         }
+        if (minutes <= 0) return
 
         Ipc.send({
           command: 'setAlarm',
           param: {
-            title: task.title,
-            message: `${
-              alarm.minutes
-            } minutes ${alarm.timing.toLowerCase()} the ${alarm.anchor}`,
+            title: message,
+            message: task.title,
             minutes: minutes,
           },
         })

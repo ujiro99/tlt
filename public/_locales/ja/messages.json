@@ -92,5 +92,32 @@
   },
   "total_by_groups": {
     "message": "グループ別集計"
+  },
+  "alarm_before_schedule": {
+    "message": "予定時刻の$minutes$分前",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
+  },
+  "alarm_after_schedule": {
+    "message": "予定時刻から$minutes$分超過しています",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
+  },
+  "alarm_after_start": {
+    "message": "開始から$minutes$分経過",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
   }
 }

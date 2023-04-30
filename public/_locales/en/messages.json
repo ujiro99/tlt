@@ -92,5 +92,32 @@
   },
   "total_by_groups": {
     "message": "Total by groups"
+  },
+  "alarm_before_schedule": {
+    "message": "$minutes$ minutes before the scheduled time",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
+  },
+  "alarm_after_schedule": {
+    "message": "$minutes$ minutes past the scheduled time",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
+  },
+  "alarm_after_start": {
+    "message": "$minutes$ minutes after the start time",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
   }
 }
