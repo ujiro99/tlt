@@ -41,8 +41,17 @@ export function useTagHistory(): useTagHistoryReturn {
   const upsertTag = useCallback(
     (record: TagRecord) => {
       if (record.name === '') return
-      const newTags = tags.filter((t) => t.name !== record.name)
-      newTags.push(record)
+
+      let found = false
+      // Don't change sort order.
+      const newTags = tags.map((t) => {
+        if (t.name === record.name) {
+          found = true
+          return record
+        }
+        return t
+      })
+      if (!found) newTags.push(record)
 
       // Limit the number of tags to save.
       if (newTags.length > MaxCount) {
