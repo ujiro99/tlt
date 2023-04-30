@@ -34,7 +34,7 @@
     "message": "days"
   },
   "label_google_calendar": {
-    "message": "Import Google Calendar"
+    "message": "Sync Google Calendar"
   },
   "actual": {
     "message": "actual",
@@ -46,6 +46,12 @@
   },
   "tag": {
     "message": "tag"
+  },
+  "tag_delete_from_history": {
+    "message": "Remove from history"
+  },
+  "tag_change_color": {
+    "message": "Change color"
   },
   "group": {
     "message": "group"
@@ -64,7 +70,7 @@
     "message": "Current tags"
   },
   "add_tags": {
-    "message": "Add tags"
+    "message": "Add from History"
   },
   "no_tags": {
     "message": "No tags yet."
@@ -86,5 +92,32 @@
   },
   "total_by_groups": {
     "message": "Total by groups"
+  },
+  "alarm_before_schedule": {
+    "message": "$minutes$ minutes before the scheduled time",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
+  },
+  "alarm_after_schedule": {
+    "message": "$minutes$ minutes past the scheduled time",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
+  },
+  "alarm_after_start": {
+    "message": "$minutes$ minutes after the start time",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
   }
 }

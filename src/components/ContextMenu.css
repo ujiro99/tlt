@@ -1,18 +1,52 @@
+@define-mixin icon {
+  width: 16px;
+  height: 16px;
+  display: inline;
+  margin-top: -2px;
+}
+
+
 .context-menu {
+  $this: .context-menu;
+  font-size: 14px;
+  --icon-margin: 6px;
+
   &__delete {
     @apply text-rose-500;
-    font-size: 14px;
 
     & > span {
-      margin-left: 4px;
+      margin-left: var(--icon-margin);
     }
 
     &-icon {
+      @mixin icon;
       @apply fill-rose-500;
-      width: 16px;
-      height: 16px;
-      display: inline;
-      margin-top: -2px;
+    }
+
+    @at-root {
+      .contexify_item-disabled {
+        $(this)__delete {
+          @apply text-gray-500;
+          cursor: not-allowed;
+
+          &-icon {
+            @apply fill-gray-500;
+          }
+        }
+      }
+    }
+  }
+  
+  &__color {
+    @apply text-gray-700;
+
+    & > span {
+      margin-left: var(--icon-margin);
+    }
+    
+    &-icon {
+      @mixin icon;
+      @apply fill-gray-700;
     }
   }
 }

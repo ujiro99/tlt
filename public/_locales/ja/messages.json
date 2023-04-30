@@ -34,7 +34,7 @@
     "message": "日間"
   },
   "label_google_calendar": {
-    "message": "Googleカレンダー読み込み"
+    "message": "Googleカレンダー同期"
   },
   "actual": {
     "message": "実績",
@@ -46,6 +46,12 @@
   },
   "tag": {
     "message": "タグ"
+  },
+  "tag_delete_from_history": {
+    "message": "履歴から削除"
+  },
+  "tag_change_color": {
+    "message": "色を変更"
   },
   "group": {
     "message": "グループ"
@@ -64,7 +70,7 @@
     "message": "現在のタグ"
   },
   "add_tags": {
-    "message": "タグを追加"
+    "message": "履歴から追加"
   },
   "no_tags": {
     "message": "タグはまだありません"
@@ -86,5 +92,32 @@
   },
   "total_by_groups": {
     "message": "グループ別集計"
+  },
+  "alarm_before_schedule": {
+    "message": "予定時刻の$minutes$分前",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
+  },
+  "alarm_after_schedule": {
+    "message": "予定時刻から$minutes$分超過しています",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
+  },
+  "alarm_after_start": {
+    "message": "開始から$minutes$分経過",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
   }
 }

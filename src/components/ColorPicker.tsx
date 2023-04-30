@@ -38,7 +38,7 @@ export const ColorPicker = (props: Props): JSX.Element => {
       presets = presets.slice(0, PresetMax)
     }
   }
-
+  
   useEffect(() => {
     window.setTimeout(() => {
       // Wait for SketchPicker to initialize before making the picker visible

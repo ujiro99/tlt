@@ -1,9 +1,11 @@
-import React, { useState, useEffect, CSSProperties } from 'react'
+import React, { useState, useEffect, useRef, CSSProperties } from 'react'
 import classnames from 'classnames'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { tag2str } from '@/services/util'
 import { eventStop } from '@/services/util'
+import { useContextMenu } from '@/lib/react-contexify'
+import { TagContextMenu } from '@/components/Tag/TagContextMenu'
 
 import './TagButton.css'
 
@@ -76,7 +78,10 @@ type TagButtonProps = {
   tag: Tag
   pickerRef?: React.MutableRefObject<Element>
   selected?: boolean
+  enableDelete?: boolean
 }
+
+const MENU_ID_PREFIX = 'tag-button-'
 
 export const TagButton = (props: TagButtonProps): JSX.Element => {
   const tag = props.tag
@@ -85,6 +90,15 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
   const initialBg = tagRecord?.colorHex || Gray200
   const [bgColor, setBgColor] = useState(initialBg)
   const [labelColor, setLabelColor] = useState(calcLabelColor(initialBg))
+
+  const MENU_ID = MENU_ID_PREFIX + tag.name
+  const { show } = useContextMenu({ id: MENU_ID })
+  const pickerRef = props.pickerRef ?? useRef<Element>(null)
+  
+  function openContextMenu(event) {
+    show({ event })
+    eventStop(event)
+  }
 
   useEffect(() => {
     const tagRecord = tags.find((t) => t.name === tag.name)
@@ -100,15 +114,25 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
   } as CSSProperties
 
   return (
-    <button
-      className={classnames('TagButton', { 'mod-selected': props.selected })}
-      name={tag.name}
-      style={style}
-      onClick={(e) => props.onClick(e, tag.name)}
-      onContextMenu={eventStop}
-      ref={props.pickerRef as React.LegacyRef<HTMLButtonElement>}
-    >
-      <span style={{ color: labelColor }}>{tag2str(tag)}</span>
-    </button>
+    <>
+      <button
+        className={classnames('TagButton', { 'mod-selected': props.selected })}
+        name={tag.name}
+        style={style}
+        onClick={(e) => props.onClick(e, tag.name)}
+        onContextMenu={openContextMenu}
+        ref={pickerRef as React.LegacyRef<HTMLButtonElement>}
+      >
+        <span style={{ color: labelColor }}>{tag2str(tag)}</span>
+      </button>
+
+      {/* context menu */}
+      <TagContextMenu
+        id={MENU_ID}
+        tag={tag}
+        tagRef={pickerRef}
+        enableDelete={props.enableDelete}
+      />
+    </>
   )
 }

@@ -31,17 +31,27 @@ const tagRecordState = atom<TagRecord[]>({
 
 interface useTagHistoryReturn {
   tags: TagRecord[]
-  setTag: (record: TagRecord) => void
+  upsertTag: (record: TagRecord) => void
+  deleteTags: (records: TagRecord[]) => void
 }
 
 export function useTagHistory(): useTagHistoryReturn {
   const [tags, setTags] = useRecoilState(tagRecordState)
 
-  const setTag = useCallback(
+  const upsertTag = useCallback(
     (record: TagRecord) => {
       if (record.name === '') return
-      const newTags = tags.filter((t) => t.name !== record.name)
-      newTags.push(record)
+
+      let found = false
+      // Don't change sort order.
+      const newTags = tags.map((t) => {
+        if (t.name === record.name) {
+          found = true
+          return record
+        }
+        return t
+      })
+      if (!found) newTags.push(record)
 
       // Limit the number of tags to save.
       if (newTags.length > MaxCount) {
@@ -53,8 +63,19 @@ export function useTagHistory(): useTagHistoryReturn {
     [tags],
   )
 
+  const deleteTags = useCallback(
+    (records: TagRecord[]) => {
+      const newTags = tags.filter(
+        (t) => !records.some((r) => r.name === t.name),
+      )
+      setTags(newTags)
+    },
+    [tags],
+  )
+
   return {
     tags,
-    setTag,
+    upsertTag,
+    deleteTags,
   }
 }
