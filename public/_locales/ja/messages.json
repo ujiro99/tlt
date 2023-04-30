@@ -34,7 +34,7 @@
     "message": "日間"
   },
   "label_google_calendar": {
-    "message": "Googleカレンダー読み込み"
+    "message": "Googleカレンダー同期"
   },
   "actual": {
     "message": "実績",

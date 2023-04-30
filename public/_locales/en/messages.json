@@ -34,7 +34,7 @@
     "message": "days"
   },
   "label_google_calendar": {
-    "message": "Import Google Calendar"
+    "message": "Sync Google Calendar"
   },
   "actual": {
     "message": "actual",
