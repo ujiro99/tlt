@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, CSSProperties } from 'react'
-import { createPortal } from 'react-dom'
 import classnames from 'classnames'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
@@ -84,10 +83,6 @@ type TagButtonProps = {
 
 const MENU_ID_PREFIX = 'tag-button-'
 
-function Portal({ children }) {
-  return createPortal(children, document.getElementById('popup'))
-}
-
 export const TagButton = (props: TagButtonProps): JSX.Element => {
   const tag = props.tag
   const { tags } = useTagHistory()
@@ -98,9 +93,8 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
 
   const MENU_ID = MENU_ID_PREFIX + tag.name
   const { show } = useContextMenu({ id: MENU_ID })
-  
   const pickerRef = props.pickerRef ?? useRef<Element>(null)
-
+  
   function openContextMenu(event) {
     show({ event })
     eventStop(event)
@@ -133,14 +127,12 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
       </button>
 
       {/* context menu */}
-      <Portal>
-        <TagContextMenu
-          id={MENU_ID}
-          tag={tag}
-          tagRef={pickerRef}
-          enableDelete={props.enableDelete}
-        />
-      </Portal>
+      <TagContextMenu
+        id={MENU_ID}
+        tag={tag}
+        tagRef={pickerRef}
+        enableDelete={props.enableDelete}
+      />
     </>
   )
 }

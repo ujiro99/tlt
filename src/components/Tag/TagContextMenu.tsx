@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { createPortal } from 'react-dom'
 import { ColorResult } from 'react-color'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTagHistory } from '@/hooks/useTagHistory'
@@ -20,6 +21,10 @@ type TagContextMenuProps = {
   enableDelete?: boolean
 }
 
+function Portal({ children }) {
+  return createPortal(children, document.getElementById('popup'))
+}
+
 export const TagContextMenu = (props: TagContextMenuProps) => {
   const tag = props.tag
   const manager = useTaskManager()
@@ -28,8 +33,9 @@ export const TagContextMenu = (props: TagContextMenuProps) => {
   const { tags, upsertTag, deleteTags } = useTagHistory()
   const { hideAll } = useContextMenu()
   const presetColors = tags.map((t) => t.colorHex).reverse()
-  const bgColor = tag.colorHex || COLOR.Gray200
-
+  const tagRecord = tags.find((t) => t.name === tag.name)
+  const bgColor = tagRecord?.colorHex || COLOR.Gray200
+  
   function clickBackdrop(e) {
     hideAll()
     eventStop(e)
@@ -56,7 +62,7 @@ export const TagContextMenu = (props: TagContextMenuProps) => {
   }
 
   return (
-    <>
+    <Portal>
       {menuVisible && (
         <div
           className="TagButton--backdrop"
@@ -98,6 +104,6 @@ export const TagContextMenu = (props: TagContextMenuProps) => {
           presetColors={presetColors}
         />
       ) : null}
-    </>
+    </Portal>
   )
 }

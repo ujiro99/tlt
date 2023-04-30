@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { usePopper } from 'react-popper'
 import { useHover, useHoverCancel } from '@/hooks/useHover'
 import { eventStop } from '@/services/util'
+import { createPortal } from 'react-dom'
 
 import './BasePicker.css'
 
@@ -36,12 +37,16 @@ export type BasePickerProps = {
   location?: Location
 }
 
+function Portal({ children }) {
+  return createPortal(children, document.getElementById('popup'))
+}
+
 export const BasePicker = (props: BasePickerProps): JSX.Element => {
   const eventType = props.eventType || EVENT_TYPE.CLICK
   const [boundaryRef, isBoundaryHovered] = useHover()
   const [overlayRef, isOverlayHovered] = useHover()
   const [contentRef] = useHoverCancel()
-
+  
   const { styles, attributes } = usePopper(props.refElm, contentRef.current, {
     placement: props.location,
     modifiers: [
@@ -73,28 +78,30 @@ export const BasePicker = (props: BasePickerProps): JSX.Element => {
   }, [isBoundaryHovered, isOverlayHovered])
 
   return (
-    <div
-      className="BasePicker__boundary"
-      ref={boundaryRef as React.RefObject<HTMLDivElement>}
-    >
+    <Portal>
       <div
-        className="BasePicker__overlay"
-        onClick={onClickOverlay}
-        onDragStart={eventStop}
-        onPointerDown={eventStop}
-        ref={overlayRef as React.RefObject<HTMLDivElement>}
+        className="BasePicker__boundary"
+        ref={boundaryRef as React.RefObject<HTMLDivElement>}
       >
         <div
-          className="BasePicker__content"
-          style={styles.popper}
-          ref={contentRef as React.RefObject<HTMLDivElement>}
-          onClick={eventStop}
-          onContextMenu={eventStop}
-          {...attributes.popper}
+          className="BasePicker__overlay"
+          onClick={onClickOverlay}
+          onDragStart={eventStop}
+          onPointerDown={eventStop}
+          ref={overlayRef as React.RefObject<HTMLDivElement>}
         >
-          {props.children}
+          <div
+            className="BasePicker__content"
+            style={styles.popper}
+            ref={contentRef as React.RefObject<HTMLDivElement>}
+            onClick={eventStop}
+            onContextMenu={eventStop}
+            {...attributes.popper}
+          >
+            {props.children}
+          </div>
         </div>
       </div>
-    </div>
+    </Portal>
   )
 }
