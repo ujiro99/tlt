@@ -106,8 +106,11 @@ export const nodeState = atom<Node>({
   }),
 })
 
+const tagEq = (a: Tag, b: Tag) => a.name === b.name
+
 interface ITaskManager {
   lineCount: number
+  tags: Tag[]
   getText: () => string
   setText: (value: string) => void
   getTextByLine: (line: number) => string
@@ -127,6 +130,14 @@ export function useTaskManager(): ITaskManager {
   const { tags, upsertTag } = useTagHistory()
 
   const flatten = flat(root)
+
+  const tagsInState = flatten.reduce((pre, crr) => {
+    const data = crr.node.data
+    if (hasTags(data)) {
+      pre.push(...data.tags)
+    }
+    return pre
+  }, [] as Tag[])
 
   const getNodeByLine = (line: number): Node | null => {
     return root.find((n) => n.line === line)
@@ -188,17 +199,8 @@ export function useTaskManager(): ITaskManager {
     })
   }
 
-  const tagEq = (a: Tag, b: Tag) => a.name === b.name
-
   const updateTagHistory = (): void => {
-    const tagsA = flatten.reduce((pre, cur) => {
-      const data = cur.node.data
-      if (hasTags(data)) {
-        pre.push(...data.tags)
-      }
-      return pre
-    }, [] as Tag[])
-    const newTags = unique(difference(tagsA, tags, tagEq), tagEq)
+    const newTags = unique(difference(tagsInState, tags, tagEq), tagEq)
     newTags.forEach((tag) => {
       upsertTag({ name: tag.name, colorHex: COLOR.Gray200 })
     })
@@ -208,6 +210,7 @@ export function useTaskManager(): ITaskManager {
 
   return {
     lineCount: flatten.length,
+    tags: tagsInState,
     getText: () => {
       return nodeToString(root)
     },
@@ -226,7 +229,7 @@ export function useTaskManager(): ITaskManager {
     getRoot: () => {
       return root
     },
-    setRoot: setRoot,
+    setRoot,
     getNodeByLine,
     setNodeByLine,
     addEmptyNodeTop,

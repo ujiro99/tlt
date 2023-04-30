@@ -1,4 +1,6 @@
 .context-menu {
+  $this: .context-menu;
+
   &__delete {
     @apply text-rose-500;
     font-size: 14px;
@@ -13,6 +15,19 @@
       height: 16px;
       display: inline;
       margin-top: -2px;
+    }
+
+    @at-root {
+      .contexify_item-disabled {
+        $(this)__delete {
+          @apply text-gray-500;
+          cursor: not-allowed;
+
+          &-icon {
+            @apply fill-gray-500;
+          }
+        }
+      }
     }
   }
 }
