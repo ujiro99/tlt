@@ -2,6 +2,7 @@ import React from 'react'
 import { Menu, Item, useContextMenu } from '@/lib/react-contexify'
 import { Icon } from './Icon'
 import { useTaskManager } from '@/hooks/useTaskManager'
+import { eventStop } from '@/services/util'
 import 'react-contexify/ReactContexify.css'
 import './MdWrapper.css'
 import './ContextMenu.css'
@@ -44,8 +45,8 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
         {props.children}
       </div>
 
-      { /* context menu */ }
-      <Menu id={MENU_ID}>
+      {/* context menu */}
+      <Menu className="context-menu" id={MENU_ID} onPointerDown={eventStop}>
         <Item id="delete" onClick={handleItemClick}>
           <div className="context-menu__delete">
             <Icon className="context-menu__delete-icon" name="delete" />
