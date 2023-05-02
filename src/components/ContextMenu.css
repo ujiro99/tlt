@@ -23,6 +23,9 @@
 
     &-icon {
       @mixin icon;
+    }
+    
+    svg {
       @apply fill-rose-500;
     }
 
@@ -61,7 +64,6 @@
     margin-left: 8px;
 
     &-icon {
-      @apply fill-rose-500;
       display: inline-block;
       margin-top: -5px;
       width: 16px;

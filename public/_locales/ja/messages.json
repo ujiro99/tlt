@@ -50,6 +50,9 @@
   "tag_delete_from_history": {
     "message": "履歴から削除"
   },
+  "tag_delete_from_history_confirm": {
+    "message": "履歴から削除？"
+  },
   "tag_change_color": {
     "message": "色を変更"
   },
