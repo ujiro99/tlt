@@ -6,14 +6,15 @@
   letter-spacing: 0.05em;
   user-select: none;
   cursor: pointer;
+  height: 30px;
 
   &__container {
     display: flex;
     align-items: flex-end;
     left: 0;
-    top: 0;
+    top: 5px;
     transition: all ease-out 0.2s;
-    padding: 5px 6px;
+    padding: 4px 6px;
     border-radius: var(--radius-md);
 
     &:hover {
