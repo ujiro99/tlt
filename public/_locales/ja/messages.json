@@ -90,6 +90,12 @@
   "total_by_tags": {
     "message": "タグ別集計"
   },
+  "context_menu_delete": {
+    "message": "削除"
+  },
+  "context_menu_delete_confirm": {
+    "message": "削除？"
+  },
   "total_by_groups": {
     "message": "グループ別集計"
   },

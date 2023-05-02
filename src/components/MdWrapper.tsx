@@ -1,8 +1,9 @@
 import React from 'react'
-import { Menu, Item, useContextMenu } from '@/lib/react-contexify'
+import { Menu, useContextMenu } from '@/lib/react-contexify'
 import { Icon } from './Icon'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { eventStop } from '@/services/util'
+import { ItemDelete } from '@/components/ContextMenu/ItemDelete'
 import 'react-contexify/ReactContexify.css'
 import './MdWrapper.css'
 import './ContextMenu.css'
@@ -25,13 +26,8 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
     show({ event })
   }
 
-  const handleItemClick = (param) => {
-    const { id } = param
-    switch (id) {
-      case 'delete':
-        manager.removeLine(props.line)
-        break
-    }
+  const handleDelete = () => {
+      manager.removeLine(props.line)
   }
 
   return (
@@ -47,12 +43,7 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
 
       {/* context menu */}
       <Menu className="context-menu" id={MENU_ID} onPointerDown={eventStop}>
-        <Item id="delete" onClick={handleItemClick}>
-          <div className="context-menu__delete">
-            <Icon className="context-menu__delete-icon" name="delete" />
-            <span>Delete</span>
-          </div>
-        </Item>
+        <ItemDelete onClick={handleDelete} />
       </Menu>
     </>
   )
