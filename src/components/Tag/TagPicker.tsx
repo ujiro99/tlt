@@ -52,7 +52,7 @@ export const TagPicker = (props: Props): JSX.Element => {
   }
 
   const exactMatch = additionalTags.find((t) => t.name === inputTxt)
-  const isNarrowedToOne = additionalTags.length === 1
+  const isNarrowedToOne = additionalTags.length === 1 && inputTxt != ''
 
   const addTag = (e: React.SyntheticEvent, tagName: string) => {
     const tag = tags.find((t) => t.name === tagName)
