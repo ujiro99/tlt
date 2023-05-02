@@ -93,6 +93,9 @@
   "total_by_tags": {
     "message": "タグ別集計"
   },
+  "context_menu_add": {
+    "message": "追加"
+  },
   "context_menu_delete": {
     "message": "削除"
   },

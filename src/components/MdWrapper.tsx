@@ -1,7 +1,8 @@
 import React from 'react'
-import { Menu, useContextMenu } from '@/lib/react-contexify'
+import { Item, Menu, useContextMenu } from '@/lib/react-contexify'
 import { Icon } from './Icon'
 import { useTaskManager } from '@/hooks/useTaskManager'
+import { useEditable } from '@/hooks/useEditable'
 import { eventStop } from '@/services/util'
 import { ItemConfirm } from '@/components/ContextMenu/ItemConfirm'
 import { t } from '@/services/i18n'
@@ -18,6 +19,7 @@ type Props = {
 
 export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
   const manager = useTaskManager()
+  const [_, __, edit] = useEditable(props.line)
   const MENU_ID = MENU_ID_PREFIX + props.line
   const { show } = useContextMenu({
     id: MENU_ID,
@@ -25,6 +27,11 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
 
   function openContextMenu(event) {
     show({ event })
+  }
+
+  const handleInsert = () => {
+    manager.addEmptyNodeByLine(props.line)
+    edit(props.line + 1)
   }
 
   const handleDelete = () => {
@@ -44,6 +51,12 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
 
       {/* context menu */}
       <Menu className="context-menu" id={MENU_ID} onPointerDown={eventStop}>
+        <Item id="color" onClick={handleInsert}>
+          <div className="context-menu__color">
+            <Icon className="context-menu__color-icon" name="plus" />
+            <span>{t('context_menu_add')}</span>
+          </div>
+        </Item>
         <ItemConfirm
           onClick={handleDelete}
           className="context-menu__delete"

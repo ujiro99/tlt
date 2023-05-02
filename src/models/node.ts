@@ -135,11 +135,20 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     return cloned
   }
 
-  public insertEmptyTaskTop(): Node {
+  public insertEmptyTask(line: number): Node {
     const [cloned] = clone([this])
-    const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(DEFAULT))
-    cloned.children.splice(0, 0, empty)
-    empty.parent = cloned
+    const found = cloned.find((n) => n.line === line)
+    if (found) {
+      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(DEFAULT))
+      if (found.type === NODE_TYPE.HEADING) {
+        empty.parent = found
+        found.children.unshift(empty)
+      } else {
+        empty.parent = found.parent
+        const idx = found.parent.children.findIndex((n) => n.id === found.id)
+        found.parent.children.splice(idx + 1, 0, empty)
+      }
+    }
     updateLineNumber(cloned)
     return cloned
   }

@@ -8,12 +8,15 @@ import { useTrackingState, useTrackingMove } from './useTrackingState'
 import { Parser } from '@/services/parser'
 
 import * as useCalendarEventModule from './useCalendarEvent'
+import * as useStorageModule from './useStorage'
 import { Storage } from '@/services/storage'
 
 jest.mock('@/hooks/useCalendarEvent')
+jest.mock('@/hooks/useStorage')
 jest.mock('@/services/storage')
 jest.mock('@/services/ipc')
 
+const alarms = []
 const storage = {}
 
 beforeEach(() => {
@@ -25,6 +28,11 @@ beforeEach(() => {
     appendEvents: (events) => {},
     uploadEvents: async (events, calendar, color, resolve) => {},
   })
+
+  const useStorageMock = useStorageModule as jest.Mocked<
+    typeof useStorageModule
+  >
+  useStorageMock.useStorage.mockReturnValue([alarms, jest.fn()])
 
   const StorageMock = Storage as jest.Mocked<typeof Storage>
   StorageMock.get.mockImplementation(async (key) => storage[key])

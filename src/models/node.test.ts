@@ -76,6 +76,36 @@ describe('toString', () => {
   })
 })
 
+describe('insertEmptyTask', () => {
+  test('Insert a empty task.', () => {
+    const root = Parser.parseMd(`# heading
+- [ ] task`)
+    const newRoot = root.insertEmptyTask(2)
+    const empty = newRoot.children[2]
+    expect(empty.toString()).toBe('- [ ] ')
+    expect(empty.line).toBe(3)
+  })
+
+  test('Insert a Node to the middle of the siblings.', () => {
+    const root = Parser.parseMd(`# heading
+  - [ ] task 1
+  - [ ] task 2`)
+    const newRoot = root.insertEmptyTask(2)
+    const empty = newRoot.children[0].children[1]
+    expect(empty.toString()).toBe('- [ ] ')
+    expect(empty.line).toBe(3)
+  })
+
+  test('Insert a Node to the below of the Heading', () => {
+    const root = Parser.parseMd(`# heading
+  - [ ] task 1`)
+    const newRoot = root.insertEmptyTask(1)
+    const empty = newRoot.children[0].children[0]
+    expect(empty.toString()).toBe('- [ ] ')
+    expect(empty.line).toBe(2)
+  })
+})
+
 describe('appendEmptyTask', () => {
   test('append a empty task.', () => {
     const root = Parser.parseMd(`# heading
@@ -179,7 +209,6 @@ describe('filter', () => {
     const filterd = root.filter((n) => !n.isComplete())
     expect(nodeToString(filterd)).toBe(``)
   })
-
 })
 
 describe('isMemberOfHeading', () => {
@@ -204,7 +233,9 @@ describe('isMemberOfHeading', () => {
     const root = Parser.parseMd(`# heading
   - [ ] task 1
     - [ ] task 2`)
-    expect(root.children[0].children[0].children[0].isMemberOfHeading()).toBe(true)
+    expect(root.children[0].children[0].children[0].isMemberOfHeading()).toBe(
+      true,
+    )
   })
 
   test('return false if', () => {
