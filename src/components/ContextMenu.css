@@ -3,18 +3,18 @@
 @define-mixin icon {
   width: 16px;
   height: 16px;
-  display: inline;
+  display: inline-block;
   margin-top: -2px;
 }
 
 .context-menu {
   $this: .context-menu;
 
-  font-size: 14px;
-  --icon-margin: 6px;
+  font-size: 12px;
+  --icon-margin: 4px;
 
   &__delete {
-    @apply text-rose-500;
+    @apply text-gray-700;
     height: 20px;
 
     & > span {
@@ -23,9 +23,10 @@
 
     &-icon {
       @mixin icon;
+      @apply fill-gray-700;
     }
     
-    svg {
+    .context-menu__confirm-button-icon--ok {
       @apply fill-rose-500;
     }
 
@@ -65,7 +66,7 @@
 
     &-icon {
       display: inline-block;
-      margin-top: -5px;
+      margin-top: -4px;
       width: 16px;
       height: 16px;
     }

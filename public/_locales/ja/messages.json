@@ -94,7 +94,7 @@
     "message": "タグ別集計"
   },
   "context_menu_add": {
-    "message": "追加"
+    "message": "下へ追加"
   },
   "context_menu_delete": {
     "message": "削除"

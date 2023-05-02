@@ -32,10 +32,10 @@ export const ItemConfirm: React.FC<Props> = (props: Props): JSX.Element => {
         <Icon className={props.className + '-icon'} name={props.iconName} />
         <span>{props.labelConfirm}</span>
         <button className="context-menu__confirm-button" onClick={clickOk}>
-          <Icon className="context-menu__confirm-button-icon" name="check" />
+          <Icon className="context-menu__confirm-button-icon context-menu__confirm-button-icon--ok" name="check" />
         </button>
         <button className="context-menu__confirm-button" onClick={hideAll}>
-          <Icon className="context-menu__confirm-button-icon" name="close" />
+          <Icon className="context-menu__confirm-button-icon context-menu__confirm-button-icon--cancel" name="close" />
         </button>
       </div>
     </div>
