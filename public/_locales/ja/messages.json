@@ -50,6 +50,9 @@
   "tag_delete_from_history": {
     "message": "履歴から削除"
   },
+  "tag_delete_from_history_confirm": {
+    "message": "履歴から削除？"
+  },
   "tag_change_color": {
     "message": "色を変更"
   },
@@ -89,6 +92,15 @@
   },
   "total_by_tags": {
     "message": "タグ別集計"
+  },
+  "context_menu_add": {
+    "message": "下へ追加"
+  },
+  "context_menu_delete": {
+    "message": "削除"
+  },
+  "context_menu_delete_confirm": {
+    "message": "削除？"
   },
   "total_by_groups": {
     "message": "グループ別集計"

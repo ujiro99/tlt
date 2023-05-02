@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { atom, selector, useRecoilState } from 'recoil'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
@@ -119,7 +120,7 @@ interface ITaskManager {
   setRoot: (node: Node) => void
   getNodeByLine: (line: number) => Node
   setNodeByLine: (node: Node, line: number) => void
-  addEmptyNodeTop: () => void
+  addEmptyNodeByLine: (line: number) => void
   addEmptyChild: (line: number) => number
   removeLine: (line: number) => void
 }
@@ -163,13 +164,15 @@ export function useTaskManager(): ITaskManager {
     setRoot(newRoot)
   }
 
-  const addEmptyNodeTop = (): void => {
-    const newRoot = root.insertEmptyTaskTop()
+  const addEmptyNodeByLine = (line: number): void => {
+    const newRoot = root.insertEmptyTask(line)
     setRoot(newRoot)
-    Log.d(`add empty top`)
+    Log.d(`add empty ${line}`)
     trackings.forEach((n) => {
-      // Move down
-      moveTracking(n.line, n.line + 1)
+      if (line < n.line) {
+        // Move down
+        moveTracking(n.line, n.line + 1)
+      }
     })
   }
 
@@ -206,7 +209,9 @@ export function useTaskManager(): ITaskManager {
     })
   }
 
-  updateTagHistory()
+  useEffect(() => {
+    updateTagHistory()
+  }, [tagsInState, tags])
 
   return {
     lineCount: flatten.length,
@@ -232,7 +237,7 @@ export function useTaskManager(): ITaskManager {
     setRoot,
     getNodeByLine,
     setNodeByLine,
-    addEmptyNodeTop,
+    addEmptyNodeByLine,
     addEmptyChild,
     removeLine,
   }

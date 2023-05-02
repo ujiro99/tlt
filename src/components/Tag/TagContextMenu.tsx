@@ -6,6 +6,7 @@ import { useTagHistory } from '@/hooks/useTagHistory'
 import { Menu, Item, useContextMenu } from '@/lib/react-contexify'
 import { Icon } from '@/components/Icon'
 import { ColorPicker } from '@/components/ColorPicker'
+import { ItemConfirm } from '@/components/ContextMenu/ItemConfirm'
 import { eventStop } from '@/services/util'
 import { t } from '@/services/i18n'
 import { TagRecord } from '@/models/tag'
@@ -85,12 +86,15 @@ export const TagContextMenu = (props: TagContextMenuProps) => {
           </div>
         </Item>
         {props.enableDelete && (
-          <Item id="delete" onClick={handleItemClick} disabled={deleteDisabled}>
-            <div className="context-menu__delete">
-              <Icon className="context-menu__delete-icon" name="delete" />
-              <span>{t('tag_delete_from_history')}</span>
-            </div>
-          </Item>
+          <ItemConfirm
+            id="delete"
+            onClick={handleItemClick}
+            className="context-menu__delete"
+            label={t('tag_delete_from_history')}
+            labelConfirm={t('tag_delete_from_history_confirm')}
+            iconName="delete"
+            disabled={deleteDisabled}
+          />
         )}
       </Menu>
 

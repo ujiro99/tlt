@@ -91,9 +91,11 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
   const [bgColor, setBgColor] = useState(initialBg)
   const [labelColor, setLabelColor] = useState(calcLabelColor(initialBg))
 
-  const MENU_ID = MENU_ID_PREFIX + tag.name
+  const hash = Math.random().toString(36).slice(2)
+  const MENU_ID = MENU_ID_PREFIX + tag.name + hash
   const { show } = useContextMenu({ id: MENU_ID })
   const pickerRef = props.pickerRef ?? useRef<Element>(null)
+  
   
   function openContextMenu(event) {
     show({ event })

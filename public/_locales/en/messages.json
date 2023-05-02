@@ -50,6 +50,9 @@
   "tag_delete_from_history": {
     "message": "Remove from history"
   },
+  "tag_delete_from_history_confirm": {
+    "message": "Remove from history?"
+  },
   "tag_change_color": {
     "message": "Change color"
   },
@@ -92,6 +95,15 @@
   },
   "total_by_groups": {
     "message": "Total by groups"
+  },
+  "context_menu_add": {
+    "message": "Add below"
+  },
+  "context_menu_delete": {
+    "message": "Delete"
+  },
+  "context_menu_delete_confirm": {
+    "message": "Delete?"
   },
   "alarm_before_schedule": {
     "message": "$minutes$ minutes before the scheduled time",

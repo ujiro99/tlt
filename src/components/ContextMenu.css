@@ -1,18 +1,21 @@
+@import '../css/mixin.css';
+
 @define-mixin icon {
   width: 16px;
   height: 16px;
-  display: inline;
+  display: inline-block;
   margin-top: -2px;
 }
 
-
 .context-menu {
   $this: .context-menu;
-  font-size: 14px;
-  --icon-margin: 6px;
+
+  font-size: 12px;
+  --icon-margin: 4px;
 
   &__delete {
-    @apply text-rose-500;
+    @apply text-gray-700;
+    height: 20px;
 
     & > span {
       margin-left: var(--icon-margin);
@@ -20,6 +23,10 @@
 
     &-icon {
       @mixin icon;
+      @apply fill-gray-700;
+    }
+    
+    .context-menu__confirm-button-icon--ok {
       @apply fill-rose-500;
     }
 
@@ -36,17 +43,35 @@
       }
     }
   }
-  
+
   &__color {
     @apply text-gray-700;
+    height: 20px;
 
     & > span {
       margin-left: var(--icon-margin);
     }
-    
+
     &-icon {
       @mixin icon;
       @apply fill-gray-700;
     }
+  }
+
+  &__confirm-button {
+    @mixin interactable;
+    padding: 0 4px;
+    border-radius: var(--radius-md);
+    margin-left: 8px;
+
+    &-icon {
+      display: inline-block;
+      margin-top: -4px;
+      width: 16px;
+      height: 16px;
+    }
+  }
+  &__confirm-button + &__confirm-button {
+    margin-left: 2px;
   }
 }
