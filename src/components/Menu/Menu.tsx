@@ -5,6 +5,7 @@ import { useMode, MODE } from '@/hooks/useMode'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { Calendar } from '@/components/Menu/Calendar'
 import { ReportSummary } from '@/components/Menu/ReportSummary'
+import { TrackingStatus } from '@/components/TrackingStatus/TrackingStatus'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
 import { Sync } from '@/components/Menu/Sync'
@@ -64,8 +65,13 @@ export function Menu(): JSX.Element {
         </button>
       )}
       <div className="menu">
-        <Calendar fixed={isFixed} />
-        {!isReport && <ReportSummary fixed={isFixed} />}
+        <div className="menu__left">
+          <Calendar fixed={isFixed} />
+          {!isReport && <ReportSummary fixed={isFixed} />}
+        </div>
+        <div className="menu__right">
+          <TrackingStatus />
+        </div>
       </div>
     </>
   )

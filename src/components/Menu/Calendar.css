@@ -17,7 +17,7 @@
     font-family: var(--font-mono);
     font-weight: bold;
     font-size: 28px;
-    margin-top: 10px;
+    margin-top: 8px;
     color: var(--text-600);
     text-align: left;
     user-select: none;
@@ -26,6 +26,7 @@
     &--fixed {
       position: fixed;
       top: 7px;
+      left: 20px;
       font-size: 16px;
       font-weight: normal;
       margin-top: 0;

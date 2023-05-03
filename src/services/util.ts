@@ -176,3 +176,10 @@ export function ifNull(num: number | string, alt = ' - '): number | string {
   if (num) return num
   return alt
 }
+
+/**
+ * Return the number as a zero-padded string.
+ */
+export function pad(num: number, len: number): string {
+  return `${num}`.padStart(len, '0')
+}
