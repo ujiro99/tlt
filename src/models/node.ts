@@ -2,6 +2,7 @@ import { TreeItem } from '@/components/Tree/types'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import Log from '@/services/log'
+import { rand } from '@/services/util'
 import { flat } from './flattenedNode'
 import { IClonable } from '@/@types/global'
 import { DEFAULT, INDENT_SIZE } from '@/const'
@@ -81,7 +82,7 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     data: Task | Group | string,
     parent?: Node,
   ) {
-    this.id = `${Math.random()}`
+    this.id = rand()
     this.type = type
     this.line = line
     this.data = data

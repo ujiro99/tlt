@@ -1,6 +1,15 @@
+@import '../../css/mixin.css';
+
 .tracking-status {
-  text-align: right;
-  padding-bottom: 8px;
+  @mixin interactable;
+
+  border-radius: var(--radius-md);
+  margin-bottom: 4px;
+  padding: 0 10px 4px;
+  
+  > button {
+    text-align: right;
+  }
 
   &__type {
     color: var(--text-600);
@@ -38,7 +47,7 @@
     }
 
     &.mod-marquee > span {
-      animation: marquee 8s steps(40) infinite;
+      animation: marquee 9s steps(40) infinite;
       padding: 0 10px;
     }
 
@@ -55,6 +64,9 @@
 
   @keyframes marquee {
     0% {
+      transform: translateX(0);
+    }
+    15% {
       transform: translateX(0);
     }
     100% {

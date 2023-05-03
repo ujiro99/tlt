@@ -1,13 +1,12 @@
-import React, { useState, useEffect, useRef, LegacyRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTrackingState } from '@/hooks/useTrackingState'
-import { useAnalytics } from '@/hooks/useAnalytics'
 import { useMode, MODE } from '@/hooks/useMode'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
-import { pad } from '@/services/util'
+import { pad, scrollTo } from '@/services/util'
 import { t } from '@/services/i18n'
-import Log from '@/services/log'
 
 import './TrackingStatus.css'
 
@@ -89,10 +88,10 @@ function Elapsed(props: ElapsedProps): JSX.Element {
 }
 
 function Title({ title }): JSX.Element {
-  const [ needMarquee, setNeedMarquee ] = useState(false)
+  const [needMarquee, setNeedMarquee] = useState(false)
   const textRef = useRef<HTMLSpanElement>()
   const frameRef = useRef<HTMLParagraphElement>()
-  
+
   useEffect(() => {
     const textWidth = textRef.current?.getBoundingClientRect()?.width
     const frameWidth = frameRef.current?.getBoundingClientRect()?.width
@@ -100,21 +99,22 @@ function Title({ title }): JSX.Element {
     setNeedMarquee(nm)
   }, [title])
 
-  let className = "tracking-status__task-name"
+  let className = 'tracking-status__task-name'
   if (needMarquee) {
-    className += " mod-marquee"
+    className += ' mod-marquee'
   }
 
   return (
     <p className={className} ref={frameRef}>
       <span ref={textRef}>{title}</span>
-      {needMarquee && <span className='pseudo'>{title}</span>}
+      {needMarquee && <span className="pseudo">{title}</span>}
     </p>
   )
 }
 
 export function TrackingStatus(): JSX.Element {
   const manager = useTaskManager()
+  const analytics = useAnalytics()
   const [mode] = useMode()
   const { trackings } = useTrackingState()
 
@@ -138,17 +138,23 @@ export function TrackingStatus(): JSX.Element {
   const estimatedTime = task.estimatedTimes
   const elapsedTime = tracking.elapsedTime
 
+  const jumpToNode = () => {
+    const elm = document.querySelector(`#node-${node.id}`)
+    scrollTo(elm, 150)
+    analytics.track('click jump_to_node')
+  }
+
   return (
     <div className="tracking-status">
       {isTracking && (
-        <>
+        <button onClick={jumpToNode}>
           {hasEstimatedTime ? (
             <Remain estimatedTime={estimatedTime} elapsedTime={elapsedTime} />
           ) : (
             <Elapsed elapsedTime={elapsedTime} />
           )}
           <Title title={task.title} />
-        </>
+        </button>
       )}
     </div>
   )

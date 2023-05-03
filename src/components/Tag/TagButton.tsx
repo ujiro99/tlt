@@ -2,8 +2,7 @@ import React, { useState, useEffect, useRef, CSSProperties } from 'react'
 import classnames from 'classnames'
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
-import { tag2str } from '@/services/util'
-import { eventStop } from '@/services/util'
+import { tag2str, eventStop, rand } from '@/services/util'
 import { useContextMenu } from '@/lib/react-contexify'
 import { TagContextMenu } from '@/components/Tag/TagContextMenu'
 
@@ -91,11 +90,9 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
   const [bgColor, setBgColor] = useState(initialBg)
   const [labelColor, setLabelColor] = useState(calcLabelColor(initialBg))
 
-  const hash = Math.random().toString(36).slice(2)
-  const MENU_ID = MENU_ID_PREFIX + tag.name + hash
+  const MENU_ID = MENU_ID_PREFIX + tag.name + rand()
   const { show } = useContextMenu({ id: MENU_ID })
   const pickerRef = props.pickerRef ?? useRef<Element>(null)
-  
   
   function openContextMenu(event) {
     show({ event })

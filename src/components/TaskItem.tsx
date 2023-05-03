@@ -94,7 +94,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
     newTask.tags = tags
     manager.setNodeByLine(newNode, line)
   }
-  
+
   // Calculate the margin above the element
   const oneLineAbove = manager.getNodeByLine(line - 1)
   const calcTopMargin = () => {
@@ -120,6 +120,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
   return (
     <div
+      id={'node-' + node.id}
       className={taskItemClass}
       style={style}
       data-line={line}
