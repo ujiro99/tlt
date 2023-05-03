@@ -1,0 +1,76 @@
+@import '../../css/mixin.css';
+
+.tracking-status {
+  @mixin interactable;
+
+  border-radius: var(--radius-md);
+  margin-bottom: 4px;
+  padding: 0 10px 4px;
+  
+  > button {
+    text-align: right;
+  }
+
+  &__type {
+    color: var(--text-600);
+    font-size: 12px;
+    font-weight: normal;
+  }
+
+  &__time {
+    margin-top: 1px;
+    color: var(--text-600);
+    font-family: var(--font-mono);
+    font-size: 23px;
+    font-weight: bold;
+  }
+
+  &__time-negative {
+    margin-right: 2px;
+  }
+
+  &__task-name {
+    margin-top: 2px;
+    color: var(--text-500);
+    font-size: 12px;
+    font-weight: normal;
+    overflow: hidden;
+    width: 120px;
+
+    &.mod-marquee {
+      display: flex;
+    }
+
+    > span {
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    &.mod-marquee > span {
+      animation: marquee 9s steps(40) infinite;
+      padding: 0 10px;
+    }
+
+    .pseudo {
+      position: relative;
+
+      &:before {
+        content: '|';
+        position: absolute;
+        left: 0;
+      }
+    }
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    15% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
+  }
+}

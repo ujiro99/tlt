@@ -1,6 +1,7 @@
 import Log from '@/services/log'
 
 const TIME_TYPE = {
+  NEGATIVE_SIGN: 'NEGATIVE_SIGN',
   MINUTE: 'MINUTE',
   HOUR: 'HOUR',
   DAY: 'DAY',
@@ -25,6 +26,11 @@ const DAY = 24
 export class Time {
   static parseMs(ms: number): Time {
     const time = new Time()
+    if (ms < 0) {
+      time._isNegative = true
+      ms = Math.abs(ms)
+    }
+    
     time._days = Math.floor(ms / DAY_MS)
     ms = ms % DAY_MS
     time._hours = Math.floor(ms / HOUR_MS)
@@ -37,6 +43,11 @@ export class Time {
 
   static parseSecond(seconds: number): Time {
     const time = new Time()
+    if (seconds < 0) {
+      time._isNegative = true
+      seconds = Math.abs(seconds)
+    }
+    
     time._days = Math.floor(seconds / DAY_S)
     seconds = seconds % DAY_S
     time._hours = Math.floor(seconds / HOUR_S)
@@ -49,6 +60,10 @@ export class Time {
 
   static parseHour(hours: number): Time {
     const time = new Time()
+    if (hours < 0) {
+      time._isNegative = true
+      hours = Math.abs(hours)
+    }
     time._days = Math.floor(hours / 24)
     hours = hours % 24
     time._hours = Math.floor(hours)
@@ -59,6 +74,7 @@ export class Time {
 
   static parseStr(timeStr: string): Time {
     const timeRegexps = [
+      { type: TIME_TYPE.NEGATIVE_SIGN, regexp: /^(-)/ },
       { type: TIME_TYPE.MINUTE, regexp: /(\d+)m/ },
       { type: TIME_TYPE.HOUR, regexp: /(\d+(?:\.\d+)?)h/ },
       { type: TIME_TYPE.DAY, regexp: /(\d+(?:\.\d+)?)d/ },
@@ -69,8 +85,13 @@ export class Time {
       if (tr.regexp.test(timeStr)) {
         const result = tr.regexp.exec(timeStr)
         const value = result[1]
-        if (!value) continue
+
+        if (!value) continue // check match
+
         switch (tr.type) {
+          case TIME_TYPE.NEGATIVE_SIGN:
+            time._isNegative = true
+            break
           case TIME_TYPE.MINUTE:
             time._minutes += Number(value)
             break
@@ -113,16 +134,18 @@ export class Time {
     return d * DAY_S + h * HOUR_S + m * MINUTE_S + s
   }
 
+  private _isNegative = false
   private _seconds = 0
   private _minutes = 0
   private _hours = 0
   private _days = 0
 
-  public constructor(seconds = 0, minutes = 0, hours = 0, days = 0) {
+  public constructor(seconds = 0, minutes = 0, hours = 0, days = 0, isNegative = false) {
     this._seconds = seconds
     this._minutes = minutes
     this._hours = hours
     this._days = days
+    this._isNegative = isNegative
     this.calculateCarryUp()
   }
 
@@ -143,6 +166,9 @@ export class Time {
 
   public toString(): string {
     let str = ''
+    if (this._isNegative) {
+      str += `-`
+    }
     if (this._days > 0) {
       str += `${this._days}d`
     }
@@ -174,6 +200,10 @@ export class Time {
 
   public isEmpty(): boolean {
     return this._days === 0 && this._hours === 0 && this._minutes === 0
+  }
+
+  public isNegative(): boolean {
+    return this._isNegative
   }
 
   public get seconds(): number {

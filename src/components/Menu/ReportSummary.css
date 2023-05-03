@@ -6,14 +6,15 @@
   letter-spacing: 0.05em;
   user-select: none;
   cursor: pointer;
+  height: 30px;
 
   &__container {
     display: flex;
     align-items: flex-end;
     left: 0;
-    top: 0;
+    top: 5px;
     transition: all ease-out 0.2s;
-    padding: 5px 6px;
+    padding: 4px 6px;
     border-radius: var(--radius-md);
 
     &:hover {
@@ -38,7 +39,7 @@
   &--fixed &__container {
     position: fixed;
     top: 5px;
-    left: 116px;
+    left: 136px;
   }
 
   &__icon + &__label {
@@ -51,12 +52,19 @@
     overflow: hidden;
   }
 
+  &__label-symbol {
+    margin: 0 4px;
+  }
+
   &__circle {
-    width: 20px;
-    height: 20px;
-    margin-left: 10px;
     position: relative;
-    top: -1px;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+  }
+
+  &--fixed &__circle {
+    margin-right: 4px;
   }
 }
 

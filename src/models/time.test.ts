@@ -63,18 +63,62 @@ describe('parse seconds to time', () => {
   })
 
   test('60 * 60 * 2.5 [s] -> "2h30m"', () => {
-    const time = Time.parseSecond(MINUTE_S * 60 * 2.5)
+    const time = Time.parseSecond(HOUR_S * 2.5)
     expect(time.toString()).toBe('2h30m')
   })
 
   test('60 * 60 * 24 [s] -> "1d"', () => {
-    const time = Time.parseSecond(MINUTE_S * 60 * 24)
+    const time = Time.parseSecond(HOUR_S * 24)
     expect(time.toString()).toBe('1d')
   })
 
   test('60 * 60 * 24 * 2.5 [s] -> "2d12h"', () => {
-    const time = Time.parseSecond(MINUTE_S * 60 * 24 * 2.5)
+    const time = Time.parseSecond(HOUR_S * 24 * 2.5)
     expect(time.toString()).toBe('2d12h')
+  })
+})
+
+describe('parse negative value', () => {
+  test('-30 * 60 - 20 [s] -> "-30m20s"', () => {
+    const time = Time.parseSecond(-30 * MINUTE_S - 20)
+    expect(time.hours).toBe(0)
+    expect(time.minutes).toBe(30)
+    expect(time.seconds).toBe(20)
+    expect(time.toString()).toBe('-30m')
+  })
+
+  test('-30 * 60 - 20 [s] -> "-30m20s"', () => {
+    const time = Time.parseMs((-30 * MINUTE_S - 20) * 1000)
+    expect(time.hours).toBe(0)
+    expect(time.minutes).toBe(30)
+    expect(time.seconds).toBe(20)
+    expect(time.toString()).toBe('-30m')
+  })
+
+  test('-2.5 [h] -> "-2h30m"', () => {
+    const time = Time.parseHour(-2.5)
+    expect(time.hours).toBe(2)
+    expect(time.minutes).toBe(30)
+    expect(time.seconds).toBe(0)
+    expect(time.toString()).toBe('-2h30m')
+  })
+
+  test('"-1m" -> 1 minutes, negative', () => {
+    const time = Time.parseStr('-1m')
+    expect(time.seconds).toBe(0)
+    expect(time.minutes).toBe(1)
+    expect(time.hours).toBe(0)
+    expect(time.days).toBe(0)
+    expect(time.isNegative()).toBe(true)
+  })
+
+  test('"-2h35m" -> 2 hours 35 minutes, negative', () => {
+    const time = Time.parseStr('-2h35m')
+    expect(time.seconds).toBe(0)
+    expect(time.minutes).toBe(35)
+    expect(time.hours).toBe(2)
+    expect(time.days).toBe(0)
+    expect(time.isNegative()).toBe(true)
   })
 })
 
@@ -210,6 +254,27 @@ describe.each(divideTable)(
       const timeB = Time.parseStr(btime)
       const res = time.divide(timeB)
       expect(res).toBe(rate)
+    })
+  },
+)
+
+const subsTable = [
+  ['1m', '1m', 0],
+  ['2m', '1m', 60],
+  ['1h', '30m', 30 * 60],
+  ['2d', '2d', 0],
+  ['2d', '1d', 24 * 60 * 60],
+  ['1h', '90m', - 30 * 60],
+]
+
+describe.each(subsTable)(
+  `subs`,
+  (atime: string, btime: string, sub: number) => {
+    test(`${atime} / ${btime} -> ${sub}`, () => {
+      const time = Time.parseStr(atime)
+      const timeB = Time.parseStr(btime)
+      const res = Time.subs(time, timeB)
+      expect(res).toBe(sub)
     })
   },
 )

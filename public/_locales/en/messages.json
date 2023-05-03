@@ -1,9 +1,9 @@
 {
-  "extName": { "message": "TLT : ToDo List & Time Tracking"},
+  "extName": { "message": "TLT : ToDo List & Time Tracking" },
   "extDescription": {
     "message": "ToDo and budget control with a minimal UI."
   },
-  "new_todo":  {
+  "new_todo": {
     "message": "+ new ToDo."
   },
   "start_only_today": {
@@ -44,6 +44,18 @@
     "message": "estimate",
     "description": "Estimation in budget control."
   },
+  "remaining": {
+    "message": "Remaining",
+    "description": "Remaining time"
+  },
+  "over": {
+    "message": "Over",
+    "description": "Overtime time"
+  },
+  "elapsed": {
+    "message": "Elapsed",
+    "description": "Elapsed time"
+  },
   "tag": {
     "message": "tag"
   },
@@ -79,7 +91,7 @@
     "message": "No tags yet."
   },
   "no_groups": {
-      "message": "No groups yet."
+    "message": "No groups yet."
   },
   "saving": {
     "message": "Saving..."

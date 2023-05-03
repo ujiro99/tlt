@@ -1,10 +1,7 @@
 import React from 'react'
 import { format, parseISO } from 'date-fns'
 import { Node, NODE_TYPE } from '@/models/node'
-import type {
-  TreeItems,
-  FlattenedItem,
-} from '@/components/Tree/types'
+import type { TreeItems, FlattenedItem } from '@/components/Tree/types'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 import { Tag } from '@/models/tag'
@@ -52,7 +49,7 @@ export function treeItemsToNode(items: TreeItems): Node {
         node.parent = parent
         if (obj.children.length > 0) {
           node.children = treeItemsToNode(obj.children).children
-          node.children.forEach(c => c.parent = node)
+          node.children.forEach((c) => (c.parent = node))
         }
       }
     }
@@ -175,4 +172,35 @@ export function tag2str(tag: Tag): string {
 export function ifNull(num: number | string, alt = ' - '): number | string {
   if (num) return num
   return alt
+}
+
+/**
+ * Return the number as a zero-padded string.
+ */
+export function pad(num: number, len: number): string {
+  return `${num}`.padStart(len, '0')
+}
+
+/**
+ * Generate a random string.
+ * @returns random string
+ */
+export function rand(): string {
+  return Math.random().toString(36).slice(2)
+}
+
+/**
+ * Scroll to the element. 
+ * @param elm Scroll target element.
+ * @param offset Offset from the top of the element. [px]
+ * @see https://stackoverflow.com/questions/49820013/javascript-scrollintoview-smooth-scroll-and-offset
+ */
+export function scrollTo(elm: Element, offset = 0): void {
+  const elementPosition = elm.getBoundingClientRect().top
+  const offsetPosition = elementPosition + window.pageYOffset - offset
+  
+  document.getElementById("popup").scrollTo({
+    top: offsetPosition,
+    behavior: 'smooth',
+  })
 }

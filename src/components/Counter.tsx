@@ -1,18 +1,12 @@
 import React, { useState, useEffect } from 'react'
 
 import { Time } from '@/models/time'
+import { pad } from '@/services/util'
 
 import '@/components/Counter.css'
 
 type CounterProps = {
   startTime: Time
-}
-
-/**
- * Return the number as a zero-padded string.
- */
-function pad(num: number, len: number): string {
-  return `${num}`.padStart(len, '0')
 }
 
 export function Counter(props: CounterProps): JSX.Element {

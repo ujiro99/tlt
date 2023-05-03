@@ -8,7 +8,7 @@ body {
 #popup {
   width: 450px;
   height: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
   position: relative;
   z-index: 0;
 
