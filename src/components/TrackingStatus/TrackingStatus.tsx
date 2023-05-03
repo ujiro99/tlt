@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, LegacyRef } from 'react'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTrackingState } from '@/hooks/useTrackingState'
 import { useAnalytics } from '@/hooks/useAnalytics'
+import { useMode, MODE } from '@/hooks/useMode'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 import { pad } from '@/services/util'
@@ -114,17 +115,24 @@ function Title({ title }): JSX.Element {
 
 export function TrackingStatus(): JSX.Element {
   const manager = useTaskManager()
-  const analytics = useAnalytics()
+  const [mode] = useMode()
   const { trackings } = useTrackingState()
 
-  const isTracking = trackings.length > 0
+  if (mode !== MODE.SHOW) {
+    return null
+  }
 
+  const isTracking = trackings.length > 0
   if (!isTracking) {
     return <div className="tracking-status" />
   }
 
   const tracking = trackings[0]
-  const node = manager.getNodeByLine(tracking.line)
+  const node = manager.getRoot().find((n) => n.id === tracking.nodeId)
+  if (node == null) {
+    return <div className="tracking-status" />
+  }
+
   const task = node.data as Task
   const hasEstimatedTime = !task.estimatedTimes.isEmpty()
   const estimatedTime = task.estimatedTimes

@@ -8,6 +8,7 @@
   overflow: hidden;
 
   &__left {
+    position: relative;
     z-index: 11;
   }
 
@@ -63,5 +64,7 @@
 
   &__back + & {
     margin-left: -2px;
+    display: inline-block;
+    margin-left: -20px;
   }
 }

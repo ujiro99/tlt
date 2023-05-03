@@ -96,20 +96,19 @@ export function ReportSummary(props: ReportSummaryProps): JSX.Element {
       })}
     >
       <div className="report-summary__container" onClick={onClick}>
-        <Icon className="report-summary__icon" name="assessment" />
-        <span className="report-summary__label">{i18n.t('actual')}</span>
-        <span className="pl-5">{ifNull(all.actual.toHours().toFixed(1))}h</span>
-        <span className="pl-5">/</span>
-        <span className="pl-5 report-summary__label">{i18n.t('estimate')}</span>
-        <span className="pl-5">
-          {ifNull(all.estimate.toHours().toFixed(1))}h
-        </span>
-        <span className="pl-5">:</span>
-        <span className="pl-5">{ifNull(all.percentage)}</span>
-        <span className="pl-2">%</span>
         <div className="report-summary__circle">
           <PieChart percentage={all.percentage} />
         </div>
+        <span className="report-summary__label">{i18n.t('actual')}</span>
+        <span className="pl-5">{ifNull(all.actual.toHours().toFixed(1))}h</span>
+        <span className="report-summary__label-symbol">/</span>
+        <span className="report-summary__label">{i18n.t('estimate')}</span>
+        <span className="pl-5">
+          {ifNull(all.estimate.toHours().toFixed(1))}h
+        </span>
+        <span className="report-summary__label-symbol">:</span>
+        <span >{ifNull(all.percentage)}</span>
+        <span className="pl-2">%</span>
       </div>
     </div>
   )

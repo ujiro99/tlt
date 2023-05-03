@@ -39,7 +39,7 @@
   &--fixed &__container {
     position: fixed;
     top: 5px;
-    left: 116px;
+    left: 136px;
   }
 
   &__icon + &__label {
@@ -52,12 +52,19 @@
     overflow: hidden;
   }
 
+  &__label-symbol {
+    margin: 0 4px;
+  }
+
   &__circle {
-    width: 20px;
-    height: 20px;
-    margin-left: 10px;
     position: relative;
-    top: -1px;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+  }
+
+  &--fixed &__circle {
+    margin-right: 4px;
   }
 }
 
