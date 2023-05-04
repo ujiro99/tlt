@@ -101,18 +101,18 @@ export function SyncModal(): JSX.Element {
       onAfterOpen={afterOpenModal}
       onRequestClose={onRequestClose}
       contentLabel="Sync Modal"
-      className="sync-modal"
+      className="modal-window"
     >
-      <div className="sync-modal-header">
+      <div className="modal-window-header">
         <h2>Sync with Google Calendar</h2>
         <button
-          className="sync-modal-header__close icon-button"
+          className="modal-window-header__close icon-button"
           onClick={onRequestClose}
         >
           <Icon className="icon-button__icon" name="close" />
         </button>
       </div>
-      <div className="sync-modal-content">
+      <div className="modal-window-content">
         <div className="google-calendar">
           <section className="google-calendar__login">
             <Account />

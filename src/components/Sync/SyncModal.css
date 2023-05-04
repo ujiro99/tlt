@@ -1,6 +1,6 @@
 @import '../../css/mixin.css';
 
-.sync-modal {
+.modal-window {
   @apply drop-shadow-xl;
   @apply rounded-md;
   @apply bg-white;
