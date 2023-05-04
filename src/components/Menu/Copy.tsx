@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
+import classnames from 'classnames'
 
 import { useMode, MODE } from '@/hooks/useMode'
 import { useHover } from '@/hooks/useHover'
@@ -23,10 +24,12 @@ export function Copy(): JSX.Element {
   const [labelVisible, setLabelVisible] = useState(false)
   const [timeoutId, setTimeoutId] = useState(0)
 
+  const isVisible = mode === MODE.EDIT || mode === MODE.REPORT
+
   const copy = async () => {
     analytics.track('click copy')
     let txt: string
-    if (mode === MODE.SHOW) {
+    if (mode === MODE.EDIT) {
       txt = manager.getText()
     } else if (mode === MODE.REPORT) {
       txt = report
@@ -53,7 +56,9 @@ export function Copy(): JSX.Element {
 
   return (
     <button
-      className="icon-button group"
+      className={classnames('icon-button', {
+        hidden: !isVisible,
+      })}
       onClick={copy}
       ref={hoverRef as React.RefObject<HTMLButtonElement>}
     >

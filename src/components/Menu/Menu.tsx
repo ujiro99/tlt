@@ -52,8 +52,8 @@ export function Menu(): JSX.Element {
         <div className="menu__button">
           <Sync />
           <Alarm />
-          <Edit />
           <Copy />
+          <Edit />
         </div>
       </header>
       {isReport && (

@@ -28,7 +28,7 @@ body {
 
 .task-textarea {
   position: relative;
-  padding: 20px 14px 30px 12px;
+  padding: 20px 12px 30px 12px;
 
   textarea {
     @apply w-full;
