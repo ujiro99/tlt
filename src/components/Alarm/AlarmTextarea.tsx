@@ -7,6 +7,8 @@ import { Icon } from '@/components/Icon'
 import { AlarmRule } from '@/models/alarmRule'
 import Log from '@/services/log'
 
+import './AlarmTextarea.css'
+
 export function AlarmTaskTextarea(): JSX.Element {
   const [text, setText] = useState('')
   const [alarms, setAlarms] = useStorage<AlarmRule[]>(STORAGE_KEY.ALARMS)
@@ -39,17 +41,11 @@ export function AlarmTaskTextarea(): JSX.Element {
   }
 
   return (
-    <>
-      <h3 className="task-textarea__section-title">
-        <Icon name="alart" />
-        Alarms
-      </h3>
-      <TextareaAutosize
-        className=""
-        onChange={onChange}
-        onBlur={onBlur}
-        value={text}
-      ></TextareaAutosize>
-    </>
+    <TextareaAutosize
+      className="alarm-textarea"
+      onChange={onChange}
+      onBlur={onBlur}
+      value={text}
+    ></TextareaAutosize>
   )
 }

@@ -1,0 +1,42 @@
+.alarm-list {
+  @apply text-gray-600;
+  @apply bg-gray-100;
+  @apply rounded-md;
+
+  margin-top: 6px;
+  max-height: 8rem;
+  overflow-y: auto;
+  padding: 2px 6px 6px 10px;
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0 6px;
+  }
+
+  &__item + &__item {
+    border-top: solid var(--bg-gray-400) 1px;
+  }
+
+  &__time {
+    @apply text-xs;
+    @apply font-mono;
+  }
+
+  &__content {
+    flex: 1;
+    margin-left: 0.6em;
+    line-height: 1;
+    overflow: hidden;
+  }
+
+  &__name, &__message {
+    font-size: 0.75rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    display: inline-block;
+  }
+}

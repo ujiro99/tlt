@@ -1,42 +1,5 @@
 @import '../../css/mixin.css';
 
-.modal-window {
-  @apply drop-shadow-xl;
-  @apply rounded-md;
-  @apply bg-white;
-  @apply p-8;
-  @apply text-base;
-
-  color: var(--text-600);
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  right: auto;
-  bottom: auto;
-  margin-right: -50%;
-  transform: translate(-50%, -30%);
-
-  &-header {
-    padding: 10px 0 20px;
-  }
-
-  &-header > h2 {
-    @apply text-lg;
-    font-weight: bold;
-  }
-
-  &-header__close {
-    position: absolute;
-    top: 4px;
-    right: 4px;
-
-    .icon-button__icon {
-      width: 22px;
-      height: 22px;
-    }
-  }
-}
-
 .google-calendar {
   &__import,
   &__upload {

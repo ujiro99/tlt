@@ -10,9 +10,9 @@ import * as i18n from '@/services/i18n'
 
 import './IconButton.css'
 
-export function Sync(): JSX.Element {
+export function Alarm(): JSX.Element {
   const [mode] = useMode()
-  const [_, setVisible] = useModal(MODAL.SYNC)
+  const [_, setVisible] = useModal(MODAL.ALARM)
   const [hoverRef, isHovered] = useHover(200)
   const isVisible = mode === MODE.SHOW
 
@@ -22,20 +22,20 @@ export function Sync(): JSX.Element {
 
   return (
     <button
-      className={classnames('icon-button group mod--sync', {
+      className={classnames('icon-button group mod--alarm', {
         hidden: !isVisible,
       })}
       onClick={showModal}
       ref={hoverRef as React.RefObject<HTMLButtonElement>}
     >
-      <Icon className="icon-button__icon" name="cloud" />
+      <Icon className="icon-button__icon" name="alart" />
       <Tooltip
         show={isHovered}
         location={'bottom'}
         style={{ whiteSpace: 'nowrap', top: '14px' }}
         refElm={hoverRef.current}
       >
-        <span>{i18n.t('label_google_calendar')}</span>
+        <span>{i18n.t('label_alarm')}</span>
       </Tooltip>
     </button>
   )

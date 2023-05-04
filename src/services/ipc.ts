@@ -11,8 +11,8 @@ type SendParam = {
 type IpcCallback = (param: unknown) => boolean
 
 export const Ipc = {
-  send(param: SendParam) {
-    chrome.runtime.sendMessage(param)
+  async send(param: SendParam) {
+    return await chrome.runtime.sendMessage(param)
   },
 
   addListener(command: string, callback: IpcCallback) {

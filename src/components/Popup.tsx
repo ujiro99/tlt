@@ -10,6 +10,7 @@ import { EmptyLine } from '@/components/EmptyLine'
 import { SortableTree } from '@/components/Tree/SortableTree'
 import { Report } from '@/components/Report'
 import { SyncModal } from '@/components/Sync/SyncModal'
+import { AlarmModal } from '@/components/Alarm/AlarmModal'
 import { useTaskStorage } from '@/hooks/useTaskStorage'
 
 import '@/css/common.css'
@@ -66,6 +67,7 @@ function ToDo() {
       <SortableTree indicator />
       <EmptyLine />
       <SyncModal />
+      <AlarmModal />
     </div>
   )
 }

@@ -36,6 +36,9 @@
   "label_google_calendar": {
     "message": "Googleカレンダー同期"
   },
+  "label_alarm": {
+    "message": "アラーム"
+  },
   "actual": {
     "message": "実績",
     "description": "Actual results in budget control."

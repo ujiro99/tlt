@@ -1,10 +1,7 @@
 import Log from '@/services/log'
 import { Icon } from '@/services/icon'
 import { Storage, STORAGE_KEY } from '@/services/storage'
-
-/** Alarm name */
-const ALARM_ICON_TIMER = 'ICON_TIMER'
-const ALARM_NOTIFICATION = 'NOTIFICATION'
+import { ALARM_TYPE } from '@/hooks/useAlarms'
 
 /** Hour in minutes */
 const HOUR = 60
@@ -68,7 +65,7 @@ const onMessageFuncs: OnMessageFuncs = {
     void updateIconTime()
 
     // start timer
-    chrome.alarms.create(ALARM_ICON_TIMER, { periodInMinutes: 1 })
+    chrome.alarms.create(ALARM_TYPE.ICON, { periodInMinutes: 1 })
     return true
   },
 
@@ -76,31 +73,35 @@ const onMessageFuncs: OnMessageFuncs = {
    * Stop tracking, and clear badge text.
    */
   stopTracking() {
-    void chrome.alarms.clear(ALARM_ICON_TIMER)
+    void chrome.alarms.clear(ALARM_TYPE.ICON)
     Icon.clearText()
     return true
   },
 
-  setAlarm(param: AlarmParam) {
+  setAlarm(param: AlarmParam, sendResponse: () => void) {
     const obj = {
-      name: ALARM_NOTIFICATION,
+      name: ALARM_TYPE.NOTIFICATION,
       param,
     }
     chrome.alarms.create(JSON.stringify(obj), {
       delayInMinutes: param.minutes,
     })
+    sendResponse()
     return true
   },
 
-  stopAllAlarm() {
+  stopAllAlarm(_, sendResponse: () => void) {
     chrome.notifications.getAll((notifications) => {
       Object.keys(notifications).forEach((notificationId) => {
         chrome.notifications.clear(notificationId)
       })
     })
     chrome.alarms.getAll((alarms) => {
-      Object.values(alarms).forEach((alarm) => {
-        chrome.alarms.clear(alarm.name)
+      const promises = Object.values(alarms).map((alarm) => {
+        return chrome.alarms.clear(alarm.name)
+      })
+      Promise.all(promises).then(() => {
+        sendResponse()
       })
     })
     return true
@@ -115,7 +116,7 @@ async function updateIconTime() {
   const trackingStartTime = (await Storage.get(
     STORAGE_KEY.TRACKING_START_MS,
   )) as number
-  
+
   // Extension icon shows the time from when tracking was started.
   const startMinutes = 0
   // TODO: Make the total elapsed time display optionally selectable
@@ -134,16 +135,16 @@ async function updateIconTime() {
 }
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === ALARM_ICON_TIMER) {
+  if (alarm.name === ALARM_TYPE.ICON) {
     void updateIconTime()
   } else {
     const obj = JSON.parse(alarm.name)
-    if (obj.name === ALARM_NOTIFICATION) {
-      Log.d(ALARM_NOTIFICATION + ' ' + obj.param.title)
+    if (obj.name === ALARM_TYPE.NOTIFICATION) {
+      Log.d(ALARM_TYPE.NOTIFICATION + ' ' + obj.param.title)
       chrome.notifications.create({
         type: 'basic',
-        title: obj.param.title,
-        message: obj.param.message,
+        title: obj.param.message,
+        message: obj.param.title,
         iconUrl: '/icon128.png',
       })
     }

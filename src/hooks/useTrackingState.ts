@@ -4,8 +4,8 @@ import { atom, selector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { nodeState, useTaskManager } from '@/hooks/useTaskManager'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
-import { useCalendarEvent } from './useCalendarEvent'
-import { useStorage } from './useStorage'
+import { useCalendarEvent } from '@/hooks/useCalendarEvent'
+import { useAlarms } from '@/hooks/useAlarms'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
 import Log from '@/services/log'
@@ -13,8 +13,6 @@ import { TrackingState, TimeObject } from '@/@types/global'
 import { Node } from '@/models/node'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
-import { AlarmRule, ALARM_ANCHOR, ALARM_TIMING } from '@/models/alarmRule'
-import { t } from '@/services/i18n'
 
 const TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
 
@@ -95,9 +93,9 @@ interface useTrackingStateReturn {
 export function useTrackingState(): useTrackingStateReturn {
   const manager = useTaskManager()
   const { appendEvents } = useCalendarEvent()
+  const { setAlarms, stopAllAlarms } = useAlarms()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
   const trackingKey = useRecoilValue(taskRecordKeyState)
-  const [alarms] = useStorage<AlarmRule[]>(STORAGE_KEY.ALARMS)
 
   const startTracking = useCallback(
     (node: Node) => {
@@ -117,6 +115,9 @@ export function useTrackingState(): useTrackingStateReturn {
       // Clone the objects for updating.
       manager.setNodeByLine(newNode, node.line)
 
+      // Stop previous alarms.
+      stopAllAlarms()
+
       const newVal = [...trackings, tracking]
       setTrackings(newVal)
       Ipc.send({
@@ -126,50 +127,6 @@ export function useTrackingState(): useTrackingStateReturn {
       setAlarms(newTask)
     },
     [trackings],
-  )
-
-  const setAlarms = useCallback(
-    (task: Task) => {
-      alarms.forEach((alarm) => {
-        let minutes = 0
-        let message: string
-        if (alarm.anchor === ALARM_ANCHOR.START) {
-          if (alarm.timing === ALARM_TIMING.AFTER) {
-            minutes = alarm.minutes
-            message = t('alarm_after_start', [`${minutes}`])
-          }
-        } else if (alarm.anchor === ALARM_ANCHOR.SCEHEDULED) {
-          if (task.estimatedTimes.toMinutes() === 0) {
-            Log.d('alarm not set because scheduled time is 0.')
-            return
-          }
-          if (alarm.timing === ALARM_TIMING.BEFORE) {
-            minutes =
-              task.estimatedTimes.toMinutes() -
-              task.actualTimes.toMinutes() -
-              alarm.minutes
-            message = t('alarm_before_schedule', [`${minutes}`])
-          } else {
-            minutes =
-              task.estimatedTimes.toMinutes() -
-              task.actualTimes.toMinutes() +
-              alarm.minutes
-            message = t('alarm_after_schedule', [`${minutes}`])
-          }
-        }
-        if (minutes <= 0) return
-
-        Ipc.send({
-          command: 'setAlarm',
-          param: {
-            title: message,
-            message: task.title,
-            minutes: minutes,
-          },
-        })
-      })
-    },
-    [alarms],
   )
 
   const stopTracking = useCallback(
@@ -207,7 +164,7 @@ export function useTrackingState(): useTrackingStateReturn {
       })
       setTrackings(newVal)
       Ipc.send({ command: 'stopTracking' })
-      Ipc.send({ command: 'stopAllAlarm' })
+      stopAllAlarms()
     },
     [trackings],
   )
@@ -268,12 +225,13 @@ export function useTrackingStop(): useTrackingStopReturn {
   const manager = useTaskManager()
   const { appendEvents } = useCalendarEvent()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
+  const { stopAllAlarms } = useAlarms()
 
   const stopAllTracking = useCallback(() => {
     Log.d('stopAllTracking')
     stopTrackings()
     Ipc.send({ command: 'stopTracking' })
-    Ipc.send({ command: 'stopAllAlarm' })
+    stopAllAlarms()
   }, [trackings])
 
   const stopOtherTracking = useCallback(

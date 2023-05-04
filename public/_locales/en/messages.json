@@ -36,6 +36,10 @@
   "label_google_calendar": {
     "message": "Sync Google Calendar"
   },
+  "label_alarm": {
+    "message": "Alarms",
+    "description": "Display a modal to manage alarms."
+  },
   "actual": {
     "message": "actual",
     "description": "Actual results in budget control."

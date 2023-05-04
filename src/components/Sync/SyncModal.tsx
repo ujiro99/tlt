@@ -3,7 +3,7 @@ import Modal from 'react-modal'
 
 import { useOauthState } from '@/hooks/useOauthState'
 import { useTaskManager } from '@/hooks/useTaskManager'
-import { useSyncModal } from '@/hooks/useSyncModal'
+import { useModal, MODAL } from '@/hooks/useModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useCalendarEvent } from '@/hooks/useCalendarEvent'
 import { Icon } from '@/components/Icon'
@@ -25,6 +25,7 @@ import { SyncButton } from './SyncButton'
 import { UplaodEventList } from './UploadEventList'
 import { CalendarColorPicker } from './CalendarColorPicker'
 
+import '../ModalWindow.css'
 import './SyncModal.css'
 
 // Make sure to bind modal to your appElement (https://reactcommunity.org/react-modal/accessibility/)
@@ -34,7 +35,7 @@ export function SyncModal(): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const isLoggedIn = useOauthState()
-  const [visible, setVisible] = useSyncModal()
+  const [visible, setVisible] = useModal(MODAL.SYNC)
   const { events: savedEvents, uploadEvents } = useCalendarEvent()
   const [calendarDown, setCalendarDown] = useState<Calendar>()
   const [calendarUp, setCalendarUp] = useState<Calendar>()
