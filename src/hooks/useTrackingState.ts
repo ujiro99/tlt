@@ -13,7 +13,7 @@ import { TrackingState, TimeObject } from '@/@types/global'
 import { Node } from '@/models/node'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
-import { Alarm, ALARM_ANCHOR, ALARM_TIMING } from '@/models/alarm'
+import { AlarmRule, ALARM_ANCHOR, ALARM_TIMING } from '@/models/alarmRule'
 import { t } from '@/services/i18n'
 
 const TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
@@ -97,7 +97,7 @@ export function useTrackingState(): useTrackingStateReturn {
   const { appendEvents } = useCalendarEvent()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
   const trackingKey = useRecoilValue(taskRecordKeyState)
-  const [alarms] = useStorage<Alarm[]>(STORAGE_KEY.ALARMS)
+  const [alarms] = useStorage<AlarmRule[]>(STORAGE_KEY.ALARMS)
 
   const startTracking = useCallback(
     (node: Node) => {

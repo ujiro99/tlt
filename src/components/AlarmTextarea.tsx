@@ -4,17 +4,17 @@ import TextareaAutosize from 'react-textarea-autosize'
 import { useStorage } from '@/hooks/useStorage'
 import { STORAGE_KEY } from '@/services/storage'
 import { Icon } from '@/components/Icon'
-import { Alarm } from '@/models/alarm'
+import { AlarmRule } from '@/models/alarmRule'
 import Log from '@/services/log'
 
 export function AlarmTaskTextarea(): JSX.Element {
   const [text, setText] = useState('')
-  const [alarms, setAlarms] = useStorage<Alarm[]>(STORAGE_KEY.ALARMS)
+  const [alarms, setAlarms] = useStorage<AlarmRule[]>(STORAGE_KEY.ALARMS)
 
   useEffect(() => {
     if (alarms.length === 0) return
     const text = alarms
-      .map((alarm) => Alarm.toText(alarm))
+      .map((alarm) => AlarmRule.toText(alarm))
       .filter((t) => t != null)
       .join('\n')
     setText(text)
@@ -29,7 +29,7 @@ export function AlarmTaskTextarea(): JSX.Element {
       .split('\n')
       .map((t) => {
         try {
-          return Alarm.fromText(t)
+          return AlarmRule.fromText(t)
         } catch (e) {
           Log.w(e)
         }

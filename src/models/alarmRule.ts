@@ -10,7 +10,7 @@ export const ALARM_ANCHOR = {
 }
 type AlarmAnchor = (typeof ALARM_ANCHOR)[keyof typeof ALARM_ANCHOR]
 
-export class Alarm {
+export class AlarmRule {
   minutes: number
   timing: AlarmTiming
   anchor: AlarmAnchor
@@ -21,7 +21,7 @@ export class Alarm {
     this.minutes = minutes
   }
   
-  static fromText(str: String): Alarm {
+  static fromText(str: String): AlarmRule {
     const ss = str.split(',')
     
     if (ss.length !== 3) {
@@ -43,10 +43,10 @@ export class Alarm {
       anchor = ALARM_ANCHOR.SCEHEDULED
     }
     
-    return new Alarm(timing, anchor, minutes)
+    return new AlarmRule(timing, anchor, minutes)
   }
   
-  static toText(alarm: Alarm): String {
+  static toText(alarm: AlarmRule): String {
     if (alarm == null) return null
     return `${alarm.minutes}, ${alarm.timing}, ${alarm.anchor}`
   }
