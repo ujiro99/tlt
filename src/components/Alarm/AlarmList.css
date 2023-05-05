@@ -39,4 +39,11 @@
     width: 100%;
     display: inline-block;
   }
+  
+  &__empty {
+    font-size: 12px;
+    white-space: pre;
+    line-height: 1.6;
+    padding: 5px;
+  }
 }

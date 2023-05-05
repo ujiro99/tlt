@@ -147,5 +147,14 @@
         "example": "5, 10, 20 ..."
       }
     }
+  },
+  "alarm_current": {
+    "message": "Current Alarms"
+  },
+  "alarm_for_task": {
+    "message": "Alarm rules for tasks"
+  },
+  "no_alarms": {
+    "message": "No alarms are currently set.\nTo set an alarm, do either of the following:\n - Set an alarm rules for tasks and start tracking.\n - Import events from Google Calendar."
   }
 }

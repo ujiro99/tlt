@@ -47,10 +47,10 @@ export function AlarmModal(): JSX.Element {
         <section className="modal-window__section">
           <h3 className="modal-window__section-title">
             <Icon name="alart" />
-            Current Alarms
+            {t("alarm_current")}
           </h3>
           <ul className="alarm-list">
-            {alarmExists &&
+            {alarmExists ? (
               alarms.map((alarm) => (
                 <li className="alarm-list__item" key={alarm.toString()}>
                   <p>
@@ -61,13 +61,17 @@ export function AlarmModal(): JSX.Element {
                     <span className="alarm-list__message">{alarm.message}</span>
                   </p>
                 </li>
-              ))}
+              ))
+            ) : (
+              <p className="alarm-list__empty">{t('no_alarms')}</p>
+            )
+            }
           </ul>
         </section>
         <section className="modal-window__section">
           <h3 className="modal-window__section-title">
             <Icon name="alart" />
-            Alarms for Task
+            {t("alarm_for_task")}
           </h3>
           <AlarmTaskTextarea />
         </section>
