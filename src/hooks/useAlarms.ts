@@ -1,19 +1,16 @@
 import { atom, selector, useRecoilState } from 'recoil'
-import { useCallback, useState } from 'react'
+import { useCallback } from 'react'
 import { useStorage } from '@/hooks/useStorage'
 import { STORAGE_KEY } from '@/services/storage'
 import { t } from '@/services/i18n'
 import { Ipc } from '@/services/ipc'
 import { Task } from '@/models/task'
-import { Alarm } from '@/models/alarm'
+import { Alarm, ALARM_TYPE } from '@/models/alarm'
 import { AlarmRule, ALARM_ANCHOR, ALARM_TIMING } from '@/models/alarmRule'
 import Log from '@/services/log'
 
-/** Alarm name on chrome.alarms */
-export const ALARM_TYPE = {
-  ICON: 'ICON_TIMER',
-  NOTIFICATION: 'NOTIFICATION',
-}
+// for debug
+// chrome.alarms.clearAll()
 
 /**
  * Get all alarms from chrome API.
@@ -23,28 +20,18 @@ const getAlarms = async (): Promise<Alarm[]> => {
   const all = await chrome.alarms.getAll()
   const alarms = all
     .map((a) => {
-      if (a.name === ALARM_TYPE.ICON) {
-        // nothing to do
-      } else {
-        const obj = JSON.parse(a.name)
-        if (obj.name === ALARM_TYPE.NOTIFICATION) {
-          //
-          return new Alarm({
-            name: obj.param.title,
-            message: obj.param.message,
-            when: a.scheduledTime,
-          })
-        }
-      }
+      return Alarm.fromString(a.name)
     })
-    .filter((a) => a != null)
+    .filter((a) => a.type !== ALARM_TYPE.ICON)
+  Log.d(alarms)
   return alarms
 }
 
 type useAlarmsReturn = {
   alarms: Alarm[]
-  setAlarms: (task: Task) => void
-  stopAllAlarms: () => void
+  setAlarms: (alarms: Alarm[]) => void
+  setAlarmsForTask: (task: Task) => void
+  stopAlarmsForTask: () => void
 }
 
 export const alarmState = atom({
@@ -65,6 +52,25 @@ export function useAlarms(): useAlarmsReturn {
   const [alarmRules] = useStorage<AlarmRule[]>(STORAGE_KEY.ALARMS)
 
   const setAlarms = useCallback(
+    async (alarms: Alarm[]) => {
+      const promises = alarms.map((alarm) => {
+        if (alarm.scheduledTime < Date.now()) {
+          // Exclude alarms that are past the time
+          return
+        }
+        return Ipc.send({
+          command: 'setAlarm',
+          param: alarm,
+        })
+      })
+      Promise.all(promises).then(async () => {
+        _setAlarms(await getAlarms())
+      })
+    },
+    [_setAlarms],
+  )
+
+  const setAlarmsForTask = useCallback(
     async (task: Task) => {
       const promises = alarmRules.map(async (alarm) => {
         let minutes = 0
@@ -97,11 +103,12 @@ export function useAlarms(): useAlarmsReturn {
 
         return Ipc.send({
           command: 'setAlarm',
-          param: {
-            title: task.title,
+          param: new Alarm({
+            type: ALARM_TYPE.TASK,
+            name: task.title,
             message: message,
             minutes: minutes,
-          },
+          }),
         })
       })
       Promise.all(promises).then(async () => {
@@ -111,14 +118,15 @@ export function useAlarms(): useAlarmsReturn {
     [alarms, alarmRules],
   )
 
-  const stopAllAlarms = useCallback(async () => {
-    await Ipc.send({ command: 'stopAllAlarm' })
+  const stopAlarmsForTask = useCallback(async () => {
+    await Ipc.send({ command: 'stopAlarmsForTask' })
     _setAlarms(await getAlarms())
   }, [])
 
   return {
     alarms,
     setAlarms,
-    stopAllAlarms,
+    setAlarmsForTask,
+    stopAlarmsForTask,
   }
 }

@@ -93,7 +93,7 @@ interface useTrackingStateReturn {
 export function useTrackingState(): useTrackingStateReturn {
   const manager = useTaskManager()
   const { appendEvents } = useCalendarEvent()
-  const { setAlarms, stopAllAlarms } = useAlarms()
+  const { setAlarmsForTask, stopAlarmsForTask } = useAlarms()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
   const trackingKey = useRecoilValue(taskRecordKeyState)
 
@@ -116,7 +116,7 @@ export function useTrackingState(): useTrackingStateReturn {
       manager.setNodeByLine(newNode, node.line)
 
       // Stop previous alarms.
-      stopAllAlarms()
+      stopAlarmsForTask()
 
       const newVal = [...trackings, tracking]
       setTrackings(newVal)
@@ -124,7 +124,7 @@ export function useTrackingState(): useTrackingStateReturn {
         command: 'startTracking',
         param: tracking.elapsedTime.toMinutes(),
       })
-      setAlarms(newTask)
+      setAlarmsForTask(newTask)
     },
     [trackings],
   )
@@ -164,7 +164,7 @@ export function useTrackingState(): useTrackingStateReturn {
       })
       setTrackings(newVal)
       Ipc.send({ command: 'stopTracking' })
-      stopAllAlarms()
+      stopAlarmsForTask()
     },
     [trackings],
   )
@@ -225,13 +225,13 @@ export function useTrackingStop(): useTrackingStopReturn {
   const manager = useTaskManager()
   const { appendEvents } = useCalendarEvent()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
-  const { stopAllAlarms } = useAlarms()
+  const { stopAlarmsForTask } = useAlarms()
 
   const stopAllTracking = useCallback(() => {
     Log.d('stopAllTracking')
     stopTrackings()
     Ipc.send({ command: 'stopTracking' })
-    stopAllAlarms()
+    stopAlarmsForTask()
   }, [trackings])
 
   const stopOtherTracking = useCallback(

@@ -1,7 +1,14 @@
 import Log from '@/services/log'
 import { Icon } from '@/services/icon'
 import { Storage, STORAGE_KEY } from '@/services/storage'
-import { ALARM_TYPE } from '@/hooks/useAlarms'
+import { Alarm, ALARM_TYPE } from '@/models/alarm'
+
+/** ICON ALarm **/
+const ICON_ALARM = new Alarm({
+  type: ALARM_TYPE.ICON,
+  name: 'icon',
+  message: '',
+}).toString()
 
 /** Hour in minutes */
 const HOUR = 60
@@ -32,12 +39,6 @@ chrome.runtime.onMessage.addListener(
   },
 )
 
-export type AlarmParam = {
-  minutes: number
-  title: string
-  message: string
-}
-
 type OnMessageFuncs = {
   [key: string]: (param: unknown, sendResponse: () => void) => boolean
 }
@@ -65,7 +66,7 @@ const onMessageFuncs: OnMessageFuncs = {
     void updateIconTime()
 
     // start timer
-    chrome.alarms.create(ALARM_TYPE.ICON, { periodInMinutes: 1 })
+    chrome.alarms.create(ICON_ALARM, { periodInMinutes: 1 })
     return true
   },
 
@@ -73,32 +74,34 @@ const onMessageFuncs: OnMessageFuncs = {
    * Stop tracking, and clear badge text.
    */
   stopTracking() {
-    void chrome.alarms.clear(ALARM_TYPE.ICON)
+    void chrome.alarms.clear(ICON_ALARM)
     Icon.clearText()
     return true
   },
 
-  setAlarm(param: AlarmParam, sendResponse: () => void) {
-    const obj = {
-      name: ALARM_TYPE.NOTIFICATION,
-      param,
-    }
-    chrome.alarms.create(JSON.stringify(obj), {
-      delayInMinutes: param.minutes,
+  setAlarm(param: Alarm, sendResponse: () => void) {
+    const alarm = new Alarm({
+      type: param.type,
+      name: param.name,
+      message: param.message,
+      when: param.scheduledTime,
+    })
+    alarm.type = param.type
+    chrome.alarms.create(alarm.toString(), {
+      when: param.scheduledTime,
     })
     sendResponse()
     return true
   },
 
-  stopAllAlarm(_, sendResponse: () => void) {
-    chrome.notifications.getAll((notifications) => {
-      Object.keys(notifications).forEach((notificationId) => {
-        chrome.notifications.clear(notificationId)
-      })
-    })
+  stopAlarmsForTask(_, sendResponse: () => void) {
     chrome.alarms.getAll((alarms) => {
       const promises = Object.values(alarms).map((alarm) => {
-        return chrome.alarms.clear(alarm.name)
+        const obj = Alarm.fromString(alarm.name)
+        if (obj.type === ALARM_TYPE.TASK) {
+          Log.d(`clear alarm: ${obj.name} | ${obj.message}`)
+          return chrome.alarms.clear(alarm.name)
+        }
       })
       Promise.all(promises).then(() => {
         sendResponse()
@@ -135,18 +138,35 @@ async function updateIconTime() {
 }
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === ALARM_TYPE.ICON) {
+  const obj = Alarm.fromString(alarm.name)
+  Log.d(obj.type + ' ' + obj.name)
+
+  if (obj.type === ALARM_TYPE.ICON) {
     void updateIconTime()
-  } else {
-    const obj = JSON.parse(alarm.name)
-    if (obj.name === ALARM_TYPE.NOTIFICATION) {
-      Log.d(ALARM_TYPE.NOTIFICATION + ' ' + obj.param.title)
-      chrome.notifications.create({
-        type: 'basic',
-        title: obj.param.message,
-        message: obj.param.title,
-        iconUrl: '/icon128.png',
-      })
-    }
+  } else if (obj.type === ALARM_TYPE.TASK) {
+    chrome.notifications.create({
+      type: 'basic',
+      title: obj.message,
+      message: obj.name,
+      iconUrl: '/icon128.png',
+    })
+  } else if (obj.type === ALARM_TYPE.EVENT) {
+    chrome.notifications.create({
+      type: 'basic',
+      title: obj.message,
+      message: obj.name,
+      iconUrl: '/icon128.png',
+      buttons: [{ title: 'start tracking' }],
+    })
   }
+})
+
+chrome.notifications.onButtonClicked.addListener(
+  (notificationId, buttonIndex) => {
+    console.log(notificationId, buttonIndex)
+  },
+)
+
+chrome.notifications.onClicked.addListener((notificationId) => {
+  console.log(notificationId)
 })

@@ -52,7 +52,7 @@ export function AlarmModal(): JSX.Element {
           <ul className="alarm-list">
             {alarmExists ? (
               alarms.map((alarm) => (
-                <li className="alarm-list__item" key={alarm.toString()}>
+                <li className="alarm-list__item" key={alarm.toKey()}>
                   <p>
                     <span className="alarm-list__time">{alarm.time}</span>
                   </p>

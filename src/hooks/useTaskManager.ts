@@ -25,8 +25,6 @@ interface TaskRecord {
 }
 export type TaskRecordArray = TaskRecord[]
 
-// void Storage.clear()
-
 const loadRecords = async (): Promise<TaskRecordArray> => {
   const records =
     ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []

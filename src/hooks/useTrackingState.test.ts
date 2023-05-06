@@ -9,10 +9,15 @@ import { Parser } from '@/services/parser'
 
 import * as useCalendarEventModule from './useCalendarEvent'
 import * as useStorageModule from './useStorage'
+import * as useAlarmModule from './useAlarms'
 import { Storage } from '@/services/storage'
+
+import { Alarm } from '@/models/alarm'
+import { Task } from '@/models/task'
 
 jest.mock('@/hooks/useCalendarEvent')
 jest.mock('@/hooks/useStorage')
+jest.mock('@/hooks/useAlarms')
 jest.mock('@/services/storage')
 jest.mock('@/services/ipc')
 
@@ -37,6 +42,16 @@ beforeEach(() => {
   const StorageMock = Storage as jest.Mocked<typeof Storage>
   StorageMock.get.mockImplementation(async (key) => storage[key])
   StorageMock.set.mockImplementation(async (key, val) => (storage[key] = val))
+
+  const alarmModule = useAlarmModule as jest.Mocked<
+    typeof useAlarmModule 
+  >
+  alarmModule.useAlarms.mockReturnValue({
+    alarms: [],
+    setAlarms: (alarms: Alarm[]) => {},
+    setAlarmsForTask: (task: Task) => {},
+    stopAlarmsForTask: () => {}
+  })
 })
 
 test('Trackings is empty default.', async () => {

@@ -5,6 +5,7 @@ import { useOauthState } from '@/hooks/useOauthState'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useModal, MODAL } from '@/hooks/useModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
+import { useAlarms } from '@/hooks/useAlarms'
 import { useCalendarEvent } from '@/hooks/useCalendarEvent'
 import { Icon } from '@/components/Icon'
 import { sleep } from '@/services/util'
@@ -17,6 +18,7 @@ import {
 } from '@/services/google/calendar'
 import { NODE_TYPE } from '@/models/node'
 import { Task } from '@/models/task'
+import { Alarm, ALARM_TYPE } from '@/models/alarm'
 
 import { CalendarList } from './CalendarList'
 import { EventList } from './EventList'
@@ -35,6 +37,7 @@ export function SyncModal(): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const isLoggedIn = useOauthState()
+  const { setAlarms } = useAlarms()
   const [visible, setVisible] = useModal(MODAL.SYNC)
   const { events: savedEvents, uploadEvents } = useCalendarEvent()
   const [calendarDown, setCalendarDown] = useState<Calendar>()
@@ -85,8 +88,21 @@ export function SyncModal(): JSX.Element {
 
     // update root
     manager.setRoot(root)
+    setAlarmForEvens()
     await sleep(1500)
     return true
+  }
+
+  const setAlarmForEvens = () => {
+    const alarms = events.map((event) => {
+      return new Alarm({
+        type: ALARM_TYPE.EVENT,
+        name: event.title,
+        when: new Date(event.start).getTime(),
+        message: `${event.title} is starting now!`,
+      })
+    })
+    setAlarms(alarms)
   }
 
   const uploadGoogle = () => {
