@@ -35,7 +35,7 @@ describe('toString', () => {
       minutes: 1,
     }
     const alarm = new Alarm(obj)
-    expect(alarm.toString()).toMatch("{\"type\":\"TASK\",\"name\":\"test\",\"message\":\"test message\",\"scheduledTime\":")
+    expect(alarm.toString()).toMatch("{\"type\":\"TASK\",\"name\":\"test\",\"message\":\"test message\",\"time\":")
   })
 
   test('when', () => {
@@ -47,7 +47,7 @@ describe('toString', () => {
       when: now,
     }
     const alarm = new Alarm(obj)
-    expect(alarm.toString()).toMatch("{\"type\":\"EVENT\",\"name\":\"test\",\"message\":\"test message\",\"scheduledTime\":" + now)
+    expect(alarm.toString()).toMatch("{\"type\":\"EVENT\",\"name\":\"test\",\"message\":\"test message\",\"time\":" + now)
   })
 })
 

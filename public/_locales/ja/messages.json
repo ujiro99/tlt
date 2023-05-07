@@ -1,9 +1,9 @@
 {
-  "extName": { "message": "TLT : ToDo List & Time Tracking"},
+  "extName": { "message": "TLT : ToDo List & Time Tracking" },
   "extDescription": {
     "message": "ミニマムなUIでToDoと予実を管理できます."
   },
-  "new_todo":  {
+  "new_todo": {
     "message": "+ new ToDo."
   },
   "start_only_today": {
@@ -94,7 +94,7 @@
     "message": "タグはまだありません"
   },
   "no_groups": {
-      "message": "グループはまだありません"
+    "message": "グループはまだありません"
   },
   "saving": {
     "message": "保存中..."
@@ -155,5 +155,19 @@
   },
   "no_alarms": {
     "message": "アラームは設定されていません。\n以下を実行するとアラームが設定されます。\n・アラームルールを設定してトラッキングを開始\n・Googleカレンダーからイベントをインポート"
+  },
+  "alarm_schedule_start": {
+    "message": "$event$の開始時間です！",
+    "placeholders": {
+      "event": {
+        "content": "$1"
+      }
+    }
+  },
+  "alarm_button_start": {
+    "message": "トラッキングを開始"
+  },
+  "alarm_button_nothing": {
+    "message": "何もしない"
   }
 }

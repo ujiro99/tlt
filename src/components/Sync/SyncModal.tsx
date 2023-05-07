@@ -7,6 +7,7 @@ import { useModal, MODAL } from '@/hooks/useModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useAlarms } from '@/hooks/useAlarms'
 import { useActivity } from '@/hooks/useActivity'
+import { useEventAlarm, eventToAlarm } from '@/hooks/useEventAlarm'
 import { Icon } from '@/components/Icon'
 import { sleep } from '@/services/util'
 import { STORAGE_KEY } from '@/services/storage'
@@ -18,7 +19,6 @@ import {
 } from '@/services/google/calendar'
 import { NODE_TYPE } from '@/models/node'
 import { Task } from '@/models/task'
-import { Alarm, ALARM_TYPE } from '@/models/alarm'
 
 import { CalendarList } from './CalendarList'
 import { EventList } from './EventList'
@@ -40,6 +40,7 @@ export function SyncModal(): JSX.Element {
   const { setAlarms } = useAlarms()
   const [visible, setVisible] = useModal(MODAL.SYNC)
   const { activities, uploadActivities } = useActivity()
+  const { setEventLines } = useEventAlarm()
   const [calendarDown, setCalendarDown] = useState<Calendar>()
   const [calendarUp, setCalendarUp] = useState<Calendar>()
   const [events, setEvents] = useState<CalendarEvent[]>()
@@ -88,20 +89,28 @@ export function SyncModal(): JSX.Element {
 
     // update root
     manager.setRoot(root)
+
+    // update event lines
+    const eventLines = events
+      .map((event) => {
+        const node = root.find((n) => {
+          if (n.type !== NODE_TYPE.TASK) return false
+          const task = n.data as Task
+          return task.calendarEventId === event.id
+        })
+        if (!node) return null
+        return { event, line: node.line }
+      })
+      .filter((e) => e != null)
+    setEventLines(eventLines)
+
     setAlarmForEvens()
     await sleep(1500)
     return true
   }
 
   const setAlarmForEvens = () => {
-    const alarms = events.map((event) => {
-      return new Alarm({
-        type: ALARM_TYPE.EVENT,
-        name: event.title,
-        when: new Date(event.start).getTime(),
-        message: `${event.title} is starting now!`,
-      })
-    })
+    const alarms = events.map((e) => eventToAlarm(e))
     setAlarms(alarms)
   }
 

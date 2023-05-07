@@ -7,9 +7,10 @@ import {
   TaskRecordArray,
 } from '@/hooks/useTaskManager'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
-import { nodeToString } from '@/models/node'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import Log from '@/services/log'
+import { TaskRecordKey } from '@/models/taskRecordKey'
+import { Node, nodeToString } from '@/models/node'
 
 export const isPossibleToSaveState = atom<boolean>({
   key: 'isPossibleToSaveState',
@@ -21,7 +22,43 @@ export const savingState = atom<boolean>({
   default: false,
 })
 
-const saveRecords = async (records: TaskRecordArray): Promise<boolean> => {
+export const updateRecords = (
+  records: TaskRecordArray,
+  key: TaskRecordKey,
+  root: Node,
+): TaskRecordArray => {
+  let found = false
+  const data = nodeToString(root)
+  const newRecords = records.map((r) => {
+    if (r.key === key.toKey()) {
+      found = true
+      return {
+        ...r,
+        data,
+      }
+    } else {
+      return r
+    }
+  })
+  if (!found) {
+    const r = {
+      key: key.toKey(),
+      type: TaskRecordType.Date,
+      data,
+    }
+    newRecords.push(r)
+  }
+  return newRecords
+}
+
+export const loadRecords = async (): Promise<TaskRecordArray> => {
+  const records =
+    ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
+  Log.d(records)
+  return records
+}
+
+export const saveRecords = async (records: TaskRecordArray): Promise<boolean> => {
   try {
     const res = await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
     return res === true
@@ -45,28 +82,8 @@ export function useTaskStorage(): void {
   }, [root])
 
   const saveToStorage = async () => {
-    const data = nodeToString(root)
     setSaving(true)
-    let found = false
-    const newRecords = records.map((r) => {
-      if (r.key === key.toKey()) {
-        found = true
-        return {
-          ...r,
-          data,
-        }
-      } else {
-        return r
-      }
-    })
-    if (!found) {
-      const r = {
-        key: key.toKey(),
-        type: TaskRecordType.Date,
-        data,
-      }
-      newRecords.push(r)
-    }
+    const newRecords = updateRecords(records, key, root)
     setRecords(newRecords)
     await saveRecords(newRecords)
     setSaving(false)

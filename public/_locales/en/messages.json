@@ -156,5 +156,20 @@
   },
   "no_alarms": {
     "message": "No alarms are currently set.\nTo set an alarm, do either of the following:\n - Set an alarm rules for tasks and start tracking.\n - Import events from Google Calendar."
+  },
+  "alarm_schedule_start": {
+    "message": "$event$ is starting now!",
+    "placeholders": {
+      "event": {
+        "content": "$1",
+        "example": "meeting, study, traveling by train"
+      }
+    }
+  },
+  "alarm_button_start": {
+    "message": "Start tracking"
+  },
+  "alarm_button_nothing": {
+    "message": "Do Nothing"
   }
 }

@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from 'react'
 import { useStorage } from '@/hooks/useStorage'
-import { STORAGE_KEY } from '@/services/storage'
+import { Storage, STORAGE_KEY } from '@/services/storage'
 import {
   GoogleCalendar,
   Calendar,
@@ -27,6 +27,20 @@ type UploadParam = {
   calendar: Calendar
   color: CalendarColor
   resolve: (v: unknown) => void
+}
+
+export const getActivities = async (): Promise<CalendarEvent[]> => {
+  return (await Storage.get(STORAGE_KEY.ACTIVITIES)) as CalendarEvent[]
+}
+
+export const appendActivities = (
+  body: CalendarEvent[],
+  element: CalendarEvent[],
+) => {
+  let ee = element.filter((e) => e.time.toMinutes() > 1)
+  const newActivities = [...body, ...ee]
+  Log.d(newActivities)
+  Storage.set(STORAGE_KEY.ACTIVITIES, newActivities)
 }
 
 export function useActivity(): useActivityReturn {
@@ -60,12 +74,9 @@ export function useActivity(): useActivityReturn {
     upload()
   }, [uploadParam])
 
-  const appendActivities = useCallback(
+  const _appendActivities = useCallback(
     (es: CalendarEvent[]) => {
-      let ee = es.filter((e) => e.time.toMinutes() > 1)
-      const newActivities = [...activities, ...ee]
-      Log.d(newActivities)
-      setActivities(newActivities)
+      appendActivities(activities, es)
     },
     [activities],
   )
@@ -93,5 +104,5 @@ export function useActivity(): useActivityReturn {
     [],
   )
 
-  return { activities, appendActivities, uploadActivities }
+  return { activities, appendActivities: _appendActivities, uploadActivities }
 }
