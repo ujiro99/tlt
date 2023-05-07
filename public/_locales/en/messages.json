@@ -36,6 +36,10 @@
   "label_google_calendar": {
     "message": "Sync Google Calendar"
   },
+  "label_alarm": {
+    "message": "Alarms",
+    "description": "Display a modal to manage alarms."
+  },
   "actual": {
     "message": "actual",
     "description": "Actual results in budget control."
@@ -143,5 +147,29 @@
         "example": "5, 10, 20 ..."
       }
     }
+  },
+  "alarm_current": {
+    "message": "Current Alarms"
+  },
+  "alarm_for_task": {
+    "message": "Alarm rules for tasks"
+  },
+  "no_alarms": {
+    "message": "No alarms are currently set.\nTo set an alarm, do either of the following:\n - Set an alarm rules for tasks and start tracking.\n - Import events from Google Calendar."
+  },
+  "alarm_schedule_start": {
+    "message": "$event$ is starting now!",
+    "placeholders": {
+      "event": {
+        "content": "$1",
+        "example": "meeting, study, traveling by train"
+      }
+    }
+  },
+  "alarm_button_start": {
+    "message": "Start tracking"
+  },
+  "alarm_button_nothing": {
+    "message": "Do Nothing"
   }
 }

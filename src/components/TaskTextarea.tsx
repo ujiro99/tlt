@@ -9,7 +9,6 @@ import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import { LoadingIcon } from '@/components/LoadingIcon'
 import { Icon } from '@/components/Icon'
-import { AlarmTaskTextarea } from '@/components/AlarmTextarea'
 import { sleep, getIndent } from '@/services/util'
 import * as i18n from '@/services/i18n'
 import { INDENT_SIZE, KEY, KEYCODE_ENTER, DEFAULT } from '@/const'
@@ -178,7 +177,6 @@ export function TaskTextarea(): JSX.Element {
         value={text}
         ref={inputArea}
       ></TextareaAutosize>
-      <AlarmTaskTextarea />
     </div>
   )
 }

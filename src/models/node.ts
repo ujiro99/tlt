@@ -300,3 +300,17 @@ export function nodeToTasks(root: INode, completed: boolean): Task[] {
   }
   return tasks
 }
+
+export function setNodeByLine(root: Node, line: number, node: Node): Node {
+  let newRoot: Node
+  if (line > flat(root).length) {
+    newRoot = root.append(node)
+  } else if (node) {
+    newRoot = root.replace(node, (n) => n.line === line)
+  } else {
+    // remove this line
+    newRoot = root.filter((n) => n.line !== line)
+    Log.d(`removed ${line}`)
+  }
+  return newRoot
+}

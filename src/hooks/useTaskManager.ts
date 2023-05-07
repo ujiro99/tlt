@@ -2,17 +2,18 @@ import { useEffect } from 'react'
 import { atom, selector, useRecoilState } from 'recoil'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
+import { useEventAlarm } from '@/hooks/useEventAlarm'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
-import { Node, nodeToString } from '@/models/node'
-import { Tag, hasTags } from '@/models/tag'
-import { flat } from '@/models/flattenedNode'
-import { KEY_TYPE } from '@/models/taskRecordKey'
-import { STORAGE_KEY, Storage } from '@/services/storage'
+import { loadRecords } from '@/hooks/useTaskStorage'
 import { Parser } from '@/services/parser'
 import { unique, difference } from '@/services/util'
 import Log from '@/services/log'
-import { COLOR } from '@/const'
+import { Node, nodeToString, setNodeByLine as _setNodeByLine } from '@/models/node'
+import { Tag, hasTags } from '@/models/tag'
+import { flat } from '@/models/flattenedNode'
+import { KEY_TYPE } from '@/models/taskRecordKey'
 import { TaskRecordKey } from '@/models/taskRecordKey'
+import { COLOR } from '@/const'
 
 export enum TaskRecordType {
   Date,
@@ -24,15 +25,6 @@ interface TaskRecord {
   data: string
 }
 export type TaskRecordArray = TaskRecord[]
-
-// void Storage.clear()
-
-const loadRecords = async (): Promise<TaskRecordArray> => {
-  const records =
-    ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
-  Log.d(records)
-  return records
-}
 
 /**
  * All of TaskRecords saved in chrome storage.
@@ -53,7 +45,7 @@ export function selectRecord(
   records: TaskRecordArray,
 ): Node {
   if (key.keyType === KEY_TYPE.SINGLE) {
-    if (records.length === 0)  {
+    if (records.length === 0) {
       // empty state
       const emptyState =
         '# Welcome to TLT !\n  - [ ] This is sample todo ~/1h\n  - [ ] Double click to edit ~/2h #tag'
@@ -128,9 +120,15 @@ interface ITaskManager {
 export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState<Node>(nodeState)
   const { trackings, moveTracking } = useTrackingMove()
+  const { moveEventLine } = useEventAlarm()
   const { tags, upsertTag } = useTagHistory()
 
   const flatten = flat(root)
+
+  const move = (from: number, to: number) => {
+    moveTracking(from, to)
+    moveEventLine(from, to)
+  }
 
   const tagsInState = flatten.reduce((pre, crr) => {
     const data = crr.node.data
@@ -145,23 +143,18 @@ export function useTaskManager(): ITaskManager {
   }
 
   const setNodeByLine = (node: Node, line: number) => {
-    let newRoot: Node
-    if (line > flatten.length) {
-      newRoot = root.append(node)
-    } else if (node) {
-      newRoot = root.replace(node, (n) => n.line === line)
-    } else {
-      // remove this line
-      newRoot = root.filter((n) => n.line !== line)
-      Log.d(`removed ${line}`)
+    let newRoot = _setNodeByLine(root, line, node)
+    setRoot(newRoot)
+
+    // if line removed
+    if (node == null) {
       trackings.forEach((n) => {
         if (line < n.line) {
           // Move up
-          moveTracking(n.line, n.line - 1)
+          move(n.line, n.line - 1)
         }
       })
     }
-    setRoot(newRoot)
   }
 
   const addEmptyNodeByLine = (line: number): void => {
@@ -171,7 +164,7 @@ export function useTaskManager(): ITaskManager {
     trackings.forEach((n) => {
       if (line < n.line) {
         // Move down
-        moveTracking(n.line, n.line + 1)
+        move(n.line, n.line + 1)
       }
     })
   }
@@ -185,7 +178,7 @@ export function useTaskManager(): ITaskManager {
     trackings.forEach((n) => {
       if (appendLine < n.line) {
         // Move down
-        moveTracking(n.line, n.line + 1)
+        move(n.line, n.line + 1)
       }
     })
     return appendLine
@@ -197,7 +190,7 @@ export function useTaskManager(): ITaskManager {
     trackings.forEach((t) => {
       if (line < t.line) {
         // Move up
-        moveTracking(t.line, t.line - 1)
+        move(t.line, t.line - 1)
       }
     })
   }

@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from 'react'
 import { useStorage } from '@/hooks/useStorage'
-import { STORAGE_KEY } from '@/services/storage'
+import { Storage, STORAGE_KEY } from '@/services/storage'
 import {
   GoogleCalendar,
   Calendar,
@@ -11,11 +11,11 @@ import { sleep } from '@/services/util'
 
 import Log from '@/services/log'
 
-type useCalendarEventsReturn = {
-  events: CalendarEvent[]
-  appendEvents: (events: CalendarEvent[]) => void
-  uploadEvents: (
-    events: CalendarEvent[],
+type useActivityReturn = {
+  activities: CalendarEvent[]
+  appendActivities: (activities: CalendarEvent[]) => void
+  uploadActivities: (
+    activities: CalendarEvent[],
     calendar: Calendar,
     color: CalendarColor,
     resolve: (v: unknown) => void,
@@ -29,9 +29,23 @@ type UploadParam = {
   resolve: (v: unknown) => void
 }
 
-export function useCalendarEvent(): useCalendarEventsReturn {
+export const getActivities = async (): Promise<CalendarEvent[]> => {
+  return (await Storage.get(STORAGE_KEY.ACTIVITIES)) as CalendarEvent[]
+}
+
+export const appendActivities = (
+  body: CalendarEvent[],
+  element: CalendarEvent[],
+) => {
+  let ee = element.filter((e) => e.time.toMinutes() > 1)
+  const newActivities = [...body, ...ee]
+  Log.d(newActivities)
+  Storage.set(STORAGE_KEY.ACTIVITIES, newActivities)
+}
+
+export function useActivity(): useActivityReturn {
   const [uploadParam, setUploadParam] = useState<UploadParam>()
-  const [events, setEvents] = useStorage<CalendarEvent[]>(
+  const [activities, setActivities] = useStorage<CalendarEvent[]>(
     STORAGE_KEY.ACTIVITIES,
   )
 
@@ -52,7 +66,7 @@ export function useCalendarEvent(): useCalendarEventsReturn {
         ...uploadParam,
         queue: newQueue,
       })
-      removeEvents([e])
+      removeActivities([e])
       if (newQueue.length === 0) {
         uploadParam.resolve(null)
       }
@@ -60,28 +74,25 @@ export function useCalendarEvent(): useCalendarEventsReturn {
     upload()
   }, [uploadParam])
 
-  const appendEvents = useCallback(
+  const _appendActivities = useCallback(
     (es: CalendarEvent[]) => {
-      let ee = es.filter((e) => e.time.toMinutes() > 1)
-      const newEvents = [...events, ...ee]
-      Log.d(newEvents)
-      setEvents(newEvents)
+      appendActivities(activities, es)
     },
-    [events],
+    [activities],
   )
 
-  const removeEvents = useCallback(
+  const removeActivities = useCallback(
     (es: CalendarEvent[]) => {
-      const newEvents = events.filter((e) => {
+      const newActivities = activities.filter((e) => {
         return !es.some((n) => n.id === e.id)
       })
-      Log.d(newEvents)
-      setEvents(newEvents)
+      Log.d(newActivities)
+      setActivities(newActivities)
     },
-    [events],
+    [activities],
   )
 
-  const uploadEvents = useCallback(
+  const uploadActivities = useCallback(
     async (
       es: CalendarEvent[],
       calendar: Calendar,
@@ -93,5 +104,5 @@ export function useCalendarEvent(): useCalendarEventsReturn {
     [],
   )
 
-  return { events, appendEvents, uploadEvents }
+  return { activities, appendActivities: _appendActivities, uploadActivities }
 }

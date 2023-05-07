@@ -9,6 +9,7 @@ import { TrackingStatus } from '@/components/TrackingStatus/TrackingStatus'
 import { Copy } from '@/components/Menu/Copy'
 import { Edit } from '@/components/Menu/Edit'
 import { Sync } from '@/components/Menu/Sync'
+import { Alarm } from '@/components/Menu/Alarm'
 import { Icon } from '@/components/Icon'
 import { sleep } from '@/services/util'
 
@@ -50,8 +51,9 @@ export function Menu(): JSX.Element {
       <header className="menu__sticky">
         <div className="menu__button">
           <Sync />
-          <Edit />
+          <Alarm />
           <Copy />
+          <Edit />
         </div>
       </header>
       {isReport && (

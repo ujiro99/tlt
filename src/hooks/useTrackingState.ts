@@ -4,19 +4,98 @@ import { atom, selector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { nodeState, useTaskManager } from '@/hooks/useTaskManager'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
-import { useCalendarEvent } from './useCalendarEvent'
-import { useStorage } from './useStorage'
+import { updateRecords, saveRecords, loadRecords } from '@/hooks/useTaskStorage'
+import {
+  useActivity,
+  appendActivities,
+  getActivities,
+} from '@/hooks/useActivity'
+import { useAlarms } from '@/hooks/useAlarms'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
 import Log from '@/services/log'
 import { TrackingState, TimeObject } from '@/@types/global'
-import { Node } from '@/models/node'
+import { Node, setNodeByLine } from '@/models/node'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
-import { Alarm, ALARM_ANCHOR, ALARM_TIMING } from '@/models/alarm'
-import { t } from '@/services/i18n'
+import { TaskRecordKey } from '@/models/taskRecordKey'
 
 const TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
+
+/**
+ * Convert time object to Time class's instance.
+ */
+const convTime = (tracking: TrackingState): TrackingState => {
+  const obj = tracking.elapsedTime as unknown as TimeObject
+  tracking.elapsedTime = new Time(
+    obj._seconds,
+    obj._minutes,
+    obj._hours,
+    obj._days,
+  )
+
+  // If the tracking is in progress, update the elapsed time to resume counting.
+  if (tracking.isTracking) {
+    const elapsedTimeMs = Date.now() - tracking.trackingStartTime
+    const elapsedTime = Time.parseMs(elapsedTimeMs)
+    tracking.elapsedTime.add(elapsedTime)
+  }
+  return tracking
+}
+
+export const stopTrackings = async (
+  root: Node,
+  trackings: TrackingState[],
+  key: TaskRecordKey,
+  exceptNodeId?: string,
+) => {
+  const events = []
+  for (const tracking of trackings) {
+    if (!tracking.isTracking || tracking.nodeId === exceptNodeId) {
+      continue
+    }
+    const node = root.find((n) => n.line === tracking.line)
+    if (node == null || !(node.data instanceof Task)) {
+      continue
+    }
+
+    // Clone the objects for updating elapsed time.
+    const newNode = node.clone()
+    const newTask = newNode.data as Task
+    newTask.trackingStop(tracking.trackingStartTime)
+    root = setNodeByLine(root, node.line, newNode)
+
+    // For updating activities.
+    const start = format(tracking.trackingStartTime, TIME_FORMAT)
+    const end = format(Date.now(), TIME_FORMAT)
+    const ems = Date.now() - tracking.trackingStartTime
+    const time = Time.parseMs(ems)
+    events.push({
+      id: '' + Math.random(),
+      title: newTask.title,
+      time,
+      start,
+      end,
+    })
+  }
+
+  // Update root Node.
+  const records = await loadRecords()
+  const newRecords = updateRecords(records, key, root)
+  await saveRecords(newRecords)
+
+  // Update activities.
+  const activities = await getActivities()
+  if (events.length > 0) appendActivities(activities, events)
+
+  // Update tracking state.
+  await Storage.set(
+    STORAGE_KEY.TRACKING_STATE,
+    trackings.filter((n) => {
+      return n.nodeId === exceptNodeId
+    }),
+  )
+}
 
 const trackingState = atom<TrackingState[]>({
   key: 'trackingState',
@@ -28,28 +107,16 @@ const trackingState = atom<TrackingState[]>({
       )) as TrackingState[]
       if (!trackings) return []
 
-      return trackings.map((tracking) => {
-        // Convert time object to Time class's instance.
-        const obj = tracking.elapsedTime as unknown as TimeObject
-        tracking.elapsedTime = new Time(
-          obj._seconds,
-          obj._minutes,
-          obj._hours,
-          obj._days,
-        )
-
-        // If the tracking is in progress, update the elapsed time to resume counting.
-        if (tracking.isTracking) {
-          const elapsedTimeMs = Date.now() - tracking.trackingStartTime
-          const elapsedTime = Time.parseMs(elapsedTimeMs)
-          tracking.elapsedTime.add(elapsedTime)
-        }
-        return tracking
-      })
+      return trackings.map((tracking) => convTime(tracking))
     },
   }),
   effects: [
-    ({ onSet }) => {
+    ({ onSet, setSelf }) => {
+      Storage.addListener(STORAGE_KEY.TRACKING_STATE, (newVal) => {
+        const newTrackings = newVal.map((tracking) => convTime(tracking))
+        setSelf(newTrackings)
+      })
+
       onSet((state) => {
         // Automatically save the tracking status.
         void Storage.set(STORAGE_KEY.TRACKING_STATE, state)
@@ -94,10 +161,10 @@ interface useTrackingStateReturn {
 
 export function useTrackingState(): useTrackingStateReturn {
   const manager = useTaskManager()
-  const { appendEvents } = useCalendarEvent()
+  const { appendActivities } = useActivity()
+  const { setAlarmsForTask, stopAlarmsForTask } = useAlarms()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
   const trackingKey = useRecoilValue(taskRecordKeyState)
-  const [alarms] = useStorage<Alarm[]>(STORAGE_KEY.ALARMS)
 
   const startTracking = useCallback(
     (node: Node) => {
@@ -117,59 +184,18 @@ export function useTrackingState(): useTrackingStateReturn {
       // Clone the objects for updating.
       manager.setNodeByLine(newNode, node.line)
 
+      // Stop previous alarms.
+      stopAlarmsForTask()
+
       const newVal = [...trackings, tracking]
       setTrackings(newVal)
       Ipc.send({
         command: 'startTracking',
         param: tracking.elapsedTime.toMinutes(),
       })
-      setAlarms(newTask)
+      setAlarmsForTask(newTask)
     },
     [trackings],
-  )
-
-  const setAlarms = useCallback(
-    (task: Task) => {
-      alarms.forEach((alarm) => {
-        let minutes = 0
-        let message: string
-        if (alarm.anchor === ALARM_ANCHOR.START) {
-          if (alarm.timing === ALARM_TIMING.AFTER) {
-            minutes = alarm.minutes
-            message = t('alarm_after_start', [`${minutes}`])
-          }
-        } else if (alarm.anchor === ALARM_ANCHOR.SCEHEDULED) {
-          if (task.estimatedTimes.toMinutes() === 0) {
-            Log.d('alarm not set because scheduled time is 0.')
-            return
-          }
-          if (alarm.timing === ALARM_TIMING.BEFORE) {
-            minutes =
-              task.estimatedTimes.toMinutes() -
-              task.actualTimes.toMinutes() -
-              alarm.minutes
-            message = t('alarm_before_schedule', [`${minutes}`])
-          } else {
-            minutes =
-              task.estimatedTimes.toMinutes() -
-              task.actualTimes.toMinutes() +
-              alarm.minutes
-            message = t('alarm_after_schedule', [`${minutes}`])
-          }
-        }
-        if (minutes <= 0) return
-
-        Ipc.send({
-          command: 'setAlarm',
-          param: {
-            title: message,
-            message: task.title,
-            minutes: minutes,
-          },
-        })
-      })
-    },
-    [alarms],
   )
 
   const stopTracking = useCallback(
@@ -190,7 +216,7 @@ export function useTrackingState(): useTrackingStateReturn {
         const end = format(Date.now(), TIME_FORMAT)
         const ems = Date.now() - tracking.trackingStartTime
         const time = Time.parseMs(ems)
-        appendEvents([
+        appendActivities([
           {
             id: '' + Math.random(),
             title: newTask.title,
@@ -207,7 +233,7 @@ export function useTrackingState(): useTrackingStateReturn {
       })
       setTrackings(newVal)
       Ipc.send({ command: 'stopTracking' })
-      Ipc.send({ command: 'stopAllAlarm' })
+      stopAlarmsForTask()
     },
     [trackings],
   )
@@ -266,62 +292,25 @@ interface useTrackingStopReturn {
 
 export function useTrackingStop(): useTrackingStopReturn {
   const manager = useTaskManager()
-  const { appendEvents } = useCalendarEvent()
-  const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
+  const root = manager.getRoot()
+  const trackingKey = useRecoilValue(taskRecordKeyState)
+  const [trackings] = useRecoilState(trackingStateSelector)
+  const { stopAlarmsForTask } = useAlarms()
 
   const stopAllTracking = useCallback(() => {
     Log.d('stopAllTracking')
-    stopTrackings()
+    stopTrackings(root, trackings, trackingKey)
     Ipc.send({ command: 'stopTracking' })
-    Ipc.send({ command: 'stopAllAlarm' })
+    stopAlarmsForTask()
   }, [trackings])
 
   const stopOtherTracking = useCallback(
     (nodeId: string) => {
       Log.d(`stopOtherTracking: ${nodeId}`)
-      stopTrackings(nodeId)
+      stopTrackings(root, trackings, trackingKey, nodeId)
     },
     [trackings],
   )
-
-  const stopTrackings = (exceptNodeId?: string) => {
-    const root = manager.getRoot()
-    const events = []
-    for (const tracking of trackings) {
-      if (tracking.isTracking && tracking.nodeId !== exceptNodeId) {
-        const node = root.find((n) => n.id === tracking.nodeId)
-        if (node && node.data instanceof Task) {
-          // Clone the objects for updating.
-          const newNode = node.clone()
-          const newTask = newNode.data as Task
-          newTask.trackingStop(tracking.trackingStartTime)
-          // TODO fix to be update multiple nodes.
-          manager.setNodeByLine(newNode, node.line)
-
-          const start = format(tracking.trackingStartTime, TIME_FORMAT)
-          const end = format(Date.now(), TIME_FORMAT)
-          const ems = Date.now() - tracking.trackingStartTime
-          const time = Time.parseMs(ems)
-          events.push({
-            id: '' + Math.random(),
-            title: newTask.title,
-            time,
-            start,
-            end,
-          })
-        }
-      }
-    }
-
-    // update calendar events
-    if (events.length > 0) appendEvents(events)
-
-    setTrackings(
-      trackings.filter((n) => {
-        return n.nodeId === exceptNodeId
-      }),
-    )
-  }
 
   return {
     stopAllTracking,

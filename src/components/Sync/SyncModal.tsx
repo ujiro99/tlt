@@ -3,9 +3,11 @@ import Modal from 'react-modal'
 
 import { useOauthState } from '@/hooks/useOauthState'
 import { useTaskManager } from '@/hooks/useTaskManager'
-import { useSyncModal } from '@/hooks/useSyncModal'
+import { useModal, MODAL } from '@/hooks/useModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
-import { useCalendarEvent } from '@/hooks/useCalendarEvent'
+import { useAlarms } from '@/hooks/useAlarms'
+import { useActivity } from '@/hooks/useActivity'
+import { useEventAlarm, eventToAlarm } from '@/hooks/useEventAlarm'
 import { Icon } from '@/components/Icon'
 import { sleep } from '@/services/util'
 import { STORAGE_KEY } from '@/services/storage'
@@ -25,6 +27,7 @@ import { SyncButton } from './SyncButton'
 import { UplaodEventList } from './UploadEventList'
 import { CalendarColorPicker } from './CalendarColorPicker'
 
+import '../ModalWindow.css'
 import './SyncModal.css'
 
 // Make sure to bind modal to your appElement (https://reactcommunity.org/react-modal/accessibility/)
@@ -34,8 +37,10 @@ export function SyncModal(): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const isLoggedIn = useOauthState()
-  const [visible, setVisible] = useSyncModal()
-  const { events: savedEvents, uploadEvents } = useCalendarEvent()
+  const { setAlarms } = useAlarms()
+  const [visible, setVisible] = useModal(MODAL.SYNC)
+  const { activities, uploadActivities } = useActivity()
+  const { setEventLines } = useEventAlarm()
   const [calendarDown, setCalendarDown] = useState<Calendar>()
   const [calendarUp, setCalendarUp] = useState<Calendar>()
   const [events, setEvents] = useState<CalendarEvent[]>()
@@ -43,7 +48,7 @@ export function SyncModal(): JSX.Element {
 
   const calendarExists = calendarDown != null
   const eventExists = events?.length > 0
-  const savedExists = savedEvents?.length > 0
+  const savedExists = activities?.length > 0
 
   const afterOpenModal = () => {}
 
@@ -84,14 +89,35 @@ export function SyncModal(): JSX.Element {
 
     // update root
     manager.setRoot(root)
+
+    // update event lines
+    const eventLines = events
+      .map((event) => {
+        const node = root.find((n) => {
+          if (n.type !== NODE_TYPE.TASK) return false
+          const task = n.data as Task
+          return task.calendarEventId === event.id
+        })
+        if (!node) return null
+        return { event, line: node.line }
+      })
+      .filter((e) => e != null)
+    setEventLines(eventLines)
+
+    setAlarmForEvens()
     await sleep(1500)
     return true
+  }
+
+  const setAlarmForEvens = () => {
+    const alarms = events.map((e) => eventToAlarm(e))
+    setAlarms(alarms)
   }
 
   const uploadGoogle = () => {
     analytics.track('upload google calendar')
     return new Promise((resolve) => {
-      uploadEvents(savedEvents, calendarUp, color, resolve)
+      uploadActivities(activities, calendarUp, color, resolve)
     })
   }
 
@@ -101,18 +127,18 @@ export function SyncModal(): JSX.Element {
       onAfterOpen={afterOpenModal}
       onRequestClose={onRequestClose}
       contentLabel="Sync Modal"
-      className="sync-modal"
+      className="modal-window"
     >
-      <div className="sync-modal-header">
+      <div className="modal-window-header">
         <h2>Sync with Google Calendar</h2>
         <button
-          className="sync-modal-header__close icon-button"
+          className="modal-window-header__close icon-button"
           onClick={onRequestClose}
         >
           <Icon className="icon-button__icon" name="close" />
         </button>
       </div>
-      <div className="sync-modal-content">
+      <div className="modal-window-content">
         <div className="google-calendar">
           <section className="google-calendar__login">
             <Account />

@@ -11,7 +11,7 @@ const TASK_STATE = {
   RUNNING: 'RUNNING',
   COMPLETE: 'COMPLETE',
 }
-type TaskState = typeof TASK_STATE[keyof typeof TASK_STATE]
+type TaskState = (typeof TASK_STATE)[keyof typeof TASK_STATE]
 
 export class Task implements IClonable<Task> {
   // for unique Id
@@ -22,7 +22,8 @@ export class Task implements IClonable<Task> {
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)(?:$|\s~|\s#(\d*))/
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
-  private static estimatedTimeRegexp = /~(\d+(?:\.\d+)?[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
+  private static estimatedTimeRegexp =
+    /~(\d+(?:\.\d+)?[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
   private static tagRegexp = /#(.*?)(:(\d))?(\s|$)/g
   private static allNumberRegexp = /^\d+$/
 
@@ -113,6 +114,7 @@ export class Task implements IClonable<Task> {
   public estimatedTimes: Time
   public actualTimes: Time
   public tags: Tag[]
+  public calendarEventId: string
 
   /**
    * Constructor called only by the parse function.
@@ -213,6 +215,7 @@ export class Task implements IClonable<Task> {
     newTask.estimatedTimes = this.estimatedTimes.clone()
     newTask.actualTimes = this.actualTimes.clone()
     newTask.tags = this.tags
+    newTask.calendarEventId = this.calendarEventId
     return newTask
   }
 }

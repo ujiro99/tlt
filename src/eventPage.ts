@@ -1,10 +1,22 @@
+import { TrackingState } from '@/@types/global'
+import { selectRecord } from '@/hooks/useTaskManager'
+import { stopTrackings } from '@/hooks/useTrackingState'
+import { loadRecords } from '@/hooks/useTaskStorage'
+import { EventLine } from '@/hooks/useEventAlarm'
 import Log from '@/services/log'
 import { Icon } from '@/services/icon'
+import { t } from '@/services/i18n'
 import { Storage, STORAGE_KEY } from '@/services/storage'
+import { Alarm, ALARM_TYPE } from '@/models/alarm'
+import { TaskRecordKey } from '@/models/taskRecordKey'
+import { Time } from '@/models/time'
 
-/** Alarm name */
-const ALARM_ICON_TIMER = 'ICON_TIMER'
-const ALARM_NOTIFICATION = 'NOTIFICATION'
+/** ICON ALarm **/
+const ICON_ALARM = new Alarm({
+  type: ALARM_TYPE.ICON,
+  name: 'icon',
+  message: '',
+}).toString()
 
 /** Hour in minutes */
 const HOUR = 60
@@ -35,12 +47,6 @@ chrome.runtime.onMessage.addListener(
   },
 )
 
-export type AlarmParam = {
-  minutes: number
-  title: string
-  message: string
-}
-
 type OnMessageFuncs = {
   [key: string]: (param: unknown, sendResponse: () => void) => boolean
 }
@@ -68,7 +74,7 @@ const onMessageFuncs: OnMessageFuncs = {
     void updateIconTime()
 
     // start timer
-    chrome.alarms.create(ALARM_ICON_TIMER, { periodInMinutes: 1 })
+    chrome.alarms.create(ICON_ALARM, { periodInMinutes: 1 })
     return true
   },
 
@@ -76,31 +82,37 @@ const onMessageFuncs: OnMessageFuncs = {
    * Stop tracking, and clear badge text.
    */
   stopTracking() {
-    void chrome.alarms.clear(ALARM_ICON_TIMER)
+    void chrome.alarms.clear(ICON_ALARM)
     Icon.clearText()
     return true
   },
 
-  setAlarm(param: AlarmParam) {
-    const obj = {
-      name: ALARM_NOTIFICATION,
-      param,
-    }
-    chrome.alarms.create(JSON.stringify(obj), {
-      delayInMinutes: param.minutes,
+  setAlarm(param: Alarm, sendResponse: () => void) {
+    const alarm = new Alarm({
+      type: param.type,
+      name: param.name,
+      message: param.message,
+      when: param.scheduledTime,
+      calendarEventId: param.calendarEventId,
     })
+    chrome.alarms.create(alarm.toString(), {
+      when: param.scheduledTime,
+    })
+    sendResponse()
     return true
   },
 
-  stopAllAlarm() {
-    chrome.notifications.getAll((notifications) => {
-      Object.keys(notifications).forEach((notificationId) => {
-        chrome.notifications.clear(notificationId)
-      })
-    })
+  stopAlarmsForTask(_, sendResponse: () => void) {
     chrome.alarms.getAll((alarms) => {
-      Object.values(alarms).forEach((alarm) => {
-        chrome.alarms.clear(alarm.name)
+      const promises = Object.values(alarms).map((alarm) => {
+        const obj = Alarm.fromString(alarm.name)
+        if (obj.type === ALARM_TYPE.TASK) {
+          Log.d(`clear alarm: ${obj.name} | ${obj.message}`)
+          return chrome.alarms.clear(alarm.name)
+        }
+      })
+      Promise.all(promises).then(() => {
+        sendResponse()
       })
     })
     return true
@@ -115,7 +127,7 @@ async function updateIconTime() {
   const trackingStartTime = (await Storage.get(
     STORAGE_KEY.TRACKING_START_MS,
   )) as number
-  
+
   // Extension icon shows the time from when tracking was started.
   const startMinutes = 0
   // TODO: Make the total elapsed time display optionally selectable
@@ -133,19 +145,93 @@ async function updateIconTime() {
   }
 }
 
-chrome.alarms.onAlarm.addListener((alarm) => {
-  if (alarm.name === ALARM_ICON_TIMER) {
+type NotificationEventId = {
+  notification: string
+  event: string
+}
+
+chrome.alarms.onAlarm.addListener((param) => {
+  const alarm = Alarm.fromString(param.name)
+  Log.d(alarm.type + ' ' + alarm.name)
+
+  if (alarm.type === ALARM_TYPE.ICON) {
     void updateIconTime()
-  } else {
-    const obj = JSON.parse(alarm.name)
-    if (obj.name === ALARM_NOTIFICATION) {
-      Log.d(ALARM_NOTIFICATION + ' ' + obj.param.title)
-      chrome.notifications.create({
+  } else if (alarm.type === ALARM_TYPE.TASK) {
+    chrome.notifications.create({
+      type: 'basic',
+      title: alarm.message,
+      message: alarm.name,
+      iconUrl: '/icon128.png',
+    })
+  } else if (alarm.type === ALARM_TYPE.EVENT) {
+    chrome.notifications.create(
+      {
         type: 'basic',
-        title: obj.param.title,
-        message: obj.param.message,
+        title: alarm.message,
+        message: alarm.name,
         iconUrl: '/icon128.png',
-      })
-    }
+        buttons: [
+          { title: t('alarm_button_start') },
+          { title: t('alarm_button_nothing') },
+        ],
+      },
+      async (notificationId) => {
+        const idArr =
+          ((await Storage.get(
+            STORAGE_KEY.NOTIFICATION_EVENT,
+          )) as NotificationEventId[]) ?? []
+        const ids = {
+          notification: notificationId,
+          event: alarm.calendarEventId,
+        }
+        Storage.set(STORAGE_KEY.NOTIFICATION_EVENT, [...idArr, ids])
+      },
+    )
   }
 })
+
+chrome.notifications.onButtonClicked.addListener(
+  async (notificationId, buttonIndex) => {
+    Log.d(`${notificationId}, ${buttonIndex}`)
+    const trackings = (await Storage.get(
+      STORAGE_KEY.TRACKING_STATE,
+    )) as TrackingState[]
+    const eventLines = (await Storage.get(
+      STORAGE_KEY.CALENDAR_EVENT,
+    )) as EventLine[]
+    const key = TaskRecordKey.fromDate(new Date())
+    
+    // TODO: elapsed time
+
+    // Stop other tracking
+    const records = await loadRecords()
+    const root = selectRecord(key, records)
+    await stopTrackings(root, trackings, key)
+
+    // Find the line number to start tracking
+    const idArr = (await Storage.get(
+      STORAGE_KEY.NOTIFICATION_EVENT,
+    )) as NotificationEventId[]
+    const eventId = idArr.find((n) => n.notification === notificationId)?.event
+    const line = eventLines.find((e) => e.event.id === eventId)?.line
+
+    // Update tracking state
+    const tracking = {
+      isTracking: true,
+      trackingStartTime: Date.now(),
+      key: key.toKey(),
+      elapsedTime: new Time(),
+      line,
+    }
+    await Storage.set(STORAGE_KEY.TRACKING_STATE, [tracking])
+
+    // Delete notified IDs
+    await Storage.set(
+      STORAGE_KEY.NOTIFICATION_EVENT,
+      idArr.filter((n) => n.notification !== notificationId),
+    )
+
+    onMessageFuncs.stopAlarmsForTask(0, () => {})
+    onMessageFuncs.startTracking(0, () => {})
+  },
+)

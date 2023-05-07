@@ -1,5 +1,8 @@
 import Log from '@/services/log'
 
+// for debug
+// void chrome.storage.local.clear()
+
 export const STORAGE_KEY = {
   ACCESS_TOKEN: 'access_token',
   REFRESH_TOKEN: 'refresh_token',
@@ -7,6 +10,7 @@ export const STORAGE_KEY = {
   CALENDAR_DOWNLOAD: 'calendar_download',
   CALENDAR_UPLOAD: 'calendar_upload',
   CALENDAR_COLOR: 'calendar_color',
+  CALENDAR_EVENT: 'calendar_event',
   OAUTH_STATE: 'oauth_state',
   LOGIN_STATE: 'login_state',
   ICON_START_MINUTES: 'icon_start_minutes',
@@ -16,6 +20,7 @@ export const STORAGE_KEY = {
   TRACKING_STATE: 'tracking_state',
   ACTIVITIES: 'activities',
   ALARMS: 'alarms',
+  NOTIFICATION_EVENT: 'notification_event',
 } as const
 export type StorageKey = (typeof STORAGE_KEY)[keyof typeof STORAGE_KEY]
 
@@ -26,6 +31,7 @@ export const ACCOUNT_DATA = [
   STORAGE_KEY.CALENDAR_DOWNLOAD,
   STORAGE_KEY.CALENDAR_UPLOAD,
   STORAGE_KEY.CALENDAR_COLOR,
+  STORAGE_KEY.CALENDAR_EVENT,
 ]
 
 export const TOKEN_TYPE = {
@@ -37,6 +43,7 @@ export const DEFAULTS = {
   [STORAGE_KEY.ACTIVITIES]: [],
   [STORAGE_KEY.ALARMS]: [],
   [STORAGE_KEY.CALENDAR_COLOR]: {},
+  [STORAGE_KEY.CALENDAR_EVENT]: [],
 }
 
 type onChangedCallback = (newVal, oldVal) => void

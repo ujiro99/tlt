@@ -83,5 +83,6 @@ export async function fetchWrapper(
 
 export function eventToNode(event: CalendarEvent): Node {
   const task = Task.parse(event.md)
+  task.calendarEventId = event.id
   return new Node(NODE_TYPE.TASK, 0, task, null)
 }

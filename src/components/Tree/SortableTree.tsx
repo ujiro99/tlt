@@ -41,6 +41,7 @@ import { CSS } from '@dnd-kit/utilities'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTrackingMove } from '@/hooks/useTrackingState'
+import { useEventAlarm } from '@/hooks/useEventAlarm'
 import { treeItemsToNode, updateLines } from '@/services/util'
 
 const measuring = {
@@ -98,6 +99,7 @@ export function SortableTree({
   const items = root.children
 
   const { moveTracking } = useTrackingMove()
+  const { moveEventLine } = useEventAlarm ()
 
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items)
@@ -277,6 +279,7 @@ export function SortableTree({
       sortedItems = updateLines(sortedItems)
       const newItems = buildTree(sortedItems)
       moveTracking(activeIndex + 1, overIndex + 1)
+      moveEventLine(activeIndex + 1, overIndex + 1)
 
       setTreeItems(newItems)
     }
