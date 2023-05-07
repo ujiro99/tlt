@@ -6,7 +6,7 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import { useModal, MODAL } from '@/hooks/useModal'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { useAlarms } from '@/hooks/useAlarms'
-import { useCalendarEvent } from '@/hooks/useCalendarEvent'
+import { useActivity } from '@/hooks/useActivity'
 import { Icon } from '@/components/Icon'
 import { sleep } from '@/services/util'
 import { STORAGE_KEY } from '@/services/storage'
@@ -39,7 +39,7 @@ export function SyncModal(): JSX.Element {
   const isLoggedIn = useOauthState()
   const { setAlarms } = useAlarms()
   const [visible, setVisible] = useModal(MODAL.SYNC)
-  const { events: savedEvents, uploadEvents } = useCalendarEvent()
+  const { activities, uploadActivities } = useActivity()
   const [calendarDown, setCalendarDown] = useState<Calendar>()
   const [calendarUp, setCalendarUp] = useState<Calendar>()
   const [events, setEvents] = useState<CalendarEvent[]>()
@@ -47,7 +47,7 @@ export function SyncModal(): JSX.Element {
 
   const calendarExists = calendarDown != null
   const eventExists = events?.length > 0
-  const savedExists = savedEvents?.length > 0
+  const savedExists = activities?.length > 0
 
   const afterOpenModal = () => {}
 
@@ -108,7 +108,7 @@ export function SyncModal(): JSX.Element {
   const uploadGoogle = () => {
     analytics.track('upload google calendar')
     return new Promise((resolve) => {
-      uploadEvents(savedEvents, calendarUp, color, resolve)
+      uploadActivities(activities, calendarUp, color, resolve)
     })
   }
 

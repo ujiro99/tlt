@@ -4,7 +4,7 @@ import { atom, selector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { nodeState, useTaskManager } from '@/hooks/useTaskManager'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
-import { useCalendarEvent } from '@/hooks/useCalendarEvent'
+import { useActivity } from '@/hooks/useActivity'
 import { useAlarms } from '@/hooks/useAlarms'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
@@ -92,7 +92,7 @@ interface useTrackingStateReturn {
 
 export function useTrackingState(): useTrackingStateReturn {
   const manager = useTaskManager()
-  const { appendEvents } = useCalendarEvent()
+  const { appendActivities } = useActivity()
   const { setAlarmsForTask, stopAlarmsForTask } = useAlarms()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
   const trackingKey = useRecoilValue(taskRecordKeyState)
@@ -147,7 +147,7 @@ export function useTrackingState(): useTrackingStateReturn {
         const end = format(Date.now(), TIME_FORMAT)
         const ems = Date.now() - tracking.trackingStartTime
         const time = Time.parseMs(ems)
-        appendEvents([
+        appendActivities([
           {
             id: '' + Math.random(),
             title: newTask.title,
@@ -223,7 +223,7 @@ interface useTrackingStopReturn {
 
 export function useTrackingStop(): useTrackingStopReturn {
   const manager = useTaskManager()
-  const { appendEvents } = useCalendarEvent()
+  const { appendActivities } = useActivity()
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
   const { stopAlarmsForTask } = useAlarms()
 
@@ -272,7 +272,7 @@ export function useTrackingStop(): useTrackingStopReturn {
     }
 
     // update calendar events
-    if (events.length > 0) appendEvents(events)
+    if (events.length > 0) appendActivities(events)
 
     setTrackings(
       trackings.filter((n) => {
