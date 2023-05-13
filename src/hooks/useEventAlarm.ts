@@ -2,8 +2,11 @@ import { useCallback } from 'react'
 import { useStorage } from '@/hooks/useStorage'
 import { CalendarEvent } from '@/services/google/calendar'
 import { STORAGE_KEY } from '@/services/storage'
-import { Alarm, ALARM_TYPE } from '@/models/alarm'
 import { t } from '@/services/i18n'
+import { equalsEventAndTask } from '@/services/google/util'
+import { Alarm, ALARM_TYPE } from '@/models/alarm'
+import { Task } from '@/models/task'
+import { Node, NODE_TYPE } from '@/models/node'
 
 export type EventLine = {
   event: CalendarEvent
@@ -23,6 +26,7 @@ export const eventToAlarm = (e: CalendarEvent): Alarm => {
 type useEventAlarmReturn = {
   setEventLines: (eventLines: EventLine[]) => void
   moveEventLine: (from: number, to: number) => void
+  fixEventLines: (root: Node) => void
 }
 
 export function useEventAlarm(): useEventAlarmReturn {
@@ -94,9 +98,33 @@ export function useEventAlarm(): useEventAlarmReturn {
     },
     [eventLines],
   )
+  
+  const fixEventLines = useCallback((root: Node) => {
+      const newEventLines = eventLines
+        .map((e) => {
+          const found = root.find((n) => {
+            if (n.type === NODE_TYPE.TASK) {
+              const task = n.data as Task
+              return equalsEventAndTask(e.event, task)
+            }
+            return false
+          })
+          if (!found) {
+            return null
+          }
+          return {
+            ...e,
+            line: found.line,
+          }
+        })
+        .filter((e) => e !== null)
+      setEventLines(newEventLines)
+    
+  }, [eventLines])
 
   return {
     setEventLines,
     moveEventLine,
+    fixEventLines,
   }
 }

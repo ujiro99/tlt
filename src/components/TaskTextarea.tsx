@@ -4,6 +4,7 @@ import TextareaAutosize from 'react-textarea-autosize'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useStorageWatcher } from '@/hooks/useStorageWatcher'
 import { useTaskRecordKey } from '@/hooks/useTaskRecordKey'
+import { useEventAlarm } from '@/hooks/useEventAlarm'
 import { depthToIndent } from '@/models/node'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
@@ -30,6 +31,7 @@ export function TaskTextarea(): JSX.Element {
   const [iconHidden, setIconHidden] = useState(true)
   const [selection, setSelection] = useState<Selection>()
   const { currentKey } = useTaskRecordKey()
+  const { fixEventLines } = useEventAlarm()
   
   const inputArea = useRef<HTMLTextAreaElement>()
   
@@ -74,7 +76,8 @@ export function TaskTextarea(): JSX.Element {
 
   const onBlur = () => {
     // Update the global scope data.
-    manager.setText(text)
+    const newRoot = manager.setText(text)
+    fixEventLines(newRoot)
   }
 
   const indent = (indentCount: number, from: number, to: number): string => {
