@@ -27,8 +27,8 @@ function AlarmItem({ alarm }: { alarm: Alarm }): JSX.Element {
 function AlarmItemEvent({ alarm }: { alarm: Alarm }): JSX.Element {
   return (
     <>
-      <p>
-        <span className="alarm-list__time">{alarm.time}</span>
+      <p className="alarm-list__time">
+        <span>{alarm.time}</span>
       </p>
       <p className="alarm-list__content">
         <span className="alarm-list__name">
@@ -42,8 +42,8 @@ function AlarmItemEvent({ alarm }: { alarm: Alarm }): JSX.Element {
 function AlarmItemTask({ alarm }: { alarm: Alarm }): JSX.Element {
   return (
     <>
-      <p>
-        <span className="alarm-list__time">{alarm.time}</span>
+      <p className="alarm-list__time">
+        <span>{alarm.time}</span>
       </p>
       <p className="alarm-list__content">
         <span className="alarm-list__name">{alarm.name}</span>
