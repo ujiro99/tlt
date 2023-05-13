@@ -121,7 +121,7 @@
     "message": "グループ別集計"
   },
   "alarm_before_schedule": {
-    "message": "予定時刻の$minutes$分前",
+    "message": "予定完了時刻の$minutes$分前",
     "placeholders": {
       "minutes": {
         "content": "$1",
@@ -130,7 +130,7 @@
     }
   },
   "alarm_after_schedule": {
-    "message": "予定時刻から$minutes$分超過しています",
+    "message": "予定時間から$minutes$分超過しています",
     "placeholders": {
       "minutes": {
         "content": "$1",
@@ -158,6 +158,14 @@
   },
   "alarm_schedule_start": {
     "message": "$event$の開始時間です！",
+    "placeholders": {
+      "event": {
+        "content": "$1"
+      }
+    }
+  },
+  "alarm_event_description": {
+    "message": "$event$の開始",
     "placeholders": {
       "event": {
         "content": "$1"

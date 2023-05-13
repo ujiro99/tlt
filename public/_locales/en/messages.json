@@ -122,7 +122,7 @@
     "message": "Delete?"
   },
   "alarm_before_schedule": {
-    "message": "$minutes$ minutes before the scheduled time",
+    "message": "$minutes$ minutes before the scheduled end time.",
     "placeholders": {
       "minutes": {
         "content": "$1",
@@ -131,7 +131,7 @@
     }
   },
   "alarm_after_schedule": {
-    "message": "$minutes$ minutes past the scheduled time",
+    "message": "Exceeded the scheduled time by $minutes$ minutes.",
     "placeholders": {
       "minutes": {
         "content": "$1",
@@ -140,7 +140,7 @@
     }
   },
   "alarm_after_start": {
-    "message": "$minutes$ minutes after the start time",
+    "message": "$minutes$ minutes elapsed since the start.",
     "placeholders": {
       "minutes": {
         "content": "$1",
@@ -159,6 +159,15 @@
   },
   "alarm_schedule_start": {
     "message": "$event$ is starting now!",
+    "placeholders": {
+      "event": {
+        "content": "$1",
+        "example": "meeting, study, traveling by train"
+      }
+    }
+  },
+  "alarm_event_description": {
+    "message": "Starting $event$",
     "placeholders": {
       "event": {
         "content": "$1",
