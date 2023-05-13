@@ -104,12 +104,12 @@ export function SyncModal(): JSX.Element {
       .filter((e) => e != null)
     setEventLines(eventLines)
 
-    setAlarmForEvens()
+    setAlarmForEvents()
     await sleep(1500)
     return true
   }
 
-  const setAlarmForEvens = () => {
+  const setAlarmForEvents = () => {
     const alarms = events.map((e) => eventToAlarm(e))
     setAlarms(alarms)
   }

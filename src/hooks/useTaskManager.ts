@@ -119,7 +119,7 @@ interface ITaskManager {
 
 export function useTaskManager(): ITaskManager {
   const [root, setRoot] = useRecoilState<Node>(nodeState)
-  const { trackings, moveTracking } = useTrackingMove()
+  const { moveTracking } = useTrackingMove()
   const { moveEventLine } = useEventAlarm()
   const { tags, upsertTag } = useTagHistory()
 
@@ -148,25 +148,16 @@ export function useTaskManager(): ITaskManager {
 
     // if line removed
     if (node == null) {
-      trackings.forEach((n) => {
-        if (line < n.line) {
-          // Move up
-          move(n.line, n.line - 1)
-        }
-      })
+      Log.d(`remove: ${line}`)
+      move(line, null)
     }
   }
 
   const addEmptyNodeByLine = (line: number): void => {
+    Log.d(`insert: ${line + 1}`)
     const newRoot = root.insertEmptyTask(line)
     setRoot(newRoot)
-    Log.d(`add empty ${line}`)
-    trackings.forEach((n) => {
-      if (line < n.line) {
-        // Move down
-        move(n.line, n.line + 1)
-      }
-    })
+    move(null, line + 1)
   }
 
   const addEmptyChild = (line: number): number => {
@@ -174,25 +165,16 @@ export function useTaskManager(): ITaskManager {
     setRoot(newRoot)
     const parent = newRoot.find((node) => node.line === line)
     const appendLine = parent.children[parent.children.length - 1].line
-    Log.d(`add empty ${appendLine}`)
-    trackings.forEach((n) => {
-      if (appendLine < n.line) {
-        // Move down
-        move(n.line, n.line + 1)
-      }
-    })
+    Log.d(`add: ${appendLine}`)
+    move(null, line)
     return appendLine
   }
 
   const removeLine = (line: number) => {
+    Log.d(`remove: ${line}`)
     const newRoot = root.filter((n) => n.line !== line)
     setRoot(newRoot)
-    trackings.forEach((t) => {
-      if (line < t.line) {
-        // Move up
-        move(t.line, t.line - 1)
-      }
-    })
+    move(line, null)
   }
 
   const updateTagHistory = (): void => {

@@ -33,8 +33,42 @@ export function useEventAlarm(): useEventAlarmReturn {
   const moveEventLine = useCallback(
     (from: number, to: number) => {
       const newVal = eventLines.map((n) => {
-        // From -> to
+        // -----
+        // add
+        // -----
+        if (from == null) {
+          if (n.line >= to) {
+            // Move down
+            return {
+              ...n,
+              line: n.line + 1,
+            }
+          }
+          return n
+        }
+
+        // -----
+        // remove
+        // -----
+        if (to == null) {
+          if (n.line === from) {
+            return null
+          }
+          if (from < n.line) {
+            // Move up
+            return {
+              ...n,
+              line: n.line - 1,
+            }
+          }
+          return n
+        }
+
+        // -----
+        // move
+        // -----
         if (n.line === from) {
+          // From -> to
           return {
             ...n,
             line: to,
@@ -55,7 +89,7 @@ export function useEventAlarm(): useEventAlarmReturn {
           }
         }
         return n
-      })
+      }).filter((n) => n != null)
       setEventLines(newVal)
     },
     [eventLines],
