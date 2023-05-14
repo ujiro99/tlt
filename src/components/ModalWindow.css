@@ -4,7 +4,6 @@
   @apply drop-shadow-xl;
   @apply rounded-md;
   @apply bg-white;
-  @apply p-8;
   @apply text-base;
 
   color: var(--text-600);
@@ -14,6 +13,7 @@
   right: auto;
   bottom: auto;
   margin-right: -50%;
+  padding: 1rem 2rem 1.6rem;
   transform: translate(-50%, -30%);
 
   &-header {

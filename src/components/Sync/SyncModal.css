@@ -3,7 +3,7 @@
 .google-calendar {
   &__import,
   &__upload {
-    margin-top: 30px;
+    margin-top: 24px;
     width: 300px;
   }
 
