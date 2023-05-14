@@ -4,6 +4,7 @@ import { useQuery } from 'react-query'
 import { useStorage } from '@/hooks/useStorage'
 import { GoogleCalendar, Calendar } from '@/services/google/calendar'
 import { StorageKey } from '@/services/storage'
+import { t } from '@/services/i18n'
 import Log from '@/services/log'
 import { Icon } from '@/components/Icon'
 import { Select } from '@/components/Select'
@@ -37,7 +38,6 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
       setCalendar(cal)
       props.onChangeCalendar(cal)
     }
-    e.target.blur()
   }
 
   useEffect(() => {
@@ -57,7 +57,7 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
   if (!calendarFound) {
     return (
       <Select defaultValue="">
-        <option key="0" value="" disabled>
+        <option key="0" value="" hidden>
           No calendar found
         </option>
       </Select>
@@ -67,8 +67,8 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
   return (
     <>
       <Select onChange={onChange} defaultValue={calendar ? calendar.id : ''}>
-        <option key="0" value="" disabled>
-          -- please select --
+        <option key="0" value="" hidden>
+          {t("please_select")}
         </option>
         {resApi.data.map((d) => {
           return (

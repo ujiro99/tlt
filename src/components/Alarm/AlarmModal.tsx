@@ -4,7 +4,7 @@ import Modal from 'react-modal'
 import { useModal, MODAL } from '@/hooks/useModal'
 import { useAlarms } from '@/hooks/useAlarms'
 import { useAnalytics } from '@/hooks/useAnalytics'
-import { AlarmTaskTextarea } from '@/components/Alarm/AlarmTextarea'
+import { AlarmEditor } from '@/components/Alarm/AlarmEditor'
 import { Icon } from '@/components/Icon'
 import { t } from '@/services/i18n'
 import { Alarm, ALARM_TYPE } from '@/models/alarm'
@@ -102,10 +102,10 @@ export function AlarmModal(): JSX.Element {
         </section>
         <section className="modal-window__section">
           <h3 className="modal-window__section-title">
-            <Icon name="alart" />
+            <Icon name="task" />
             {t('alarm_for_task')}
           </h3>
-          <AlarmTaskTextarea />
+          <AlarmEditor />
         </section>
       </div>
     </Modal>

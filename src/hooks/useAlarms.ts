@@ -97,7 +97,7 @@ export function useAlarms(): useAlarmsReturn {
               task.estimatedTimes.toMinutes() -
               task.actualTimes.toMinutes() +
               alarm.minutes
-            message = t('alarm_after_schedule', [`${minutes}`])
+            message = t('alarm_after_schedule_message', [`${minutes}`])
           }
         }
         if (minutes <= 0) return

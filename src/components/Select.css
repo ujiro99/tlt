@@ -1,6 +1,8 @@
 @import '../css/mixin.css';
 
 .select {
+  position: relative;
+
   &__select {
     @mixin interactable;
     @apply border;
@@ -13,7 +15,6 @@
 
     width: 100%;
     appearance: none;
-    font-size: 0.8rem;
     border-radius: var(--radius-md);
 
     option {
@@ -21,7 +22,7 @@
     }
 
     option[disabled] {
-      display: none;
+      background: var(--bg-gray-300);
     }
 
     &:focus-visible {

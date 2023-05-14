@@ -3,6 +3,7 @@
 .calendar-list {
   position: relative;
   flex: 1;
+  font-size: 0.8rem;
 
   &__error {
     @apply text-rose-500;

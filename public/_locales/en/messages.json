@@ -60,6 +60,9 @@
     "message": "Elapsed",
     "description": "Elapsed time"
   },
+  "minutes": {
+    "message": "minutes"
+  },
   "tag": {
     "message": "tag"
   },
@@ -131,7 +134,16 @@
     }
   },
   "alarm_after_schedule": {
-    "message": "Exceeded the scheduled time by $minutes$ minutes.",
+    "message": "$minutes$ minutes after scheduled end time.",
+    "placeholders": {
+      "minutes": {
+        "content": "$1",
+        "example": "5, 10, 20 ..."
+      }
+    }
+  },
+  "alarm_after_schedule_message": {
+    "message": "Exceeded the scheduled end time by $minutes$ minutes.",
     "placeholders": {
       "minutes": {
         "content": "$1",
@@ -140,7 +152,7 @@
     }
   },
   "alarm_after_start": {
-    "message": "$minutes$ minutes elapsed since the start.",
+    "message": "$minutes$ minutes elapsed from start.",
     "placeholders": {
       "minutes": {
         "content": "$1",
@@ -180,5 +192,24 @@
   },
   "alarm_button_nothing": {
     "message": "Do Nothing"
+  },
+  "alarm_timing_before": {
+    "message": "Before"
+  },
+  "alarm_timing_after": {
+    "message": "After"
+  },
+  "alarm_anchor_start": {
+    "message": "Start time"
+  },
+  "alarm_anchor_sceheduled": {
+    "message": "Scheduled end time"
+  },
+  "alarm_no_alarm_rule": {
+    "message": "No alarm rule is set for the task. Please select a rule and click the 'Add' button."
+  },
+  "please_select": {
+    "message": "Please select",
+    "description": "Initial display for the select box"
   }
 }

@@ -9,19 +9,27 @@ type Prop = {
   onChange?: React.ChangeEventHandler
   loading?: boolean
   defaultValue?: string
+  value?: string
+  className?: string
   style?: CSSProperties
   children?: React.ReactNode
 }
 
 export function Select(props: Prop): JSX.Element {
+  const onChange = (e) => {
+    props.onChange(e)
+    e.target.blur()
+  }
+
   return (
-    <div className="select" style={props.style}>
+    <div className={classnames('select', props.className)} style={props.style}>
       <select
         className={classnames('select__select', {
           'mod-loading': props.loading,
         })}
-        onChange={props.onChange}
+        onChange={onChange}
         defaultValue={props.defaultValue}
+        value={props.value}
       >
         {props.children}
       </select>
