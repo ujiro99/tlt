@@ -1,6 +1,11 @@
 import React, { Suspense, useEffect } from 'react'
 import { useQuery } from 'react-query'
-import { GoogleCalendar, Calendar, CalendarEvent } from '@/services/google/calendar'
+import {
+  GoogleCalendar,
+  Calendar,
+  CalendarEvent,
+  RESPONSE_STATUS,
+} from '@/services/google/calendar'
 
 import './EventList.css'
 
@@ -24,12 +29,20 @@ function Inner(props: EventListProps): JSX.Element {
     props.onChangeEvents(data)
   }, [data])
 
+  const className = (e: CalendarEvent) => {
+    let name = 'event-list__item'
+    if (e.responseStatus === RESPONSE_STATUS.DECLINED) {
+      name += ' mod-declined'
+    }
+    return name
+  }
+
   return isExist ? (
     <ul>
       {data.map((e) => (
-        <li key={e.id} className="event-list__item">
-          <span className='event-list__title'>{e.title}</span>
-          <span className='event-list__time'>{e.time.toString()}</span>
+        <li key={e.id} className={className(e)}>
+          <span className="event-list__title">{e.title}</span>
+          <span className="event-list__time">{e.time.toString()}</span>
         </li>
       ))}
     </ul>

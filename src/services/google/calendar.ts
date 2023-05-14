@@ -45,6 +45,14 @@ async function fetchCalendars(): Promise<Calendar[]> {
   return res
 }
 
+export const RESPONSE_STATUS = {
+  NEEDS_ACTION: 'needsAction',
+  DECLINED: 'declined',
+  TENTATIVE: 'tentative',
+  ACCEPTED: 'accepted',
+}
+type ResponseStatus = (typeof RESPONSE_STATUS)[keyof typeof RESPONSE_STATUS]
+
 export type CalendarEvent = {
   id: string
   title: string
@@ -56,6 +64,7 @@ export type CalendarEvent = {
   status?: string
   description?: string
   colorId?: string
+  responseStatus?: ResponseStatus
 }
 
 async function fetchEvents(calendar: Calendar): Promise<CalendarEvent[]> {
@@ -100,6 +109,14 @@ async function fetchEvents(calendar: Calendar): Promise<CalendarEvent[]> {
       e.md = `${DEFAULT}${e.title} ~/${e.time.toString()}`
       e.htmlLink = item.htmlLink
       e.status = item.status
+      
+      if (item.attendees != null) {
+        const found = item.attendees.find((a) => a.self)
+        if (found != null) {
+          e.responseStatus = found.responseStatus
+        }
+      }
+
       res.push(e)
     } catch {
       Log.v(item)
@@ -132,7 +149,7 @@ async function insertEvent(
         dateTime: event.end,
       },
       description: event.description,
-      colorId: event.colorId
+      colorId: event.colorId,
     },
   }
 

@@ -16,6 +16,7 @@ import {
   Calendar,
   CalendarColor,
   CalendarEvent,
+  RESPONSE_STATUS,
 } from '@/services/google/calendar'
 import { NODE_TYPE } from '@/models/node'
 import { Task } from '@/models/task'
@@ -59,7 +60,10 @@ export function SyncModal(): JSX.Element {
   const importGoogle = async () => {
     analytics.track('import google calendar')
 
-    let nodes = events.map(eventToNode)
+    let eventsFiltered = events.filter(
+      (e) => e.responseStatus !== RESPONSE_STATUS.DECLINED,
+    )
+    let nodes = eventsFiltered.map(eventToNode)
     let root = manager.getRoot()
 
     // merge
@@ -91,7 +95,7 @@ export function SyncModal(): JSX.Element {
     manager.setRoot(root)
 
     // update event lines
-    const eventLines = events
+    const eventLines = eventsFiltered
       .map((event) => {
         const node = root.find((n) => {
           if (n.type !== NODE_TYPE.TASK) return false
@@ -104,12 +108,12 @@ export function SyncModal(): JSX.Element {
       .filter((e) => e != null)
     setEventLines(eventLines)
 
-    setAlarmForEvents()
+    setAlarmForEvents(eventsFiltered)
     await sleep(1500)
     return true
   }
 
-  const setAlarmForEvents = () => {
+  const setAlarmForEvents = (events: CalendarEvent[]) => {
     const alarms = events.map((e) => eventToAlarm(e))
     setAlarms(alarms)
   }
