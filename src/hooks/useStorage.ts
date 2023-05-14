@@ -15,11 +15,11 @@ const localPersist =
       setSelf(newVal)
     })
 
-    onSet((newVal) => {
+    onSet(async (newVal) => {
       if (newVal instanceof DefaultValue) {
-        Storage.remove(key)
+        await Storage.remove(key)
       } else {
-        Storage.set(key, newVal)
+        await Storage.set(key, newVal)
       }
     })
   }

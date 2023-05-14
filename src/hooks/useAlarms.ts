@@ -23,6 +23,7 @@ const getAlarms = async (): Promise<Alarm[]> => {
       return Alarm.fromString(a.name)
     })
     .filter((a) => a.type !== ALARM_TYPE.ICON)
+    .sort((a, b) => a.scheduledTime - b.scheduledTime)
   Log.d(alarms)
   return alarms
 }
@@ -39,8 +40,8 @@ export const alarmState = atom({
   default: selector({
     key: 'alarmStateSelector',
     get: async () => {
-      const alarms = await getAlarms()
       Log.d(`get alarmStateSelector`)
+      const alarms = await getAlarms()
       Log.d(alarms)
       return alarms
     },
@@ -90,13 +91,13 @@ export function useAlarms(): useAlarmsReturn {
               task.estimatedTimes.toMinutes() -
               task.actualTimes.toMinutes() -
               alarm.minutes
-            message = t('alarm_before_schedule', [`${minutes}`])
+            message = t('alarm_before_schedule', [`${alarm.minutes}`])
           } else {
             minutes =
               task.estimatedTimes.toMinutes() -
               task.actualTimes.toMinutes() +
               alarm.minutes
-            message = t('alarm_after_schedule', [`${minutes}`])
+            message = t('alarm_after_schedule_message', [`${minutes}`])
           }
         }
         if (minutes <= 0) return

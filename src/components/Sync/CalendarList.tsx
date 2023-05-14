@@ -1,11 +1,13 @@
 import React, { Suspense, useEffect } from 'react'
 import { useQuery } from 'react-query'
 
-import { Icon } from '@/components/Icon'
 import { useStorage } from '@/hooks/useStorage'
 import { GoogleCalendar, Calendar } from '@/services/google/calendar'
 import { StorageKey } from '@/services/storage'
+import { t } from '@/services/i18n'
 import Log from '@/services/log'
+import { Icon } from '@/components/Icon'
+import { Select } from '@/components/Select'
 
 import './CalendarList.css'
 
@@ -25,7 +27,7 @@ type CalendarListProps = {
 function CalendarListInner(props: CalendarListProps): JSX.Element {
   const [calendar, setCalendar] = useStorage<Calendar>(props.calendarKey)
   const resApi = fetchCalendars()
-  
+
   const needReAuth = resApi.data == null
   const calendarFound = resApi.data?.length > 0
 
@@ -36,7 +38,6 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
       setCalendar(cal)
       props.onChangeCalendar(cal)
     }
-    e.target.blur()
   }
 
   useEffect(() => {
@@ -55,23 +56,19 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
 
   if (!calendarFound) {
     return (
-      <select className="calendar-list__select" defaultValue="">
-        <option key="0" value="" disabled>
+      <Select defaultValue="">
+        <option key="0" value="" hidden>
           No calendar found
         </option>
-      </select>
+      </Select>
     )
   }
 
   return (
     <>
-      <select
-        className="calendar-list__select"
-        onChange={onChange}
-        defaultValue={calendar ? calendar.id : ""}
-      >
-        <option key="0" value="" disabled>
-          -- please select --
+      <Select onChange={onChange} defaultValue={calendar ? calendar.id : ''}>
+        <option key="0" value="" hidden>
+          {t("please_select")}
         </option>
         {resApi.data.map((d) => {
           return (
@@ -80,8 +77,7 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
             </option>
           )
         })}
-      </select>
-      <Icon className="calendar-list__expand" name="expand" />
+      </Select>
     </>
   )
 }
@@ -89,11 +85,7 @@ function CalendarListInner(props: CalendarListProps): JSX.Element {
 export function CalendarList(props: CalendarListProps): JSX.Element {
   return (
     <div className="calendar-list">
-      <Suspense
-        fallback={
-          <select className="calendar-list__select mod-loading"></select>
-        }
-      >
+      <Suspense fallback={<Select loading={true} />}>
         <CalendarListInner {...props} />
       </Suspense>
     </div>
