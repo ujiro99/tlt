@@ -207,48 +207,64 @@ chrome.alarms.onAlarm.addListener((param) => {
   }
 })
 
+const startTrackingForCalendarEvent = async (notificationId: string) => {
+  const trackings = (await Storage.get(
+    STORAGE_KEY.TRACKING_STATE,
+  )) as TrackingState[]
+  const eventLines = (await Storage.get(
+    STORAGE_KEY.CALENDAR_EVENT,
+  )) as EventLine[]
+  const key = TaskRecordKey.fromDate(new Date())
+
+  // Find the line number to start tracking
+  const idArr = (await Storage.get(
+    STORAGE_KEY.NOTIFICATION_EVENT,
+  )) as NotificationEventId[]
+  const eventId = idArr.find((n) => n.notification === notificationId)?.event
+  const line = eventLines.find((e) => e.event.id === eventId)?.line
+  
+  if (line == null) {
+    // It is not a notification to CalendarEvent, so does nothing.
+    return
+  }
+
+  // Stop other tracking
+  const records = await loadRecords()
+  const root = selectRecord(key, records)
+  await stopTrackings(root, trackings, key)
+
+  // Update tracking state
+  const tracking = {
+    isTracking: true,
+    trackingStartTime: Date.now(),
+    key: key.toKey(),
+    elapsedTime: new Time(),
+    line,
+  }
+  await Storage.set(STORAGE_KEY.TRACKING_STATE, [tracking])
+
+  // Delete notified IDs
+  await Storage.set(
+    STORAGE_KEY.NOTIFICATION_EVENT,
+    idArr.filter((n) => n.notification !== notificationId),
+  )
+
+  onMessageFuncs.stopAlarmsForTask(0, () => {})
+  onMessageFuncs.startTracking(0, () => {})
+}
+
+chrome.notifications.onClicked.addListener(async (notificationId) => {
+  Log.d(`${notificationId}`)
+  await startTrackingForCalendarEvent(notificationId)
+})
+
 chrome.notifications.onButtonClicked.addListener(
   async (notificationId, buttonIndex) => {
     Log.d(`${notificationId}, ${buttonIndex}`)
-    const trackings = (await Storage.get(
-      STORAGE_KEY.TRACKING_STATE,
-    )) as TrackingState[]
-    const eventLines = (await Storage.get(
-      STORAGE_KEY.CALENDAR_EVENT,
-    )) as EventLine[]
-    const key = TaskRecordKey.fromDate(new Date())
-
-    // TODO: elapsed time
-
-    // Stop other tracking
-    const records = await loadRecords()
-    const root = selectRecord(key, records)
-    await stopTrackings(root, trackings, key)
-
-    // Find the line number to start tracking
-    const idArr = (await Storage.get(
-      STORAGE_KEY.NOTIFICATION_EVENT,
-    )) as NotificationEventId[]
-    const eventId = idArr.find((n) => n.notification === notificationId)?.event
-    const line = eventLines.find((e) => e.event.id === eventId)?.line
-
-    // Update tracking state
-    const tracking = {
-      isTracking: true,
-      trackingStartTime: Date.now(),
-      key: key.toKey(),
-      elapsedTime: new Time(),
-      line,
+    if (buttonIndex !== 0) {
+      // Do nothing button clicked.
+      return
     }
-    await Storage.set(STORAGE_KEY.TRACKING_STATE, [tracking])
-
-    // Delete notified IDs
-    await Storage.set(
-      STORAGE_KEY.NOTIFICATION_EVENT,
-      idArr.filter((n) => n.notification !== notificationId),
-    )
-
-    onMessageFuncs.stopAlarmsForTask(0, () => {})
-    onMessageFuncs.startTracking(0, () => {})
+    await startTrackingForCalendarEvent(notificationId)
   },
 )
