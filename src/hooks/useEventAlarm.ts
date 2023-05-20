@@ -7,6 +7,7 @@ import { equalsEventAndTask } from '@/services/google/util'
 import { Alarm, ALARM_TYPE } from '@/models/alarm'
 import { Task } from '@/models/task'
 import { Node, NODE_TYPE } from '@/models/node'
+import { useAlarms } from '@/hooks/useAlarms'
 
 export type EventLine = {
   event: CalendarEvent
@@ -33,6 +34,7 @@ export function useEventAlarm(): useEventAlarmReturn {
   const [eventLines, setEventLines] = useStorage<EventLine[]>(
     STORAGE_KEY.CALENDAR_EVENT,
   )
+  const { stopAlarms } = useAlarms()
 
   const moveEventLine = useCallback(
     (from: number, to: number) => {
@@ -56,6 +58,7 @@ export function useEventAlarm(): useEventAlarmReturn {
         // -----
         if (to == null) {
           if (n.line === from) {
+            stopAlarms([eventToAlarm(n.event)])
             return null
           }
           if (from < n.line) {
@@ -99,6 +102,9 @@ export function useEventAlarm(): useEventAlarmReturn {
     [eventLines],
   )
   
+  /**
+   * Fix line numbers as much as possible to match the result of editing in the TaskTextarea.
+   */
   const fixEventLines = useCallback((root: Node) => {
       const newEventLines = eventLines
         .map((e) => {

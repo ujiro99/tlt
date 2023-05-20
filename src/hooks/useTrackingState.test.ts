@@ -48,6 +48,7 @@ beforeEach(() => {
   alarmModule.useAlarms.mockReturnValue({
     alarms: [],
     setAlarms: (alarms: Alarm[]) => {},
+    stopAlarms: (alarms: Alarm[]) => {},
     setAlarmsForTask: (task: Task) => {},
     stopAlarmsForTask: () => {}
   })

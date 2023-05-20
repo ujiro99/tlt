@@ -31,6 +31,7 @@ const getAlarms = async (): Promise<Alarm[]> => {
 type useAlarmsReturn = {
   alarms: Alarm[]
   setAlarms: (alarms: Alarm[]) => void
+  stopAlarms: (alarms: Alarm[]) => void
   setAlarmsForTask: (task: Task) => void
   stopAlarmsForTask: () => void
 }
@@ -41,9 +42,7 @@ export const alarmState = atom({
     key: 'alarmStateSelector',
     get: async () => {
       Log.d(`get alarmStateSelector`)
-      const alarms = await getAlarms()
-      Log.d(alarms)
-      return alarms
+      return await getAlarms()
     },
   }),
 })
@@ -119,6 +118,11 @@ export function useAlarms(): useAlarmsReturn {
     [alarms, alarmRules],
   )
 
+  const stopAlarms = useCallback(async (alarms: Alarm[]) => {
+    await Ipc.send({ command: 'stopAlarms', param: alarms })
+    _setAlarms(await getAlarms())
+  }, [])
+
   const stopAlarmsForTask = useCallback(async () => {
     await Ipc.send({ command: 'stopAlarmsForTask' })
     _setAlarms(await getAlarms())
@@ -127,6 +131,7 @@ export function useAlarms(): useAlarmsReturn {
   return {
     alarms,
     setAlarms,
+    stopAlarms,
     setAlarmsForTask,
     stopAlarmsForTask,
   }

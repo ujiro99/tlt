@@ -102,6 +102,23 @@ const onMessageFuncs: OnMessageFuncs = {
     return true
   },
 
+  stopAlarms(params: Alarm[], sendResponse: () => void) {
+    const promises = params.map((param) => {
+      const alarm = new Alarm({
+        type: param.type,
+        name: param.name,
+        message: param.message,
+        when: param.scheduledTime,
+        calendarEventId: param.calendarEventId,
+      })
+      return chrome.alarms.clear(alarm.toString())
+    })
+    Promise.all(promises).then(() => {
+      sendResponse()
+    })
+    return true
+  },
+
   stopAlarmsForTask(_, sendResponse: () => void) {
     chrome.alarms.getAll((alarms) => {
       const promises = Object.values(alarms).map((alarm) => {
@@ -200,7 +217,7 @@ chrome.notifications.onButtonClicked.addListener(
       STORAGE_KEY.CALENDAR_EVENT,
     )) as EventLine[]
     const key = TaskRecordKey.fromDate(new Date())
-    
+
     // TODO: elapsed time
 
     // Stop other tracking
