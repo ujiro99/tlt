@@ -7,9 +7,13 @@ import Log from '@/services/log'
 import { Icon } from '@/services/icon'
 import { t } from '@/services/i18n'
 import { Storage, STORAGE_KEY } from '@/services/storage'
+import { AlarmService } from '@/services/alarm'
 import { Alarm, ALARM_TYPE } from '@/models/alarm'
 import { TaskRecordKey } from '@/models/taskRecordKey'
 import { Time } from '@/models/time'
+import { NODE_TYPE } from '@/models/node'
+import { Task } from '@/models/task'
+import { AlarmRule } from '@/models/alarmRule'
 
 /** ICON ALarm **/
 const ICON_ALARM = new Alarm({
@@ -234,6 +238,7 @@ const startTrackingForCalendarEvent = async (notificationId: string) => {
   await stopTrackings(root, trackings, key)
 
   // Update tracking state
+  onMessageFuncs.startTracking(0, () => {})
   const tracking = {
     isTracking: true,
     trackingStartTime: Date.now(),
@@ -243,14 +248,22 @@ const startTrackingForCalendarEvent = async (notificationId: string) => {
   }
   await Storage.set(STORAGE_KEY.TRACKING_STATE, [tracking])
 
+  // Set alarms for task
+  onMessageFuncs.stopAlarmsForTask(0, () => {})
+  const alarmRules = (await Storage.get(STORAGE_KEY.ALARMS)) as AlarmRule[]
+  const node = root.find((n) => n.line === line)
+  if (node != null && node.type === NODE_TYPE.TASK) {
+    const alarms = AlarmService.taskToAlarms(node.data as Task, alarmRules)
+    alarms.forEach((alarm) => {
+      onMessageFuncs.setAlarm(alarm, () => {})
+    })
+  }
+
   // Delete notified IDs
   await Storage.set(
     STORAGE_KEY.NOTIFICATION_EVENT,
     idArr.filter((n) => n.notification !== notificationId),
   )
-
-  onMessageFuncs.stopAlarmsForTask(0, () => {})
-  onMessageFuncs.startTracking(0, () => {})
 }
 
 chrome.notifications.onClicked.addListener(async (notificationId) => {

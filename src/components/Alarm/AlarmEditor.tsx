@@ -25,7 +25,7 @@ const anchorRule = {
 export function AlarmEditor(): JSX.Element {
   const [timing, setTiming] = useState('')
   const [anchor, setAnchor] = useState('')
-  const [minutes, setMinutes] = useState(0)
+  const [minutes, setMinutes] = useState<number>(0)
   const [alarms, setAlarms] = useStorage<AlarmRule[]>(STORAGE_KEY.ALARMS)
 
   const alarmExists = alarms?.length > 0
@@ -48,7 +48,7 @@ export function AlarmEditor(): JSX.Element {
 
   const handleClickAdd = () => {
     if (!isValid) return
-    const rule = new AlarmRule(timing, anchor, minutes)
+    const rule = new AlarmRule(timing, anchor, minutes - 0)
     const newRules = [...alarms, rule]
     setAlarms(newRules)
   }

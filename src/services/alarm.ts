@@ -27,31 +27,31 @@ export const AlarmService = {
    */
   taskToAlarms: (task: Task, alarmRules: AlarmRule[]): Alarm[] => {
     return alarmRules
-      .map((alarm) => {
+      .map((rule) => {
         let minutes = 0
         let message: string
-        if (alarm.anchor === ALARM_ANCHOR.START) {
-          if (alarm.timing === ALARM_TIMING.AFTER) {
-            minutes = alarm.minutes
-            message = t('alarm_after_start', [`${minutes}`])
+        if (rule.anchor === ALARM_ANCHOR.START) {
+          if (rule.timing === ALARM_TIMING.AFTER) {
+            minutes = rule.minutes
+            message = t('alarm_after_start', [`${rule.minutes}`])
           }
-        } else if (alarm.anchor === ALARM_ANCHOR.SCEHEDULED) {
+        } else if (rule.anchor === ALARM_ANCHOR.SCEHEDULED) {
           if (task.estimatedTimes.toMinutes() === 0) {
             Log.d('alarm not set because scheduled time is 0.')
             return
           }
-          if (alarm.timing === ALARM_TIMING.BEFORE) {
+          if (rule.timing === ALARM_TIMING.BEFORE) {
             minutes =
               task.estimatedTimes.toMinutes() -
               task.actualTimes.toMinutes() -
-              alarm.minutes
-            message = t('alarm_before_schedule', [`${alarm.minutes}`])
+              rule.minutes
+            message = t('alarm_before_schedule', [`${rule.minutes}`])
           } else {
             minutes =
               task.estimatedTimes.toMinutes() -
               task.actualTimes.toMinutes() +
-              alarm.minutes
-            message = t('alarm_after_schedule_message', [`${minutes}`])
+              rule.minutes
+            message = t('alarm_after_schedule_message', [`${rule.minutes}`])
           }
         }
         if (minutes <= 0) return

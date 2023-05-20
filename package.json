@@ -29,6 +29,7 @@
     "date-fns": "^2.29.3",
     "date-fns-tz": "^2.0.0",
     "googleapis": "^105.0.0",
+    "jest-chrome": "^0.8.0",
     "mixpanel-browser": "^2.45.0",
     "react": "^18.2.0",
     "react-calendar": "^4.0.0",
