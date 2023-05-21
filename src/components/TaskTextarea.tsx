@@ -32,9 +32,8 @@ export function TaskTextarea(): JSX.Element {
   const [selection, setSelection] = useState<Selection>()
   const { currentKey } = useTaskRecordKey()
   const { fixEventLines } = useEventAlarm()
-  
   const inputArea = useRef<HTMLTextAreaElement>()
-  
+
   useEffect(() => {
     setText(manager.getText())
   }, [currentKey])
@@ -45,12 +44,19 @@ export function TaskTextarea(): JSX.Element {
   }, [currentKey])
 
   useEffect(() => {
+    let unmounted = false
     if (timeoutID) clearTimeout(timeoutID)
     const newTimeoutId = window.setTimeout(() => {
+      if (unmounted) return
       manager.setText(text)
       setTimeoutID(null)
     }, 1 * 500 /* ms */)
+
     setTimeoutID(newTimeoutId)
+    return () => {
+      unmounted = true
+      clearTimeout(timeoutID)
+    }
   }, [text])
 
   useEffect(() => {

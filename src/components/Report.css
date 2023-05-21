@@ -1,4 +1,6 @@
 .report-data {
+  position: relative;
+
   &__setting {
     position: absolute;
     right: 10px;
