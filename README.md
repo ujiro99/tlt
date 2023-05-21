@@ -25,10 +25,6 @@
 <img src="https://github.com/ujiro99/optimize-ab-selector/blob/master/docs/assets/chrome-webstore-small.png?raw=true" alt="chrome webstore" width="200">
 </a>
 
-## Sponsor
-If you find this app useful, please support the author!🌟
-
-<a href="https://www.buymeacoffee.com/yujiro.takeda"><img src="https://img.buymeacoffee.com/button-api/?text=Buy me a coffee&emoji=&slug=yujiro.takeda&button_colour=FFDD00&font_colour=000000&font_family=Cookie&outline_colour=000000&coffee_colour=ffffff"></a>
 
 ## Privacy policy
 [Privacy policy](https://todolist-timetracking.com/privacy-policy)
