@@ -4,6 +4,7 @@ import { CalendarEvent } from '@/services/google/calendar'
 import { STORAGE_KEY } from '@/services/storage'
 import { t } from '@/services/i18n'
 import { equalsEventAndTask } from '@/services/google/util'
+import { moveLine } from '@/services/util'
 import { Alarm, ALARM_TYPE } from '@/models/alarm'
 import { Task } from '@/models/task'
 import { Node, NODE_TYPE } from '@/models/node'
@@ -38,74 +39,28 @@ export function useEventAlarm(): useEventAlarmReturn {
 
   const moveEventLine = useCallback(
     (from: number, to: number) => {
-      const newVal = eventLines.map((n) => {
-        // -----
-        // add
-        // -----
-        if (from == null) {
-          if (n.line >= to) {
-            // Move down
-            return {
-              ...n,
-              line: n.line + 1,
-            }
-          }
-          return n
-        }
-
-        // -----
-        // remove
-        // -----
-        if (to == null) {
-          if (n.line === from) {
+      const newVal = eventLines
+        .map((n) => {
+          if (n.line === from && to == null) {
+            // Remove this line.
             stopAlarms([eventToAlarm(n.event)])
-            return null
           }
-          if (from < n.line) {
-            // Move up
-            return {
-              ...n,
-              line: n.line - 1,
-            }
-          }
-          return n
-        }
-
-        // -----
-        // move
-        // -----
-        if (n.line === from) {
-          // From -> to
           return {
             ...n,
-            line: to,
+            line: moveLine(n.line, from, to),
           }
-        }
-        if (from > n.line && n.line >= to) {
-          // Move down
-          return {
-            ...n,
-            line: n.line + 1,
-          }
-        }
-        if (from < n.line && n.line <= to) {
-          // Move up
-          return {
-            ...n,
-            line: n.line - 1,
-          }
-        }
-        return n
-      }).filter((n) => n != null)
+        })
+        .filter((n) => n.line != null)
       setEventLines(newVal)
     },
     [eventLines],
   )
-  
+
   /**
    * Fix line numbers as much as possible to match the result of editing in the TaskTextarea.
    */
-  const fixEventLines = useCallback((root: Node) => {
+  const fixEventLines = useCallback(
+    (root: Node) => {
       const newEventLines = eventLines
         .map((e) => {
           const found = root.find((n) => {
@@ -125,8 +80,9 @@ export function useEventAlarm(): useEventAlarmReturn {
         })
         .filter((e) => e !== null)
       setEventLines(newEventLines)
-    
-  }, [eventLines])
+    },
+    [eventLines],
+  )
 
   return {
     setEventLines,

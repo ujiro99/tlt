@@ -13,6 +13,7 @@ import {
 import { useAlarms } from '@/hooks/useAlarms'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
+import { moveLine } from '@/services/util'
 import Log from '@/services/log'
 import { TrackingState, TimeObject } from '@/@types/global'
 import { Node, setNodeByLine } from '@/models/node'
@@ -250,30 +251,14 @@ export function useTrackingMove() {
 
   const moveTracking = useCallback(
     (from: number, to: number) => {
-      const newVal = trackings.map((n) => {
-        // From -> to
-        if (n.line === from) {
+      const newVal = trackings
+        .map((n) => {
           return {
             ...n,
-            line: to,
+            line: moveLine(n.line, from, to),
           }
-        }
-        if (from > n.line && n.line >= to) {
-          // Move down
-          return {
-            ...n,
-            line: n.line + 1,
-          }
-        }
-        if (from < n.line && n.line <= to) {
-          // Move up
-          return {
-            ...n,
-            line: n.line - 1,
-          }
-        }
-        return n
-      })
+        })
+        .filter((n) => n.line != null)
       setTrackings(newVal)
     },
     [trackings],

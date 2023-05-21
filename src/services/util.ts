@@ -23,6 +23,60 @@ export function updateLines(items: FlattenedItem[]): FlattenedItem[] {
 }
 
 /**
+ * Calculation of line movement
+ *
+ * @param current Current line number.
+ * @param from Line number from which to move.
+ * @param to Destination line number.
+ * @returns Line number after move.
+ */
+export function moveLine(current: number, from: number, to: number): number {
+  // -----
+  // add
+  // -----
+  if (from == null) {
+    if (current >= to) {
+      // Move down
+      return current + 1
+    }
+    return current
+  }
+
+  // -----
+  // remove
+  // -----
+  if (to == null) {
+    if (current === from) {
+      // remove this line.
+      return null
+    }
+    if (from < current) {
+      // Move up
+      return current - 1
+    }
+    return current
+  }
+
+  // -----
+  // move
+  // -----
+  if (current === from) {
+    // From -> to
+    return to
+  }
+  if (from > current && current >= to) {
+    // Move down
+    return current + 1
+  }
+  if (from < current && current <= to) {
+    // Move up
+    return current - 1
+  }
+  
+  return current
+}
+
+/**
  * Convert TreeItems to Node.
  * @param {TreeItems} items Convertion target.
  */
@@ -190,7 +244,7 @@ export function rand(): string {
 }
 
 /**
- * Scroll to the element. 
+ * Scroll to the element.
  * @param elm Scroll target element.
  * @param offset Offset from the top of the element. [px]
  * @see https://stackoverflow.com/questions/49820013/javascript-scrollintoview-smooth-scroll-and-offset
@@ -198,8 +252,8 @@ export function rand(): string {
 export function scrollTo(elm: Element, offset = 0): void {
   const elementPosition = elm.getBoundingClientRect().top
   const offsetPosition = elementPosition + window.pageYOffset - offset
-  
-  document.getElementById("popup").scrollTo({
+
+  document.getElementById('popup').scrollTo({
     top: offsetPosition,
     behavior: 'smooth',
   })

@@ -42,15 +42,13 @@ beforeEach(() => {
   StorageMock.get.mockImplementation(async (key) => storage[key])
   StorageMock.set.mockImplementation(async (key, val) => (storage[key] = val))
 
-  const alarmModule = useAlarmModule as jest.Mocked<
-    typeof useAlarmModule 
-  >
+  const alarmModule = useAlarmModule as jest.Mocked<typeof useAlarmModule>
   alarmModule.useAlarms.mockReturnValue({
     alarms: [],
     setAlarms: (alarms: Alarm[]) => {},
     stopAlarms: (alarms: Alarm[]) => {},
     setAlarmsForTask: (task: Task) => {},
-    stopAlarmsForTask: () => {}
+    stopAlarmsForTask: () => {},
   })
 })
 
@@ -80,90 +78,176 @@ test('Add a tracking', async () => {
   })
 })
 
-test('Move a tracking position', async () => {
-  const { result } = renderHook(
-    () => {
-      return {
-        state: useTrackingState(),
-        move: useTrackingMove(),
-      }
-    },
-    {
-      wrapper: RecoilRoot,
-    },
-  )
-  const rootNode = Parser.parseMd('- [ ] task')
+describe('moveTracking', () => {
+  test('Move a tracking position', async () => {
+    const { result } = renderHook(
+      () => {
+        return {
+          state: useTrackingState(),
+          move: useTrackingMove(),
+        }
+      },
+      {
+        wrapper: RecoilRoot,
+      },
+    )
+    const rootNode = Parser.parseMd('- [ ] task')
 
-  act(() => {
-    result.current.state.startTracking(rootNode.children[0])
+    act(() => {
+      result.current.state.startTracking(rootNode.children[0])
+    })
+
+    await waitFor(() => {
+      expect(result.current.state.trackings.length).toBe(1)
+      expect(result.current.state.trackings[0].line).toBe(1)
+    })
+
+    act(() => {
+      result.current.move.moveTracking(1, 2)
+    })
+
+    await waitFor(() => {
+      expect(result.current.state.trackings[0].line).toBe(2)
+    })
   })
 
-  await waitFor(() => {
-    expect(result.current.state.trackings.length).toBe(1)
-    expect(result.current.state.trackings[0].line).toBe(1)
+  test('Move a line above the line being tracked', async () => {
+    const { result } = renderHook(
+      () => {
+        return {
+          state: useTrackingState(),
+          move: useTrackingMove(),
+        }
+      },
+      {
+        wrapper: RecoilRoot,
+      },
+    )
+
+    const rootNode = Parser.parseMd('- [ ] task')
+
+    act(() => {
+      result.current.state.startTracking(rootNode.children[0])
+    })
+
+    act(() => {
+      result.current.move.moveTracking(2, 1)
+    })
+
+    await waitFor(() => {
+      expect(result.current.state.trackings[0].line).toBe(2)
+    })
   })
 
-  act(() => {
-    result.current.move.moveTracking(1, 2)
+  test('Move a line below the line being tracked', async () => {
+    const { result } = renderHook(
+      () => {
+        return {
+          state: useTrackingState(),
+          move: useTrackingMove(),
+        }
+      },
+      {
+        wrapper: RecoilRoot,
+      },
+    )
+
+    const rootNode = Parser.parseMd('- [ ] task')
+
+    act(() => {
+      result.current.state.startTracking(rootNode.children[0])
+    })
+
+    act(() => {
+      result.current.move.moveTracking(0, 2)
+    })
+
+    await waitFor(() => {
+      expect(result.current.state.trackings[0].line).toBe(0)
+    })
   })
 
-  await waitFor(() => {
-    expect(result.current.state.trackings[0].line).toBe(2)
-  })
-})
+  test('Add a line above and move', async () => {
+    const { result } = renderHook(
+      () => {
+        return {
+          state: useTrackingState(),
+          move: useTrackingMove(),
+        }
+      },
+      {
+        wrapper: RecoilRoot,
+      },
+    )
 
-test('Move a line above the line being tracked', async () => {
-  const { result } = renderHook(
-    () => {
-      return {
-        state: useTrackingState(),
-        move: useTrackingMove(),
-      }
-    },
-    {
-      wrapper: RecoilRoot,
-    },
-  )
+    const rootNode = Parser.parseMd('- [ ] task')
 
-  const rootNode = Parser.parseMd('- [ ] task')
+    act(() => {
+      result.current.state.startTracking(rootNode.children[0])
+    })
+    act(() => {
+      result.current.move.moveTracking(null, 1)
+    })
 
-  act(() => {
-    result.current.state.startTracking(rootNode.children[0])
-  })
-
-  act(() => {
-    result.current.move.moveTracking(2, 1)
-  })
-
-  await waitFor(() => {
-    expect(result.current.state.trackings[0].line).toBe(2)
-  })
-})
-
-test('Move a line below the line being tracked', async () => {
-  const { result } = renderHook(
-    () => {
-      return {
-        state: useTrackingState(),
-        move: useTrackingMove(),
-      }
-    },
-    {
-      wrapper: RecoilRoot,
-    },
-  )
-
-  const rootNode = Parser.parseMd('- [ ] task')
-
-  act(() => {
-    result.current.state.startTracking(rootNode.children[0])
+    await waitFor(() => {
+      expect(result.current.state.trackings[0].line).toBe(2)
+    })
   })
 
-  act(() => {
-    result.current.move.moveTracking(0, 2)
+  test('Remove a line above and move', async () => {
+    const { result } = renderHook(
+      () => {
+        return {
+          state: useTrackingState(),
+          move: useTrackingMove(),
+        }
+      },
+      {
+        wrapper: RecoilRoot,
+      },
+    )
+
+    const rootNode = Parser.parseMd('- [ ] task\n- [ ] task')
+
+    act(() => {
+      result.current.state.startTracking(rootNode.children[1])
+    })
+    act(() => {
+      result.current.move.moveTracking(1, null)
+    })
+
+    await waitFor(() => {
+      expect(result.current.state.trackings[0].line).toBe(1)
+    })
   })
 
-  await waitFor(() => {
-    expect(result.current.state.trackings[0].line).toBe(0)
+  test('Remove this line', async () => {
+    const { result } = renderHook(
+      () => {
+        return {
+          state: useTrackingState(),
+          move: useTrackingMove(),
+        }
+      },
+      {
+        wrapper: RecoilRoot,
+      },
+    )
+
+    const rootNode = Parser.parseMd('- [ ] task')
+
+    act(() => {
+      result.current.state.startTracking(rootNode.children[0])
+    })
+    await waitFor(() => {
+      expect(result.current.state.trackings[0].line).toBe(1)
+    })
+
+    act(() => {
+      result.current.move.moveTracking(1, null)
+    })
+    await waitFor(() => {
+      expect(result.current.state.trackings.length).toBe(0)
+    })
   })
 })
