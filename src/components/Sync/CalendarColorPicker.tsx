@@ -127,22 +127,20 @@ const ColorPicker = (props: ColorPickerProps): JSX.Element => {
       <BasePicker
         onRequestClose={props.onRequestClose}
         refElm={props.refElm}
-        location='top'
+        location="top"
       >
         <div className="color-picker">
           <ul className="color-picker__list">
-            {colors.map((color) => {
-              return (
-                <li className="color-picker__li" key={color.id}>
-                  <button
-                    className="color-picker__item"
-                    value={color.id}
-                    style={{ backgroundColor: color.background }}
-                    onClick={click}
-                  />
-                </li>
-              )
-            })}
+            {colors.map((color) => (
+              <li className="color-picker__li" key={color.id}>
+                <button
+                  className="color-picker__item"
+                  value={color.id}
+                  style={{ backgroundColor: color.background }}
+                  onClick={click}
+                />
+              </li>
+            ))}
           </ul>
         </div>
       </BasePicker>

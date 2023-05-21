@@ -1,5 +1,10 @@
 @import '../css/mixin.css';
 
+.ReactModalPortal {
+  position: relative;
+  z-index: 11;
+}
+
 .modal-window {
   @apply drop-shadow-xl;
   @apply rounded-md;
