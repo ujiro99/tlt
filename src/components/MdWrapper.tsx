@@ -3,9 +3,11 @@ import { Item, Menu, useContextMenu } from '@/lib/react-contexify'
 import { Icon } from './Icon'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditable } from '@/hooks/useEditable'
+import { useTrackingState } from '@/hooks/useTrackingState'
 import { eventStop } from '@/services/util'
 import { ItemConfirm } from '@/components/ContextMenu/ItemConfirm'
 import { t } from '@/services/i18n'
+
 import 'react-contexify/ReactContexify.css'
 import './MdWrapper.css'
 import './ContextMenu.css'
@@ -20,6 +22,10 @@ type Props = {
 export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
   const manager = useTaskManager()
   const [_, __, edit] = useEditable(props.line)
+  const { trackings } = useTrackingState()
+  const tracking = trackings.find((n) => n.line === props.line)
+  const isTracking = tracking == null ? false : tracking.isTracking
+
   const MENU_ID = MENU_ID_PREFIX + props.line
   const { show } = useContextMenu({
     id: MENU_ID,
@@ -63,6 +69,7 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
           label={t('context_menu_delete')}
           labelConfirm={t('context_menu_delete_confirm')}
           iconName="delete"
+          disabled={isTracking}
         />
       </Menu>
     </>

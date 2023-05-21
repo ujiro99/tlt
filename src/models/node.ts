@@ -310,7 +310,6 @@ export function setNodeByLine(root: Node, line: number, node: Node): Node {
   } else {
     // remove this line
     newRoot = root.filter((n) => n.line !== line)
-    Log.d(`removed ${line}`)
   }
   return newRoot
 }

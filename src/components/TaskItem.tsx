@@ -97,11 +97,8 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
   // Calculate the margin above the element
   const oneLineAbove = manager.getNodeByLine(line - 1)
-  const calcTopMargin = () => {
-    return node.parent.isRoot() && oneLineAbove.isMemberOfHeading()
-  }
   useEffect(() => {
-    setTopMargin(calcTopMargin())
+    setTopMargin(node.parent.isRoot() && oneLineAbove.isMemberOfHeading())
   }, [line, oneLineAbove, node.parent])
 
   const taskItemClass = classnames('task-item', {
@@ -115,7 +112,14 @@ export const TaskItem: React.FC<TaskItemProps> = (
   }
 
   if (isEditing) {
-    return <LineEditor className="mod-task" line={line} />
+    return (
+      <LineEditor
+        className={classnames('mod-task', {
+          'mod-top-margin': topMargin,
+        })}
+        line={line}
+      />
+    )
   }
 
   return (

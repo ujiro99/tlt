@@ -9,8 +9,6 @@ body {
   width: 450px;
   height: 100%;
   overflow-y: auto;
-  position: relative;
-  z-index: 0;
 
   @apply text-sm;
   @apply text-black;

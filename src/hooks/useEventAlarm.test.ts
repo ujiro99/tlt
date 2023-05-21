@@ -7,8 +7,11 @@ import { waitFor, renderHook, act } from '@testing-library/react'
 import { useEventAlarm } from './useEventAlarm'
 import { CalendarEvent } from '@/services/google/calendar'
 
+import * as useAlarmModule from './useAlarms'
 import * as useStorageModule from './useStorage'
+jest.mock('@/hooks/useAlarms')
 jest.mock('@/hooks/useStorage')
+jest.mock('@/services/i18n')
 
 let storage = []
 let useStorageMock
@@ -19,6 +22,13 @@ beforeEach(() => {
   >
   const func = jest.fn().mockImplementation((val) => (storage = val))
   useStorageMock.useStorage.mockReturnValue([storage, func])
+
+  const alarmModule = useAlarmModule as jest.Mocked<
+    typeof useAlarmModule 
+  >
+  alarmModule.useAlarms.mockReturnValue({
+    stopAlarms: jest.fn(),
+  } as any)
 })
 
 afterEach(() => {
