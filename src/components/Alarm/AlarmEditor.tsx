@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import classNames from 'classnames'
 
 import { useStorage } from '@/hooks/useStorage'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { STORAGE_KEY } from '@/services/storage'
 import { t } from '@/services/i18n'
 import { Select } from '@/components/Select'
@@ -27,6 +28,7 @@ export function AlarmEditor(): JSX.Element {
   const [anchor, setAnchor] = useState('')
   const [minutes, setMinutes] = useState<number>(0)
   const [alarms, setAlarms] = useStorage<AlarmRule[]>(STORAGE_KEY.ALARMS)
+  const analytics = useAnalytics()
 
   const alarmExists = alarms?.length > 0
   const isValid = AlarmRule.checkParams(timing, anchor, minutes)
@@ -51,11 +53,13 @@ export function AlarmEditor(): JSX.Element {
     const rule = new AlarmRule(timing, anchor, minutes - 0)
     const newRules = [...alarms, rule]
     setAlarms(newRules)
+    analytics.track('click add alarmRule')
   }
 
   const handleClickDelete = (id) => {
     const newRules = alarms.filter((r) => r.id !== id)
     setAlarms(newRules)
+    analytics.track('click delete alarmRule')
   }
 
   return (

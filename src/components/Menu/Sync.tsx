@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import { useMode, MODE } from '@/hooks/useMode'
 import { useHover } from '@/hooks/useHover'
 import { useModal, MODAL } from '@/hooks/useModal'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
 import * as i18n from '@/services/i18n'
@@ -11,6 +12,7 @@ import * as i18n from '@/services/i18n'
 import './IconButton.css'
 
 export function Sync(): JSX.Element {
+  const analytics = useAnalytics()
   const [mode] = useMode()
   const [_, setVisible] = useModal(MODAL.SYNC)
   const [hoverRef, isHovered] = useHover(200)
@@ -18,6 +20,7 @@ export function Sync(): JSX.Element {
 
   const showModal = () => {
     setVisible(true)
+    analytics.track('click sync modal')
   }
 
   return (
