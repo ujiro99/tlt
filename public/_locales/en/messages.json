@@ -152,7 +152,7 @@
     }
   },
   "alarm_after_start": {
-    "message": "$minutes$ minutes elapsed from start.",
+    "message": "$minutes$ minutes elapsed from start time.",
     "placeholders": {
       "minutes": {
         "content": "$1",
@@ -193,17 +193,14 @@
   "alarm_button_nothing": {
     "message": "Do Nothing"
   },
-  "alarm_timing_before": {
-    "message": "Before"
+  "alarm_opt_before_sceheduled": {
+    "message": "Before scheduled end time"
   },
-  "alarm_timing_after": {
-    "message": "After"
+  "alarm_opt_after_start": {
+    "message": "After start time"
   },
-  "alarm_anchor_start": {
-    "message": "Start time"
-  },
-  "alarm_anchor_sceheduled": {
-    "message": "Scheduled end time"
+  "alarm_opt_after_sceheduled": {
+    "message": "After scheduled end time"
   },
   "alarm_no_alarm_rule": {
     "message": "No alarm rule is set for the task. Please select a rule and click the 'Add' button."

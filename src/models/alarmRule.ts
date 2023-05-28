@@ -5,13 +5,13 @@ export const ALARM_TIMING = {
   BEFORE: 'BEFORE',
   AFTER: 'AFTER',
 }
-type AlarmTiming = (typeof ALARM_TIMING)[keyof typeof ALARM_TIMING]
+export type AlarmTiming = (typeof ALARM_TIMING)[keyof typeof ALARM_TIMING]
 
 export const ALARM_ANCHOR = {
   START: 'start time',
   SCEHEDULED: 'scheduled time',
 }
-type AlarmAnchor = (typeof ALARM_ANCHOR)[keyof typeof ALARM_ANCHOR]
+export type AlarmAnchor = (typeof ALARM_ANCHOR)[keyof typeof ALARM_ANCHOR]
 
 export class AlarmRule {
   id: string
