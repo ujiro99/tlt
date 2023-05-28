@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { RecoilRoot } from 'recoil'
 import { QueryClient, QueryClientProvider } from 'react-query'
+import SimpleBar from 'simplebar-react'
 
 import { ErrorFallback } from '@/components/ErrorFallback'
 import { TaskTextarea } from '@/components/TaskTextarea'
@@ -13,6 +14,7 @@ import { SyncModal } from '@/components/Sync/SyncModal'
 import { AlarmModal } from '@/components/Alarm/AlarmModal'
 import { useTaskStorage } from '@/hooks/useTaskStorage'
 
+import 'simplebar-react/dist/simplebar.min.css'
 import '@/css/common.css'
 import '@/components/Popup.css'
 
@@ -20,7 +22,7 @@ export default function Popup(): JSX.Element {
   useEffect(() => {
     chrome.runtime.sendMessage({ command: 'popupMounted' })
   }, [])
-  
+
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -30,17 +32,19 @@ export default function Popup(): JSX.Element {
   })
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ErrorFallback>
-        <RecoilRoot>
-          <React.Suspense fallback={<div></div>}>
-            <Init />
-            <Menu />
-            <TaskList />
-          </React.Suspense>
-        </RecoilRoot>
-      </ErrorFallback>
-    </QueryClientProvider>
+    <SimpleBar style={{ height: 600 }}>
+      <QueryClientProvider client={queryClient}>
+        <ErrorFallback>
+          <RecoilRoot>
+            <React.Suspense fallback={<div></div>}>
+              <Init />
+              <Menu />
+              <TaskList />
+            </React.Suspense>
+          </RecoilRoot>
+        </ErrorFallback>
+      </QueryClientProvider>
+    </SimpleBar>
   )
 }
 

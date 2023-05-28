@@ -1,4 +1,4 @@
-import React, { useState, useEffect, CSSProperties } from 'react'
+import React, { useState, useEffect, useLayoutEffect, CSSProperties } from 'react'
 import classnames from 'classnames'
 
 import Log from '@/services/log'
@@ -97,7 +97,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
 
   // Calculate the margin above the element
   const oneLineAbove = manager.getNodeByLine(line - 1)
-  useEffect(() => {
+  useLayoutEffect(() => {
     setTopMargin(node.parent.isRoot() && oneLineAbove.isMemberOfHeading())
   }, [line, oneLineAbove, node.parent])
 
