@@ -99,10 +99,25 @@ const onMessageFuncs: OnMessageFuncs = {
       when: param.scheduledTime,
       calendarEventId: param.calendarEventId,
     })
-    chrome.alarms.create(alarm.toString(), {
-      when: param.scheduledTime,
+
+    // Delete the alarm if it already exists.
+    chrome.alarms.getAll((alarms) => {
+      const promises = Object.values(alarms).map((alarm) => {
+        const obj = Alarm.fromString(alarm.name)
+        if (obj.calendarEventId === param.calendarEventId) {
+          Log.d(`clear alarm: ${obj.name} | ${obj.message}`)
+          return chrome.alarms.clear(alarm.name)
+        }
+        return
+      })
+      Promise.all(promises).then(() => {
+        chrome.alarms.create(alarm.toString(), {
+          when: param.scheduledTime,
+        })
+        sendResponse()
+      })
     })
-    sendResponse()
+
     return true
   },
 
@@ -226,7 +241,7 @@ const startTrackingForCalendarEvent = async (notificationId: string) => {
   )) as NotificationEventId[]
   const eventId = idArr.find((n) => n.notification === notificationId)?.event
   const line = eventLines.find((e) => e.event.id === eventId)?.line
-  
+
   if (line == null) {
     // It is not a notification to CalendarEvent, so does nothing.
     return
