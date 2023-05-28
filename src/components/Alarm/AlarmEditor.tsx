@@ -2,44 +2,38 @@ import React, { useState } from 'react'
 import classNames from 'classnames'
 
 import { useStorage } from '@/hooks/useStorage'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { STORAGE_KEY } from '@/services/storage'
 import { t } from '@/services/i18n'
 import { Select } from '@/components/Select'
 import { Icon } from '@/components/Icon'
-import { AlarmRule, ALARM_TIMING, ALARM_ANCHOR } from '@/models/alarmRule'
+import {
+  AlarmRule,
+  ALARM_TIMING,
+  ALARM_ANCHOR,
+  AlarmTiming,
+  AlarmAnchor,
+} from '@/models/alarmRule'
 
 import './AlarmEditor.css'
 
-const anchorRule = {
-  '': {},
-  [ALARM_TIMING.BEFORE]: {
-    [ALARM_ANCHOR.START]: false,
-    [ALARM_ANCHOR.SCEHEDULED]: true,
-  },
-  [ALARM_TIMING.AFTER]: {
-    [ALARM_ANCHOR.START]: true,
-    [ALARM_ANCHOR.SCEHEDULED]: true,
-  },
+type Timing = {
+  timing: AlarmTiming
+  anchor: AlarmAnchor
 }
 
 export function AlarmEditor(): JSX.Element {
-  const [timing, setTiming] = useState('')
-  const [anchor, setAnchor] = useState('')
   const [minutes, setMinutes] = useState<number>(0)
+  const [timing, setTiming] = useState<Timing>({} as Timing)
   const [alarms, setAlarms] = useStorage<AlarmRule[]>(STORAGE_KEY.ALARMS)
+  const analytics = useAnalytics()
 
   const alarmExists = alarms?.length > 0
-  const isValid = AlarmRule.checkParams(timing, anchor, minutes)
+  const isValid = AlarmRule.checkParams(timing.timing, timing.anchor, minutes)
 
   const handleChangeTiming = (e) => {
-    setTiming(e.target.value)
-    if (e.target.value === ALARM_TIMING.BEFORE) {
-      setAnchor(ALARM_ANCHOR.SCEHEDULED)
-    }
-  }
-
-  const handleChangeAnchor = (e) => {
-    setAnchor(e.target.value)
+    const vals = e.target.value.split(',')
+    setTiming({ timing: vals[0], anchor: vals[1] })
   }
 
   const handleChangeMinutes = (e) => {
@@ -48,21 +42,23 @@ export function AlarmEditor(): JSX.Element {
 
   const handleClickAdd = () => {
     if (!isValid) return
-    const rule = new AlarmRule(timing, anchor, minutes - 0)
+    const rule = new AlarmRule(timing.timing, timing.anchor, minutes - 0)
     const newRules = [...alarms, rule]
     setAlarms(newRules)
+    analytics.track('click add alarmRule')
   }
 
   const handleClickDelete = (id) => {
     const newRules = alarms.filter((r) => r.id !== id)
     setAlarms(newRules)
+    analytics.track('click delete alarmRule')
   }
 
   return (
     <div className="alarm-editor">
       <section className="alarm-editor__input">
-        <div className="alarm-editor__input-line1">
-          <div>
+        <div className="alarm-editor__input-line">
+          <label>
             <input
               type="number"
               className="alarm-editor__input-minutes"
@@ -72,51 +68,35 @@ export function AlarmEditor(): JSX.Element {
               step="5"
             ></input>
             <span>{t('minutes')}</span>
-          </div>
+          </label>
           <Select
             className="alarm-editor__input-timing"
             onChange={handleChangeTiming}
-            defaultValue={timing}
+            value={`${timing.timing},${timing.anchor}`}
           >
             <option value="" hidden>
               {t('please_select')}
             </option>
-            <option value="BEFORE">{t('alarm_timing_before')}</option>
-            <option value="AFTER">{t('alarm_timing_after')}</option>
+            <option value={`${ALARM_TIMING.AFTER},${ALARM_ANCHOR.START}`}>
+              {t('alarm_opt_after_start')}
+            </option>
+            <option value={`${ALARM_TIMING.BEFORE},${ALARM_ANCHOR.SCEHEDULED}`}>
+              {t('alarm_opt_before_sceheduled')}
+            </option>
+            <option value={`${ALARM_TIMING.AFTER},${ALARM_ANCHOR.SCEHEDULED}`}>
+              {t('alarm_opt_after_sceheduled')}
+            </option>
           </Select>
         </div>
-        <div className="alarm-editor__input-line2">
-          <Select
-            className="alarm-editor__input-anchor"
-            onChange={handleChangeAnchor}
-            value={anchor}
+        <div className="alarm-editor__input-button">
+          <button
+            className={classNames('alarm-editor__button', {
+              'mod-disable': !isValid,
+            })}
+            onClick={handleClickAdd}
           >
-            <option value="" hidden>
-              {t('please_select')}
-            </option>
-            <option
-              disabled={!anchorRule[timing][ALARM_ANCHOR.START]}
-              value="start time"
-            >
-              {t('alarm_anchor_start')}
-            </option>
-            <option
-              disabled={!anchorRule[timing][ALARM_ANCHOR.SCEHEDULED]}
-              value="scheduled time"
-            >
-              {t('alarm_anchor_sceheduled')}
-            </option>
-          </Select>
-          <div>
-            <button
-              className={classNames('alarm-editor__button', {
-                'mod-disable': !isValid,
-              })}
-              onClick={handleClickAdd}
-            >
-              Add
-            </button>
-          </div>
+            Add
+          </button>
         </div>
       </section>
       <section className="alarm-editor__current">

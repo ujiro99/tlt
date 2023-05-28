@@ -1,6 +1,7 @@
 import React from 'react'
 import { OAuth } from '@/services/google/oauth'
 import { useOauthState } from '@/hooks/useOauthState'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { Profile } from './Profile'
 import './Account.css'
 
@@ -13,14 +14,17 @@ function Login({ startLogin }): JSX.Element {
 }
 
 export function Account(): JSX.Element {
+  const analytics = useAnalytics()
   const isLoggedIn = useOauthState()
 
   const login = () => {
     OAuth.ensureToken()
+    analytics.track('click login')
   }
 
   const logout = () => {
     OAuth.logout()
+    analytics.track('click logout')
   }
 
   return isLoggedIn ? (

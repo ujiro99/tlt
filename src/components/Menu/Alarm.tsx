@@ -4,6 +4,7 @@ import classnames from 'classnames'
 import { useMode, MODE } from '@/hooks/useMode'
 import { useHover } from '@/hooks/useHover'
 import { useModal, MODAL } from '@/hooks/useModal'
+import { useAnalytics } from '@/hooks/useAnalytics'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
 import * as i18n from '@/services/i18n'
@@ -13,11 +14,13 @@ import './IconButton.css'
 export function Alarm(): JSX.Element {
   const [mode] = useMode()
   const [_, setVisible] = useModal(MODAL.ALARM)
+  const analytics = useAnalytics()
   const [hoverRef, isHovered] = useHover(200)
   const isVisible = mode === MODE.SHOW
 
   const showModal = () => {
     setVisible(true)
+    analytics.track('click alarm modal')
   }
 
   return (

@@ -45,6 +45,7 @@
     "react-textarea-autosize": "^8.4.0",
     "react-transition-group": "^4.4.5",
     "recoil": "^0.7.6",
+    "simplebar-react": "^3.2.4",
     "text-table": "^0.2.0"
   },
   "devDependencies": {

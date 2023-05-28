@@ -2,13 +2,12 @@
 
 body {
   margin: 0;
-  height: 600px;
 }
 
 #popup {
   width: 450px;
   height: 100%;
-  overflow-y: auto;
+  overflow-x: hidden;
 
   @apply text-sm;
   @apply text-black;

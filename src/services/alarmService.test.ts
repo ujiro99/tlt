@@ -1,7 +1,7 @@
 import { chrome } from 'jest-chrome'
 import { format } from 'date-fns'
 import { Task } from '@/models/task'
-import { AlarmService } from './alarm' 
+import { AlarmService } from './alarmService' 
 import { AlarmRule, ALARM_ANCHOR, ALARM_TIMING } from '@/models/alarmRule'
 
 const TIME_FMT = 'HH:mm'

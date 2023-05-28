@@ -189,17 +189,14 @@
   "alarm_button_nothing": {
     "message": "何もしない"
   },
-  "alarm_timing_before": {
-    "message": "前"
+  "alarm_opt_after_start": {
+    "message": "開始時刻の後"
   },
-  "alarm_timing_after": {
-    "message": "後"
+  "alarm_opt_before_sceheduled": {
+    "message": "予定終了時刻の前"
   },
-  "alarm_anchor_start": {
-    "message": "開始時刻"
-  },
-  "alarm_anchor_sceheduled": {
-    "message": "予定終了時刻"
+  "alarm_opt_after_sceheduled": {
+    "message": "予定終了時刻の後"
   },
   "alarm_no_alarm_rule": {
     "message": "タスク用のアラームルールが設定されていません。ルールを選択して「Add」ボタンを教えてください。"
