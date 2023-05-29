@@ -104,7 +104,10 @@ const onMessageFuncs: OnMessageFuncs = {
     chrome.alarms.getAll((alarms) => {
       const promises = Object.values(alarms).map((alarm) => {
         const obj = Alarm.fromString(alarm.name)
-        if (obj.calendarEventId === param.calendarEventId) {
+        if (
+          obj.type === ALARM_TYPE.EVENT &&
+          obj.calendarEventId === param.calendarEventId
+        ) {
           Log.d(`clear alarm: ${obj.name} | ${obj.message}`)
           return chrome.alarms.clear(alarm.name)
         }

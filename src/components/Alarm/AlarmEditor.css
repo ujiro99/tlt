@@ -35,30 +35,31 @@
   }
 
   &__input-timing {
-    flex: 1.5;
+    flex: 1;
     font-size: 13px;
     margin-left: 4px;
   }
 
-  &__input-button {
-    margin-top: 6px;
-    text-align: right;
+  &__button {
+    margin-left: 4px;
+    .Icon {
+      width: 16px;
+      height: 16px;
+    }
   }
 
   &__button {
     @mixin interactable;
 
-    @apply text-gray-500;
+    @apply fill-gray-400;
+    @apply group-hover:fill-gray-600;
     @apply bg-white;
     @apply font-semibold;
     @apply border;
     @apply border-gray-200;
 
-    padding-top: 0.125rem;
-    padding-bottom: 0.375rem;
-    padding-left: 0.8rem;
-    padding-right: 0.8rem;
-    font-size: 14px;
+    padding-left: 0.4rem;
+    padding-right: 0.4rem;
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-1);
 

@@ -7,12 +7,12 @@
     @mixin interactable;
     @apply border;
     @apply border-gray-200;
-    @apply pl-3;
-    @apply pt-0.5;
     @apply pb-1.5;
     @apply text-gray-500;
     
-    padding-right: 1.6rem;
+    padding-top: 4px;
+    padding-left: 0.6rem;
+    padding-right: 1.4rem;
 
     width: 100%;
     appearance: none;
@@ -44,7 +44,7 @@
     height: 1.4em;
     position: absolute;
     right: 4px;
-    bottom: 6px;
+    bottom: 8px;
     transition: transform 0.2s ease-out;
   }
 
