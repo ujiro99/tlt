@@ -87,15 +87,13 @@ export function AlarmEditor(): JSX.Element {
               {t('alarm_opt_after_sceheduled')}
             </option>
           </Select>
-        </div>
-        <div className="alarm-editor__input-button">
           <button
             className={classNames('alarm-editor__button', {
               'mod-disable': !isValid,
             })}
             onClick={handleClickAdd}
           >
-            Add
+            <Icon name="plus" />
           </button>
         </div>
       </section>
