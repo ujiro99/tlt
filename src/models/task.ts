@@ -163,6 +163,11 @@ export class Task implements IClonable<Task> {
   public setComplete(isComplete: boolean): void {
     if (isComplete) {
       this.taskState = TASK_STATE.COMPLETE
+      
+      if (this.actualTimes.isEmpty() && !this.estimatedTimes.isEmpty()) {
+        this.actualTimes.add(this.estimatedTimes)
+      }
+      
     } else {
       if (this.taskState !== TASK_STATE.RUNNING) {
         this.taskState = TASK_STATE.STOP
