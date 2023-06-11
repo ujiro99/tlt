@@ -19,6 +19,7 @@ export class Task implements IClonable<Task> {
 
   // Regular expressions for markdown parsing
   private static taskRegexp = /- (\[\s\]|\[x\])\s.*$/
+  private static emptyTaskRegexp = /- (\[\s\]|\[x\]) /
   private static stateRegexp = /(\[ \]|\[x\])/
   private static titleRegexp = /\[.\]\s(.+?)(?:$|\s~|\s#(\d*))/
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
@@ -35,6 +36,13 @@ export class Task implements IClonable<Task> {
 
   public static isTaskStr(taskStr: string): boolean {
     return Task.taskRegexp.test(taskStr)
+  }
+
+  public static isEmptyTask(taskStr: string): boolean {
+    if (!Task.emptyTaskRegexp.test(taskStr)) {
+      return false
+    }
+    return /^\s*$/.test(taskStr.replace(Task.emptyTaskRegexp, ''))
   }
 
   public static parse(taskStr: string): Task {
@@ -163,11 +171,10 @@ export class Task implements IClonable<Task> {
   public setComplete(isComplete: boolean): void {
     if (isComplete) {
       this.taskState = TASK_STATE.COMPLETE
-      
+
       if (this.actualTimes.isEmpty() && !this.estimatedTimes.isEmpty()) {
         this.actualTimes.add(this.estimatedTimes)
       }
-      
     } else {
       if (this.taskState !== TASK_STATE.RUNNING) {
         this.taskState = TASK_STATE.STOP

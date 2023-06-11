@@ -5,12 +5,11 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import { useStorageWatcher } from '@/hooks/useStorageWatcher'
 import { useTaskRecordKey } from '@/hooks/useTaskRecordKey'
 import { useEventAlarm } from '@/hooks/useEventAlarm'
-import { depthToIndent } from '@/models/node'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import { LoadingIcon } from '@/components/LoadingIcon'
 import { Icon } from '@/components/Icon'
-import { sleep, getIndent } from '@/services/util'
+import { sleep, getIndent, depthToIndent, getIndentDepth } from '@/services/util'
 import * as i18n from '@/services/i18n'
 import { INDENT_SIZE, KEY, KEYCODE_ENTER, DEFAULT } from '@/const'
 import Log from '@/services/log'
@@ -22,7 +21,7 @@ type Selection = {
   end: number
 }
 
-export function TaskTextarea(): JSX.Element {
+export function TodoEditor(): JSX.Element {
   const manager = useTaskManager()
   const [saving] = useStorageWatcher()
   const [text, setText] = useState('')
@@ -109,26 +108,42 @@ export function TaskTextarea(): JSX.Element {
       // KeyCode is used to distinguish it from the Enter key input during IME
       const start = inputArea.current.selectionStart
       const end = inputArea.current.selectionEnd
+      const endChar = text.charAt(end)
       if (start !== end) return
+      if (endChar !== '\n' && text.length !== end) return
       if (e.shiftKey) return
 
       const lines = text.split(/\n/)
-      const prevPos = text.slice(0, start).split(/\n/).length - 1
-      const prevLine = lines[prevPos]
-      let rowAdd: string
-      if (Task.isTaskStr(prevLine)) {
+      let currentRow = text.slice(0, start).split(/\n/).length - 1
+      const currentLine = lines[currentRow]
+      if (Task.isEmptyTask(currentLine)) {
+        // Decrease the indent of the current line.
+        const depth = getIndentDepth(currentLine)
+        let replaceLine = "" 
+        if (depth > 0) {
+          replaceLine = depthToIndent(Math.max(depth - 1, 0)) + DEFAULT
+        }
+        lines.splice(currentRow, 1, replaceLine)
+        currentRow += 1
+      } else if (Task.isTaskStr(currentLine)) {
         // Add a new task as sibling level.
-        rowAdd = getIndent(prevLine) + DEFAULT
-      } else if (Group.test(prevLine)) {
+        const addedLine = getIndent(currentLine) + DEFAULT
+        lines.splice(currentRow + 1, 0, addedLine)
+        currentRow += 2
+      } else if (Group.test(currentLine)) {
         // Add a new task as child level.
-        rowAdd = getIndent(prevLine) + INDENT + DEFAULT
+        const addedLine = getIndent(currentLine) + INDENT + DEFAULT
+        lines.splice(currentRow + 1, 0, addedLine)
+        currentRow += 2
+      } else {
+        // Add a empty line.
+        lines.splice(currentRow + 1, 0, "")
+        currentRow += 2
       }
 
-      lines.splice(prevPos + 1, 0, rowAdd)
-      const newText = lines.join('\n')
-      setText(newText)
-      const newPos = lines.slice(0, prevPos + 2).join('\n').length
-      setSelection({ start: newPos, end: newPos })
+      setText(lines.join('\n'))
+      const newRow = lines.slice(0, currentRow).join('\n').length
+      setSelection({ start: newRow, end: newRow })
 
       e.preventDefault()
       return

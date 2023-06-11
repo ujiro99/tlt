@@ -2,7 +2,7 @@ import { Node, NODE_TYPE } from '@/models/node'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import Log from '@/services/log'
-import { getIndentCount } from '@/services/util'
+import { getIndentDepth } from '@/services/util'
 
 const OTHER_REGEXP = /^ *(.+)$/
 
@@ -21,7 +21,7 @@ function parse(text: string): Node {
         // line number starts from 1.
         const line = idx + 1
 
-        const depth = Math.floor(getIndentCount(val) / 2)
+        const depth = getIndentDepth(val)
         if (prevDepth === depth) {
           // Insert as a sibling.
           // Keep parent.

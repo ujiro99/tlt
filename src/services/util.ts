@@ -6,6 +6,7 @@ import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 import { Tag } from '@/models/tag'
 import Log from '@/services/log'
+import { INDENT_SIZE } from '@/const'
 
 /**
  * Stops processing for the specified time.
@@ -115,21 +116,21 @@ export function treeItemsToNode(items: TreeItems): Node {
 }
 
 /**
- * Count the number of indents.
+ * Count the depth of indents.
  * @param {string} str String to be counted.
  * @return Number of indent spaces.
  */
-export function getIndentCount(str: string): number {
+export function getIndentDepth(str: string): number {
   const indentRegexp = /^ +/
   if (indentRegexp.test(str)) {
     const m = indentRegexp.exec(str)
-    return m[0].length
+    return Math.floor(m[0].length / INDENT_SIZE)
   }
   return 0
 }
 
 /**
- * Count indents.
+ * Get indent spaces.
  * @param {string} str String to be counted.
  * @return Indent spaces.
  */
@@ -140,6 +141,10 @@ export function getIndent(str: string): string {
     return m[0]
   }
   return ''
+}
+
+export function depthToIndent(depth: number): string {
+  return ''.padStart(depth * INDENT_SIZE, ' ')
 }
 
 /**

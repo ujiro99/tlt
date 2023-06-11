@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from 'react-query'
 import SimpleBar from 'simplebar-react'
 
 import { ErrorFallback } from '@/components/ErrorFallback'
-import { TaskTextarea } from '@/components/TaskTextarea'
+import { TodoEditor } from '@/components/TodoEditor'
 import { useMode, MODE } from '@/hooks/useMode'
 import { Menu } from '@/components/Menu/Menu'
 import { EmptyLine } from '@/components/EmptyLine'
@@ -57,7 +57,7 @@ function TaskList() {
   const [mode] = useMode()
   switch (mode) {
     case MODE.EDIT:
-      return <TaskTextarea />
+      return <TodoEditor />
     case MODE.SHOW:
       return <ToDo />
     case MODE.REPORT:

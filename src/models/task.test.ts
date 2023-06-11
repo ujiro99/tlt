@@ -182,3 +182,38 @@ describe('setComplete', () => {
     expect(task.actualTimes.minutes).toBe(2)
   })
 })
+
+describe('isTaskStr', () => {
+  const table = [
+    ['- [ ] task', true],
+    ['- [ ]  task', true],
+    ['- [ ]not task', false],
+    ['- [ not task', false],
+  ]
+  describe.each(table)(
+    `checks %s`,
+    (str: string, res: boolean) => {
+      test(`then returns ${res}`, () => {
+        expect(Task.isTaskStr(str)).toBe(res)
+      })
+    },
+  )
+})
+
+describe('isEmptyTask', () => {
+  const table = [
+    ['- [ ] ', true],
+    ['- [ ]', false],
+    ['', false],
+    ['- [ ] task', false],
+    ['- [ not task', false],
+  ]
+  describe.each(table)(
+    `checks %s`,
+    (str: string, res: boolean) => {
+      test(`then returns ${res}`, () => {
+        expect(Task.isEmptyTask(str)).toBe(res)
+      })
+    },
+  )
+})

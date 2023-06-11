@@ -2,10 +2,10 @@ import { TreeItem } from '@/components/Tree/types'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import Log from '@/services/log'
-import { rand } from '@/services/util'
+import { rand, depthToIndent } from '@/services/util'
 import { flat } from './flattenedNode'
 import { IClonable } from '@/@types/global'
-import { DEFAULT, INDENT_SIZE } from '@/const'
+import { DEFAULT } from '@/const'
 
 /**
  * Represent types of the Node.
@@ -269,10 +269,6 @@ function updateLineNumber(root: Node): void {
   flatten.forEach((f, index) => {
     f.node.line = index + 1
   })
-}
-
-export function depthToIndent(depth: number): string {
-  return ''.padStart(depth * INDENT_SIZE, ' ')
 }
 
 export function nodeToString(root: Node): string {
