@@ -5,7 +5,7 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditFinish } from '@/hooks/useEditable'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { eventStop } from '@/services/util'
-import { DEFAULT, KEYCODE_ENTER } from '@/const'
+import { TASK_DEFAULT, KEYCODE_ENTER } from '@/const'
 
 import './LineEditor.css'
 
@@ -22,7 +22,7 @@ export function LineEditor(props: Props): JSX.Element {
   const finishEdit = useEditFinish()
 
   function finish() {
-    if (text !== DEFAULT) {
+    if (text !== TASK_DEFAULT) {
       manager.setTextByLine(line, text)
     } else {
       manager.removeLine(line)
@@ -38,7 +38,7 @@ export function LineEditor(props: Props): JSX.Element {
   function onFocus() {
     let current = manager.getTextByLine(line)
     if (!current) {
-      current = DEFAULT
+      current = TASK_DEFAULT
     }
     analytics.track('edit line start')
     setText(current)

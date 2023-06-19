@@ -2,10 +2,10 @@ import { TreeItem } from '@/components/Tree/types'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import Log from '@/services/log'
-import { rand } from '@/services/util'
+import { rand, depthToIndent } from '@/services/util'
 import { flat } from './flattenedNode'
 import { IClonable } from '@/@types/global'
-import { DEFAULT, INDENT_SIZE } from '@/const'
+import { TASK_DEFAULT } from '@/const'
 
 /**
  * Represent types of the Node.
@@ -140,7 +140,7 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     const [cloned] = clone([this])
     const found = cloned.find((n) => n.line === line)
     if (found) {
-      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(DEFAULT))
+      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(TASK_DEFAULT))
       if (found.type === NODE_TYPE.HEADING) {
         empty.parent = found
         found.children.unshift(empty)
@@ -158,7 +158,7 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     let cloned: Node
     const parent = this.find(predicate)
     if (parent) {
-      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(DEFAULT))
+      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(TASK_DEFAULT))
       const newParent = parent.append(empty)
       cloned = this.replace(newParent, (n) => n.id === parent.id, false)
     }
@@ -269,10 +269,6 @@ function updateLineNumber(root: Node): void {
   flatten.forEach((f, index) => {
     f.node.line = index + 1
   })
-}
-
-export function depthToIndent(depth: number): string {
-  return ''.padStart(depth * INDENT_SIZE, ' ')
 }
 
 export function nodeToString(root: Node): string {

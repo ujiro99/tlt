@@ -156,3 +156,64 @@ describe('trackingStop', () => {
     expect(task.actualTimes.hours).toBe(1)
   })
 })
+
+describe('setComplete', () => {
+  test('changes complete state to true', () => {
+    const task = Task.parse('- [ ] task title')
+    task.setComplete(true)
+    expect(task.isComplete()).toBe(true)
+  })
+
+  test('changes complete state to false', () => {
+    const task = Task.parse('- [ ] task title')
+    task.setComplete(false)
+    expect(task.isComplete()).toBe(false)
+  })
+
+  test('set actual times if estimated time isn\'t empty and actual time is empty', () => {
+    const task = Task.parse('- [ ] task title ~/10m')
+    task.setComplete(true)
+    expect(task.actualTimes.minutes).toBe(10)
+  })
+
+  test('don\'t change actual times if actual time is not empty', () => {
+    const task = Task.parse('- [ ] task title ~2m/10m')
+    task.setComplete(true)
+    expect(task.actualTimes.minutes).toBe(2)
+  })
+})
+
+describe('isTaskStr', () => {
+  const table = [
+    ['- [ ] task', true],
+    ['- [ ]  task', true],
+    ['- [ ]not task', false],
+    ['- [ not task', false],
+  ]
+  describe.each(table)(
+    `checks %s`,
+    (str: string, res: boolean) => {
+      test(`then returns ${res}`, () => {
+        expect(Task.isTaskStr(str)).toBe(res)
+      })
+    },
+  )
+})
+
+describe('isEmptyTask', () => {
+  const table = [
+    ['- [ ] ', true],
+    ['- [ ]', false],
+    ['', false],
+    ['- [ ] task', false],
+    ['- [ not task', false],
+  ]
+  describe.each(table)(
+    `checks %s`,
+    (str: string, res: boolean) => {
+      test(`then returns ${res}`, () => {
+        expect(Task.isEmptyTask(str)).toBe(res)
+      })
+    },
+  )
+})
