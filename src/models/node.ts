@@ -5,7 +5,7 @@ import Log from '@/services/log'
 import { rand, depthToIndent } from '@/services/util'
 import { flat } from './flattenedNode'
 import { IClonable } from '@/@types/global'
-import { DEFAULT } from '@/const'
+import { TASK_DEFAULT } from '@/const'
 
 /**
  * Represent types of the Node.
@@ -140,7 +140,7 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     const [cloned] = clone([this])
     const found = cloned.find((n) => n.line === line)
     if (found) {
-      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(DEFAULT))
+      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(TASK_DEFAULT))
       if (found.type === NODE_TYPE.HEADING) {
         empty.parent = found
         found.children.unshift(empty)
@@ -158,7 +158,7 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     let cloned: Node
     const parent = this.find(predicate)
     if (parent) {
-      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(DEFAULT))
+      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(TASK_DEFAULT))
       const newParent = parent.append(empty)
       cloned = this.replace(newParent, (n) => n.id === parent.id, false)
     }

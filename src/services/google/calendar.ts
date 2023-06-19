@@ -3,7 +3,7 @@ import { differenceInMinutes } from 'date-fns'
 import { Time } from '@/models/time'
 import { fetchWrapper, FetchMethod } from './util'
 import Log from '@/services/log'
-import { DEFAULT, API_KEY } from '@/const'
+import { TASK_DEFAULT, API_KEY } from '@/const'
 
 export type Calendar = {
   id: string
@@ -106,7 +106,7 @@ async function fetchEvents(calendar: Calendar): Promise<CalendarEvent[]> {
       e.end = item.end.dateTime
       const d = differenceInMinutes(new Date(e.end), new Date(e.start))
       e.time = new Time(0, d % 60, Math.floor(d / 60))
-      e.md = `${DEFAULT}${e.title} ~/${e.time.toString()}`
+      e.md = `${TASK_DEFAULT}${e.title} ~/${e.time.toString()}`
       e.htmlLink = item.htmlLink
       e.status = item.status
       

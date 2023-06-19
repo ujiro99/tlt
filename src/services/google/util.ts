@@ -3,7 +3,7 @@ import { CalendarEvent } from './calendar'
 import { Storage, STORAGE_KEY } from '@/services/storage'
 import { Task } from '@/models/task'
 import { Node, NODE_TYPE } from '@/models/node'
-import { DEFAULT } from '@/const'
+import { TASK_DEFAULT } from '@/const'
 import Log from '@/services/log'
 
 function getOptions(token: string) {
@@ -89,6 +89,6 @@ export function eventToNode(event: CalendarEvent): Node {
 }
 
 export function equalsEventAndTask(event: CalendarEvent, task: Task): boolean {
-  const taskMd = `${DEFAULT}${task.title} ~/${task.estimatedTimes.toString()}`
+  const taskMd = `${TASK_DEFAULT}${task.title} ~/${task.estimatedTimes.toString()}`
   return event.md === taskMd
 }
