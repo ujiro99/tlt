@@ -9,7 +9,7 @@ interface ILog {
   v: (msg: unknown) => void
   d: (msg: unknown) => void
   w: (msg: unknown) => void
-  e: (msg: unknown) => void
+  e: (message?: any, ...optionalParams: any[]) => void
 }
 
 const nop = () => {
