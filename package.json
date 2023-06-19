@@ -1,6 +1,6 @@
 {
   "name": "tlt",
-  "version": "0.7.4",
+  "version": "0.7.5",
   "description": "This is a chrome extension, enables to manage todo and time.",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --config webpack.prod.js",
