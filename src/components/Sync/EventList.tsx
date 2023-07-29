@@ -1,4 +1,5 @@
 import React, { Suspense, useEffect } from 'react'
+import SimpleBar from 'simplebar-react'
 import { useQuery } from 'react-query'
 import {
   GoogleCalendar,
@@ -38,14 +39,16 @@ function Inner(props: EventListProps): JSX.Element {
   }
 
   return isExist ? (
-    <ul>
-      {data.map((e) => (
-        <li key={e.id} className={className(e)}>
-          <span className="event-list__title">{e.title}</span>
-          <span className="event-list__time">{e.time.toString()}</span>
-        </li>
-      ))}
-    </ul>
+    <SimpleBar>
+      <ul>
+        {data.map((e) => (
+          <li key={e.id} className={className(e)}>
+            <span className="event-list__title">{e.title}</span>
+            <span className="event-list__time">{e.time.toString()}</span>
+          </li>
+        ))}
+      </ul>
+    </SimpleBar>
   ) : (
     <span>No schedule found</span>
   )
