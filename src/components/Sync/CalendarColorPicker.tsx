@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useState } from 'react'
 import { CSSTransition } from 'react-transition-group'
 import { useQuery } from 'react-query'
 import { useStorage } from '@/hooks/useStorage'
-import { STORAGE_KEY } from '@/services/storage'
+import { STORAGE_KEY, DEFAULTS } from '@/services/storage'
 import {
   GoogleCalendar,
   CalendarColor,
@@ -38,7 +38,7 @@ function Inner(props: CalendarColorsProps): JSX.Element {
   const [visible, setVisible] = useState(false)
   const [refElm, setRefElm] = useState(null)
   const [colors, setColors] = useStorage<ColorStorage>(
-    STORAGE_KEY.CALENDAR_COLOR,
+    STORAGE_KEY.CALENDAR_COLOR, DEFAULTS[STORAGE_KEY.CALENDAR_COLOR] as ColorStorage,
   )
   const { data } = fetchColors()
   const color =
