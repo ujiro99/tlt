@@ -1,0 +1,15 @@
+.plain-text {
+  @apply w-full;
+  @apply relative;
+  @apply leading-normal;
+  @apply cursor-pointer;
+  @apply pr-3;
+  @apply py-2;
+  @apply min-h-[40px];
+  
+  word-break: break-all;
+  
+  &.mod-edit {
+    @apply cursor-text;
+  }
+}
