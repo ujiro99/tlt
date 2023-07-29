@@ -219,8 +219,14 @@ export function TodoEditor(): JSX.Element {
           let replaceLine = depthToIndent(Math.max(depth - 1, 0)) + TASK_DEFAULT
           setTextAtRow(currentRow, currentRow, replaceLine)
         } else {
-          // Noting to do.
-          return
+          // Set the current line to empty.
+          let replaceLine = ''
+          if (start === inputArea.current.value.length) {
+            // The cause is unclear, but if you perform an operation to leave the last line empty,
+            // the focus position gets messed up, so insert one line break.
+            replaceLine = '\n'
+          }
+          setTextAtRow(currentRow, currentRow, replaceLine)
         }
       } else if (Task.isTaskStr(currentLine)) {
         // Add a new task as sibling level.
