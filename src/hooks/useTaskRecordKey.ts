@@ -1,9 +1,6 @@
 import { atom, useRecoilValue, useRecoilState } from 'recoil'
-import {
-  allRecordsState,
-  useTaskManager,
-  selectRecord,
-} from '@/hooks/useTaskManager'
+import { useTaskManager, selectRecord } from '@/hooks/useTaskManager'
+import { allRecordsState } from '@/hooks/useTaskStorage'
 import { TaskRecordKey } from '@/models/taskRecordKey'
 
 export const taskRecordKeyState = atom<TaskRecordKey>({

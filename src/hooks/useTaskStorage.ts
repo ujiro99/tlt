@@ -1,8 +1,13 @@
 import { useEffect } from 'react'
-import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  atom,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+  DefaultValue,
+} from 'recoil'
 import {
   nodeState,
-  allRecordsState,
   TaskRecordType,
   TaskRecordArray,
 } from '@/hooks/useTaskManager'
@@ -21,6 +26,33 @@ export const isPossibleToSaveState = atom<boolean>({
 export const savingState = atom<boolean>({
   key: 'savingState',
   default: false,
+})
+
+/**
+ * All of TaskRecords saved in chrome storage.
+ */
+export const allRecordsState = atom<TaskRecordArray>({
+  key: 'taskRecordsState',
+  default: null,
+  effects: [
+    ({ trigger, setSelf, onSet }) => {
+      if (trigger === 'get') {
+        setSelf(loadRecords())
+      }
+
+      Storage.addListener(STORAGE_KEY.TASK_LIST_TEXT, (newVal) => {
+        setSelf(newVal)
+      })
+
+      onSet(async (newVal) => {
+        if (newVal instanceof DefaultValue) {
+          await Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
+        } else {
+          await saveRecords(newVal)
+        }
+      })
+    },
+  ],
 })
 
 export const updateRecords = (

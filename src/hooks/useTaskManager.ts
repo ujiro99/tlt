@@ -1,10 +1,10 @@
 import { useEffect } from 'react'
-import { atom, selector, useRecoilState, DefaultValue } from 'recoil'
+import { atom, selector, useRecoilState } from 'recoil'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
 import { useEventAlarm } from '@/hooks/useEventAlarm'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
-import { loadRecords, saveRecords } from '@/hooks/useTaskStorage'
+import { allRecordsState } from '@/hooks/useTaskStorage'
 import { Parser } from '@/services/parser'
 import { unique, difference } from '@/services/util'
 import Log from '@/services/log'
@@ -19,8 +19,6 @@ import { KEY_TYPE } from '@/models/taskRecordKey'
 import { TaskRecordKey } from '@/models/taskRecordKey'
 import { COLOR } from '@/const'
 
-import { STORAGE_KEY, Storage } from '@/services/storage'
-
 export enum TaskRecordType {
   Date,
 }
@@ -31,35 +29,6 @@ interface TaskRecord {
   data: string
 }
 export type TaskRecordArray = TaskRecord[]
-
-/**
- * All of TaskRecords saved in chrome storage.
- */
-export const allRecordsState = atom<TaskRecordArray>({
-  key: 'taskRecordsState',
-  default: null,
-  effects: [
-    ({ trigger, setSelf, onSet }) => {
-      if (trigger === 'get') {
-        setSelf(
-          Storage.get(STORAGE_KEY.TASK_LIST_TEXT) as Promise<TaskRecordArray>,
-        )
-      }
-
-      Storage.addListener(STORAGE_KEY.TASK_LIST_TEXT, (newVal) => {
-        setSelf(newVal)
-      })
-
-      onSet(async (newVal) => {
-        if (newVal instanceof DefaultValue) {
-          await Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
-        } else {
-          await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, newVal)
-        }
-      })
-    },
-  ],
-})
 
 export function selectRecord(
   key: TaskRecordKey,
