@@ -29,6 +29,7 @@ type Selection = {
 
 export function TodoEditor(): JSX.Element {
   const manager = useTaskManager()
+  const rootText = manager.getText()
   const [saving] = useStorageWatcher()
   const [text, setText] = useState('')
   const [timeoutID, setTimeoutID] = useState<number>()
@@ -41,8 +42,8 @@ export function TodoEditor(): JSX.Element {
   const analytics = useAnalytics()
 
   useEffect(() => {
-    setText(manager.getText())
-  }, [currentKey])
+    setText(rootText)
+  }, [currentKey, rootText])
 
   useEffect(() => {
     setIconHidden(true)

@@ -134,7 +134,6 @@ export function useTaskManager(): ITaskManager {
   const { tags, upsertTag } = useTagHistory()
 
   const flatten = flat(root)
-
   const move = (from: number, to: number) => {
     moveTracking(from, to)
     moveEventLine(from, to)
