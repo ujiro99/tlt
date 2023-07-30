@@ -73,7 +73,7 @@ export function moveLine(current: number, from: number, to: number): number {
     // Move up
     return current - 1
   }
-  
+
   return current
 }
 
@@ -149,7 +149,7 @@ export function depthToIndent(depth: number): string {
 
 /**
  * Convert a date to the key of TaskRecord.
- * @param {Date} date A date to be converted.
+ * @param date A date to be converted.
  * @return Key of TaskRecord.
  */
 export function dateToKey(date: Date): string {
@@ -179,8 +179,11 @@ export function formatDaysAgo(
   return rtf.format(Math.ceil(deltaDays), 'days').replace(' ', '')
 }
 
-export function formatTime(dateString: string) {
-  return format(parseISO(dateString), 'HH:mm')
+export function formatTime(date: string | number) {
+  if (typeof date === 'number') {
+    return format(new Date(date), 'HH:mm')
+  }
+  return format(parseISO(date), 'HH:mm')
 }
 
 type TimeTotal = {
