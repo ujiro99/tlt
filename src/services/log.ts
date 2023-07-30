@@ -6,9 +6,9 @@ import { isDebug } from '@/const'
 const verbose = false
 
 interface ILog {
-  v: (msg: unknown) => void
-  d: (msg: unknown) => void
-  w: (msg: unknown) => void
+  v: (msg: unknown, ...msgs) => void
+  d: (msg: unknown, ...msgs) => void
+  w: (msg: unknown, ...msgs) => void
   e: (message?: any, ...optionalParams: any[]) => void
 }
 

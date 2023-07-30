@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import classnames from 'classnames'
 
 import { useTrackingStop } from '@/hooks/useTrackingState'
@@ -7,6 +7,7 @@ import { useHover } from '@/hooks/useHover'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import { Tooltip } from '@/components/Tooltip'
 import { Icon } from '@/components/Icon'
+import  Log  from '@/services/log'
 import * as i18n from '@/services/i18n'
 
 import './IconButton.css'
@@ -20,16 +21,20 @@ export function Edit(): JSX.Element {
   const label = isEdit ? i18n.t('label_save') : i18n.t('label_edit')
   const icon = isEdit ? 'save' : 'edit'
   const isVisible = mode === MODE.SHOW || mode === MODE.EDIT
-
-  const toggleMode = () => {
-    const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
-    if (nextMode === MODE.EDIT) {
+  
+  useEffect(() => {
+    Log.d('mode changed', mode)
+    if (mode === MODE.EDIT) {
       // Automatically stop tracking before entering edit mode.
       stopAllTracking()
       analytics.track('edit all start')
     } else {
       analytics.track('edit all finish')
     }
+  }, [mode])
+
+  const toggleMode = () => {
+    const nextMode = isEdit ? MODE.SHOW : MODE.EDIT
     setMode(nextMode)
   }
 

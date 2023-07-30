@@ -9,7 +9,6 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import { LoadingIcon } from '@/components/LoadingIcon'
-import { Icon } from '@/components/Icon'
 import {
   sleep,
   getIndent,
@@ -29,6 +28,7 @@ type Selection = {
 
 export function TodoEditor(): JSX.Element {
   const manager = useTaskManager()
+  const rootText = manager.getText()
   const [saving] = useStorageWatcher()
   const [text, setText] = useState('')
   const [timeoutID, setTimeoutID] = useState<number>()
@@ -41,8 +41,8 @@ export function TodoEditor(): JSX.Element {
   const analytics = useAnalytics()
 
   useEffect(() => {
-    setText(manager.getText())
-  }, [currentKey])
+    setText(rootText)
+  }, [currentKey, rootText])
 
   useEffect(() => {
     setIconHidden(true)
@@ -219,8 +219,14 @@ export function TodoEditor(): JSX.Element {
           let replaceLine = depthToIndent(Math.max(depth - 1, 0)) + TASK_DEFAULT
           setTextAtRow(currentRow, currentRow, replaceLine)
         } else {
-          // Noting to do.
-          return
+          // Set the current line to empty.
+          let replaceLine = ''
+          if (start === inputArea.current.value.length) {
+            // The cause is unclear, but if you perform an operation to leave the last line empty,
+            // the focus position gets messed up, so insert one line break.
+            replaceLine = '\n'
+          }
+          setTextAtRow(currentRow, currentRow, replaceLine)
         }
       } else if (Task.isTaskStr(currentLine)) {
         // Add a new task as sibling level.
@@ -278,10 +284,6 @@ export function TodoEditor(): JSX.Element {
           <span>{i18n.t('saving')}</span>
         </LoadingIcon>
       ) : null}
-      <h3 className="task-textarea__section-title">
-        <Icon name="task" />
-        Tasks
-      </h3>
       <TextareaAutosize
         className=""
         onChange={onChange}

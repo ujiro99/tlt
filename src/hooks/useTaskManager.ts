@@ -4,11 +4,15 @@ import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
 import { useEventAlarm } from '@/hooks/useEventAlarm'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
-import { loadRecords } from '@/hooks/useTaskStorage'
+import { allRecordsState } from '@/hooks/useTaskStorage'
 import { Parser } from '@/services/parser'
 import { unique, difference } from '@/services/util'
 import Log from '@/services/log'
-import { Node, nodeToString, setNodeByLine as _setNodeByLine } from '@/models/node'
+import {
+  Node,
+  nodeToString,
+  setNodeByLine as _setNodeByLine,
+} from '@/models/node'
 import { Tag, hasTags } from '@/models/tag'
 import { flat } from '@/models/flattenedNode'
 import { KEY_TYPE } from '@/models/taskRecordKey'
@@ -25,20 +29,6 @@ interface TaskRecord {
   data: string
 }
 export type TaskRecordArray = TaskRecord[]
-
-/**
- * All of TaskRecords saved in chrome storage.
- */
-export const allRecordsState = atom({
-  key: 'taskRecordsState',
-  default: selector({
-    key: 'nodeStateSelctor',
-    get: async () => {
-      Log.d(`get taskRecordsState`)
-      return await loadRecords()
-    },
-  }),
-})
 
 export function selectRecord(
   key: TaskRecordKey,
@@ -75,26 +65,15 @@ export function selectRecord(
   }
 }
 
-/**
- * Task text saved in chrome storage.
- */
-const taskRecordSelector = selector<Node>({
-  key: 'taskRecordSelector',
-  get: ({ get }) => {
-    const key = get(taskRecordKeyState)
-    const records = get(allRecordsState)
-    Log.d(`get taskRecordSelector: ${key.toKey()}`)
-    return selectRecord(key, records)
-  },
-})
-
 export const nodeState = atom<Node>({
   key: 'nodeState',
   default: selector({
     key: 'nodeStateSelector',
     get: ({ get }) => {
-      Log.d(`get nodeStateSelector`)
-      return get(taskRecordSelector)
+      const key = get(taskRecordKeyState)
+      const records = get(allRecordsState)
+      Log.d(`get nodeStateSelector: ${key.toKey()}`)
+      return selectRecord(key, records)
     },
   }),
 })
@@ -124,7 +103,6 @@ export function useTaskManager(): ITaskManager {
   const { tags, upsertTag } = useTagHistory()
 
   const flatten = flat(root)
-
   const move = (from: number, to: number) => {
     moveTracking(from, to)
     moveEventLine(from, to)

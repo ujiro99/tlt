@@ -4,7 +4,7 @@ import classnames from 'classnames'
 import Log from '@/services/log'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useAnalytics } from '@/hooks/useAnalytics'
-import { useTrackingState, useTrackingStop } from '@/hooks/useTrackingState'
+import { useTrackingState } from '@/hooks/useTrackingState'
 import { useEditable } from '@/hooks/useEditable'
 import { Counter, CounterStopped } from '@/components/Counter'
 import { Checkbox } from '@/components/Checkbox'
@@ -34,12 +34,10 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const checkboxProps = props.checkboxProps
   const node = props.node
   const line = props.node.line
-  const [started, setStarted] = useState(false)
   const [topMargin, setTopMargin] = useState(false)
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const { trackings, startTracking, stopTracking } = useTrackingState()
-  const { stopOtherTracking } = useTrackingStop()
   const [isEditing, focusOrEdit] = useEditable(line)
   const task = node.data as Task
   const tracking = trackings.find((n) => n.nodeId === node.id)
@@ -48,14 +46,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const hasEstimatedTime = !task.estimatedTimes.isEmpty()
 
   Log.v(`${line} ${id} ${isTracking ? 'tracking' : 'stop'}`)
-
-  useEffect(() => {
-    if (started) {
-      // stop previous task.
-      stopOtherTracking(node.id)
-      setStarted(false)
-    }
-  }, [started, node])
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation()
@@ -71,7 +61,6 @@ export const TaskItem: React.FC<TaskItemProps> = (
     e.stopPropagation()
     analytics.track('click start')
     startTracking(node)
-    setStarted(true)
   }
 
   const stop = (e: React.SyntheticEvent) => {

@@ -4,20 +4,20 @@
   @apply relative;
   @apply py-2;
   @apply min-h-[40px];
-  @apply leading-relaxed;
   @apply flex;
   @apply flex-row;
   @apply items-center;
   @apply cursor-pointer;
   @apply select-none;
 
+  line-height: 1.5;
   width: 100%;
   padding-right: 12px;
 
   &__label {
     @apply flex;
     flex: 1;
-    word-break: break-word;
+    word-break: break-all;
   }
 
   &__tags {

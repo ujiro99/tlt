@@ -7,7 +7,7 @@ const localPersist =
     if (trigger === 'get') {
       setSelf(async () => {
         const val = await Storage.get(key)
-        return val === undefined ? DEFAULTS[key] : val
+        return val == null ? DEFAULTS[key] : val
       })
     }
 
@@ -29,7 +29,10 @@ const storageState = atomFamily({
   effects: (key) => [localPersist(key)],
 })
 
-export function useStorage<P>(key: StorageKey): [P, (P) => void] {
+export function useStorage<P>(key: StorageKey, _default?: P): [P, (P) => void] {
   const [data, setData] = useRecoilState(storageState(key))
+  if (data == null) {
+    return [_default, setData]
+  }
   return [data as P, setData]
 }

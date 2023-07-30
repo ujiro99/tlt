@@ -1,16 +1,19 @@
 .line-editor {
   @apply align-top;
-  @apply font-mono;
   @apply w-full;
-  @apply leading-relaxed;
   @apply outline-0;
   @apply min-h-[40px];
   @apply cursor-text;
   @apply resize-none;
 
+  word-break: break-all;
+  line-height: 1.5;
+
   &.mod-task {
     @apply py-2;
-    margin-left: -18px;
+    padding-right: 12px;
+    padding-left: 26px;
+    text-indent: -26px;
   }
 
   &.mod-heading {

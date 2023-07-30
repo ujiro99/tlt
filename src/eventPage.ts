@@ -1,6 +1,6 @@
 import { TrackingState } from '@/@types/global'
 import { selectRecord } from '@/hooks/useTaskManager'
-import { stopTrackings } from '@/hooks/useTrackingState'
+import { stopTrackings, saveStates } from '@/hooks/useTrackingState'
 import { loadRecords } from '@/hooks/useTaskStorage'
 import { EventLine } from '@/hooks/useEventAlarm'
 import Log from '@/services/log'
@@ -253,7 +253,8 @@ const startTrackingForCalendarEvent = async (notificationId: string) => {
   // Stop other tracking
   const records = await loadRecords()
   const root = selectRecord(key, records)
-  await stopTrackings(root, trackings, key)
+  const [newRoot, events] = await stopTrackings(root, trackings)
+  saveStates(key, newRoot, trackings, events)
 
   // Update tracking state
   onMessageFuncs.startTracking(0, () => {})

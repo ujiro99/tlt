@@ -1,8 +1,13 @@
 import { useEffect } from 'react'
-import { atom, useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  atom,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+  DefaultValue,
+} from 'recoil'
 import {
   nodeState,
-  allRecordsState,
   TaskRecordType,
   TaskRecordArray,
 } from '@/hooks/useTaskManager'
@@ -11,6 +16,7 @@ import { STORAGE_KEY, Storage } from '@/services/storage'
 import Log from '@/services/log'
 import { TaskRecordKey } from '@/models/taskRecordKey'
 import { Node, nodeToString } from '@/models/node'
+import { sleep } from '@/services/util'
 
 export const isPossibleToSaveState = atom<boolean>({
   key: 'isPossibleToSaveState',
@@ -20,6 +26,33 @@ export const isPossibleToSaveState = atom<boolean>({
 export const savingState = atom<boolean>({
   key: 'savingState',
   default: false,
+})
+
+/**
+ * All of TaskRecords saved in chrome storage.
+ */
+export const allRecordsState = atom<TaskRecordArray>({
+  key: 'taskRecordsState',
+  default: null,
+  effects: [
+    ({ trigger, setSelf, onSet }) => {
+      if (trigger === 'get') {
+        setSelf(loadRecords())
+      }
+
+      Storage.addListener(STORAGE_KEY.TASK_LIST_TEXT, (newVal) => {
+        setSelf(newVal)
+      })
+
+      onSet(async (newVal) => {
+        if (newVal instanceof DefaultValue) {
+          await Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
+        } else {
+          await saveRecords(newVal)
+        }
+      })
+    },
+  ],
 })
 
 export const updateRecords = (
@@ -54,11 +87,14 @@ export const updateRecords = (
 export const loadRecords = async (): Promise<TaskRecordArray> => {
   const records =
     ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
-  Log.d(records)
+  Log.d('loadRecords', records)
   return records
 }
 
-export const saveRecords = async (records: TaskRecordArray): Promise<boolean> => {
+export const saveRecords = async (
+  records: TaskRecordArray,
+): Promise<boolean> => {
+  Log.d('saveRecords', records)
   try {
     const res = await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
     return res === true
@@ -85,7 +121,7 @@ export function useTaskStorage(): void {
     setSaving(true)
     const newRecords = updateRecords(records, key, root)
     setRecords(newRecords)
-    await saveRecords(newRecords)
+    await sleep(1000)
     setSaving(false)
   }
 }

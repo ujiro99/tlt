@@ -12,6 +12,7 @@ import { SortableTree } from '@/components/Tree/SortableTree'
 import { Report } from '@/components/Report'
 import { SyncModal } from '@/components/Sync/SyncModal'
 import { AlarmModal } from '@/components/Alarm/AlarmModal'
+import { Debug } from '@/components/Debug'
 import { useTaskStorage } from '@/hooks/useTaskStorage'
 
 import 'simplebar-react/dist/simplebar.min.css'
@@ -72,6 +73,7 @@ function ToDo() {
       <EmptyLine />
       <SyncModal />
       <AlarmModal />
+      <Debug />
     </div>
   )
 }

@@ -15,6 +15,7 @@ import { STORAGE_KEY, Storage } from '@/services/storage'
 import { Ipc } from '@/services/ipc'
 import { moveLine } from '@/services/util'
 import Log from '@/services/log'
+import { CalendarEvent } from '@/services/google/calendar'
 import { TrackingState, TimeObject } from '@/@types/global'
 import { Node, setNodeByLine } from '@/models/node'
 import { Task } from '@/models/task'
@@ -44,15 +45,13 @@ const convTime = (tracking: TrackingState): TrackingState => {
   return tracking
 }
 
-export const stopTrackings = async (
+export const stopTrackings = (
   root: Node,
   trackings: TrackingState[],
-  key: TaskRecordKey,
-  exceptNodeId?: string,
-) => {
+): [Node, CalendarEvent[]] => {
   const events = []
   for (const tracking of trackings) {
-    if (!tracking.isTracking || tracking.nodeId === exceptNodeId) {
+    if (!tracking.isTracking) {
       continue
     }
     const node = root.find((n) => n.line === tracking.line)
@@ -80,6 +79,15 @@ export const stopTrackings = async (
     })
   }
 
+  return [root, events]
+}
+
+export const saveStates = async (
+  key: TaskRecordKey,
+  root: Node,
+  trackings: TrackingState[],
+  events: CalendarEvent[],
+) => {
   // Update root Node.
   const records = await loadRecords()
   const newRecords = updateRecords(records, key, root)
@@ -90,12 +98,7 @@ export const stopTrackings = async (
   if (events.length > 0) appendActivities(activities, events)
 
   // Update tracking state.
-  await Storage.set(
-    STORAGE_KEY.TRACKING_STATE,
-    trackings.filter((n) => {
-      return n.nodeId === exceptNodeId
-    }),
-  )
+  await Storage.set(STORAGE_KEY.TRACKING_STATE, trackings)
 }
 
 const trackingState = atom<TrackingState[]>({
@@ -169,6 +172,8 @@ export function useTrackingState(): useTrackingStateReturn {
 
   const startTracking = useCallback(
     (node: Node) => {
+      let root = manager.getRoot()
+
       // start new task.
       const newNode = node.clone()
       const newTask = newNode.data as Task
@@ -181,15 +186,18 @@ export function useTrackingState(): useTrackingStateReturn {
         elapsedTime: newTask.actualTimes,
         line: node.line,
       }
+      root = setNodeByLine(root, node.line, newNode)
 
-      // Clone the objects for updating.
-      manager.setNodeByLine(newNode, node.line)
+      // Stop other tasks.
+      const filtered = trackings.filter((n) => n.nodeId !== node.id)
+      const [newRoot, events] = stopTrackings(root, filtered)
+      manager.setRoot(newRoot)
+      if (events.length > 0) appendActivities(events)
 
       // Stop previous alarms.
       stopAlarmsForTask()
 
-      const newVal = [...trackings, tracking]
-      setTrackings(newVal)
+      setTrackings([tracking])
       Ipc.send({
         command: 'startTracking',
         param: tracking.elapsedTime.toMinutes(),
@@ -272,7 +280,6 @@ export function useTrackingMove() {
 
 interface useTrackingStopReturn {
   stopAllTracking: () => void
-  stopOtherTracking: (nodeId: string) => void
 }
 
 export function useTrackingStop(): useTrackingStopReturn {
@@ -284,21 +291,13 @@ export function useTrackingStop(): useTrackingStopReturn {
 
   const stopAllTracking = useCallback(() => {
     Log.d('stopAllTracking')
-    stopTrackings(root, trackings, trackingKey)
+    const [newRoot, events] = stopTrackings(root, trackings)
+    manager.setRoot(newRoot)
+    Log.d('stopAllTracking', newRoot)
+    saveStates(trackingKey, newRoot, [], events)
     Ipc.send({ command: 'stopTracking' })
     stopAlarmsForTask()
   }, [trackings])
 
-  const stopOtherTracking = useCallback(
-    (nodeId: string) => {
-      Log.d(`stopOtherTracking: ${nodeId}`)
-      stopTrackings(root, trackings, trackingKey, nodeId)
-    },
-    [trackings],
-  )
-
-  return {
-    stopAllTracking,
-    stopOtherTracking,
-  }
+  return { stopAllTracking }
 }
