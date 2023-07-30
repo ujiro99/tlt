@@ -9,7 +9,6 @@ import { useAnalytics } from '@/hooks/useAnalytics'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import { LoadingIcon } from '@/components/LoadingIcon'
-import { Icon } from '@/components/Icon'
 import {
   sleep,
   getIndent,
@@ -285,10 +284,6 @@ export function TodoEditor(): JSX.Element {
           <span>{i18n.t('saving')}</span>
         </LoadingIcon>
       ) : null}
-      <h3 className="task-textarea__section-title">
-        <Icon name="task" />
-        Tasks
-      </h3>
       <TextareaAutosize
         className=""
         onChange={onChange}

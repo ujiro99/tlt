@@ -11,6 +11,7 @@ import { STORAGE_KEY, Storage } from '@/services/storage'
 import Log from '@/services/log'
 import { TaskRecordKey } from '@/models/taskRecordKey'
 import { Node, nodeToString } from '@/models/node'
+import { sleep } from '@/services/util'
 
 export const isPossibleToSaveState = atom<boolean>({
   key: 'isPossibleToSaveState',
@@ -88,6 +89,7 @@ export function useTaskStorage(): void {
     setSaving(true)
     const newRecords = updateRecords(records, key, root)
     setRecords(newRecords)
+    await sleep(1000)
     setSaving(false)
   }
 }
