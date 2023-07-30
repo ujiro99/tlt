@@ -49,7 +49,7 @@ export const stopTrackings = async (
   trackings: TrackingState[],
   key: TaskRecordKey,
   exceptNodeId?: string,
-) => {
+): Promise<Node> => {
   const events = []
   for (const tracking of trackings) {
     if (!tracking.isTracking || tracking.nodeId === exceptNodeId) {
@@ -96,6 +96,8 @@ export const stopTrackings = async (
       return n.nodeId === exceptNodeId
     }),
   )
+
+  return root
 }
 
 const trackingState = atom<TrackingState[]>({
@@ -181,8 +183,6 @@ export function useTrackingState(): useTrackingStateReturn {
         elapsedTime: newTask.actualTimes,
         line: node.line,
       }
-
-      // Clone the objects for updating.
       manager.setNodeByLine(newNode, node.line)
 
       // Stop previous alarms.
@@ -282,17 +282,19 @@ export function useTrackingStop(): useTrackingStopReturn {
   const [trackings] = useRecoilState(trackingStateSelector)
   const { stopAlarmsForTask } = useAlarms()
 
-  const stopAllTracking = useCallback(() => {
+  const stopAllTracking = useCallback(async () => {
     Log.d('stopAllTracking')
-    stopTrackings(root, trackings, trackingKey)
+    const newRoot = await stopTrackings(root, trackings, trackingKey)
+    manager.setRoot(newRoot)
     Ipc.send({ command: 'stopTracking' })
     stopAlarmsForTask()
   }, [trackings])
 
   const stopOtherTracking = useCallback(
-    (nodeId: string) => {
+    async (nodeId: string) => {
       Log.d(`stopOtherTracking: ${nodeId}`)
-      stopTrackings(root, trackings, trackingKey, nodeId)
+      const newRoot = await stopTrackings(root, trackings, trackingKey, nodeId)
+      manager.setRoot(newRoot)
     },
     [trackings],
   )

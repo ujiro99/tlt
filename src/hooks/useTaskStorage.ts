@@ -52,13 +52,17 @@ export const updateRecords = (
 }
 
 export const loadRecords = async (): Promise<TaskRecordArray> => {
+  console.log('loadRecords ')
   const records =
     ((await Storage.get(STORAGE_KEY.TASK_LIST_TEXT)) as TaskRecordArray) || []
   Log.d(records)
   return records
 }
 
-export const saveRecords = async (records: TaskRecordArray): Promise<boolean> => {
+export const saveRecords = async (
+  records: TaskRecordArray,
+): Promise<boolean> => {
+  console.log('saveRecords', records)
   try {
     const res = await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, records)
     return res === true
@@ -85,7 +89,6 @@ export function useTaskStorage(): void {
     setSaving(true)
     const newRecords = updateRecords(records, key, root)
     setRecords(newRecords)
-    await saveRecords(newRecords)
     setSaving(false)
   }
 }

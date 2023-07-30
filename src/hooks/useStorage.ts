@@ -7,7 +7,7 @@ const localPersist =
     if (trigger === 'get') {
       setSelf(async () => {
         const val = await Storage.get(key)
-        return val === undefined ? DEFAULTS[key] : val
+        return val == null ? DEFAULTS[key] : val
       })
     }
 

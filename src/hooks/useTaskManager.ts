@@ -1,19 +1,25 @@
 import { useEffect } from 'react'
-import { atom, selector, useRecoilState } from 'recoil'
+import { atom, selector, useRecoilState, DefaultValue } from 'recoil'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { useTrackingMove } from '@/hooks/useTrackingState'
 import { useEventAlarm } from '@/hooks/useEventAlarm'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
-import { loadRecords } from '@/hooks/useTaskStorage'
+import { loadRecords, saveRecords } from '@/hooks/useTaskStorage'
 import { Parser } from '@/services/parser'
 import { unique, difference } from '@/services/util'
 import Log from '@/services/log'
-import { Node, nodeToString, setNodeByLine as _setNodeByLine } from '@/models/node'
+import {
+  Node,
+  nodeToString,
+  setNodeByLine as _setNodeByLine,
+} from '@/models/node'
 import { Tag, hasTags } from '@/models/tag'
 import { flat } from '@/models/flattenedNode'
 import { KEY_TYPE } from '@/models/taskRecordKey'
 import { TaskRecordKey } from '@/models/taskRecordKey'
 import { COLOR } from '@/const'
+
+import { STORAGE_KEY, Storage } from '@/services/storage'
 
 export enum TaskRecordType {
   Date,
@@ -29,15 +35,30 @@ export type TaskRecordArray = TaskRecord[]
 /**
  * All of TaskRecords saved in chrome storage.
  */
-export const allRecordsState = atom({
+export const allRecordsState = atom<TaskRecordArray>({
   key: 'taskRecordsState',
-  default: selector({
-    key: 'nodeStateSelctor',
-    get: async () => {
-      Log.d(`get taskRecordsState`)
-      return await loadRecords()
+  default: null,
+  effects: [
+    ({ trigger, setSelf, onSet }) => {
+      if (trigger === 'get') {
+        setSelf(
+          Storage.get(STORAGE_KEY.TASK_LIST_TEXT) as Promise<TaskRecordArray>,
+        )
+      }
+
+      Storage.addListener(STORAGE_KEY.TASK_LIST_TEXT, (newVal) => {
+        setSelf(newVal)
+      })
+
+      onSet(async (newVal) => {
+        if (newVal instanceof DefaultValue) {
+          await Storage.remove(STORAGE_KEY.TASK_LIST_TEXT)
+        } else {
+          await Storage.set(STORAGE_KEY.TASK_LIST_TEXT, newVal)
+        }
+      })
     },
-  }),
+  ],
 })
 
 export function selectRecord(
@@ -75,26 +96,15 @@ export function selectRecord(
   }
 }
 
-/**
- * Task text saved in chrome storage.
- */
-const taskRecordSelector = selector<Node>({
-  key: 'taskRecordSelector',
-  get: ({ get }) => {
-    const key = get(taskRecordKeyState)
-    const records = get(allRecordsState)
-    Log.d(`get taskRecordSelector: ${key.toKey()}`)
-    return selectRecord(key, records)
-  },
-})
-
 export const nodeState = atom<Node>({
   key: 'nodeState',
   default: selector({
     key: 'nodeStateSelector',
     get: ({ get }) => {
-      Log.d(`get nodeStateSelector`)
-      return get(taskRecordSelector)
+      const key = get(taskRecordKeyState)
+      const records = get(allRecordsState)
+      Log.d(`get nodeStateSelector: ${key.toKey()}`)
+      return selectRecord(key, records)
     },
   }),
 })
