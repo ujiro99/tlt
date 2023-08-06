@@ -184,11 +184,6 @@ async function updateIconTime() {
   }
 }
 
-type NotificationEventId = {
-  notification: string
-  event: string
-}
-
 chrome.alarms.onAlarm.addListener((param) => {
   const alarm = Alarm.fromString(param.name)
   Log.d(alarm.type + ' ' + alarm.name)
@@ -204,6 +199,7 @@ chrome.alarms.onAlarm.addListener((param) => {
     })
   } else if (alarm.type === ALARM_TYPE.EVENT) {
     chrome.notifications.create(
+      alarm.calendarEventId,
       {
         type: 'basic',
         title: alarm.message,
@@ -213,23 +209,12 @@ chrome.alarms.onAlarm.addListener((param) => {
           { title: t('alarm_button_start') },
           { title: t('alarm_button_nothing') },
         ],
-      },
-      async (notificationId) => {
-        const idArr =
-          ((await Storage.get(
-            STORAGE_KEY.NOTIFICATION_EVENT,
-          )) as NotificationEventId[]) ?? []
-        const ids = {
-          notification: notificationId,
-          event: alarm.calendarEventId,
-        }
-        Storage.set(STORAGE_KEY.NOTIFICATION_EVENT, [...idArr, ids])
-      },
+      }
     )
   }
 })
 
-const startTrackingForCalendarEvent = async (notificationId: string) => {
+const startTrackingForCalendarEvent = async (eventId: string) => {
   const trackings = (await Storage.get(
     STORAGE_KEY.TRACKING_STATE,
   )) as TrackingState[]
@@ -239,64 +224,56 @@ const startTrackingForCalendarEvent = async (notificationId: string) => {
   const key = TaskRecordKey.fromDate(new Date())
 
   // Find the line number to start tracking
-  const idArr = (await Storage.get(
-    STORAGE_KEY.NOTIFICATION_EVENT,
-  )) as NotificationEventId[]
-  const eventId = idArr.find((n) => n.notification === notificationId)?.event
   const line = eventLines.find((e) => e.event.id === eventId)?.line
-
   if (line == null) {
     // It is not a notification to CalendarEvent, so does nothing.
+    Log.e('line not found')
     return
   }
 
-  // Stop other tracking
+  // TODO: Check if already tracking
+
+  // Stop other tracking & alarms
   const records = await loadRecords()
   const root = selectRecord(key, records)
-  const [newRoot, events] = await stopTrackings(root, trackings)
-  saveStates(key, newRoot, trackings, events)
+  const [newRoot, events] = stopTrackings(root, trackings)
+  onMessageFuncs.stopAlarmsForTask(0, () => { })
 
   // Update tracking state
-  onMessageFuncs.startTracking(0, () => {})
+  onMessageFuncs.startTracking(0, () => { })
   const tracking = {
     isTracking: true,
+    nodeId: null,
     trackingStartTime: Date.now(),
     key: key.toKey(),
     elapsedTime: new Time(),
     line,
   }
-  await Storage.set(STORAGE_KEY.TRACKING_STATE, [tracking])
+  saveStates(key, newRoot, [tracking], events)
 
   // Set alarms for task
-  onMessageFuncs.stopAlarmsForTask(0, () => {})
   const alarmRules = (await Storage.get(STORAGE_KEY.ALARMS)) as AlarmRule[]
   const node = root.find((n) => n.line === line)
   if (node != null && node.type === NODE_TYPE.TASK) {
     const alarms = AlarmService.taskToAlarms(node.data as Task, alarmRules)
     alarms.forEach((alarm) => {
-      onMessageFuncs.setAlarm(alarm, () => {})
+      onMessageFuncs.setAlarm(alarm, () => { })
     })
   }
-
-  // Delete notified IDs
-  await Storage.set(
-    STORAGE_KEY.NOTIFICATION_EVENT,
-    idArr.filter((n) => n.notification !== notificationId),
-  )
 }
 
-chrome.notifications.onClicked.addListener(async (notificationId) => {
-  Log.d(`${notificationId}`)
-  await startTrackingForCalendarEvent(notificationId)
+chrome.notifications.onClicked.addListener(async (evnetId) => {
+  Log.d(`${evnetId}`)
+  await startTrackingForCalendarEvent(evnetId)
 })
 
 chrome.notifications.onButtonClicked.addListener(
-  async (notificationId, buttonIndex) => {
-    Log.d(`${notificationId}, ${buttonIndex}`)
+  async (evnetId, buttonIndex) => {
+    Log.d(`${evnetId}, ${buttonIndex}`)
     if (buttonIndex !== 0) {
       // Do nothing button clicked.
       return
     }
-    await startTrackingForCalendarEvent(notificationId)
+    await startTrackingForCalendarEvent(evnetId)
   },
 )
