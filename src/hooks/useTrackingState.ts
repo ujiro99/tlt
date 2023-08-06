@@ -35,13 +35,6 @@ const convTime = (tracking: TrackingState): TrackingState => {
     obj._hours,
     obj._days,
   )
-
-  // If the tracking is in progress, update the elapsed time to resume counting.
-  if (tracking.isTracking) {
-    const elapsedTimeMs = Date.now() - tracking.trackingStartTime
-    const elapsedTime = Time.parseMs(elapsedTimeMs)
-    tracking.elapsedTime.add(elapsedTime)
-  }
   return tracking
 }
 
@@ -110,7 +103,6 @@ const trackingState = atom<TrackingState[]>({
         STORAGE_KEY.TRACKING_STATE,
       )) as TrackingState[]
       if (!trackings) return []
-
       return trackings.map((tracking) => convTime(tracking))
     },
   }),
@@ -293,7 +285,6 @@ export function useTrackingStop(): useTrackingStopReturn {
     Log.d('stopAllTracking')
     const [newRoot, events] = stopTrackings(root, trackings)
     manager.setRoot(newRoot)
-    Log.d('stopAllTracking', newRoot)
     saveStates(trackingKey, newRoot, [], events)
     Ipc.send({ command: 'stopTracking' })
     stopAlarmsForTask()
