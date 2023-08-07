@@ -1,7 +1,8 @@
 import React from 'react'
 import { format, parseISO } from 'date-fns'
+import type { TreeItems } from '@/components/Tree/types'
 import { Node, NODE_TYPE } from '@/models/node'
-import type { TreeItems, FlattenedItem } from '@/components/Tree/types'
+import { flat } from '@/models/flattenedNode'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 import { Tag } from '@/models/tag'
@@ -16,29 +17,29 @@ export function sleep(msec: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, msec))
 }
 
-export function updateLines(items: FlattenedItem[]): FlattenedItem[] {
-  return items.map((i, idx) => {
-    ;(i as unknown as Node).line = idx + 1
-    return i
-  })
-}
-
 /**
  * Calculation of line movement
  *
  * @param current Current line number.
  * @param from Line number from which to move.
  * @param to Destination line number.
+ * @param length Number of lines to move.
+ *
  * @returns Line number after move.
  */
-export function moveLine(current: number, from: number, to: number): number {
+export function moveLine(
+  current: number,
+  from: number,
+  to: number,
+  length: number,
+): number {
   // -----
   // add
   // -----
   if (from == null) {
     if (current >= to) {
       // Move down
-      return current + 1
+      return current + length
     }
     return current
   }
@@ -47,13 +48,19 @@ export function moveLine(current: number, from: number, to: number): number {
   // remove
   // -----
   if (to == null) {
-    if (current === from) {
-      // remove this line.
+    //       1. no change
+    // from
+    //       2. remove togher
+    // from + length
+    //       3. move up
+
+    if (from <= current && current < from + length) {
+      // 2. remove togher
       return null
     }
-    if (from < current) {
-      // Move up
-      return current - 1
+    if (from + length - 1 < current) {
+      // 3. Move up
+      return current - length
     }
     return current
   }
@@ -61,20 +68,64 @@ export function moveLine(current: number, from: number, to: number): number {
   // -----
   // move
   // -----
+  if (from < to && from + length - 1 >= to) {
+    // The operation to move within oneself is invalid.
+    return current
+  }
   if (current === from) {
     // From -> to
-    return to
+    if (from < to) {
+      return to - (length - 1)
+    } else {
+      return to
+    }
   }
-  if (from > current && current >= to) {
-    // Move down
-    return current + 1
+
+  if (from > to) {
+    // Lines move up
+
+    //       1. no change
+    // to
+    //       2. move down
+    // from
+    //       3. move up togher
+    // from + length
+    //       4. no change
+
+    if (current < to) {
+      // 1. no change
+      return current
+    }
+    if (current < from) {
+      // 2. move down
+      return current + length
+    }
+    if (current <= from + length - 1) {
+      // 3. move up togher
+      return to + (current - from)
+    }
+    // 4. no change
+    return current
   }
+
   if (from < current && current <= to) {
-    // Move up
-    return current - 1
+    // Lines move down
+    if (current <= from + length - 1) {
+      // moves together
+      return to + (current - from - 1)
+    }
+    return current - length
   }
 
   return current
+}
+
+export function updateLines(root: Node): Node {
+  const flatten = flat(root)
+  flatten.forEach((f, index) => {
+    f.node.line = index + 1
+  })
+  return root
 }
 
 /**

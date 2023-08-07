@@ -20,9 +20,17 @@ export const STORAGE_KEY = {
   TRACKING_STATE: 'tracking_state',
   ACTIVITIES: 'activities',
   ALARMS: 'alarms',
-  NOTIFICATION_EVENT: 'notification_event',
 } as const
 export type StorageKey = (typeof STORAGE_KEY)[keyof typeof STORAGE_KEY]
+
+export const DEFAULTS = {
+  [STORAGE_KEY.ACTIVITIES]: [],
+  [STORAGE_KEY.ALARMS]: [],
+  [STORAGE_KEY.CALENDAR_COLOR]: {},
+  [STORAGE_KEY.CALENDAR_EVENT]: [],
+  [STORAGE_KEY.TRACKING_STATE]: [],
+  [STORAGE_KEY.TASK_LIST_TEXT]: [],
+}
 
 export const ACCOUNT_DATA = [
   STORAGE_KEY.ACCESS_TOKEN,
@@ -39,14 +47,7 @@ export const TOKEN_TYPE = {
   WEB: 'web',
 }
 
-export const DEFAULTS = {
-  [STORAGE_KEY.ACTIVITIES]: [],
-  [STORAGE_KEY.ALARMS]: [],
-  [STORAGE_KEY.CALENDAR_COLOR]: {},
-  [STORAGE_KEY.CALENDAR_EVENT]: [],
-}
-
-type onChangedCallback = (newVal, oldVal) => void
+type onChangedCallback = (newVal: any, oldVal: any) => void
 
 export const Storage = {
   /**
@@ -61,8 +62,9 @@ export const Storage = {
         if (chrome.runtime.lastError != null) {
           reject(chrome.runtime.lastError)
         } else {
-          Log.v(result[key])
-          resolve(result[key])
+          const val = result[key] ?? DEFAULTS[key]
+          Log.v(val)
+          resolve(val)
         }
       })
     })

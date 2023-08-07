@@ -1,4 +1,5 @@
 import Log from '@/services/log'
+import { TimeObject } from '@/@types/global'
 
 const TIME_TYPE = {
   NEGATIVE_SIGN: 'NEGATIVE_SIGN',
@@ -30,7 +31,7 @@ export class Time {
       time._isNegative = true
       ms = Math.abs(ms)
     }
-    
+
     time._days = Math.floor(ms / DAY_MS)
     ms = ms % DAY_MS
     time._hours = Math.floor(ms / HOUR_MS)
@@ -47,7 +48,7 @@ export class Time {
       time._isNegative = true
       seconds = Math.abs(seconds)
     }
-    
+
     time._days = Math.floor(seconds / DAY_S)
     seconds = seconds % DAY_S
     time._hours = Math.floor(seconds / HOUR_S)
@@ -132,6 +133,16 @@ export class Time {
     const h = a._hours - b._hours
     const d = a._days - b._days
     return d * DAY_S + h * HOUR_S + m * MINUTE_S + s
+  }
+
+  static fromTimeObject(obj: TimeObject|Time): Time {
+    let timeObject = obj as TimeObject
+    return new Time(
+      timeObject._seconds,
+      timeObject._minutes,
+      timeObject._hours,
+      timeObject._days,
+    )
   }
 
   private _isNegative = false

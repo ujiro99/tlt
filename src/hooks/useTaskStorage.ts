@@ -33,7 +33,7 @@ export const savingState = atom<boolean>({
  */
 export const allRecordsState = atom<TaskRecordArray>({
   key: 'taskRecordsState',
-  default: null,
+  default: [],
   effects: [
     ({ trigger, setSelf, onSet }) => {
       if (trigger === 'get') {

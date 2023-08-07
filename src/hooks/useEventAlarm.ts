@@ -27,7 +27,7 @@ export const eventToAlarm = (e: CalendarEvent): Alarm => {
 
 type useEventAlarmReturn = {
   setEventLines: (eventLines: EventLine[]) => void
-  moveEventLine: (from: number, to: number) => void
+  moveEventLine: (from: number, to: number, length: number) => void
   fixEventLines: (root: Node) => void
 }
 
@@ -38,7 +38,7 @@ export function useEventAlarm(): useEventAlarmReturn {
   const { stopAlarms } = useAlarms()
 
   const moveEventLine = useCallback(
-    (from: number, to: number) => {
+    (from: number, to: number, length: number) => {
       const newVal = eventLines
         .map((n) => {
           if (n.line === from && to == null) {
@@ -47,7 +47,7 @@ export function useEventAlarm(): useEventAlarmReturn {
           }
           return {
             ...n,
-            line: moveLine(n.line, from, to),
+            line: moveLine(n.line, from, to, length),
           }
         })
         .filter((n) => n.line != null)
