@@ -17,15 +17,11 @@ let storage = []
 let useStorageMock
 
 beforeEach(() => {
-  useStorageMock = useStorageModule as jest.Mocked<
-    typeof useStorageModule
-  >
+  useStorageMock = useStorageModule as jest.Mocked<typeof useStorageModule>
   const func = jest.fn().mockImplementation((val) => (storage = val))
   useStorageMock.useStorage.mockReturnValue([storage, func])
 
-  const alarmModule = useAlarmModule as jest.Mocked<
-    typeof useAlarmModule 
-  >
+  const alarmModule = useAlarmModule as jest.Mocked<typeof useAlarmModule>
   alarmModule.useAlarms.mockReturnValue({
     stopAlarms: jest.fn(),
   } as any)
@@ -102,7 +98,7 @@ describe('moveLine', () => {
     )
 
     act(() => {
-      result.current.moveEventLine(1, 2)
+      result.current.moveEventLine(1, 2, 1)
     })
 
     await waitFor(() => {
@@ -120,7 +116,7 @@ describe('moveLine', () => {
     ]
     const func = jest.fn().mockImplementation((val) => (eventLines = val))
     useStorageMock.useStorage.mockReturnValue([eventLines, func])
-    
+
     const { result } = renderHook(
       () => {
         return useEventAlarm()
@@ -131,7 +127,7 @@ describe('moveLine', () => {
     )
 
     act(() => {
-      result.current.moveEventLine(1, 5)
+      result.current.moveEventLine(1, 5, 1)
     })
 
     await waitFor(() => {
@@ -140,7 +136,7 @@ describe('moveLine', () => {
       expect(eventLines[2].line).toBe(3)
     })
   })
-  
+
   test('move up', async () => {
     let eventLines = [
       { event: { id: 1 } as unknown as CalendarEvent, line: 2 },
@@ -149,7 +145,7 @@ describe('moveLine', () => {
     ]
     const func = jest.fn().mockImplementation((val) => (eventLines = val))
     useStorageMock.useStorage.mockReturnValue([eventLines, func])
-    
+
     const { result } = renderHook(
       () => {
         return useEventAlarm()
@@ -160,7 +156,7 @@ describe('moveLine', () => {
     )
 
     act(() => {
-      result.current.moveEventLine(5, 2)
+      result.current.moveEventLine(5, 2, 1)
     })
 
     await waitFor(() => {
@@ -178,7 +174,7 @@ describe('moveLine', () => {
     ]
     const func = jest.fn().mockImplementation((val) => (eventLines = val))
     useStorageMock.useStorage.mockReturnValue([eventLines, func])
-    
+
     const { result } = renderHook(
       () => {
         return useEventAlarm()
@@ -189,7 +185,7 @@ describe('moveLine', () => {
     )
 
     act(() => {
-      result.current.moveEventLine(1, 3)
+      result.current.moveEventLine(1, 3, 1)
     })
 
     await waitFor(() => {
@@ -207,7 +203,7 @@ describe('moveLine', () => {
     ]
     const func = jest.fn().mockImplementation((val) => (eventLines = val))
     useStorageMock.useStorage.mockReturnValue([eventLines, func])
-    
+
     const { result } = renderHook(
       () => {
         return useEventAlarm()
@@ -218,7 +214,7 @@ describe('moveLine', () => {
     )
 
     act(() => {
-      result.current.moveEventLine(5, 3)
+      result.current.moveEventLine(5, 3, 1)
     })
 
     await waitFor(() => {
@@ -236,7 +232,7 @@ describe('moveLine', () => {
     ]
     const func = jest.fn().mockImplementation((val) => (eventLines = val))
     useStorageMock.useStorage.mockReturnValue([eventLines, func])
-    
+
     const { result } = renderHook(
       () => {
         return useEventAlarm()
@@ -247,7 +243,7 @@ describe('moveLine', () => {
     )
 
     act(() => {
-      result.current.moveEventLine(null, 3)
+      result.current.moveEventLine(null, 3, 1)
     })
 
     await waitFor(() => {
@@ -256,7 +252,7 @@ describe('moveLine', () => {
       expect(eventLines[2].line).toBe(5)
     })
   })
-  
+
   test('remove', async () => {
     let eventLines = [
       { event: { id: 1 } as unknown as CalendarEvent, line: 2 },
@@ -265,7 +261,7 @@ describe('moveLine', () => {
     ]
     const func = jest.fn().mockImplementation((val) => (eventLines = val))
     useStorageMock.useStorage.mockReturnValue([eventLines, func])
-    
+
     const { result } = renderHook(
       () => {
         return useEventAlarm()
@@ -276,7 +272,7 @@ describe('moveLine', () => {
     )
 
     act(() => {
-      result.current.moveEventLine(3, null)
+      result.current.moveEventLine(3, null, 1)
     })
 
     await waitFor(() => {

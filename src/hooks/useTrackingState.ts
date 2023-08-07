@@ -250,12 +250,12 @@ export function useTrackingMove() {
   const [trackings, setTrackings] = useRecoilState(trackingStateSelector)
 
   const moveTracking = useCallback(
-    (from: number, to: number) => {
+    (from: number, to: number, length: number) => {
       const newVal = trackings
         .map((n) => {
           return {
             ...n,
-            line: moveLine(n.line, from, to),
+            line: moveLine(n.line, from, to, length),
           }
         })
         .filter((n) => n.line != null)

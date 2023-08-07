@@ -29,6 +29,7 @@ export const DEFAULTS = {
   [STORAGE_KEY.CALENDAR_COLOR]: {},
   [STORAGE_KEY.CALENDAR_EVENT]: [],
   [STORAGE_KEY.TRACKING_STATE]: [],
+  [STORAGE_KEY.TASK_LIST_TEXT]: [],
 }
 
 export const ACCOUNT_DATA = [
@@ -56,7 +57,7 @@ export const Storage = {
    */
   get: (key: StorageKey): Promise<unknown> => {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.get(key, function(result) {
+      chrome.storage.local.get(key, function (result) {
         Log.d('storage get: ' + key)
         if (chrome.runtime.lastError != null) {
           reject(chrome.runtime.lastError)
@@ -80,7 +81,7 @@ export const Storage = {
     value: unknown,
   ): Promise<boolean | chrome.runtime.LastError> => {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.set({ [key]: value }, function() {
+      chrome.storage.local.set({ [key]: value }, function () {
         Log.d('storage set: ' + key)
         if (chrome.runtime.lastError != null) {
           reject(chrome.runtime.lastError)
@@ -98,7 +99,7 @@ export const Storage = {
    */
   remove: (key: StorageKey): Promise<boolean | chrome.runtime.LastError> => {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.remove(key, function() {
+      chrome.storage.local.remove(key, function () {
         Log.d('storage remove: ' + key)
         if (chrome.runtime.lastError != null) {
           reject(chrome.runtime.lastError)
@@ -114,7 +115,7 @@ export const Storage = {
    */
   clear: (): Promise<boolean> => {
     return new Promise((resolve, reject) => {
-      chrome.storage.local.clear(function() {
+      chrome.storage.local.clear(function () {
         Log.d('clear')
         if (chrome.runtime.lastError != null) {
           reject(chrome.runtime.lastError)

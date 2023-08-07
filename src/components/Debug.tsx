@@ -1,12 +1,16 @@
 import React from 'react'
+import { TrackingState } from '@/@types/global'
 import { useTrackingState } from '@/hooks/useTrackingState'
 import { useStorage } from '@/hooks/useStorage'
 import { EventLine } from '@/hooks/useEventAlarm'
-import { TrackingState } from '@/@types/global'
+import { useTaskManager } from '@/hooks/useTaskManager'
 import { formatTime } from '@/services/util'
 import { STORAGE_KEY } from '@/services/storage'
 import { isDebug } from '@/const'
 import { Time } from '@/models/time'
+import { Node, NODE_TYPE } from '@/models/node'
+import { Task } from '@/models/task'
+import { flattenTree } from '@/components/Tree/utilities'
 
 const trackingsToText = (trackings: TrackingState[]) => {
   let res = '<Trackings>'
@@ -34,10 +38,26 @@ const calendarToText = (calendars: EventLine[]) => {
   return res
 }
 
+const nodeToText = (root: any) => {
+  const flatten = flattenTree([root])
+  let res = '<Node>'
+  flatten.forEach((item) => {
+    const n = item as any as Node
+    if (n.type === NODE_TYPE.ROOT) {
+      return
+    }
+    res += `\n  id: ${n.id} line: ${n.line} type: ${n.type} - ${
+      (n.data as Task).title
+    }`
+  })
+  return res
+}
+
 export function Debug(): JSX.Element {
   const { trackings } = useTrackingState()
   const [sCalendar] = useStorage<EventLine[]>(STORAGE_KEY.CALENDAR_EVENT)
   const [sAlarms] = useStorage(STORAGE_KEY.ALARMS)
+  const root = useTaskManager().getRoot()
 
   if (!isDebug) {
     return <></>
@@ -45,6 +65,9 @@ export function Debug(): JSX.Element {
 
   return (
     <>
+      <pre className="debug">
+        <code>{nodeToText(root)}</code>
+      </pre>
       <pre className="debug">
         <code>{trackingsToText(trackings)}</code>
       </pre>

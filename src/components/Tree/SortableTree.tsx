@@ -99,7 +99,7 @@ export function SortableTree({
   const items = root.children
 
   const { moveTracking } = useTrackingMove()
-  const { moveEventLine } = useEventAlarm ()
+  const { moveEventLine } = useEventAlarm()
 
   const flattenedItems = useMemo(() => {
     const flattenedTree = flattenTree(items)
@@ -272,22 +272,24 @@ export function SortableTree({
       const overIndex = clonedItems.findIndex(({ id }) => id === over.id)
       const activeIndex = clonedItems.findIndex(({ id }) => id === active.id)
       const activeTreeItem = clonedItems[activeIndex]
+      const activeNode = root.find((n) => n.id === activeTreeItem.id)
 
       clonedItems[activeIndex] = { ...activeTreeItem, depth, parentId }
 
       let sortedItems = arrayMove(clonedItems, activeIndex, overIndex)
-      sortedItems = updateLines(sortedItems)
       const newItems = buildTree(sortedItems)
-      moveTracking(activeIndex + 1, overIndex + 1)
-      moveEventLine(activeIndex + 1, overIndex + 1)
 
+      moveTracking(activeIndex + 1, overIndex + 1, activeNode.size())
+      moveEventLine(activeIndex + 1, overIndex + 1, activeNode.size())
       setTreeItems(newItems)
     }
   }
 
   function setTreeItems(newItems: TreeItems) {
     // update persistent data
-    manager.setRoot(treeItemsToNode(newItems))
+    let newRoot = treeItemsToNode(newItems)
+    newRoot = updateLines(newRoot)
+    manager.setRoot(newRoot)
   }
   function handleDragCancel() {
     resetState()

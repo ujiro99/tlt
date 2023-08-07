@@ -103,9 +103,9 @@ export function useTaskManager(): ITaskManager {
   const { tags, upsertTag } = useTagHistory()
 
   const flatten = flat(root)
-  const move = (from: number, to: number) => {
-    moveTracking(from, to)
-    moveEventLine(from, to)
+  const move = (from: number, to: number, length: number) => {
+    moveTracking(from, to, length)
+    moveEventLine(from, to, length)
   }
 
   const tagsInState = flatten.reduce((pre, crr) => {
@@ -127,7 +127,7 @@ export function useTaskManager(): ITaskManager {
     // if line removed
     if (node == null) {
       Log.d(`remove: ${line}`)
-      move(line, null)
+      move(line, null, 1)
     }
   }
 
@@ -135,7 +135,7 @@ export function useTaskManager(): ITaskManager {
     Log.d(`insert: ${line + 1}`)
     const newRoot = root.insertEmptyTask(line)
     setRoot(newRoot)
-    move(null, line + 1)
+    move(null, line + 1, 1)
   }
 
   const addEmptyChild = (line: number): number => {
@@ -144,7 +144,7 @@ export function useTaskManager(): ITaskManager {
     const parent = newRoot.find((node) => node.line === line)
     const appendLine = parent.children[parent.children.length - 1].line
     Log.d(`add: ${appendLine}`)
-    move(null, line)
+    move(null, line, 1)
     return appendLine
   }
 
@@ -152,7 +152,7 @@ export function useTaskManager(): ITaskManager {
     Log.d(`remove: ${line}`)
     const newRoot = root.filter((n) => n.line !== line)
     setRoot(newRoot)
-    move(line, null)
+    move(line, null, 1)
   }
 
   const updateTagHistory = (): void => {

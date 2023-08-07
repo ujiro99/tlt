@@ -250,6 +250,12 @@ export class Node implements TreeItem, INode, IClonable<INode> {
 
     return cloned
   }
+
+  public size(): number {
+    let size = 1
+    size += this.children.reduce((acc, child) => acc + child.size(), 0)
+    return size
+  }
 }
 
 function clone(nodes: Node[], parent?: Node): Node[] {
