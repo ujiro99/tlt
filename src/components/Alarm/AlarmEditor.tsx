@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import classNames from 'classnames'
+import SimpleBar from 'simplebar-react'
 
 import { useStorage } from '@/hooks/useStorage'
 import { useAnalytics } from '@/hooks/useAnalytics'
@@ -99,21 +100,26 @@ export function AlarmEditor(): JSX.Element {
       </section>
       <section className="alarm-editor__current">
         <ul className="alarm-editor__current-list">
-          {!alarmExists && <span>{t('alarm_no_alarm_rule')}</span>}
-          {alarms.map((alarm) => {
-            return (
-              <li className="alarm-editor__current-item" key={alarm.id}>
-                <span>{AlarmRule.toText(alarm)}</span>
-                <button
-                  className="alarm-editor__current-item__button"
-                  value={alarm.id}
-                  onClick={() => handleClickDelete(alarm.id)}
-                >
-                  <Icon name="delete" />
-                </button>
-              </li>
-            )
-          })}
+          {!alarmExists ? (
+            <span>{t('alarm_no_alarm_rule')}</span>
+          ) : (
+            <SimpleBar>
+              {alarms.map((alarm) => {
+                return (
+                  <li className="alarm-editor__current-item" key={alarm.id}>
+                    <span>{AlarmRule.toText(alarm)}</span>
+                    <button
+                      className="alarm-editor__current-item__button"
+                      value={alarm.id}
+                      onClick={() => handleClickDelete(alarm.id)}
+                    >
+                      <Icon name="delete" />
+                    </button>
+                  </li>
+                )
+              })}
+            </SimpleBar>
+          )}
         </ul>
       </section>
     </div>
