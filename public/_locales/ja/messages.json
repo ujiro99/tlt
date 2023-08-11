@@ -1,5 +1,7 @@
 {
-  "extName": { "message": "TLT : ToDo List & Time Tracking" },
+  "extName": {
+    "message": "TLT : ToDo List & Time Tracking"
+  },
   "extDescription": {
     "message": "ミニマムなUIでToDoと予実を管理できます."
   },
@@ -36,8 +38,14 @@
   "label_google_calendar": {
     "message": "Googleカレンダー同期"
   },
+  "desc_select_calendar_for_download": {
+    "message": "インポートしたいカレンダーを選んでください。"
+  },
+  "desc_select_calendar_for_upload": {
+    "message": "アップロードしたいカレンダーを選んでください。"
+  },
   "label_alarm": {
-    "message": "アラーム"
+    "message": "アラーム設定"
   },
   "actual": {
     "message": "実績",
