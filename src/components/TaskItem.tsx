@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, CSSProperties } from 'react'
+import React, { useState, useLayoutEffect, CSSProperties } from 'react'
 import classnames from 'classnames'
 
 import Log from '@/services/log'
