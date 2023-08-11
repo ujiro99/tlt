@@ -35,6 +35,12 @@ const convTime = (tracking: TrackingState): TrackingState => {
     obj._hours,
     obj._days,
   )
+  // If the tracking is in progress, update the elapsed time to resume counting.
+  if (tracking.isTracking) {
+    const elapsedTimeMs = Date.now() - tracking.trackingStartTime
+    const elapsedTime = Time.parseMs(elapsedTimeMs)
+    tracking.elapsedTime = elapsedTime
+  }
   return tracking
 }
 

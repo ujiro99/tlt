@@ -1,5 +1,6 @@
 import React from 'react'
 import Modal from 'react-modal'
+import SimpleBar from 'simplebar-react'
 
 import { useModal, MODAL } from '@/hooks/useModal'
 import { useAlarms } from '@/hooks/useAlarms'
@@ -89,15 +90,17 @@ export function AlarmModal(): JSX.Element {
             {t('alarm_current')}
           </h3>
           <ul className="alarm-list">
-            {alarmExists ? (
-              alarms.map((alarm) => (
-                <li className="alarm-list__item" key={alarm.toKey()}>
-                  <AlarmItem alarm={alarm} />
-                </li>
-              ))
-            ) : (
-              <p className="alarm-list__empty">{t('no_alarms')}</p>
-            )}
+            <SimpleBar>
+              {alarmExists ? (
+                alarms.map((alarm) => (
+                  <li className="alarm-list__item" key={alarm.toKey()}>
+                    <AlarmItem alarm={alarm} />
+                  </li>
+                ))
+              ) : (
+                <p className="alarm-list__empty">{t('no_alarms')}</p>
+              )}
+            </SimpleBar>
           </ul>
         </section>
         <section className="modal-window__section">

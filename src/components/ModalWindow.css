@@ -51,6 +51,7 @@
 
   &__section-title {
     @mixin section-title;
+    font-size: 1rem;
 
     & > .Icon {
       @apply fill-gray-400;

@@ -18,6 +18,7 @@ import {
   CalendarEvent,
   RESPONSE_STATUS,
 } from '@/services/google/calendar'
+import { t } from '@/services/i18n'
 import { NODE_TYPE } from '@/models/node'
 import { Task } from '@/models/task'
 
@@ -134,7 +135,7 @@ export function SyncModal(): JSX.Element {
       className="modal-window"
     >
       <div className="modal-window-header">
-        <h2>Sync with Google Calendar</h2>
+        <h2>{t('label_google_calendar')}</h2>
         <button
           className="modal-window-header__close icon-button"
           onClick={onRequestClose}
@@ -152,11 +153,11 @@ export function SyncModal(): JSX.Element {
               <section className="google-calendar__import">
                 <h3 className="google-calendar__section-title">
                   <Icon name="download" />
-                  Download
+                  Import
                 </h3>
                 {calendarExists && (
                   <p className="google-calendar__section-desc">
-                    Select a calendar you wish to import.
+                    {t('desc_select_calendar_for_download')}
                   </p>
                 )}
                 <div className="google-calendar__select-calendar">
@@ -184,7 +185,7 @@ export function SyncModal(): JSX.Element {
                 </h3>
                 {calendarExists && (
                   <p className="google-calendar__section-desc">
-                    Select a calendar you wish to upload.
+                    {t('desc_select_calendar_for_upload')}
                   </p>
                 )}
                 <div className="google-calendar__select-calendar">

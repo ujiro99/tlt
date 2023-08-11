@@ -1,5 +1,7 @@
 {
-  "extName": { "message": "TLT : ToDo List & Time Tracking" },
+  "extName": {
+    "message": "TLT : ToDo List & Time Tracking"
+  },
   "extDescription": {
     "message": "ミニマムなUIでToDoと予実を管理できます."
   },
@@ -36,8 +38,14 @@
   "label_google_calendar": {
     "message": "Googleカレンダー同期"
   },
+  "desc_select_calendar_for_download": {
+    "message": "インポートしたいカレンダーを選んでください。"
+  },
+  "desc_select_calendar_for_upload": {
+    "message": "アップロードしたいカレンダーを選んでください。"
+  },
   "label_alarm": {
-    "message": "アラーム"
+    "message": "アラーム設定"
   },
   "actual": {
     "message": "実績",
@@ -162,7 +170,7 @@
     "message": "現在のアラーム"
   },
   "alarm_for_task": {
-    "message": "タスクのアラームルール"
+    "message": "計測中タスクのアラームルール"
   },
   "no_alarms": {
     "message": "アラームは設定されていません。\n以下を実行するとアラームが設定されます。\n・アラームルールを設定してトラッキングを開始\n・Googleカレンダーからイベントをインポート"

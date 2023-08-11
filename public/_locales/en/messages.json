@@ -1,5 +1,7 @@
 {
-  "extName": { "message": "TLT : ToDo List & Time Tracking" },
+  "extName": {
+    "message": "TLT : ToDo List & Time Tracking"
+  },
   "extDescription": {
     "message": "ToDo and budget control with a minimal UI."
   },
@@ -34,10 +36,16 @@
     "message": "days"
   },
   "label_google_calendar": {
-    "message": "Sync Google Calendar"
+    "message": "Sync with Google Calendar"
+  },
+  "desc_select_calendar_for_download": {
+    "message": "Select a calendar you wish to import."
+  },
+  "desc_select_calendar_for_upload": {
+    "message": "Select a calendar you wish to upload."
   },
   "label_alarm": {
-    "message": "Alarms",
+    "message": "Alarm settings",
     "description": "Display a modal to manage alarms."
   },
   "actual": {
@@ -164,7 +172,7 @@
     "message": "Current Alarms"
   },
   "alarm_for_task": {
-    "message": "Alarm rules for tasks"
+    "message": "Alarm rules for tasks being tracked."
   },
   "no_alarms": {
     "message": "No alarms are currently set.\nTo set an alarm, do either of the following:\n - Set an alarm rules for tasks and start tracking.\n - Import events from Google Calendar."

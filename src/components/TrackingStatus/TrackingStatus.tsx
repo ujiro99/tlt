@@ -140,7 +140,7 @@ export function TrackingStatus(): JSX.Element {
 
   const jumpToNode = () => {
     const elm = document.querySelector(`#node-${node.id}`)
-    scrollTo(elm, 150)
+    scrollTo(elm, 240)
     analytics.track('click jump_to_node')
   }
 
