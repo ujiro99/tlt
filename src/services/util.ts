@@ -312,7 +312,7 @@ export function scrollTo(elm: Element, offset = 0): void {
   const elementPosition = elm.getBoundingClientRect().top
   const offsetPosition = elementPosition + window.pageYOffset - offset
 
-  document.getElementById('popup').scrollTo({
+  document.getElementsByClassName('simplebar-content-wrapper')[0].scrollTo({
     top: offsetPosition,
     behavior: 'smooth',
   })
