@@ -36,7 +36,7 @@ export const TagContextMenu = (props: TagContextMenuProps) => {
   const presetColors = tags.map((t) => t.colorHex).reverse()
   const tagRecord = tags.find((t) => t.name === tag.name)
   const bgColor = tagRecord?.colorHex || COLOR.Gray200
-  
+
   function clickBackdrop(e) {
     hideAll()
     eventStop(e)
