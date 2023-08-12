@@ -8,6 +8,8 @@ export const KEYCODE_ENTER = 13
 
 export const COLOR = {
   Gray200: '#e2e8f0',
+  White: '#ffffff',
+  Black: '#000000',
 }
 
 // for oAuth
