@@ -64,20 +64,23 @@ export function Debug(): JSX.Element {
   }
 
   return (
-    <>
-      <pre className="debug">
-        <code>{nodeToText(root)}</code>
-      </pre>
-      <pre className="debug">
-        <code>{trackingsToText(trackings)}</code>
-      </pre>
-      <pre className="debug">
-        <code>{calendarToText(sCalendar)}</code>
-      </pre>
-      <pre className="debug">
-        <code>alarms</code> <br />
-        <code>{JSON.stringify(sAlarms, null, 2)}</code>
-      </pre>
-    </>
+    <details className="debug">
+      <summary>Debug</summary>
+      <section className="debug__content">
+        <pre className="debug__label">
+          <code>{nodeToText(root)}</code>
+        </pre>
+        <pre className="debug__label">
+          <code>{trackingsToText(trackings)}</code>
+        </pre>
+        <pre className="debug__label">
+          <code>{calendarToText(sCalendar)}</code>
+        </pre>
+        <pre className="debug__label">
+          <code>alarms</code> <br />
+          <code>{JSON.stringify(sAlarms, null, 2)}</code>
+        </pre>
+      </section>
+    </details>
   )
 }

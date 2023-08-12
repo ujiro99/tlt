@@ -66,10 +66,28 @@ body {
 }
 
 .debug {
-  font-size: 12px;
-  line-height: 1;
-  background: #f0f0f0;
-  padding: 1em;
-  margin-bottom: 4px;
-  border-radius: 4px;
+  & summary {
+    cursor: pointer;
+    transition: background 0.4s ease-out;
+    padding: 0.4em;
+    border-radius: 4px;
+    margin-bottom: 4px;
+
+    &:hover {
+      background: #f0f0f0;
+    }
+  }
+
+  &__label {
+    font-size: 12px;
+    line-height: 1;
+    background: #f0f0f0;
+    padding: 1em;
+    margin-bottom: 4px;
+    border-radius: 4px;
+  }
+
+  &__content {
+    padding: 0 1em;
+  }
 }

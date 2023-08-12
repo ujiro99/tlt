@@ -1,55 +1,16 @@
 import React, { useState, useEffect, useRef, CSSProperties } from 'react'
 import classnames from 'classnames'
+import { calcAPCA, reverseAPCA, sRGBtoY } from 'apca-w3'
+import { colorParsley } from 'colorparsley'
+
 import { Tag } from '@/models/tag'
 import { useTagHistory } from '@/hooks/useTagHistory'
 import { tag2str, eventStop, rand } from '@/services/util'
 import { useContextMenu } from '@/lib/react-contexify'
 import { TagContextMenu } from '@/components/Tag/TagContextMenu'
+import { COLOR } from '@/const'
 
 import './TagButton.css'
-
-const Gray50 = '#f9fafb'
-const Gray200 = '#e2e8f0'
-const Gray700 = '#334155'
-
-type Hsv = {
-  h: number
-  s: number
-  v: number
-}
-
-function hex2hsv(hex: string): Hsv {
-  if (hex[0] === '#') {
-    hex = hex.slice(1)
-  }
-  const num = parseInt(hex, 16)
-  const r = (num >> 16) / 255
-  const b = ((num >> 8) & 0x00ff) / 255
-  const g = (num & 0x0000ff) / 255
-
-  const max = Math.max(r, g, b)
-  const min = Math.min(r, g, b)
-  const diff = max - min
-
-  let h = 0
-
-  switch (min) {
-    case max:
-      h = 0
-      break
-    case r:
-      h = 60 * ((b - g) / diff) + 180
-      break
-    case g:
-      h = 60 * ((r - b) / diff) + 300
-      break
-    case b:
-      h = 60 * ((g - r) / diff) + 60
-      break
-  }
-
-  return { h, s: max === 0 ? 0 : diff / max, v: max }
-}
 
 function hex2rgb(hex: string): string {
   if (hex.slice(0, 1) === '#') hex = hex.slice(1)
@@ -67,9 +28,24 @@ function hex2rgb(hex: string): string {
     .join(',')
 }
 
-const calcLabelColor = (rgb: string): string => {
-  const hsv = hex2hsv(rgb)
-  return hsv.s < 0.4 && hsv.v > 0.6 ? Gray700 : Gray50
+const calcApcaFg = (lc: number, bgColor: string): string => {
+  const knownY = sRGBtoY(colorParsley(bgColor))
+  let fgColor = reverseAPCA(lc, knownY, 'bg', 'hex') // dark color
+  if (!fgColor) {
+    fgColor = reverseAPCA(lc * -1, knownY, 'bg', 'hex') // light color
+  }
+  return fgColor
+}
+
+const calcLabelColor = (bgColor: string): string => {
+  let col = calcApcaFg(90, bgColor)
+  if (col) {
+    return col
+  } else {
+    let lcb = Math.abs(calcAPCA(COLOR.Black, bgColor))
+    let lcw = Math.abs(calcAPCA(COLOR.White, bgColor))
+    return lcb > lcw + 5 ? COLOR.Black : COLOR.White
+  }
 }
 
 type TagButtonProps = {
@@ -86,15 +62,15 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
   const tag = props.tag
   const { tags } = useTagHistory()
   const tagRecord = tags.find((t) => t.name === tag.name)
-  const initialBg = tagRecord?.colorHex || Gray200
+  const initialBg = tagRecord?.colorHex || COLOR.Gray200
   const [bgColor, setBgColor] = useState(initialBg)
-  const [labelColor, setLabelColor] = useState(calcLabelColor(initialBg))
+  const [fbColor, setFbColor] = useState(calcLabelColor(initialBg))
 
   const MENU_ID = MENU_ID_PREFIX + tag.name + rand()
   const { show } = useContextMenu({ id: MENU_ID })
   const pickerRef = props.pickerRef ?? useRef<Element>(null)
-  
-  function openContextMenu(event) {
+
+  function openContextMenu(event: React.MouseEvent) {
     show({ event })
     eventStop(event)
   }
@@ -103,7 +79,7 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
     const tagRecord = tags.find((t) => t.name === tag.name)
     if (tagRecord) {
       setBgColor(tagRecord.colorHex)
-      setLabelColor(calcLabelColor(tagRecord.colorHex))
+      setFbColor(calcLabelColor(tagRecord.colorHex))
     }
   }, [tags])
 
@@ -122,7 +98,7 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
         onContextMenu={openContextMenu}
         ref={pickerRef as React.LegacyRef<HTMLButtonElement>}
       >
-        <span style={{ color: labelColor }}>{tag2str(tag)}</span>
+        <span style={{ color: fbColor }}>{tag2str(tag)}</span>
       </button>
 
       {/* context menu */}
