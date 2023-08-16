@@ -9,7 +9,7 @@
     pointer-events: none;
     width: 100%;
     padding: 0;
-    margin-top: 20px; 
+    margin-top: 20px;
     opacity: 0.8;
 
     .TreeItem {
@@ -109,15 +109,5 @@
   .Count {
     user-select: none;
     -webkit-user-select: none;
-  }
-}
-
-.Collapse {
-  svg {
-    transition: transform 250ms ease;
-  }
-
-  &.collapsed svg {
-    transform: rotate(-90deg);
   }
 }

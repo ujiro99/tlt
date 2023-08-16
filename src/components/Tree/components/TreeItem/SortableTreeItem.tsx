@@ -37,7 +37,7 @@ export function SortableTreeItem({ id, depth, ...props }: Props) {
   }
 
   const [getItem] = useItemAdapter()
-  const item = getItem(id)
+  const { elm, isCollapsable } = getItem(id)
 
   return (
     <TreeItem
@@ -53,8 +53,10 @@ export function SortableTreeItem({ id, depth, ...props }: Props) {
         ...listeners,
       }}
       {...props}
+      // override onCollapse
+      onCollapse={isCollapsable ? props.onCollapse : undefined}
     >
-      {item}
+      {elm}
     </TreeItem>
   )
 }

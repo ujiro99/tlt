@@ -162,18 +162,21 @@ export function setProperty<T extends keyof TreeItem>(
   property: T,
   setter: (value: TreeItem[T]) => TreeItem[T],
 ) {
-  for (const item of items) {
+  const newItems = items.map((item) => {
     if (item.id === id) {
-      item[property] = setter(item[property])
-      continue
+      const newItem = item.clone()
+      newItem[property] = setter(newItem[property])
+      return newItem
     }
-
     if (item.children.length) {
-      item.children = setProperty(item.children, id, property, setter)
+      const newItem = item.clone()
+      newItem.children = setProperty(newItem.children, id, property, setter)
+      return newItem
     }
-  }
+    return item
+  })
 
-  return [...items]
+  return [...newItems]
 }
 
 function countChildren(items: TreeItem[], count = 0): number {

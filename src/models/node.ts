@@ -2,7 +2,7 @@ import { TreeItem } from '@/components/Tree/types'
 import { Task } from '@/models/task'
 import { Group } from '@/models/group'
 import Log from '@/services/log'
-import { rand, depthToIndent } from '@/services/util'
+import { rand, depthToIndent, hasProperties } from '@/services/util'
 import { flat } from './flattenedNode'
 import { IClonable } from '@/@types/global'
 import { TASK_DEFAULT } from '@/const'
@@ -18,16 +18,6 @@ export const NODE_TYPE = {
 }
 type NodeType = (typeof NODE_TYPE)[keyof typeof NODE_TYPE]
 
-/**
- * @see https://qiita.com/SoraKumo/items/1d593796de973095f101
- */
-function hasProperties<K extends string>(
-  x: unknown,
-  ...name: K[]
-): x is { [M in K]: unknown } {
-  return x instanceof Object && name.every((prop) => prop in x)
-}
-
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isClonable<T>(arg: any): arg is IClonable<T> {
   // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -41,6 +31,7 @@ export interface INode {
   parent: Node
   children: Node[]
   id: string
+  collapsed: boolean
 
   toString(): string
   clone(): INode
@@ -291,6 +282,19 @@ export function nodeToString(root: Node): string {
   })
 
   return lines.join('\n')
+}
+
+/**
+ * Get collapsed line numbers.
+ */
+export function getCollapsedLines(root: Node): number[] {
+  const flatten = flat(root)
+  return flatten.reduce((collapsed, n) => {
+    if (n.node.collapsed) {
+      collapsed.push(n.node.line)
+    }
+    return collapsed
+  }, [])
 }
 
 export function nodeToTasks(root: INode, completed: boolean): Task[] {

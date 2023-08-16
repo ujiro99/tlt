@@ -28,6 +28,7 @@
     margin-right: 2px;
     opacity: 0;
     transition: opacity 0.2s ease-out;
+    cursor: grab;
 
     @at-root {
       .dragging $(this)__drag {
@@ -96,5 +97,37 @@
       border-bottom-left-radius: var(--radius-md);
       border-bottom-right-radius: var(--radius-md);
     }
+  }
+
+  &__collapse {
+    width: 20px;
+    height: 20px;
+    padding: 0 6px 0 0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    appearance: none;
+    background-color: transparent;
+
+    svg {
+      @apply fill-gray-500;
+      transition: transform 250ms ease;
+    }
+
+    @at-root {
+      .collapsed $(this)__collapse svg {
+        transform: rotate(-90deg);
+      }
+    }
+  }
+
+  &:has(textarea) &__collapse {
+    transition: none;
+    opacity: 0;
   }
 }

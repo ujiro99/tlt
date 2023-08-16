@@ -15,7 +15,7 @@ import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import Log from '@/services/log'
 import { TaskRecordKey } from '@/models/taskRecordKey'
-import { Node, nodeToString } from '@/models/node'
+import { Node, nodeToString, getCollapsedLines } from '@/models/node'
 import { sleep } from '@/services/util'
 
 export const isPossibleToSaveState = atom<boolean>({
@@ -62,12 +62,14 @@ export const updateRecords = (
 ): TaskRecordArray => {
   let found = false
   const data = nodeToString(root)
+  const collapsedLines = getCollapsedLines(root)
   const newRecords = records.map((r) => {
     if (r.key === key.toKey()) {
       found = true
       return {
         ...r,
         data,
+        collapsedLines,
       }
     } else {
       return r
@@ -78,6 +80,7 @@ export const updateRecords = (
       key: key.toKey(),
       type: TaskRecordType.Date,
       data,
+      collapsedLines,
     }
     newRecords.push(r)
   }
