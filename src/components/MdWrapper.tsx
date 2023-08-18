@@ -7,7 +7,6 @@ import { useTrackingState } from '@/hooks/useTrackingState'
 import { eventStop } from '@/services/util'
 import { ItemConfirm } from '@/components/ContextMenu/ItemConfirm'
 import { t } from '@/services/i18n'
-import { Action } from '@/components/Tree/components'
 
 import 'react-contexify/ReactContexify.css'
 import './MdWrapper.css'

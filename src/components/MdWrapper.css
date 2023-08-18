@@ -113,10 +113,18 @@
     outline: none;
     appearance: none;
     background-color: transparent;
+    opacity: 0;
+    transition: opacity 0.2s ease-out;
 
     svg {
-      @apply fill-gray-500;
-      transition: transform 250ms ease;
+      @apply fill-gray-400;
+      transition: transform 250ms ease-out, fill 250ms ease-out;
+    }
+
+    &:hover {
+      svg {
+        @apply fill-gray-600;
+      }
     }
 
     @at-root {
@@ -126,7 +134,12 @@
     }
   }
 
-  &:has(textarea) &__collapse {
+  &:hover &__collapse {
+    opacity: 1;
+  }
+
+  &:has(textarea) &__collapse,
+  &:hover:has(textarea) &__collapse {
     transition: none;
     opacity: 0;
   }

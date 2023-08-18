@@ -63,6 +63,10 @@
     }
   }
 
+  & > * {
+    user-select: none;
+  }
+
   h1 {
     position: relative;
     z-index: 0;
@@ -74,7 +78,7 @@
       z-index: -1;
       left: -6px;
       bottom: 0;
-      width: calc(100% + 12px);
+      width: calc(100% + 10px);
       height: 0.6rem;
       border-radius: 2px;
     }
