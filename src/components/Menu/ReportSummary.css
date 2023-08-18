@@ -61,6 +61,8 @@
     width: 18px;
     height: 18px;
     margin-right: 8px;
+    background: var(--bg-gray-100);
+    border-radius: 50%;
   }
 
   &--fixed &__circle {
