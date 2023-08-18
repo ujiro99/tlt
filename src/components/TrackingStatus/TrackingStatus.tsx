@@ -134,7 +134,7 @@ export function TrackingStatus(): JSX.Element {
   }
 
   const task = node.data as Task
-  const hasEstimatedTime = !task.estimatedTimes.isEmpty()
+  const hasEstimatedTime = task.estimatedTimes && !task.estimatedTimes.isEmpty()
   const estimatedTime = task.estimatedTimes
   const elapsedTime = tracking.elapsedTime
 

@@ -110,9 +110,9 @@ export function moveLine(
 
   if (from < current && current <= to) {
     // Lines move down
-    if (current <= from + length - 1) {
+    if (current < from + length) {
       // moves together
-      return to + (current - from - 1)
+      return to + current - from - length + 1
     }
     return current - length
   }
