@@ -1,4 +1,5 @@
 .Heading {
+  $this: .Heading;
   @apply w-full;
   @apply py-2;
   @apply font-bold;
@@ -60,6 +61,12 @@
         @apply fill-gray-600;
         @apply drop-shadow-md;
       }
+    }
+  }
+
+  @at-root {
+    .item-wrapper__drag + $(this) {
+      padding-left: 20px;
     }
   }
 
