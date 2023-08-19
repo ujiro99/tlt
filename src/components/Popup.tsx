@@ -69,7 +69,7 @@ function TaskList() {
 function ToDo() {
   return (
     <div className="task-container">
-      <SortableTree indicator />
+      <SortableTree indicator collapsible />
       <EmptyLine />
       <SyncModal />
       <AlarmModal />

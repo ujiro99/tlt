@@ -110,9 +110,9 @@ export function moveLine(
 
   if (from < current && current <= to) {
     // Lines move down
-    if (current <= from + length - 1) {
+    if (current < from + length) {
       // moves together
-      return to + (current - from - 1)
+      return to + current - from - length + 1
     }
     return current - length
   }
@@ -153,6 +153,9 @@ export function treeItemsToNode(items: TreeItems): Node {
       if (node) {
         parent.children.push(node)
         node.parent = parent
+        if (hasProperties(obj, 'collapsed')) {
+          node.collapsed = obj.collapsed
+        }
         if (obj.children.length > 0) {
           node.children = treeItemsToNode(obj.children).children
           node.children.forEach((c) => (c.parent = node))
@@ -316,4 +319,14 @@ export function scrollTo(elm: Element, offset = 0): void {
     top: offsetPosition,
     behavior: 'smooth',
   })
+}
+
+/**
+ * @see https://qiita.com/SoraKumo/items/1d593796de973095f101
+ */
+export function hasProperties<K extends string>(
+  x: unknown,
+  ...name: K[]
+): x is { [M in K]: unknown } {
+  return x instanceof Object && name.every((prop) => prop in x)
 }

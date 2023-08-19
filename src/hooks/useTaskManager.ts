@@ -27,8 +27,29 @@ interface TaskRecord {
   key: string
   type: TaskRecordType
   data: string
+  collapsedLines: number[]
 }
 export type TaskRecordArray = TaskRecord[]
+
+function assignCollapsedLines(root: Node, collapsedLines: number[]): Node {
+  if (!collapsedLines || collapsedLines.length === 0) {
+    return root
+  }
+  collapsedLines.forEach((line) => {
+    const node = root.find((n) => n.line === line)
+    if (node) {
+      node.collapsed = true
+    } else {
+      Log.w(`line ${line} not found.`)
+    }
+  })
+  return root
+}
+
+function parseRecord(data: string, collapsedLines: number[]): Node {
+  const root = Parser.parseMd(data)
+  return assignCollapsedLines(root, collapsedLines)
+}
 
 export function selectRecord(
   key: TaskRecordKey,
@@ -46,13 +67,13 @@ export function selectRecord(
     const record = records.find((r) => r.key === key.toKey())
 
     if (record) {
-      return Parser.parseMd(record.data)
+      return parseRecord(record.data, record.collapsedLines)
     } else {
       // If today's task data does not exist,
       // copy the uncompleted data from the most recent past data.
       const lastRecord = records[records.length - 1]
       if (lastRecord) {
-        const lastRoot = Parser.parseMd(lastRecord.data)
+        const lastRoot = parseRecord(lastRecord.data, lastRecord.collapsedLines)
         return lastRoot.filter((n) => !n.isComplete())
       } else {
         // Nothing to load.
@@ -182,8 +203,8 @@ export function useTaskManager(): ITaskManager {
       return node ? node.toString() : ''
     },
     setTextByLine: (line: number, text: string) => {
-      const root = Parser.parseMd(text)
-      setNodeByLine(root.children[0], line)
+      const parsed = Parser.parseMd(text)
+      setNodeByLine(parsed.children[0], line)
     },
     getRoot: () => {
       return root

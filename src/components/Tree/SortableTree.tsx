@@ -269,12 +269,17 @@ export function SortableTree({
       const { depth, parentId } = projected
 
       const clonedItems: FlattenedItem[] = flattenTree(items)
-      const overIndex = clonedItems.findIndex(({ id }) => id === over.id)
+      let overIndex = clonedItems.findIndex(({ id }) => id === over.id)
       const activeIndex = clonedItems.findIndex(({ id }) => id === active.id)
       const activeTreeItem = clonedItems[activeIndex]
-      const activeNode = root.find((n) => n.id === activeTreeItem.id)
+      const activeNode = root.find((n) => n.id === active.id)
+      const overNode = root.find((n) => n.id === over.id)
 
       clonedItems[activeIndex] = { ...activeTreeItem, depth, parentId }
+
+      if (activeIndex < overIndex && overNode.collapsed) {
+        overIndex += overNode.size() - 1
+      }
 
       let sortedItems = arrayMove(clonedItems, activeIndex, overIndex)
       const newItems = buildTree(sortedItems)
@@ -291,6 +296,7 @@ export function SortableTree({
     newRoot = updateLines(newRoot)
     manager.setRoot(newRoot)
   }
+
   function handleDragCancel() {
     resetState()
   }

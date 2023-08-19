@@ -5,6 +5,7 @@ export interface TreeItem {
   id: UniqueIdentifier
   children: TreeItem[]
   collapsed?: boolean
+  clone?: () => TreeItem
 }
 
 export type TreeItems = TreeItem[]

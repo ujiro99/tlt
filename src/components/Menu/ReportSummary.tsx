@@ -10,7 +10,6 @@ import { useTaskManager } from '@/hooks/useTaskManager'
 import { useMode, MODE } from '@/hooks/useMode'
 import { useAnalytics } from '@/hooks/useAnalytics'
 import * as i18n from '@/services/i18n'
-import { Icon } from '@/components/Icon'
 
 import './ReportSummary.css'
 
@@ -107,7 +106,7 @@ export function ReportSummary(props: ReportSummaryProps): JSX.Element {
           {ifNull(all.estimate.toHours().toFixed(1))}h
         </span>
         <span className="report-summary__label-symbol">:</span>
-        <span >{ifNull(all.percentage)}</span>
+        <span>{ifNull(all.percentage)}</span>
         <span className="pl-2">%</span>
       </div>
     </div>
