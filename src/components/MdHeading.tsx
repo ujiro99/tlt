@@ -38,6 +38,7 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
   const group = props.node.data as Group
   const level = group.level
   const hasTags = group.tags.length > 0
+  const collapsed = props.node.collapsed
 
   const [isEditing, focusOrEdit, edit] = useEditable(line)
 
@@ -92,22 +93,25 @@ export const MdHeading = (props: NodeProps): JSX.Element => {
     >
       <TagName>{group.title}</TagName>
 
-      {hasTags ? (
+      {hasTags && (
         <div className="flex items-center ml-2 font-medium">
           {group.tags.map((tag) => (
             <TaskTag key={tag.name} tag={tag} />
           ))}
         </div>
-      ) : null}
+      )}
 
       <div className="Heading__tagmenu">
         <TagMenu tags={group.tags} onChangeTags={onChangeTags} />
       </div>
-      <div className="Heading__add-todo">
-        <button className="Heading__add-button" onClick={addChild}>
-          <Icon name="plus" />
-        </button>
-      </div>
+
+      {!collapsed && (
+        <div className="Heading__add-todo">
+          <button className="Heading__add-button" onClick={addChild}>
+            <Icon name="plus" />
+          </button>
+        </div>
+      )}
     </div>
   )
 }

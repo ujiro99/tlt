@@ -32,8 +32,8 @@
     margin-left: 4px;
   }
 
-  &:hover > &__tagmenu,
-  &:hover > &__add-todo {
+  li:hover &__tagmenu,
+  li:hover &__add-todo {
     opacity: 1;
   }
 
