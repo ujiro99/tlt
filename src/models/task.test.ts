@@ -1,17 +1,17 @@
 import { Task } from '@/models/task'
 
 const testParseTable = [
-  ['- [ ] task title',                 'task title', '',        false],
-  ['- [x] task title',                 'task title', '',        true],
-  ['- [ ] task title ~2h',             'task title', '2h',      false],
-  ['- [ ] task title ~1m',             'task title', '1m',      false],
-  ['- [ ] task title ~2.1h',           'task title', '2h6m',    false],
-  ['- [ ] task title ~2.1h4m',         'task title', '2h10m',   false],
-  ['- [ ] task title ~0.1d1h1m',       'task title', '3h25m',   false],
-  ['- [ ] task title ~1.1d1h1m',       'task title', '1d3h25m', false],
-  ['- [ ] task title ~30m #sp:1',      'task title', '30m',     false],
-  ['- [ ] task title ~30m/2.3h #sp:1', 'task title', '30m',     false],
-  ['- [ ] task title #100',            'task title #100', '',   false],
+  ['- [ ] task title', 'task title', '', false],
+  ['- [x] task title', 'task title', '', true],
+  ['- [ ] task title ~2h', 'task title', '2h', false],
+  ['- [ ] task title ~1m', 'task title', '1m', false],
+  ['- [ ] task title ~2.1h', 'task title', '2h6m', false],
+  ['- [ ] task title ~2.1h4m', 'task title', '2h10m', false],
+  ['- [ ] task title ~0.1d1h1m', 'task title', '3h25m', false],
+  ['- [ ] task title ~1.1d1h1m', 'task title', '1d3h25m', false],
+  ['- [ ] task title ~30m #sp:1', 'task title', '30m', false],
+  ['- [ ] task title ~30m/2.3h #sp:1', 'task title', '30m', false],
+  ['- [ ] task title #100', 'task title #100', '', false],
 ]
 
 describe.each(testParseTable)(
@@ -41,31 +41,31 @@ describe(`toString`, () => {
 })
 
 const parseTimeTable = [
-  ['- [ ] task ~30m/1h',          '30m',    '1h'],
-  ['- [ ] task ~1h13m/1h30m #cd', '1h13m',  '1h30m'],
-  ['- [ ] task ~/30m #cd',        '',       '30m'],
-  ['- [ ] task ~/1h',             '',       '1h'],
-  ['- [ ] task ~/1d',             '',       '1d'],
-  ['- [ ] task ~/10d',            '',       '10d'],
-  ['- [ ] task ~1d',              '1d',     ''],
-  ['- [ ] task ~1d1h',            '1d1h',   ''],
-  ['- [ ] task ~1d1h1m',          '1d1h1m', ''],
-  ['- [ ] task ~1d1m',            '1d1m',   ''],
-  ['- [ ] task ~1h',              '1h',     ''],
-  ['- [ ] task ~1h1m',            '1h1m',   ''],
-  ['- [ ] task ~1m',              '1m',     ''],
-  ['- [ ] task ~1d/1d',           '1d',     '1d'],
-  ['- [ ] task ~1d1h/1d1h',       '1d1h',   '1d1h'],
-  ['- [ ] task ~1d1h1m/1d1h1m',   '1d1h1m', '1d1h1m'],
-  ['- [ ] task ~1d1m/1d1m',       '1d1m',   '1d1m'],
-  ['- [ ] task ~0.5d/0.5d',       '12h',    '12h'],
-  ['- [ ] task ~1h/1h',           '1h',     '1h'],
-  ['- [ ] task ~1h1m/1h10m',      '1h1m',   '1h10m'],
-  ['- [ ] task ~1m/1m',           '1m',     '1m'],
-  ['- [ ] task ~0.1h/1h',         '6m',     '1h'],
-  ['- [ ] task ~0.25h/1h',        '15m',    '1h'],
-  ['- [ ] task ~0.125h/1h',       '7m',     '1h'],
-  ['- [ ] task ~0.1h/0.1h',       '6m',     '6m'],
+  ['- [ ] task ~30m/1h', '30m', '1h'],
+  ['- [ ] task ~1h13m/1h30m #cd', '1h13m', '1h30m'],
+  ['- [ ] task ~/30m #cd', '', '30m'],
+  ['- [ ] task ~/1h', '', '1h'],
+  ['- [ ] task ~/1d', '', '1d'],
+  ['- [ ] task ~/10d', '', '10d'],
+  ['- [ ] task ~1d', '1d', ''],
+  ['- [ ] task ~1d1h', '1d1h', ''],
+  ['- [ ] task ~1d1h1m', '1d1h1m', ''],
+  ['- [ ] task ~1d1m', '1d1m', ''],
+  ['- [ ] task ~1h', '1h', ''],
+  ['- [ ] task ~1h1m', '1h1m', ''],
+  ['- [ ] task ~1m', '1m', ''],
+  ['- [ ] task ~1d/1d', '1d', '1d'],
+  ['- [ ] task ~1d1h/1d1h', '1d1h', '1d1h'],
+  ['- [ ] task ~1d1h1m/1d1h1m', '1d1h1m', '1d1h1m'],
+  ['- [ ] task ~1d1m/1d1m', '1d1m', '1d1m'],
+  ['- [ ] task ~0.5d/0.5d', '12h', '12h'],
+  ['- [ ] task ~1h/1h', '1h', '1h'],
+  ['- [ ] task ~1h1m/1h10m', '1h1m', '1h10m'],
+  ['- [ ] task ~1m/1m', '1m', '1m'],
+  ['- [ ] task ~0.1h/1h', '6m', '1h'],
+  ['- [ ] task ~0.25h/1h', '15m', '1h'],
+  ['- [ ] task ~0.125h/1h', '7m', '1h'],
+  ['- [ ] task ~0.1h/0.1h', '6m', '6m'],
 ]
 
 describe.each(parseTimeTable)(
@@ -209,7 +209,7 @@ describe('isTaskStr', () => {
   ]
   describe.each(table)(`checks %s`, (str: string, res: boolean) => {
     test(`then returns ${res}`, () => {
-      expect(Task.isTaskStr(str)).toBe(res)
+      expect(Task.test(str)).toBe(res)
     })
   })
 })

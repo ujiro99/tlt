@@ -34,7 +34,7 @@ export class Task implements IClonable<Task> {
     return this.taskId
   }
 
-  public static isTaskStr(taskStr: string): boolean {
+  public static test(taskStr: string): boolean {
     return Task.taskRegexp.test(taskStr)
   }
 
@@ -46,7 +46,7 @@ export class Task implements IClonable<Task> {
   }
 
   public static parse(taskStr: string): Task {
-    if (Task.isTaskStr(taskStr)) {
+    if (Task.test(taskStr)) {
       const state = Task.parseState(taskStr)
       const title = Task.parseTitle(taskStr)
       const atime = Task.parseTime(taskStr)

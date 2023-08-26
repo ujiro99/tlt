@@ -38,7 +38,7 @@ function parse(text: string): Node {
       prevDepth = depth
 
       let newNode: Node
-      if (Task.isTaskStr(val)) {
+      if (Task.test(val)) {
         // task
         const task = Task.parse(val)
         newNode = new Node(NODE_TYPE.TASK, line, task, parent)

@@ -228,7 +228,7 @@ export function TodoEditor(): JSX.Element {
           }
           setTextAtRow(currentRow, currentRow, replaceLine)
         }
-      } else if (Task.isTaskStr(currentLine)) {
+      } else if (Task.test(currentLine)) {
         // Add a new task as sibling level.
         const addedLine = getIndent(currentLine) + TASK_DEFAULT
         setTextAtRow(currentRow, currentRow, addedLine, true)
