@@ -32,7 +32,7 @@ export const TagContextMenu = (props: TagContextMenuProps) => {
   const [menuVisible, setMenuVisible] = useState(false)
   const [pickerVisible, setPickerVisible] = useState(false)
   const { tags, upsertTag, deleteTags } = useTagHistory()
-  const { hideAll } = useContextMenu()
+  const { show, hideAll } = useContextMenu({ id: props.id })
   const presetColors = tags.map((t) => t.colorHex).reverse()
   const tagRecord = tags.find((t) => t.name === tag.name)
   const bgColor = tagRecord?.colorHex || COLOR.Gray200
@@ -52,6 +52,11 @@ export const TagContextMenu = (props: TagContextMenuProps) => {
         break
     }
     eventStop(triggerEvent)
+  }
+
+  function handleConfirming({ event }) {
+    const { left, bottom } = props.tagRef.current.getBoundingClientRect()
+    show({ id: props.id, event, position: { x: left, y: bottom + 5 } })
   }
 
   function deleteDisabled() {
@@ -94,6 +99,7 @@ export const TagContextMenu = (props: TagContextMenuProps) => {
             labelConfirm={t('tag_delete_from_history_confirm')}
             iconName="delete"
             disabled={deleteDisabled}
+            onConfirming={handleConfirming}
           />
         )}
       </Menu>

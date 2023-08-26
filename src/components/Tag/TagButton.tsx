@@ -70,8 +70,16 @@ export const TagButton = (props: TagButtonProps): JSX.Element => {
   const { show } = useContextMenu({ id: MENU_ID })
   const pickerRef = props.pickerRef ?? useRef<Element>(null)
 
+  function getMenuPosition() {
+    const { left, bottom } = pickerRef.current.getBoundingClientRect()
+    return { x: left, y: bottom + 5 }
+  }
+
   function openContextMenu(event: React.MouseEvent) {
-    show({ event })
+    show({
+      event,
+      position: getMenuPosition(),
+    })
     eventStop(event)
   }
 

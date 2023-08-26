@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Item, Menu, useContextMenu } from '@/lib/react-contexify'
 import { Icon } from './Icon'
 import { useTaskManager } from '@/hooks/useTaskManager'
@@ -26,6 +26,7 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
   const { trackings } = useTrackingState()
   const tracking = trackings.find((n) => n.line === props.line)
   const isTracking = tracking == null ? false : tracking.isTracking
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
 
   const MENU_ID = MENU_ID_PREFIX + props.line
   const { show } = useContextMenu({
@@ -33,6 +34,7 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
   })
 
   function openContextMenu(event) {
+    setMenuPosition({ x: event.pageX, y: event.pageY })
     show({ event })
   }
 
@@ -43,6 +45,10 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
 
   const handleDelete = () => {
     manager.removeLine(props.line)
+  }
+
+  function handleConfirming({ event }) {
+    show({ event, position: menuPosition })
   }
 
   return (
@@ -76,6 +82,7 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
           labelConfirm={t('context_menu_delete_confirm')}
           iconName="delete"
           disabled={isTracking}
+          onConfirming={handleConfirming}
         />
       </Menu>
     </>
