@@ -85,7 +85,6 @@ describe(`parse estimatedTimes`, () => {
     const task = Task.parse(str)
     expect(task.estimatedTimes.toString()).toBe('1h')
   })
-
 })
 
 describe(`parse tags`, () => {
@@ -106,6 +105,24 @@ describe(`parse tags`, () => {
 
   test(`returns no tags`, () => {
     const str = '- [ ] task title'
+    const task = Task.parse(str)
+    expect(task.tags.length).toBe(0)
+  })
+
+  test(`returns no tags`, () => {
+    const str = '- [ ] task title'
+    const task = Task.parse(str)
+    expect(task.tags.length).toBe(0)
+  })
+
+  test(`Treat as non-tag when only '#' is present.`, () => {
+    const str = '- [ ] task title #'
+    const task = Task.parse(str)
+    expect(task.tags.length).toBe(0)
+  })
+
+  test(`Treat as non-tag when only '# ' is present.`, () => {
+    const str = '- [ ] task title # '
     const task = Task.parse(str)
     expect(task.tags.length).toBe(0)
   })
@@ -170,13 +187,13 @@ describe('setComplete', () => {
     expect(task.isComplete()).toBe(false)
   })
 
-  test('set actual times if estimated time isn\'t empty and actual time is empty', () => {
+  test("set actual times if estimated time isn't empty and actual time is empty", () => {
     const task = Task.parse('- [ ] task title ~/10m')
     task.setComplete(true)
     expect(task.actualTimes.minutes).toBe(10)
   })
 
-  test('don\'t change actual times if actual time is not empty', () => {
+  test("don't change actual times if actual time is not empty", () => {
     const task = Task.parse('- [ ] task title ~2m/10m')
     task.setComplete(true)
     expect(task.actualTimes.minutes).toBe(2)
@@ -190,14 +207,11 @@ describe('isTaskStr', () => {
     ['- [ ]not task', false],
     ['- [ not task', false],
   ]
-  describe.each(table)(
-    `checks %s`,
-    (str: string, res: boolean) => {
-      test(`then returns ${res}`, () => {
-        expect(Task.isTaskStr(str)).toBe(res)
-      })
-    },
-  )
+  describe.each(table)(`checks %s`, (str: string, res: boolean) => {
+    test(`then returns ${res}`, () => {
+      expect(Task.isTaskStr(str)).toBe(res)
+    })
+  })
 })
 
 describe('isEmptyTask', () => {
@@ -208,12 +222,9 @@ describe('isEmptyTask', () => {
     ['- [ ] task', false],
     ['- [ not task', false],
   ]
-  describe.each(table)(
-    `checks %s`,
-    (str: string, res: boolean) => {
-      test(`then returns ${res}`, () => {
-        expect(Task.isEmptyTask(str)).toBe(res)
-      })
-    },
-  )
+  describe.each(table)(`checks %s`, (str: string, res: boolean) => {
+    test(`then returns ${res}`, () => {
+      expect(Task.isEmptyTask(str)).toBe(res)
+    })
+  })
 })

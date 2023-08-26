@@ -25,7 +25,7 @@ export class Task implements IClonable<Task> {
   private static timeRegexp = /~((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
   private static estimatedTimeRegexp =
     /~(\d+(?:\.\d+)?[dhm])*\/((\d+(?:\.\d+)?d)?(\d+(?:\.\d+)?h)?(\d+m)?)/
-  private static tagRegexp = /#(.*?)(:(\d))?(\s|$)/g
+  private static tagRegexp = /#(\S+?)(:(\d))?(\s|$)/g
   private static allNumberRegexp = /^\d+$/
 
   // utility for creating unique Id
