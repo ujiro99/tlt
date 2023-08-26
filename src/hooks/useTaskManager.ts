@@ -112,7 +112,7 @@ interface ITaskManager {
   setRoot: (node: Node) => void
   getNodeByLine: (line: number) => Node
   setNodeByLine: (node: Node, line: number) => void
-  addEmptyNodeByLine: (line: number) => void
+  addEmptyNodeByLine: (line: number) => number
   addEmptyChild: (line: number) => number
   removeLine: (line: number) => void
 }
@@ -152,11 +152,12 @@ export function useTaskManager(): ITaskManager {
     }
   }
 
-  const addEmptyNodeByLine = (line: number): void => {
+  const addEmptyNodeByLine = (line: number): number => {
     Log.d(`insert: ${line + 1}`)
-    const newRoot = root.insertEmptyTask(line)
-    setRoot(newRoot)
-    move(null, line + 1, 1)
+    const ret = root.insertEmptyTask(line)
+    setRoot(ret.root)
+    move(null, ret.inserted.line, 1)
+    return ret.inserted.line
   }
 
   const addEmptyChild = (line: number): number => {

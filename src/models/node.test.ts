@@ -80,8 +80,8 @@ describe('insertEmptyTask', () => {
   test('Insert a empty task.', () => {
     const root = Parser.parseMd(`# heading
 - [ ] task`)
-    const newRoot = root.insertEmptyTask(2)
-    const empty = newRoot.children[2]
+    const ret = root.insertEmptyTask(2)
+    const empty = ret.root.children[2]
     expect(empty.toString()).toBe('- [ ] ')
     expect(empty.line).toBe(3)
   })
@@ -90,17 +90,26 @@ describe('insertEmptyTask', () => {
     const root = Parser.parseMd(`# heading
   - [ ] task 1
   - [ ] task 2`)
-    const newRoot = root.insertEmptyTask(2)
-    const empty = newRoot.children[0].children[1]
+    const ret = root.insertEmptyTask(2)
+    const empty = ret.root.children[0].children[1]
     expect(empty.toString()).toBe('- [ ] ')
     expect(empty.line).toBe(3)
   })
 
-  test('Insert a Node to the below of the Heading', () => {
+  test('Insert a Node to last child of the Heading', () => {
     const root = Parser.parseMd(`# heading
   - [ ] task 1`)
-    const newRoot = root.insertEmptyTask(1)
-    const empty = newRoot.children[0].children[0]
+    const ret = root.insertEmptyTask(1)
+    const empty = ret.root.children[0].children[0]
+    expect(empty.toString()).toBe('- [ ] ')
+    expect(empty.line).toBe(2)
+  })
+
+  test('Insert a Node to last child of parent task', () => {
+    const root = Parser.parseMd(`- [ ] task parent
+  - [ ] task child 1`)
+    const ret = root.insertEmptyTask(1)
+    const empty = ret.root.children[0].children[0]
     expect(empty.toString()).toBe('- [ ] ')
     expect(empty.line).toBe(2)
   })

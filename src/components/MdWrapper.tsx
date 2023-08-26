@@ -37,8 +37,8 @@ export const MdWrapper: React.FC<Props> = (props: Props): JSX.Element => {
   }
 
   const handleInsert = () => {
-    manager.addEmptyNodeByLine(props.line)
-    edit(props.line + 1)
+    const l = manager.addEmptyNodeByLine(props.line)
+    edit(l)
   }
 
   const handleDelete = () => {

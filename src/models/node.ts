@@ -127,22 +127,24 @@ export class Node implements TreeItem, INode, IClonable<INode> {
     return cloned
   }
 
-  public insertEmptyTask(line: number): Node {
+  public insertEmptyTask(line: number): { root: Node; inserted: Node } {
     const [cloned] = clone([this])
     const found = cloned.find((n) => n.line === line)
+    const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(TASK_DEFAULT))
     if (found) {
-      const empty = new Node(NODE_TYPE.TASK, 0, Task.parse(TASK_DEFAULT))
-      if (found.type === NODE_TYPE.HEADING) {
+      if (found.type === NODE_TYPE.HEADING || found.children.length > 0) {
+        // Add as a child.
         empty.parent = found
         found.children.unshift(empty)
       } else {
+        // Add as a sibling to the Node.
         empty.parent = found.parent
         const idx = found.parent.children.findIndex((n) => n.id === found.id)
         found.parent.children.splice(idx + 1, 0, empty)
       }
     }
     updateLineNumber(cloned)
-    return cloned
+    return { root: cloned, inserted: empty }
   }
 
   public appendEmptyTask(predicate: Predicate): Node {
