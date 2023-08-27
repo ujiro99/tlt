@@ -20,7 +20,6 @@ export function LineEditor(props: Props): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const [text, setText] = useState('')
-  const [timeoutID, setTimeoutID] = useState<number>()
   const finishEdit = useEditFinish()
   const editorRef = useRef<HTMLTextAreaElement>()
 
@@ -32,20 +31,6 @@ export function LineEditor(props: Props): JSX.Element {
     analytics.track('edit line start')
     setText(current)
   }, [])
-
-  useEffect(() => {
-    if (timeoutID) clearTimeout(timeoutID)
-    const newTimeoutId = window.setTimeout(() => {
-      if (!text) return
-      save()
-      setTimeoutID(null)
-    }, 1 * 500 /* ms */)
-    setTimeoutID(newTimeoutId)
-
-    return () => {
-      clearTimeout(timeoutID)
-    }
-  }, [text])
 
   function save() {
     console.warn('save')
