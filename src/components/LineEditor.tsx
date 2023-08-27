@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import TextareaAutosize from 'react-textarea-autosize'
 
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useEditFinish } from '@/hooks/useEditable'
 import { useAnalytics } from '@/hooks/useAnalytics'
+import { Autocomplete } from '@/components/Autocomplete'
 import { eventStop } from '@/services/util'
 import { TASK_DEFAULT, KEYCODE_ENTER } from '@/const'
 
@@ -19,29 +20,53 @@ export function LineEditor(props: Props): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const [text, setText] = useState('')
+  const [timeoutID, setTimeoutID] = useState<number>()
   const finishEdit = useEditFinish()
+  const editorRef = useRef<HTMLTextAreaElement>()
 
-  function finish() {
-    if (text !== TASK_DEFAULT) {
-      manager.setTextByLine(line, text)
-    } else {
-      manager.removeLine(line)
-    }
-    analytics.track('edit line fnish')
-    finishEdit()
-  }
-
-  function onBlur() {
-    finish()
-  }
-
-  function onFocus() {
+  useEffect(() => {
     let current = manager.getTextByLine(line)
     if (!current) {
       current = TASK_DEFAULT
     }
     analytics.track('edit line start')
     setText(current)
+  }, [])
+
+  useEffect(() => {
+    if (timeoutID) clearTimeout(timeoutID)
+    const newTimeoutId = window.setTimeout(() => {
+      if (!text) return
+      save()
+      setTimeoutID(null)
+    }, 1 * 500 /* ms */)
+    setTimeoutID(newTimeoutId)
+
+    return () => {
+      clearTimeout(timeoutID)
+    }
+  }, [text])
+
+  function save() {
+    console.warn('save')
+    manager.setTextByLine(line, text)
+  }
+
+  function finish() {
+    console.warn('finish')
+    if (text === TASK_DEFAULT) {
+      manager.removeLine(line)
+    }
+    // finishEdit()
+    analytics.track('edit line fnish')
+  }
+
+  function onBlur() {
+    window.setTimeout(() => {
+      if (editorRef.current === document.activeElement) return
+      save()
+      finish()
+    }, 50)
   }
 
   function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
@@ -50,23 +75,35 @@ export function LineEditor(props: Props): JSX.Element {
 
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.keyCode === KEYCODE_ENTER) {
+      save()
       finish()
     }
-    // Prevent key events to reach the SortableTree.
-    e.stopPropagation()
+    eventStop(e)
+  }
+
+  function handleComplete(val: string) {
+    setText(val)
+    editorRef.current.focus()
   }
 
   return (
-    <TextareaAutosize
-      className={`line-editor ${props.className}`}
-      value={text}
-      onBlur={onBlur}
-      onChange={onChange}
-      onKeyDown={onKeyDown}
-      onFocus={onFocus}
-      onDragStart={eventStop}
-      onPointerDown={eventStop}
-      autoFocus
-    />
+    <>
+      <TextareaAutosize
+        className={`line-editor ${props.className}`}
+        value={text}
+        onBlur={onBlur}
+        onChange={onChange}
+        onKeyDown={onKeyDown}
+        onDragStart={eventStop}
+        onPointerDown={eventStop}
+        ref={editorRef}
+        autoFocus
+      />
+      <Autocomplete
+        text={text}
+        editorRef={editorRef}
+        onComplete={handleComplete}
+      />
+    </>
   )
 }

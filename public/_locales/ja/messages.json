@@ -211,5 +211,8 @@
   },
   "please_select": {
     "message": "選んでください"
+  },
+  "autocomplete_estimated": {
+    "message": "見積もり時間"
   }
 }

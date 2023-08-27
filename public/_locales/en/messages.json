@@ -216,5 +216,9 @@
   "please_select": {
     "message": "Please select",
     "description": "Initial display for the select box"
+  },
+  "autocomplete_estimated": {
+    "message": "Estimated time",
+    "description": "estimated working time"
   }
 }

@@ -1,0 +1,24 @@
+@import '../css/mixin.css';
+
+.autocomplete {
+  position: absolute;
+  z-index: 1;
+  background: white;
+  box-shadow: var(--shadow-md);
+  padding: 4px 8px 4px;
+  border-radius: var(--radius-md);
+
+  &__item {
+    @mixin interactable;
+    font-size: 12px;
+    min-width: 200px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 4px;
+  }
+
+  &__name {
+    color: var(--text-400);
+  }
+}

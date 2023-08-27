@@ -66,6 +66,11 @@ export const Parser = {
     return parse(markdown)
   },
 
+  parseLine(markdown: string): Node | null {
+    let node = parse(markdown)
+    return node.children[0]
+  },
+
   parseArray(textArray: string[]): Node {
     const root = new Node(NODE_TYPE.ROOT, 0, null)
     root.children = textArray.map((txt) => parse(txt))
