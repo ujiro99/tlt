@@ -38,6 +38,7 @@ export interface INode {
 }
 
 type Predicate = (n: Node) => boolean
+type Callback = (n: Node) => void
 
 export class Node implements TreeItem, INode, IClonable<INode> {
   public type: NodeType
@@ -177,6 +178,23 @@ export class Node implements TreeItem, INode, IClonable<INode> {
       Log.w(e)
     }
     return null
+  }
+
+  public each(callback: Callback): void {
+    const queue: Node[] = [this]
+
+    // breadth first search
+    try {
+      while (queue.length > 0) {
+        const elm = queue.shift()
+        callback(elm)
+        if (elm.children.length > 0) {
+          queue.push(...elm.children)
+        }
+      }
+    } catch (e) {
+      Log.w(e)
+    }
   }
 
   public filter(predicate: Predicate): Node {

@@ -20,6 +20,7 @@ export function LineEditor(props: Props): JSX.Element {
   const manager = useTaskManager()
   const analytics = useAnalytics()
   const [text, setText] = useState('')
+  const [activeAutocomplete, activateAutocomplete] = useState(false)
   const finishEdit = useEditFinish()
   const editorRef = useRef<HTMLTextAreaElement>()
 
@@ -56,6 +57,9 @@ export function LineEditor(props: Props): JSX.Element {
 
   function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setText(e.target.value)
+    setTimeout(() => {
+      activateAutocomplete(true)
+    }, 500)
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
@@ -84,11 +88,13 @@ export function LineEditor(props: Props): JSX.Element {
         ref={editorRef}
         autoFocus
       />
-      <Autocomplete
-        text={text}
-        editorRef={editorRef}
-        onComplete={handleComplete}
-      />
+      {activeAutocomplete && (
+        <Autocomplete
+          text={text}
+          editorRef={editorRef}
+          onComplete={handleComplete}
+        />
+      )}
     </>
   )
 }

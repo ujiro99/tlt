@@ -2,20 +2,28 @@
 
 .autocomplete {
   position: absolute;
-  z-index: 1;
-  background: white;
-  box-shadow: var(--shadow-md);
-  padding: 4px 8px 4px;
-  border-radius: var(--radius-md);
+  z-index: var(--z-index-autocomplete);
+
+  &__menu {
+    background: white;
+    box-shadow: var(--shadow-md);
+    border-radius: var(--radius-md);
+    padding: 0 0 6px;
+  }
+
+  &__list {
+    overflow: hidden;
+  }
 
   &__item {
     @mixin interactable;
     font-size: 12px;
-    min-width: 200px;
+    min-width: 160px;
     width: 100%;
     display: flex;
     justify-content: space-between;
-    padding: 4px;
+    padding: 4px 10px;
+    border-radius: var(--radius-sm);
   }
 
   &__name {

@@ -1,0 +1,18 @@
+.collapse-enter > * {
+  animation: 0.2s collapse ease-out forwards;
+}
+
+.collapse-exit > * {
+  animation: 0.1s collapse ease-out forwards;
+  animation-direction: reverse;
+}
+
+@keyframes collapse {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: var(--height);
+  }
+}
