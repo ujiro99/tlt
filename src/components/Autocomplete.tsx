@@ -49,7 +49,6 @@ export const Autocomplete = forwardRef<HTMLDivElement, AutocompleteProps>(
     let containerStyle = { left: 0, top: 0 }
     if (editorRef && editorRef.current) {
       const refRect = editorRef.current.getBoundingClientRect()
-      console.warn(refRect)
       containerStyle = { left: tokenPosition.current - 12, top: refRect.height }
     }
 

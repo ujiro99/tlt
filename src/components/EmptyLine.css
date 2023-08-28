@@ -21,4 +21,8 @@
     font-size: 1em;
     font-weight: 500;
   }
+
+  &--edit {
+    position: relative;
+  }
 }
