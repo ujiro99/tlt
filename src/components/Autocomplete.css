@@ -1,6 +1,8 @@
 @import '../css/mixin.css';
 
 .autocomplete {
+  $this: .autocomplete;
+
   position: absolute;
   z-index: var(--z-index-autocomplete);
 
@@ -13,6 +15,14 @@
 
   &__list {
     overflow: hidden;
+
+    &--focus {
+      background: var(--bg-gray-100);
+      $(this)__value {
+        color: var(--text-600);
+        font-weight: bold;
+      }
+    }
   }
 
   &__item {
@@ -24,6 +34,10 @@
     justify-content: space-between;
     padding: 4px 10px;
     border-radius: var(--radius-sm);
+  }
+
+  &__value {
+    margin-right: 1em;
   }
 
   &__name {

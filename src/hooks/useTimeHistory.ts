@@ -25,7 +25,6 @@ export function useTimeHistory(): useTimeHistoryReturn {
       newTimes = unique(newTimes).filter((t) => t !== '')
       newTimes = newTimes.slice(-MaxCount)
       setTimes(newTimes)
-      console.warn('newTimes', newTimes)
     },
     [times],
   )
