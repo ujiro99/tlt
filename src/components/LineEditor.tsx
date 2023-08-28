@@ -19,10 +19,12 @@ export function LineEditor(props: Props): JSX.Element {
   const line = props.line
   const manager = useTaskManager()
   const analytics = useAnalytics()
-  const [text, setText] = useState('')
-  const [timeoutID, setTimeoutID] = useState<number>()
   const finishEdit = useEditFinish()
+  const [text, setText] = useState('')
+  const [autocompleteVisible, setAutocompleteVisible] = useState(false)
+  const [activeAutocomplete, activateAutocomplete] = useState(false)
   const editorRef = useRef<HTMLTextAreaElement>()
+  const autocompleteRef = useRef<HTMLDivElement>()
 
   useEffect(() => {
     let current = manager.getTextByLine(line)
@@ -33,31 +35,15 @@ export function LineEditor(props: Props): JSX.Element {
     setText(current)
   }, [])
 
-  useEffect(() => {
-    if (timeoutID) clearTimeout(timeoutID)
-    const newTimeoutId = window.setTimeout(() => {
-      if (!text) return
-      save()
-      setTimeoutID(null)
-    }, 1 * 500 /* ms */)
-    setTimeoutID(newTimeoutId)
-
-    return () => {
-      clearTimeout(timeoutID)
-    }
-  }, [text])
-
   function save() {
-    console.warn('save')
     manager.setTextByLine(line, text)
   }
 
   function finish() {
-    console.warn('finish')
     if (text === TASK_DEFAULT) {
       manager.removeLine(line)
     }
-    // finishEdit()
+    finishEdit()
     analytics.track('edit line fnish')
   }
 
@@ -66,23 +52,42 @@ export function LineEditor(props: Props): JSX.Element {
       if (editorRef.current === document.activeElement) return
       save()
       finish()
-    }, 50)
+    }, 100)
   }
 
   function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setText(e.target.value)
+    setTimeout(() => {
+      activateAutocomplete(true)
+    }, 500)
+  }
+
+  function forwardEvent(e: React.KeyboardEvent) {
+    // Propagate keyboard event to autocomplete component
+    if (autocompleteVisible && autocompleteRef.current) {
+      let clone = new KeyboardEvent(e.nativeEvent.type, e.nativeEvent)
+      autocompleteRef.current.dispatchEvent(clone)
+      e.preventDefault()
+    }
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
     if (e.keyCode === KEYCODE_ENTER) {
-      save()
-      finish()
+      if (autocompleteVisible) {
+        forwardEvent(e)
+      } else {
+        save()
+        finish()
+      }
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      forwardEvent(e)
     }
+
     eventStop(e)
   }
 
-  function handleComplete(val: string) {
-    setText(val)
+  function handleComplete(value: string) {
+    setText(value)
     editorRef.current.focus()
   }
 
@@ -99,11 +104,15 @@ export function LineEditor(props: Props): JSX.Element {
         ref={editorRef}
         autoFocus
       />
-      <Autocomplete
-        text={text}
-        editorRef={editorRef}
-        onComplete={handleComplete}
-      />
+      {activeAutocomplete && (
+        <Autocomplete
+          text={text}
+          editorRef={editorRef}
+          onComplete={handleComplete}
+          onVisibleChange={setAutocompleteVisible}
+          ref={autocompleteRef}
+        />
+      )}
     </>
   )
 }

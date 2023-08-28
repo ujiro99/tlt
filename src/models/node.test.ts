@@ -146,6 +146,18 @@ describe('find', () => {
   })
 })
 
+describe('each', () => {
+  test('Count nodes using each().', () => {
+    const root = Parser.parseMd(`- [ ] task
+- [ ] 1
+  - [ ] 2
+- [ ] 3`)
+    let count = 0
+    root.each((n) => count++)
+    expect(count).toBe(5)
+  })
+})
+
 describe('replace', () => {
   test('replace a Task', () => {
     let root = Parser.parseMd('- [ ] task')

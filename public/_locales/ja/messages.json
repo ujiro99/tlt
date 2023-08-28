@@ -214,5 +214,9 @@
   },
   "autocomplete_estimated": {
     "message": "見積もり時間"
+  },
+  "autocomplete_tag": {
+    "message": "タグ",
+    "description": "tags"
   }
 }

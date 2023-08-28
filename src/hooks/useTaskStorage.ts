@@ -12,10 +12,12 @@ import {
   TaskRecordArray,
 } from '@/hooks/useTaskManager'
 import { taskRecordKeyState } from '@/hooks/useTaskRecordKey'
+import { useTimeHistory } from '@/hooks/useTimeHistory'
 import { STORAGE_KEY, Storage } from '@/services/storage'
 import Log from '@/services/log'
 import { TaskRecordKey } from '@/models/taskRecordKey'
-import { Node, nodeToString, getCollapsedLines } from '@/models/node'
+import { Node, NODE_TYPE, nodeToString, getCollapsedLines } from '@/models/node'
+import { Task } from '@/models/task'
 import { sleep } from '@/services/util'
 
 export const isPossibleToSaveState = atom<boolean>({
@@ -108,6 +110,7 @@ export const saveRecords = async (
 }
 
 export function useTaskStorage(): void {
+  const { addTimes } = useTimeHistory()
   const [records, setRecords] = useRecoilState(allRecordsState)
   const key = useRecoilValue(taskRecordKeyState)
   const root = useRecoilValue(nodeState)
@@ -124,7 +127,21 @@ export function useTaskStorage(): void {
     setSaving(true)
     const newRecords = updateRecords(records, key, root)
     setRecords(newRecords)
+    updateTimeHistory()
     await sleep(1000)
     setSaving(false)
+  }
+
+  const updateTimeHistory = () => {
+    let times: string[] = []
+    root.each((n) => {
+      if (n.type === NODE_TYPE.TASK) {
+        const task = n.data as Task
+        if (task.estimatedTimes) {
+          times.push(task.estimatedTimes.toString())
+        }
+      }
+    })
+    addTimes(times)
   }
 }

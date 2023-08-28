@@ -19,7 +19,7 @@ const tagRecordState = atom<TagRecord[]>({
       return records
     },
   }),
-  effects_UNSTABLE: [
+  effects: [
     ({ onSet }) => {
       onSet((state) => {
         // Automatically save the TagRecords.

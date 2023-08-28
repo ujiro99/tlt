@@ -19,7 +19,11 @@ export function EmptyLine(): JSX.Element {
   }
 
   if (isEditing) {
-    return <LineEditor className="m-2" line={line} />
+    return (
+      <div tabIndex={0} className="empty-line--edit">
+        <LineEditor className="m-2" line={line} />
+      </div>
+    )
   }
 
   return (
