@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTrackingState } from '@/hooks/useTrackingState'
 import { useMode, MODE } from '@/hooks/useMode'
@@ -27,7 +27,7 @@ function Remain(props: RemainProps): JSX.Element {
   const [time, setTime] = useState<Time>(new Time())
   const [displayStartTime] = useState(Date.now())
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     update()
     const timerId = setInterval(update, 1000)
     return () => clearInterval(timerId)
@@ -63,7 +63,7 @@ function Elapsed(props: ElapsedProps): JSX.Element {
   const [time, setTime] = useState<Time>(new Time())
   const [displayStartTime] = useState(Date.now())
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     update()
     const timerId = setInterval(update, 1000)
     return () => clearInterval(timerId)
@@ -136,7 +136,7 @@ export function TrackingStatus(): JSX.Element {
   const task = node.data as Task
   const hasEstimatedTime = task.estimatedTimes && !task.estimatedTimes.isEmpty()
   const estimatedTime = task.estimatedTimes
-  const elapsedTime = tracking.elapsedTime
+  const elapsedTime = task.actualTimes.clone().add(tracking.elapsedTime)
 
   const jumpToNode = () => {
     const elm = document.querySelector(`#node-${node.id}`)

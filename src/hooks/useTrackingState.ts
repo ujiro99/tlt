@@ -181,7 +181,7 @@ export function useTrackingState(): useTrackingStateReturn {
         nodeId: node.id,
         isTracking: true,
         trackingStartTime,
-        elapsedTime: newTask.actualTimes,
+        elapsedTime: new Time(),
         line: node.line,
       }
       root = setNodeByLine(root, node.line, newNode)

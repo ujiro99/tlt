@@ -45,6 +45,11 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const id = `check-${task.id}`
   const hasEstimatedTime = !task.estimatedTimes.isEmpty()
 
+  let elapsedTime
+  if (isTracking) {
+    elapsedTime = task.actualTimes.clone().add(tracking.elapsedTime)
+  }
+
   Log.v(`${line} ${id} ${isTracking ? 'tracking' : 'stop'}`)
 
   const toggleItemCompletion = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -132,7 +137,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
       </div>
       <div className="task-item__times">
         {isTracking ? (
-          <Counter startTime={tracking.elapsedTime} />
+          <Counter startTime={elapsedTime} />
         ) : !task.actualTimes.isEmpty() ? (
           <CounterStopped startTime={task.actualTimes} />
         ) : null}

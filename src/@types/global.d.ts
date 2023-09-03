@@ -5,7 +5,7 @@ type TrackingState = {
   nodeId: string
   isTracking: boolean
   trackingStartTime: number /** [milli second] */
-  elapsedTime: Time
+  elapsedTime: Time /* The elapsed time from the start of tracking. */
   line: number
 }
 
