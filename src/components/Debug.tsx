@@ -18,7 +18,8 @@ const trackingsToText = (trackings: TrackingState[]) => {
     res += '\n  line: ' + tracking.line
     res += '\n  nodeId: ' + tracking.nodeId
     res += '\n  startTime: ' + formatTime(tracking.trackingStartTime)
-    res += '\n  elapsedTime: ' + tracking.elapsedTime.toString()
+    res +=
+      '\n  elapsedTime: ' + Time.elapsed(tracking.trackingStartTime).toString()
   })
   res += '\n'
   return res

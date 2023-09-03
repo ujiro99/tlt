@@ -16,33 +16,13 @@ import { Ipc } from '@/services/ipc'
 import { moveLine } from '@/services/util'
 import Log from '@/services/log'
 import { CalendarEvent } from '@/services/google/calendar'
-import { TrackingState, TimeObject } from '@/@types/global'
+import { TrackingState } from '@/@types/global'
 import { Node, setNodeByLine } from '@/models/node'
 import { Task } from '@/models/task'
 import { Time } from '@/models/time'
 import { TaskRecordKey } from '@/models/taskRecordKey'
 
 const TIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssXXX"
-
-/**
- * Convert time object to Time class's instance.
- */
-const convTime = (tracking: TrackingState): TrackingState => {
-  const obj = tracking.elapsedTime as unknown as TimeObject
-  tracking.elapsedTime = new Time(
-    obj._seconds,
-    obj._minutes,
-    obj._hours,
-    obj._days,
-  )
-  // If the tracking is in progress, update the elapsed time to resume counting.
-  if (tracking.isTracking) {
-    const elapsedTimeMs = Date.now() - tracking.trackingStartTime
-    const elapsedTime = Time.parseMs(elapsedTimeMs)
-    tracking.elapsedTime = elapsedTime
-  }
-  return tracking
-}
 
 export const stopTrackings = (
   root: Node,
@@ -109,14 +89,13 @@ const trackingState = atom<TrackingState[]>({
         STORAGE_KEY.TRACKING_STATE,
       )) as TrackingState[]
       if (!trackings) return []
-      return trackings.map((tracking) => convTime(tracking))
+      return trackings
     },
   }),
   effects: [
     ({ onSet, setSelf }) => {
       Storage.addListener(STORAGE_KEY.TRACKING_STATE, (newVal) => {
-        const newTrackings = newVal.map((tracking) => convTime(tracking))
-        setSelf(newTrackings)
+        setSelf(newVal)
       })
 
       onSet((state) => {
@@ -181,7 +160,6 @@ export function useTrackingState(): useTrackingStateReturn {
         nodeId: node.id,
         isTracking: true,
         trackingStartTime,
-        elapsedTime: new Time(),
         line: node.line,
       }
       root = setNodeByLine(root, node.line, newNode)
@@ -198,7 +176,7 @@ export function useTrackingState(): useTrackingStateReturn {
       setTrackings([tracking])
       Ipc.send({
         command: 'startTracking',
-        param: tracking.elapsedTime.toMinutes(),
+        param: 0,
       })
       setAlarmsForTask(newTask)
     },
