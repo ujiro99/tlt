@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react'
 import { useTaskManager } from '@/hooks/useTaskManager'
 import { useTrackingState } from '@/hooks/useTrackingState'
 import { useMode, MODE } from '@/hooks/useMode'
@@ -17,26 +17,26 @@ const timeToStr = (time: Time): string => {
 }
 
 type RemainProps = {
+  actualTimes: Time
+  startTime: number
   estimatedTime: Time
-  elapsedTime: Time
 }
 
 function Remain(props: RemainProps): JSX.Element {
   const estimatedTime = props.estimatedTime
-  const elapsedTime = props.elapsedTime
   const [time, setTime] = useState<Time>(new Time())
-  const [displayStartTime] = useState(Date.now())
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     update()
     const timerId = setInterval(update, 1000)
     return () => clearInterval(timerId)
-  }, [estimatedTime, elapsedTime])
+  }, [])
 
   const update = () => {
-    const diff = Date.now() - displayStartTime
-    const remain = Time.subs(estimatedTime, elapsedTime) * 1000 - diff
-    setTime(Time.parseMs(remain))
+    const elapsed = Time.elapsed(props.startTime)
+    const elapsedTime = props.actualTimes.clone().add(elapsed)
+    const remain = Time.subs(estimatedTime, elapsedTime)
+    setTime(Time.parseSecond(remain))
   }
 
   return (
@@ -55,24 +55,22 @@ function Remain(props: RemainProps): JSX.Element {
 }
 
 type ElapsedProps = {
-  elapsedTime: Time
+  actualTimes: Time
+  startTime: number
 }
 
 function Elapsed(props: ElapsedProps): JSX.Element {
-  const elapsedTime = props.elapsedTime
   const [time, setTime] = useState<Time>(new Time())
-  const [displayStartTime] = useState(Date.now())
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     update()
     const timerId = setInterval(update, 1000)
     return () => clearInterval(timerId)
-  }, [elapsedTime])
+  }, [])
 
   const update = () => {
-    const diff = Date.now() - displayStartTime
-    const elapsed = elapsedTime.clone().add(Time.parseMs(diff))
-    setTime(elapsed)
+    const elapsed = Time.elapsed(props.startTime)
+    setTime(props.actualTimes.clone().add(elapsed))
   }
 
   return (
@@ -136,7 +134,6 @@ export function TrackingStatus(): JSX.Element {
   const task = node.data as Task
   const hasEstimatedTime = task.estimatedTimes && !task.estimatedTimes.isEmpty()
   const estimatedTime = task.estimatedTimes
-  const elapsedTime = tracking.elapsedTime
 
   const jumpToNode = () => {
     const elm = document.querySelector(`#node-${node.id}`)
@@ -149,9 +146,16 @@ export function TrackingStatus(): JSX.Element {
       {isTracking && (
         <button onClick={jumpToNode}>
           {hasEstimatedTime ? (
-            <Remain estimatedTime={estimatedTime} elapsedTime={elapsedTime} />
+            <Remain
+              actualTimes={task.actualTimes}
+              startTime={tracking.trackingStartTime}
+              estimatedTime={estimatedTime}
+            />
           ) : (
-            <Elapsed elapsedTime={elapsedTime} />
+            <Elapsed
+              actualTimes={task.actualTimes}
+              startTime={tracking.trackingStartTime}
+            />
           )}
           <Title title={task.title} />
         </button>

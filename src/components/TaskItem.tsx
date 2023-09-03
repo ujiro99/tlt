@@ -12,6 +12,7 @@ import { TaskController } from '@/components/TaskController'
 import { TaskTags } from '@/components/Tag/TaskTags'
 import { LineEditor } from '@/components/LineEditor'
 import { Task } from '@/models/task'
+import { Time } from '@/models/time'
 import { Tag } from '@/models/tag'
 import { Node } from '@/models/node'
 
@@ -44,6 +45,12 @@ export const TaskItem: React.FC<TaskItemProps> = (
   const isTracking = tracking == null ? false : tracking.isTracking
   const id = `check-${task.id}`
   const hasEstimatedTime = !task.estimatedTimes.isEmpty()
+
+  let elapsedTime: Time
+  if (isTracking) {
+    let elapsed = Time.elapsed(tracking.trackingStartTime)
+    elapsedTime = task.actualTimes.clone().add(elapsed)
+  }
 
   Log.v(`${line} ${id} ${isTracking ? 'tracking' : 'stop'}`)
 
@@ -132,7 +139,7 @@ export const TaskItem: React.FC<TaskItemProps> = (
       </div>
       <div className="task-item__times">
         {isTracking ? (
-          <Counter startTime={tracking.elapsedTime} />
+          <Counter startTime={elapsedTime} />
         ) : !task.actualTimes.isEmpty() ? (
           <CounterStopped startTime={task.actualTimes} />
         ) : null}

@@ -135,7 +135,7 @@ export class Time {
     return d * DAY_S + h * HOUR_S + m * MINUTE_S + s
   }
 
-  static fromTimeObject(obj: TimeObject|Time): Time {
+  static fromTimeObject(obj: TimeObject | Time): Time {
     let timeObject = obj as TimeObject
     return new Time(
       timeObject._seconds,
@@ -145,13 +145,29 @@ export class Time {
     )
   }
 
+  /**
+   * Calculate the elapsed time from the start time.
+   * @param startTime [milli second]
+   * @returns Time
+   */
+  static elapsed(startTime: number): Time {
+    const ms = Date.now() - startTime
+    return Time.parseMs(ms)
+  }
+
   private _isNegative = false
   private _seconds = 0
   private _minutes = 0
   private _hours = 0
   private _days = 0
 
-  public constructor(seconds = 0, minutes = 0, hours = 0, days = 0, isNegative = false) {
+  public constructor(
+    seconds = 0,
+    minutes = 0,
+    hours = 0,
+    days = 0,
+    isNegative = false,
+  ) {
     this._seconds = seconds
     this._minutes = minutes
     this._hours = hours
