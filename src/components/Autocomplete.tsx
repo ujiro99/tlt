@@ -30,8 +30,10 @@ type CompleteItem = {
   name: string
 }
 
+const WINDOW_WIDTH = 450
+
 export const Autocomplete = forwardRef<HTMLDivElement, AutocompleteProps>(
-  (props: AutocompleteProps, ref) => {
+  (props: AutocompleteProps, ref: React.RefObject<HTMLDivElement>) => {
     const { tags } = useTagHistory()
     const { times } = useTimeHistory()
     const [cursor, setCursor] = useState(-1)
@@ -47,9 +49,16 @@ export const Autocomplete = forwardRef<HTMLDivElement, AutocompleteProps>(
     }
 
     let containerStyle = { left: 0, top: 0 }
-    if (editorRef && editorRef.current) {
-      const refRect = editorRef.current.getBoundingClientRect()
-      containerStyle = { left: tokenPosition.current - 12, top: refRect.height }
+    if (editorRef && editorRef.current && ref && ref.current) {
+      const editorRect = editorRef.current.getBoundingClientRect()
+      const refRect = ref.current.getBoundingClientRect()
+      containerStyle = {
+        left: Math.min(
+          tokenPosition.current - 12,
+          WINDOW_WIDTH - refRect.width - editorRect.x + 20,
+        ),
+        top: editorRect.height,
+      }
     }
 
     let items: CompleteItem[] = []
