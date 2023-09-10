@@ -30,11 +30,14 @@ type CompleteItem = {
   name: string
 }
 
+const WINDOW_WIDTH = 450
+const CURSOR_NONE = -1
+
 export const Autocomplete = forwardRef<HTMLDivElement, AutocompleteProps>(
-  (props: AutocompleteProps, ref) => {
+  (props: AutocompleteProps, ref: React.RefObject<HTMLDivElement>) => {
     const { tags } = useTagHistory()
     const { times } = useTimeHistory()
-    const [cursor, setCursor] = useState(-1)
+    const [cursor, setCursor] = useState(CURSOR_NONE)
     const tokenPosition = useRef(0)
     const editorRef = props.editorRef
     const node = Parser.parseLine(props.text)
@@ -47,9 +50,16 @@ export const Autocomplete = forwardRef<HTMLDivElement, AutocompleteProps>(
     }
 
     let containerStyle = { left: 0, top: 0 }
-    if (editorRef && editorRef.current) {
-      const refRect = editorRef.current.getBoundingClientRect()
-      containerStyle = { left: tokenPosition.current - 12, top: refRect.height }
+    if (editorRef && editorRef.current && ref && ref.current) {
+      const editorRect = editorRef.current.getBoundingClientRect()
+      const refRect = ref.current.getBoundingClientRect()
+      containerStyle = {
+        left: Math.min(
+          tokenPosition.current - 12,
+          WINDOW_WIDTH - refRect.width - editorRect.x + 20,
+        ),
+        top: editorRect.height,
+      }
     }
 
     let items: CompleteItem[] = []
@@ -111,7 +121,9 @@ export const Autocomplete = forwardRef<HTMLDivElement, AutocompleteProps>(
     function handleKeyDown(e: React.KeyboardEvent) {
       let newCursor: number
       if (e.keyCode === KEYCODE_ENTER) {
-        handleClick(items[cursor].value)()
+        if (cursor != null && cursor !== CURSOR_NONE) {
+          handleClick(items[cursor].value)()
+        }
       } else if (e.key === 'ArrowUp') {
         newCursor = cursor === 0 ? items.length - 1 : cursor - 1
       } else if (e.key === 'ArrowDown') {

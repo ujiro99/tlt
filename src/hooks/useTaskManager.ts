@@ -166,7 +166,7 @@ export function useTaskManager(): ITaskManager {
     const parent = newRoot.find((node) => node.line === line)
     const appendLine = parent.children[parent.children.length - 1].line
     Log.d(`add: ${appendLine}`)
-    move(null, line, 1)
+    move(null, appendLine, 1)
     return appendLine
   }
 

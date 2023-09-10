@@ -72,12 +72,12 @@ export const saveStates = async (
   const newRecords = updateRecords(records, key, root)
   await saveRecords(newRecords)
 
+  // Update tracking state.
+  await Storage.set(STORAGE_KEY.TRACKING_STATE, trackings)
+
   // Update activities.
   const activities = await getActivities()
   if (events.length > 0) appendActivities(activities, events)
-
-  // Update tracking state.
-  await Storage.set(STORAGE_KEY.TRACKING_STATE, trackings)
 }
 
 const trackingState = atom<TrackingState[]>({

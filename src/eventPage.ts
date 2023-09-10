@@ -198,9 +198,13 @@ chrome.alarms.onAlarm.addListener((param) => {
       iconUrl: '/icon128.png',
     })
   } else if (alarm.type === ALARM_TYPE.EVENT) {
-    chrome.notifications.create(
-      alarm.calendarEventId,
-      {
+    // If already tracking, do not display notification.
+    checkEventAlreadyStarted(alarm.calendarEventId).then((isStarted) => {
+      if (isStarted) {
+        Log.d('event already started')
+        return
+      }
+      chrome.notifications.create(alarm.calendarEventId, {
         type: 'basic',
         title: alarm.message,
         message: alarm.name,
@@ -209,8 +213,8 @@ chrome.alarms.onAlarm.addListener((param) => {
           { title: t('alarm_button_start') },
           { title: t('alarm_button_nothing') },
         ],
-      }
-    )
+      })
+    })
   }
 })
 
@@ -231,16 +235,14 @@ const startTrackingForCalendarEvent = async (eventId: string) => {
     return
   }
 
-  // TODO: Check if already tracking
-
   // Stop other tracking & alarms
   const records = await loadRecords()
   const root = selectRecord(key, records)
   const [newRoot, events] = stopTrackings(root, trackings)
-  onMessageFuncs.stopAlarmsForTask(0, () => { })
+  onMessageFuncs.stopAlarmsForTask(0, () => {})
 
   // Update tracking state
-  onMessageFuncs.startTracking(0, () => { })
+  onMessageFuncs.startTracking(0, () => {})
   const tracking = {
     isTracking: true,
     nodeId: null,
@@ -257,9 +259,21 @@ const startTrackingForCalendarEvent = async (eventId: string) => {
   if (node != null && node.type === NODE_TYPE.TASK) {
     const alarms = AlarmService.taskToAlarms(node.data as Task, alarmRules)
     alarms.forEach((alarm) => {
-      onMessageFuncs.setAlarm(alarm, () => { })
+      onMessageFuncs.setAlarm(alarm, () => {})
     })
   }
+}
+
+const checkEventAlreadyStarted = async (eventId: string) => {
+  const trackings = (await Storage.get(
+    STORAGE_KEY.TRACKING_STATE,
+  )) as TrackingState[]
+  const eventLines = (await Storage.get(
+    STORAGE_KEY.CALENDAR_EVENT,
+  )) as EventLine[]
+
+  const line = eventLines.find((e) => e.event.id === eventId)?.line
+  return trackings.some((t) => t.line === line)
 }
 
 chrome.notifications.onClicked.addListener(async (evnetId) => {
