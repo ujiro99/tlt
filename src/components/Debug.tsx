@@ -15,7 +15,7 @@ import { flattenTree } from '@/components/Tree/utilities'
 const trackingsToText = (trackings: TrackingState[]) => {
   let res = '<Trackings>'
   trackings.forEach((tracking) => {
-    res += '\n  line: ' + tracking.line
+    res += '\n- line: ' + tracking.line
     res += '\n  nodeId: ' + tracking.nodeId
     res += '\n  startTime: ' + formatTime(tracking.trackingStartTime)
     res +=
@@ -28,7 +28,7 @@ const trackingsToText = (trackings: TrackingState[]) => {
 const calendarToText = (calendars: EventLine[]) => {
   let res = '<Calendars>'
   calendars.forEach((calendar) => {
-    res += '\n  line: ' + calendar.line
+    res += '\n- line: ' + calendar.line
     res += '\n  id: ' + calendar.event.id
     res += '\n  title: ' + calendar.event.title
     res += '\n  md: ' + calendar.event.md
@@ -78,7 +78,7 @@ export function Debug(): JSX.Element {
           <code>{calendarToText(sCalendar)}</code>
         </pre>
         <pre className="debug__label">
-          <code>alarms</code> <br />
+          <code>Alarms</code> <br />
           <code>{JSON.stringify(sAlarms, null, 2)}</code>
         </pre>
       </section>

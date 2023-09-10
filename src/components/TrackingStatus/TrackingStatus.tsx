@@ -30,7 +30,7 @@ function Remain(props: RemainProps): JSX.Element {
     update()
     const timerId = setInterval(update, 1000)
     return () => clearInterval(timerId)
-  }, [])
+  }, [props])
 
   const update = () => {
     const elapsed = Time.elapsed(props.startTime)
