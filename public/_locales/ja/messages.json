@@ -3,13 +3,13 @@
     "message": "TLT : ToDo List & Time Tracking"
   },
   "extDescription": {
-    "message": "ミニマムなUIでToDoと予実を管理できます."
+    "message": "ミニマムなUIでToDoとタイムトラッキングができます."
   },
   "new_todo": {
     "message": "+ new ToDo."
   },
   "start_only_today": {
-    "message": "今日のToDoのみ開始できます"
+    "message": "今日のToDoのみが開始できます"
   },
   "copied": {
     "message": "コピー完了!"
